@@ -21,7 +21,7 @@ dependencies {
     implementation 'org.apache.opennlp:opennlp-tools:2.3.0'
 
     // JOCL Dependencies
-    implementation 'org.jocl:jocl:2.0.4'
+    implementation 'org.jocl:jocl:2.0.5'
 
     // Aparapi Dependencies (Optional)
     implementation 'com.aparapi:aparapi:3.0.0'
