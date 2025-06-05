@@ -32,10 +32,11 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
-    // Logging
+    // Logging - Replace simple with Logback for better configuration options
     implementation 'org.slf4j:slf4j-api:2.0.7'
-    runtimeOnly 'org.slf4j:slf4j-simple:2.0.7'
-
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+    implementation 'ch.qos.logback:logback-core:1.4.11'
+    
     // Testing Dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
