@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     // OpenNLP Dependencies
-    implementation 'org.apache.opennlp:opennlp-tools:2.3.0'
+    implementation 'org.apache.opennlp:opennlp-tools:2.5.4'
 
     // JOCL Dependencies
     implementation 'org.jocl:jocl:2.0.4'
