@@ -14,33 +14,45 @@
 *.jar
 *.war
 *.ear
+*.zip
+*.tar.gz
+*.rar
 
 # Virtual machine crash logs
 hs_err_pid*
-
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
+replay_pid*
+*.hprof
 
 # Gradle
 .gradle/
 build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
+.gradletasknamecache
+**/build/
+local.properties
+
+# Gradle Profiler
+gradle-user-home/
 
 # Eclipse
 .classpath
 .project
 .settings/
 bin/
+.apt_generated/
+.factorypath
+.springBeans
+.sts4-cache
 
 # IntelliJ IDEA
 .idea/
 *.iml
 *.iws
+*.ipr
 out/
+.idea_modules/
 
 # NetBeans
 nbproject/private/
@@ -49,10 +61,45 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+nbactions.xml
 
 # VS Code
 .vscode/
+.code-workspace
 
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Coverage reports
+jacoco/
+*.exec
+coverage/
+htmlReport/
+
+# Native libraries
+*.so
+*.dylib
+*.dll
+*.jnilib
+
+# Temporary build files
+tmp/
+temp/
+
+# Lombok
+.lombok/
+lombok.config
+
+# Kotlin
+.kotlin/
+
+# Node (for docs or web components)
+node_modules/
+npm-debug.log
+yarn-error.log

@@ -11,8 +11,8 @@ This project adds GPU acceleration capabilities to [Apache OpenNLP](https://gith
 
 ## Prerequisites
 
-- Java 11 or higher
-- Apache Maven 3.6 or higher
+- Java 11 or higher (Java 17 recommended)
+- Gradle 8.4 or higher 
 - CUDA Toolkit 11.0 or higher (for NVIDIA GPUs)
 - OpenCL 1.2 or higher compatible GPU
 
@@ -26,18 +26,17 @@ git clone https://github.com/yourusername/opennlp-gpu.git
 cd opennlp-gpu
 
 # Build the project
-mvn clean install
+./gradlew build
 ```
 
-### Including in Your Project
+### Troubleshooting Build Issues
 
-```xml
-<dependency>
-    <groupId>org.apache.opennlp</groupId>
-    <artifactId>opennlp-gpu</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-</dependency>
-```
+If you encounter Java version compatibility issues:
+
+1. Make sure you have Java 11 or Java 17 installed
+2. Set the `JAVA_HOME` environment variable to point to this installation
+3. Run `./gradlew --version` to verify Gradle is using the correct Java version
+4. If needed, update `gradle.properties` to set the correct JVM arguments
 
 ## Usage Examples
 

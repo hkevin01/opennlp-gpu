@@ -1,0 +1,33 @@
+# EditorConfig helps maintain consistent coding styles
+# across different editors and IDEs
+# editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{json,yml,yaml,xml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{kt,kts}]
+kotlin_code_style = official
+
+[*.java]
+# Java-specific settings
+max_line_length = 120
+continuation_indent_size = 8
+
+[*.{gradle,gradle.kts}]
+indent_size = 4
+
+[*.properties]
+charset = latin1

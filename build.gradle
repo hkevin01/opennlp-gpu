@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'io.freefair.lombok' version '8.4'
+}
+
+group = 'org.apache.opennlp'
+version = '0.1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // OpenNLP Dependencies
+    implementation 'org.apache.opennlp:opennlp-tools:2.3.0'
+
+    // JOCL Dependencies
+    implementation 'org.jocl:jocl:2.0.4'
+
+    // Aparapi Dependencies (Optional)
+    implementation 'com.aparapi:aparapi:3.0.0'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    runtimeOnly 'org.slf4j:slf4j-simple:2.0.7'
+
+    // Testing Dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// This makes the project more resilient to different Java versions
+wrapper {
+    gradleVersion = '8.4'
+}
