@@ -95,7 +95,11 @@ public class CudaComputeProvider implements ComputeProvider {
         return "CUDA Compute Provider";
     }
     
-    @Override
+    /**
+     * Get the compute capability of the CUDA provider.
+     * 
+     * @return the compute capability value
+     */
     public int getComputeCapability() {
         // CUDA has high compute capability
         return 20;
@@ -158,6 +162,15 @@ public class CudaComputeProvider implements ComputeProvider {
     @Override
     public ResourceManager getResourceManager() {
         return resourceManager;
+    }
+    
+    @Override
+    public void release() {
+        log.info("Releasing CUDA compute provider resources");
+        if (resourceManager != null) {
+            resourceManager.release();
+        }
+        benchmarkCache.clear();
     }
     
     /**

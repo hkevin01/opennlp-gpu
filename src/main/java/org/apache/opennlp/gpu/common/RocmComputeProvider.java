@@ -138,6 +138,33 @@ public class RocmComputeProvider implements ComputeProvider {
         return Type.ROCM;
     }
     
+    @Override
+    public boolean isAvailable() {
+        // Check if ROCm is available on the system
+        return RocmUtil.isAvailable();
+    }
+
+    @Override
+    public String getName() {
+        return "ROCm Compute Provider (" + deviceName + ")";
+    }
+
+    @Override
+    public int getComputeCapability() {
+        // ROCm has a base compute capability
+        return 15; // Example value, adjust as needed
+    }
+    
+    @Override
+    public void release() {
+        log.info("Releasing ROCm compute provider resources");
+        if (resourceManager != null) {
+            resourceManager.releaseAll();
+        }
+        benchmarkCache.clear();
+        supportedOperations.clear();
+    }
+    
     /**
      * Resource manager implementation for ROCm provider.
      */

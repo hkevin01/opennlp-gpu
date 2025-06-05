@@ -176,7 +176,11 @@ public class OpenClComputeProvider implements ComputeProvider {
         return "OpenCL Provider (" + deviceName + ")";
     }
     
-    @Override
+    /**
+     * Get the compute capability of the OpenCL provider.
+     * 
+     * @return the compute capability value
+     */
     public int getComputeCapability() {
         // Use OpenCL version and compute units to determine capability
         int openclVersion = getOpenClVersion();

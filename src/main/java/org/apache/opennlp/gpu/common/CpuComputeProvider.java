@@ -1,20 +1,19 @@
 package org.apache.opennlp.gpu.common;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CPU-based fallback implementation of the ComputeProvider interface.
  * This provider is always available and serves as a fallback when GPU providers
  * are not available or not suitable for a task.
  */
-@Slf4j
 public class CpuComputeProvider implements ComputeProvider {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CpuComputeProvider.class);
+    // Explicit logger declaration
+    private static final Logger log = LoggerFactory.getLogger(CpuComputeProvider.class);
     
     // Resource manager for CPU operations
     private final CpuResourceManager resourceManager = new CpuResourceManager();
@@ -50,7 +49,11 @@ public class CpuComputeProvider implements ComputeProvider {
         return "CPU Compute Provider";
     }
     
-    @Override
+    /**
+     * Get the compute capability of the CPU provider.
+     * 
+     * @return the compute capability value
+     */
     public int getComputeCapability() {
         // CPU has a base compute capability
         return 1;
@@ -110,6 +113,18 @@ public class CpuComputeProvider implements ComputeProvider {
     }
     
     /**
+     * Release any resources held by this provider.
+     */
+    @Override
+    public void release() {
+        log.info("Releasing CPU compute provider resources");
+        if (resourceManager != null) {
+            resourceManager.release();
+        }
+        benchmarkCache.clear();
+    }
+    
+    /**
      * Resource manager implementation for CPU provider.
      */
     private class CpuResourceManager implements ResourceManager {
@@ -137,12 +152,34 @@ public class CpuComputeProvider implements ComputeProvider {
         }
         
         @Override
-        public Object getOrCreateKernel(String kernelName, String kernelSource) {
-            // CPU doesn't use kernels, return the name as a placeholder
-            return kernelName;
+        public org.jocl.cl_kernel getOrCreateKernel(String name, String source) {
+            // CPU doesn't use kernels, return null as a placeholder
+            return null;
         }
         
         @Override
+        public org.jocl.cl_mem allocateBuffer(int size, boolean readOnly) {
+            // CPU implementation doesn't use OpenCL buffers
+            return null;
+        }
+        
+        @Override
+        public org.jocl.cl_mem allocateBuffer(int size, String name) {
+            // CPU implementation doesn't use OpenCL buffers
+            return null;
+        }
+        
+        @Override
+        public Object getCachedData(String name) {
+            return dataCache.get(name);
+        }
+        
+        @Override
+        public void releaseBuffer(org.jocl.cl_mem buffer) {
+            // No-op for CPU implementation
+        }
+        
+        // The existing allocateBuffer method with long parameter can remain as an additional helper
         public Object allocateBuffer(long size, String type) {
             // For CPU, we simply allocate a float array
             if ("float".equals(type)) {
@@ -156,37 +193,14 @@ public class CpuComputeProvider implements ComputeProvider {
             }
         }
         
-        @Override
-        public void releaseBuffer(Object buffer) {
-            // Java GC handles this automatically, nothing to do
-        }
-        
-        @Override
-        public Object getCachedData(String name) {
-            return null; // Or cached data if implemented
-        }
-        
-        @Override
-        public void releaseBuffer(cl_mem buffer) {
-            // No-op for CPU implementation
-        }
-        
-        @Override
         public void cacheData(String key, Object data) {
             dataCache.put(key, data);
         }
         
-        @Override
-        public Object getCachedData(String key) {
-            return dataCache.get(key);
-        }
-        
-        @Override
         public void clearCache() {
             dataCache.clear();
         }
         
-        @Override
         public Map<String, Object> getStatistics() {
             Map<String, Object> stats = new HashMap<>();
             stats.put("cacheSize", dataCache.size());

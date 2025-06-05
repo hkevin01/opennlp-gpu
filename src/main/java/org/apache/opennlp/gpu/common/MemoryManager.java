@@ -8,16 +8,17 @@ import org.jocl.Pointer;
 import org.jocl.cl_command_queue;
 import org.jocl.cl_context;
 import org.jocl.cl_mem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.jocl.CL.*;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Manages memory allocations for GPU operations.
  */
-@Slf4j
 public class MemoryManager {
+    // Explicit logger declaration
+    private static final Logger log = LoggerFactory.getLogger(MemoryManager.class);
     
     private static final int DEFAULT_ALIGNMENT = 64;
     private cl_context context;

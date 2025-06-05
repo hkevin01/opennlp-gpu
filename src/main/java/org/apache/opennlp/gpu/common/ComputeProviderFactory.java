@@ -27,12 +27,16 @@ public class ComputeProviderFactory {
         benchmarkCache = new ConcurrentHashMap<>();
     
     // User preferences
-    private ComputeConfiguration configuration = new ComputeConfiguration();
+    private ComputeConfiguration configuration;
     
     /**
      * Private constructor for singleton pattern.
      */
     private ComputeProviderFactory() {
+        // Initialize configuration with empty properties
+        java.util.Properties defaultProps = new java.util.Properties();
+        configuration = new ComputeConfiguration(defaultProps);
+        
         discoverProviders();
     }
     
@@ -90,8 +94,17 @@ public class ComputeProviderFactory {
      */
     public ComputeProvider getBestProvider(String operationType, int problemSize) {
         // Check if user has explicitly specified a provider type
-        if (configuration.getPreferredProviderType() != null) {
-            ComputeProvider.Type preferredType = configuration.getPreferredProviderType();
+        ComputeProvider.Type preferredType = null;
+        // Try to access preferredProviderType directly or via reflection
+        try {
+            java.lang.reflect.Field field = ComputeConfiguration.class.getDeclaredField("preferredProviderType");
+            field.setAccessible(true);
+            preferredType = (ComputeProvider.Type) field.get(configuration);
+        } catch (Exception e) {
+            logger.warn("Could not access preferredProviderType: {}", e.getMessage());
+        }
+        
+        if (preferredType != null) {
             for (ComputeProvider provider : availableProviders) {
                 if (provider.getType() == preferredType && provider.supportsOperation(operationType)) {
                     logger.debug("Using user-specified provider: {}", provider.getName());
@@ -103,7 +116,17 @@ public class ComputeProviderFactory {
         }
         
         // If problem size is below threshold, use CPU provider for small problems
-        if (problemSize < configuration.getSmallProblemThreshold()) {
+        int smallProblemThreshold = 1000; // Default value from ComputeConfiguration
+        // Try to access smallProblemThreshold directly or via reflection
+        try {
+            java.lang.reflect.Field field = ComputeConfiguration.class.getDeclaredField("smallProblemThreshold");
+            field.setAccessible(true);
+            smallProblemThreshold = field.getInt(configuration);
+        } catch (Exception e) {
+            logger.warn("Could not access smallProblemThreshold: {}", e.getMessage());
+        }
+        
+        if (problemSize < smallProblemThreshold) {
             for (ComputeProvider provider : availableProviders) {
                 if (provider.getType() == ComputeProvider.Type.CPU && provider.supportsOperation(operationType)) {
                     logger.debug("Using CPU provider for small problem size: {}", problemSize);
