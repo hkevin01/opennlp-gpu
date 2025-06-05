@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.common;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CpuComputeProvider implements ComputeProvider {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CpuComputeProvider.class);
     
     // Resource manager for CPU operations
     private final CpuResourceManager resourceManager = new CpuResourceManager();

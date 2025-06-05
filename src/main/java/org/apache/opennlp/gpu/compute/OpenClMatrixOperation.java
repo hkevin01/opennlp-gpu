@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.compute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.ResourceManager;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class OpenClMatrixOperation implements MatrixOperation {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpenClMatrixOperation.class);
     
     @Getter
     private final ComputeProvider provider;
@@ -79,12 +82,12 @@ public class OpenClMatrixOperation implements MatrixOperation {
     public OpenClMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
         this.resourceManager = provider.getResourceManager();
-        logger.info("Initializing OpenCL matrix operations with provider: {}", provider.getName());
+        log.info("Initializing OpenCL matrix operations with provider: {}", provider.getName());
     }
     
     @Override
     public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
-        logger.debug("OpenCL matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
+        log.debug("OpenCL matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
         
         try {
             // Get kernel
@@ -133,7 +136,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
             resourceManager.releaseBuffer(cBuffer);
             
         } catch (Exception e) {
-            logger.error("Error in OpenCL matrix multiplication", e);
+            log.error("Error in OpenCL matrix multiplication", e);
             // Fall back to CPU implementation
             new CpuMatrixOperation(provider).multiply(a, b, c, rowsA, colsB, sharedDim);
         }
@@ -141,7 +144,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
     
     @Override
     public void add(float[] a, float[] b, float[] c, int elements) {
-        logger.debug("OpenCL matrix add: {} elements", elements);
+        log.debug("OpenCL matrix add: {} elements", elements);
         
         try {
             // Get kernel
@@ -188,7 +191,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
             resourceManager.releaseBuffer(cBuffer);
             
         } catch (Exception e) {
-            logger.error("Error in OpenCL matrix addition", e);
+            log.error("Error in OpenCL matrix addition", e);
             // Fall back to CPU implementation
             new CpuMatrixOperation(provider).add(a, b, c, elements);
         }
@@ -196,7 +199,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
     
     @Override
     public void subtract(float[] a, float[] b, float[] c, int elements) {
-        logger.debug("OpenCL matrix subtract: {} elements", elements);
+        log.debug("OpenCL matrix subtract: {} elements", elements);
         
         try {
             // Get kernel
@@ -243,7 +246,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
             resourceManager.releaseBuffer(cBuffer);
             
         } catch (Exception e) {
-            logger.error("Error in OpenCL matrix subtraction", e);
+            log.error("Error in OpenCL matrix subtraction", e);
             // Fall back to CPU implementation
             new CpuMatrixOperation(provider).subtract(a, b, c, elements);
         }
@@ -251,7 +254,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
     
     @Override
     public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
-        logger.debug("OpenCL scalar multiply: {} elements by {}", elements, scalar);
+        log.debug("OpenCL scalar multiply: {} elements by {}", elements, scalar);
         
         try {
             // Get kernel
@@ -291,7 +294,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
             resourceManager.releaseBuffer(bBuffer);
             
         } catch (Exception e) {
-            logger.error("Error in OpenCL scalar multiplication", e);
+            log.error("Error in OpenCL scalar multiplication", e);
             // Fall back to CPU implementation
             new CpuMatrixOperation(provider).scalarMultiply(a, b, scalar, elements);
         }
@@ -299,7 +302,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
     
     @Override
     public void transpose(float[] a, float[] b, int rows, int cols) {
-        logger.debug("OpenCL matrix transpose: {}x{}", rows, cols);
+        log.debug("OpenCL matrix transpose: {}x{}", rows, cols);
         
         try {
             // Get kernel
@@ -339,7 +342,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
             resourceManager.releaseBuffer(bBuffer);
             
         } catch (Exception e) {
-            logger.error("Error in OpenCL matrix transpose", e);
+            log.error("Error in OpenCL matrix transpose", e);
             // Fall back to CPU implementation
             new CpuMatrixOperation(provider).transpose(a, b, rows, cols);
         }
@@ -352,7 +355,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
     
     @Override
     public void release() {
-        logger.info("Releasing OpenCL matrix operation resources");
+        log.info("Releasing OpenCL matrix operation resources");
         // No specific resources to release, as ResourceManager handles cleanup
     }
 }

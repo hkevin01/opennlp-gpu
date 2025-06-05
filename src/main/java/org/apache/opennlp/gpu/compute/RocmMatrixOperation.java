@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.compute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
@@ -11,6 +13,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class RocmMatrixOperation implements MatrixOperation {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RocmMatrixOperation.class);
+    @Override
+    public ComputeProvider getProvider() {
+        return this.provider;
+    }
     
     @Getter
     private final ComputeProvider provider;

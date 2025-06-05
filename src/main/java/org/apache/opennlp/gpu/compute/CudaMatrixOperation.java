@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.compute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.cuda.CudaUtil;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CudaMatrixOperation implements MatrixOperation {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CudaMatrixOperation.class);
     
     @Getter
     private final ComputeProvider provider;

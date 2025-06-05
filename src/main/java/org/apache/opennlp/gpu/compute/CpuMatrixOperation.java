@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.compute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class CpuMatrixOperation implements MatrixOperation {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CpuMatrixOperation.class);
     
     @Getter
     private final ComputeProvider provider;
@@ -23,12 +26,12 @@ public class CpuMatrixOperation implements MatrixOperation {
      */
     public CpuMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
-        logger.info("Initializing CPU matrix operations with provider: {}", provider.getName());
+        log.info("Initializing CPU matrix operations with provider: {}", provider.getName());
     }
     
     @Override
     public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
-        logger.debug("CPU matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
+        log.debug("CPU matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
         
         // Basic matrix multiplication algorithm
         for (int i = 0; i < rowsA; i++) {
@@ -44,7 +47,7 @@ public class CpuMatrixOperation implements MatrixOperation {
     
     @Override
     public void add(float[] a, float[] b, float[] c, int elements) {
-        logger.debug("CPU matrix add: {} elements", elements);
+        log.debug("CPU matrix add: {} elements", elements);
         
         for (int i = 0; i < elements; i++) {
             c[i] = a[i] + b[i];
@@ -53,7 +56,7 @@ public class CpuMatrixOperation implements MatrixOperation {
     
     @Override
     public void subtract(float[] a, float[] b, float[] c, int elements) {
-        logger.debug("CPU matrix subtract: {} elements", elements);
+        log.debug("CPU matrix subtract: {} elements", elements);
         
         for (int i = 0; i < elements; i++) {
             c[i] = a[i] - b[i];
@@ -62,7 +65,7 @@ public class CpuMatrixOperation implements MatrixOperation {
     
     @Override
     public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
-        logger.debug("CPU scalar multiply: {} elements by {}", elements, scalar);
+        log.debug("CPU scalar multiply: {} elements by {}", elements, scalar);
         
         for (int i = 0; i < elements; i++) {
             b[i] = a[i] * scalar;
@@ -71,7 +74,7 @@ public class CpuMatrixOperation implements MatrixOperation {
     
     @Override
     public void transpose(float[] a, float[] b, int rows, int cols) {
-        logger.debug("CPU matrix transpose: {}x{}", rows, cols);
+        log.debug("CPU matrix transpose: {}x{}", rows, cols);
         
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -82,7 +85,7 @@ public class CpuMatrixOperation implements MatrixOperation {
     
     @Override
     public void release() {
-        logger.info("Releasing CPU matrix operation resources");
+        log.info("Releasing CPU matrix operation resources");
         // No resources to release for CPU implementation
     }
 }

@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.compute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class CpuFeatureExtractionOperation implements FeatureExtractionOperation {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CpuFeatureExtractionOperation.class);
     
     @Getter
     private final ComputeProvider provider;
@@ -23,12 +26,12 @@ public class CpuFeatureExtractionOperation implements FeatureExtractionOperation
      */
     public CpuFeatureExtractionOperation(ComputeProvider provider) {
         this.provider = provider;
-        logger.info("Initializing CPU feature extraction with provider: {}", provider.getName());
+        log.info("Initializing CPU feature extraction with provider: {}", provider.getName());
     }
     
     @Override
     public int extractNGrams(int[] tokens, int numTokens, int maxNGramLength, int[] featureMap) {
-        logger.debug("CPU extracting n-grams: {} tokens, max length {}", numTokens, maxNGramLength);
+        log.debug("CPU extracting n-grams: {} tokens, max length {}", numTokens, maxNGramLength);
         
         int featureCount = 0;
         
@@ -54,7 +57,7 @@ public class CpuFeatureExtractionOperation implements FeatureExtractionOperation
     
     @Override
     public void computeTfIdf(float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms) {
-        logger.debug("CPU computing TF-IDF: {} terms, {} docs", numTerms, numDocs);
+        log.debug("CPU computing TF-IDF: {} terms, {} docs", numTerms, numDocs);
         
         for (int i = 0; i < numTerms; i++) {
             // Avoid division by zero
@@ -69,7 +72,7 @@ public class CpuFeatureExtractionOperation implements FeatureExtractionOperation
     
     @Override
     public void computeCosineSimilarity(float[] docVectors, int numDocs, int vectorSize, float[] similarities) {
-        logger.debug("CPU computing cosine similarity: {} docs, vector size {}", numDocs, vectorSize);
+        log.debug("CPU computing cosine similarity: {} docs, vector size {}", numDocs, vectorSize);
         
         // Pre-compute document vector norms
         float[] norms = new float[numDocs];
@@ -109,7 +112,7 @@ public class CpuFeatureExtractionOperation implements FeatureExtractionOperation
     
     @Override
     public void release() {
-        logger.info("Releasing CPU feature extraction resources");
+        log.info("Releasing CPU feature extraction resources");
         // No resources to release for CPU implementation
     }
 }

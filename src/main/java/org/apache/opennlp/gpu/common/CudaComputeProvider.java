@@ -1,4 +1,6 @@
 package org.apache.opennlp.gpu.common;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.cuda.CudaUtil;
 import lombok.Getter;
@@ -13,6 +15,7 @@ import java.util.Map;
  */
 @Slf4j
 public class CudaComputeProvider implements ComputeProvider {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CudaComputeProvider.class);
     
     private CudaResourceManager resourceManager;
     private String deviceName;
@@ -34,10 +37,10 @@ public class CudaComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        logger.info("Initializing CUDA compute provider");
+        log.info("Initializing CUDA compute provider");
         
         if (!CudaUtil.isAvailable()) {
-            logger.warn("CUDA is not available on this system");
+            log.warn("CUDA is not available on this system");
             return false;
         }
         
@@ -48,10 +51,10 @@ public class CudaComputeProvider implements ComputeProvider {
             // Initialize supported operations
             initializeSupportedOperations();
             
-            logger.info("CUDA compute provider initialized successfully");
+            log.info("CUDA compute provider initialized successfully");
             return true;
         } catch (Exception e) {
-            logger.error("Error initializing CUDA compute provider", e);
+            log.error("Error initializing CUDA compute provider", e);
             return false;
         }
     }
@@ -136,7 +139,7 @@ public class CudaComputeProvider implements ComputeProvider {
             baseScore *= 2.0; // Large problems benefit more from GPU parallelism
         }
         
-        logger.debug("CUDA benchmark for {} with size {}: score {}", 
+        log.debug("CUDA benchmark for {} with size {}: score {}", 
                     operationType, problemSize, baseScore);
         
         return baseScore;
@@ -162,7 +165,7 @@ public class CudaComputeProvider implements ComputeProvider {
         benchmarkCache.clear();
         supportedOperations.clear();
         
-        logger.info("Released CUDA compute provider resources");
+        log.info("Released CUDA compute provider resources");
     }
     
     /**
@@ -183,7 +186,7 @@ public class CudaComputeProvider implements ComputeProvider {
                 long devicePtr = cudaAllocateMemory(size);
                 return Long.valueOf(devicePtr);
             } catch (Exception e) {
-                logger.error("Error allocating CUDA memory", e);
+                log.error("Error allocating CUDA memory", e);
                 throw new RuntimeException("Error allocating CUDA memory", e);
             }
         }
@@ -194,7 +197,7 @@ public class CudaComputeProvider implements ComputeProvider {
                 try {
                     cudaFreeMemory((Long) buffer);
                 } catch (Exception e) {
-                    logger.error("Error releasing CUDA memory", e);
+                    log.error("Error releasing CUDA memory", e);
                 }
             }
         }
