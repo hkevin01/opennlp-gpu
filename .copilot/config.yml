@@ -1,0 +1,32 @@
+# GitHub Copilot configuration
+
+suggestions:
+  # Include and exclude patterns for GitHub Copilot suggestions
+  include:
+    - "src/**/*.java"
+    - "src/**/*.cl"
+    - "src/**/*.cu"
+  
+  exclude:
+    - "**/test/**"
+    - "**/generated/**"
+    - "**/*Test.java"
+
+# Prompt templates for common tasks
+prompts:
+  - name: "Create JOCL Kernel"
+    description: "Generate a JOCL kernel wrapper for OpenCL"
+    template: |
+      I need a JOCL kernel wrapper for OpenCL to perform the following operation:
+      {{operation_description}}
+      
+      This will be used in the context of NLP for:
+      {{nlp_context}}
+
+  - name: "Create CPU Fallback"
+    description: "Generate a CPU fallback implementation"
+    template: |
+      I need a CPU fallback implementation for this GPU-accelerated code:
+      ```java
+      {{gpu_code}}
+      ```
