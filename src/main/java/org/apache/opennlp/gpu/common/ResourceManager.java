@@ -1,68 +1,77 @@
 package org.apache.opennlp.gpu.common;
 
-import java.util.Map;
+import org.jocl.cl_mem;
+import org.jocl.cl_kernel;
+import org.jocl.Pointer;
 
 /**
- * Manages hardware resources such as memory buffers, contexts, and compiled kernels.
- * Provides caching and resource pooling to minimize allocation overhead.
+ * Interface for resource managers used by compute providers.
  */
 public interface ResourceManager {
     
     /**
-     * Allocate a memory buffer of the specified size.
-     *
-     * @param size the size in bytes
-     * @param type the type of memory (e.g., "host", "device")
-     * @return a handle to the allocated buffer
+     * Initialize the resource manager.
+     * 
+     * @return true if initialization was successful
      */
-    Object allocateBuffer(long size, String type);
+    boolean initialize();
     
     /**
-     * Release a previously allocated buffer.
-     *
-     * @param buffer the buffer to release
+     * Release all resources.
      */
-    void releaseBuffer(Object buffer);
+    void release();
     
     /**
-     * Get or create a compiled kernel.
-     *
-     * @param kernelName the name of the kernel
-     * @param kernelSource the source code of the kernel
-     * @return a handle to the compiled kernel
-     */
-    Object getOrCreateKernel(String kernelName, String kernelSource);
-    
-    /**
-     * Cache data for frequent use.
-     *
-     * @param key the cache key
-     * @param data the data to cache
-     */
-    void cacheData(String key, Object data);
-    
-    /**
-     * Retrieve cached data.
-     *
-     * @param key the cache key
-     * @return the cached data, or null if not found
-     */
-    Object getCachedData(String key);
-    
-    /**
-     * Clear all cached data.
-     */
-    void clearCache();
-    
-    /**
-     * Get statistics about resource usage.
-     *
-     * @return a map of statistics names to values
-     */
-    Map<String, Object> getStatistics();
-    
-    /**
-     * Release all resources managed by this resource manager.
+     * Release all cached resources.
      */
     void releaseAll();
+    
+    /**
+     * Get the memory manager.
+     * 
+     * @return the memory manager
+     */
+    MemoryManager getMemoryManager();
+    
+    /**
+     * Get or create an OpenCL kernel.
+     * 
+     * @param name the kernel name
+     * @param source the kernel source code
+     * @return the kernel
+     */
+    cl_kernel getOrCreateKernel(String name, String source);
+    
+    /**
+     * Allocate a buffer with the specified size.
+     * 
+     * @param size the buffer size in bytes
+     * @param readOnly whether the buffer is read-only
+     * @return the allocated buffer
+     */
+    cl_mem allocateBuffer(int size, boolean readOnly);
+    
+    /**
+     * Allocate a buffer with the specified size and name.
+     * 
+     * @param size the buffer size in bytes
+     * @param name the buffer name for caching
+     * @return the allocated buffer
+     */
+    cl_mem allocateBuffer(int size, String name);
+    
+    /**
+     * Get cached data by name.
+     * 
+     * @param name the data name
+     * @return the cached data
+     */
+    Object getCachedData(String name);
+    
+    /**
+     * Release a buffer.
+     * 
+     * @param buffer the buffer to release
+     */
+    void releaseBuffer(cl_mem buffer);
 }

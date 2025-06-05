@@ -242,9 +242,9 @@ package org.apache.opennlp.gpu.test;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Log4j;
 
-@Slf4j
+@Log4j
 @RequiredArgsConstructor
 public class LombokTester {
     @Getter
@@ -257,6 +257,98 @@ public class LombokTester {
 EOF
 
     echo "Created $TEST_FILE."
+}
+
+# Add SLF4J dependencies with more specific version and ensure direct import
+add_slf4j_dependencies() {
+    echo "Adding or updating SLF4J dependencies..."
+    
+    # Check if SLF4J is in pom.xml
+    if ! grep -q "<artifactId>slf4j-api</artifactId>" "$POM_FILE" || ! grep -q "<version>$SLF4J_VERSION</version>" "$POM_FILE"; then
+        # Remove any existing SLF4J dependencies to avoid version conflicts
+        TMP_FILE="$(mktemp)"
+        sed '/<artifactId>slf4j-api<\/artifactId>/,/<\/dependency>/d' "$POM_FILE" > "$TMP_FILE"
+        sed '/<artifactId>slf4j-simple<\/artifactId>/,/<\/dependency>/d' "$TMP_FILE" > "$POM_FILE"
+        
+        # Add SLF4J with explicit dependency management
+        sed -i '/<dependencies>/a\
+            <!-- SLF4J API -->\
+            <dependency>\
+                <groupId>org.slf4j</groupId>\
+                <artifactId>slf4j-api</artifactId>\
+                <version>'"$SLF4J_VERSION"'</version>\
+            </dependency>\
+            <!-- SLF4J Simple implementation -->\
+            <dependency>\
+                <groupId>org.slf4j</groupId>\
+                <artifactId>slf4j-simple</artifactId>\
+                <version>'"$SLF4J_VERSION"'</version>\
+            </dependency>' "$POM_FILE"
+        
+        echo "Added explicit SLF4J dependencies to pom.xml"
+    fi
+}
+
+# Install Lombok jar directly (for when Maven dependency isn't enough)
+install_lombok_jar() {
+    echo "Installing Lombok jar directly to ensure proper resolution..."
+    
+    # Create .m2 directory if it doesn't exist
+    mkdir -p "$HOME/.m2/repository/org/projectlombok/lombok/$LOMBOK_VERSION"
+    
+    # Download Lombok jar if it doesn't exist
+    LOMBOK_JAR="$HOME/.m2/repository/org/projectlombok/lombok/$LOMBOK_VERSION/lombok-$LOMBOK_VERSION.jar"
+    if [ ! -f "$LOMBOK_JAR" ]; then
+        echo "Downloading Lombok jar..."
+        if command -v curl >/dev/null 2>&1; then
+            curl -L "https://repo1.maven.org/maven2/org/projectlombok/lombok/$LOMBOK_VERSION/lombok-$LOMBOK_VERSION.jar" -o "$LOMBOK_JAR"
+        elif command -v wget >/dev/null 2>&1; then
+            wget "https://repo1.maven.org/maven2/org/projectlombok/lombok/$LOMBOK_VERSION/lombok-$LOMBOK_VERSION.jar" -O "$LOMBOK_JAR"
+        else
+            echo "ERROR: Neither curl nor wget is available. Cannot download Lombok."
+        fi
+    fi
+    
+    # Verify download
+    if [ -f "$LOMBOK_JAR" ]; then
+        echo "Lombok jar available at: $LOMBOK_JAR"
+        
+        # Copy to project directory for IDE usage
+        mkdir -p "$PROJECT_ROOT/lib"
+        cp "$LOMBOK_JAR" "$PROJECT_ROOT/lib/"
+        echo "Copied Lombok jar to project lib directory for IDE usage"
+    else
+        echo "ERROR: Failed to ensure Lombok jar is available."
+    fi
+}
+
+# Create IDE configuration for Lombok
+create_ide_config() {
+    echo "Creating IDE configuration for Lombok..."
+    
+    # VS Code configuration
+    if command -v code >/dev/null 2>&1; then
+        mkdir -p "$PROJECT_ROOT/.vscode"
+        cat << EOF > "$PROJECT_ROOT/.vscode/settings.json"
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.jdt.ls.lombokSupport": true,
+    "java.format.enabled": true
+}
+EOF
+        echo "Created VS Code settings for Lombok"
+    fi
+    
+    # Eclipse/IntelliJ .factorypath for annotation processing
+    cat << EOF > "$PROJECT_ROOT/.factorypath"
+<factorypath>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/$LOMBOK_VERSION/lombok-$LOMBOK_VERSION.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
+EOF
+    echo "Created .factorypath for IDE annotation processing"
 }
 
 # Fix Java Files Automatically
@@ -284,7 +376,8 @@ fix_java_files() {
     if [ -f "$COMPUTE_PROVIDER_FACTORY_FILE" ]; then
         if grep -q "new ComputeConfiguration()" "$COMPUTE_PROVIDER_FACTORY_FILE"; then
             echo "Adding missing constructor parameters to ComputeConfiguration in ComputeProviderFactory.java..."
-            sed -i 's/new ComputeConfiguration()/new ComputeConfiguration(/* Add required Properties here */)/g' "$COMPUTE_PROVIDER_FACTORY_FILE"
+            # Use a different delimiter (|) instead of / to avoid escaping issues
+            sed -i 's|new ComputeConfiguration()|new ComputeConfiguration(/* Add required Properties here */)|g' "$COMPUTE_PROVIDER_FACTORY_FILE"
             echo "Updated ComputeConfiguration constructor."
         fi
     fi
@@ -440,18 +533,35 @@ fix_java_files() {
             continue
         fi
 
+        # Fix incorrect Slf4j imports - this was causing the "import lombok cannot be resolved" error
+        if grep -q "import lombok.extern/slf4j" "$file"; then
+            echo "Fixing incorrect SLF4J import in $CLASS_NAME..."
+            sed -i 's|import lombok.extern/slf4j/.*|import lombok.extern/slf4j/log4j;|g' "$file"
+        fi
+
+        # Ensure proper SLF4J imports are present
+        if ! grep -q "import lombok.extern/slf4j/log4j" "$file" && ! grep -q "import org.slf4j.Logger" "$file"; then
+            echo "Adding proper SLF4J import to $CLASS_NAME..."
+            sed -i "/package /a\\
+import lombok.extern/slf4j/log4j;" "$file"
+        fi
+
         # Check if class already has @Slf4j
         if ! grep -q "@Slf4j" "$file"; then
             echo "Adding @Slf4j annotation to $CLASS_NAME..."
-            sed -i "/public class $CLASS_NAME/a\\
-    @Slf4j" "$file"
+            sed -i "/public class $CLASS_NAME/i @Slf4j" "$file"
         fi
 
-        # Ensure SLF4J imports are present
-        if ! grep -q "import lombok.extern.slf4j/log4j;" "$file"; then
-            echo "Adding SLF4J import to $CLASS_NAME..."
+        # Add manual SLF4J logger if needed (to handle edge cases)
+        if grep -q "log\." "$file" && ! grep -q "@Slf4j" "$file" && ! grep -q "Logger log" "$file"; then
+            echo "Adding manual SLF4J logger to $CLASS_NAME..."
+            sed -i "/public class $CLASS_NAME/a\\
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger($CLASS_NAME.class);" "$file"
+            
+            # Add imports for manual logger
             sed -i "/package /a\\
-import lombok.extern.slf4j.log4j;" "$file"
+import org.slf4j.Logger;\\
+import org.slf4j.LoggerFactory;" "$file"
         fi
 
         # Replace 'logger' with 'log' if present
@@ -496,9 +606,12 @@ run_maven_build() {
 backup_pom
 add_repositories
 add_dependencies
+add_slf4j_dependencies
 configure_maven_compiler_plugin
 configure_lombok
 create_lombok_test_file
+install_lombok_jar  # Add this new function
+create_ide_config   # Add this new function
 fix_java_files
 add_missing_libraries
 run_maven_build

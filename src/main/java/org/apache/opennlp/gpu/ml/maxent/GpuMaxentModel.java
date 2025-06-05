@@ -185,4 +185,22 @@ public class GpuMaxentModel {
             logger.error("Error releasing GPU MaxEnt model resources", e);
         }
     }
+    
+    /**
+     * Get device information.
+     *
+     * @param device the OpenCL device
+     * @return the device information string
+     */
+    public static String getDeviceInfo(cl_device_id device) {
+        if (device == null) {
+            return "Device not available";
+        }
+        
+        // Instead of using getInfo() which doesn't exist, build device info manually
+        StringBuilder info = new StringBuilder();
+        info.append("Device ID: ").append(device.toString());
+        
+        return info.toString();
+    }
 }

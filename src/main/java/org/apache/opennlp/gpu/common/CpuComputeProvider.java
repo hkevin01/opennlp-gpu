@@ -57,19 +57,25 @@ public class CpuComputeProvider implements ComputeProvider {
     }
     
     @Override
-    public double getPerformanceScore(String operationType, int problemSize) {
+    public boolean supportsOperation(String operationName) {
+        // CPU provider supports all operations
+        return true;
+    }
+    
+    @Override
+    public double getPerformanceScore(String operationName, int dataSize) {
         // Check if we have a cached score
-        if (benchmarkCache.containsKey(operationType) &&
-            benchmarkCache.get(operationType).containsKey(problemSize)) {
-            return benchmarkCache.get(operationType).get(problemSize);
+        if (benchmarkCache.containsKey(operationName) &&
+            benchmarkCache.get(operationName).containsKey(dataSize)) {
+            return benchmarkCache.get(operationName).get(dataSize);
         }
         
         // Perform a simple benchmark
-        double score = performBenchmark(operationType, problemSize);
+        double score = performBenchmark(operationName, dataSize);
         
         // Cache the result
-        benchmarkCache.computeIfAbsent(operationType, k -> new HashMap<>())
-                     .put(problemSize, score);
+        benchmarkCache.computeIfAbsent(operationName, k -> new HashMap<>())
+                     .put(dataSize, score);
         
         return score;
     }
@@ -103,25 +109,38 @@ public class CpuComputeProvider implements ComputeProvider {
         return resourceManager;
     }
     
-    @Override
-    public boolean supportsOperation(String operationType) {
-        // CPU provider supports all operations
-        return true;
-    }
-    
-    @Override
-    public void release() {
-        resourceManager.releaseAll();
-        benchmarkCache.clear();
-        log.info("Released CPU compute provider resources");
-    }
-    
     /**
-     * CPU-specific implementation of the ResourceManager interface.
+     * Resource manager implementation for CPU provider.
      */
-    private static class CpuResourceManager implements ResourceManager {
+    private class CpuResourceManager implements ResourceManager {
         
         private final Map<String, Object> dataCache = new HashMap<>();
+        
+        @Override
+        public boolean initialize() {
+            return true; // Nothing to initialize for CPU
+        }
+        
+        @Override
+        public void release() {
+            // Java GC handles this automatically, nothing to do
+        }
+        
+        @Override
+        public MemoryManager getMemoryManager() {
+            return new MemoryManager();
+        }
+        
+        @Override
+        public void releaseAll() {
+            clearCache();
+        }
+        
+        @Override
+        public Object getOrCreateKernel(String kernelName, String kernelSource) {
+            // CPU doesn't use kernels, return the name as a placeholder
+            return kernelName;
+        }
         
         @Override
         public Object allocateBuffer(long size, String type) {
@@ -143,9 +162,13 @@ public class CpuComputeProvider implements ComputeProvider {
         }
         
         @Override
-        public Object getOrCreateKernel(String kernelName, String kernelSource) {
-            // CPU doesn't use kernels, return the name as a placeholder
-            return kernelName;
+        public Object getCachedData(String name) {
+            return null; // Or cached data if implemented
+        }
+        
+        @Override
+        public void releaseBuffer(cl_mem buffer) {
+            // No-op for CPU implementation
         }
         
         @Override
@@ -168,11 +191,6 @@ public class CpuComputeProvider implements ComputeProvider {
             Map<String, Object> stats = new HashMap<>();
             stats.put("cacheSize", dataCache.size());
             return stats;
-        }
-        
-        @Override
-        public void releaseAll() {
-            clearCache();
         }
     }
 }

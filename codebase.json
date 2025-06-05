@@ -1,0 +1,235 @@
+{
+  "project": "OpenNLP GPU",
+  "description": "GPU acceleration for Apache OpenNLP using JOCL",
+  "version": "1.0.0",
+  "structure": {
+    "components": [
+      {
+        "name": "ComputeProvider",
+        "type": "interface",
+        "path": "src/main/java/org/apache/opennlp/gpu/common/ComputeProvider.java",
+        "description": "Core interface for GPU compute providers",
+        "implementations": [
+          "CpuComputeProvider", "CudaComputeProvider", "RocmComputeProvider", "OpenClComputeProvider"
+        ],
+        "methods": ["initialize", "isAvailable", "getType", "release", "getResourceManager"]
+      },
+      {
+        "name": "ResourceManager",
+        "type": "interface",
+        "path": "src/main/java/org/apache/opennlp/gpu/common/ResourceManager.java",
+        "description": "Manages GPU resources and memory",
+        "methods": ["initialize", "release", "getMemoryManager", "allocateBuffer", "releaseBuffer"]
+      },
+      {
+        "name": "MatrixOperation",
+        "type": "interface",
+        "path": "src/main/java/org/apache/opennlp/gpu/common/MatrixOperation.java",
+        "description": "Matrix operations interface",
+        "implementations": [
+          "CpuMatrixOperation", "CudaMatrixOperation", "RocmMatrixOperation", "OpenClMatrixOperation"
+        ]
+      },
+      {
+        "name": "FeatureExtractionOperation",
+        "type": "interface",
+        "path": "src/main/java/org/apache/opennlp/gpu/common/FeatureExtractionOperation.java",
+        "description": "Feature extraction interface",
+        "implementations": [
+          "CpuFeatureExtractionOperation", "CudaFeatureExtractionOperation", "RocmFeatureExtractionOperation", "OpenClFeatureExtractionOperation"
+        ]
+      },
+      {
+        "name": "ComputeProviderFactory",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/common/ComputeProviderFactory.java",
+        "description": "Factory for creating compute providers based on availability"
+      },
+      {
+        "name": "MemoryManager",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/common/MemoryManager.java",
+        "description": "Manages memory allocations for GPU operations"
+      }
+    ],
+    "utilities": [
+      {
+        "name": "CudaUtil",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/cuda/CudaUtil.java",
+        "description": "Utility class for CUDA operations and device management"
+      },
+      {
+        "name": "RocmUtil",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/rocm/RocmUtil.java",
+        "description": "Utility class for ROCm operations and device management"
+      },
+      {
+        "name": "LoggingUtil",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/util/LoggingUtil.java",
+        "description": "Utility for logging operations"
+      },
+      {
+        "name": "NativeLibraryLoader",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/util/NativeLibraryLoader.java",
+        "description": "Utility for loading native libraries"
+      }
+    ],
+    "models": [
+      {
+        "name": "GpuMaxentModel",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/ml/maxent/GpuMaxentModel.java",
+        "description": "GPU-accelerated maximum entropy model"
+      }
+    ],
+    "kernels": [
+      {
+        "name": "MatrixOps",
+        "type": "class",
+        "path": "src/main/java/org/apache/opennlp/gpu/kernels/MatrixOps.java",
+        "description": "GPU kernel operations for matrix calculations"
+      },
+      {
+        "name": "matrix_ops.cl",
+        "type": "OpenCL kernel",
+        "path": "src/main/resources/opencl/matrix_ops.cl",
+        "description": "OpenCL kernel implementation for matrix operations"
+      },
+      {
+        "name": "CudaKernelLaunchers.cu",
+        "type": "CUDA kernel",
+        "path": "src/main/cpp/cuda/CudaKernelLaunchers.cu",
+        "description": "CUDA kernel launchers for matrix operations"
+      },
+      {
+        "name": "RocmKernelLaunchers.hip",
+        "type": "ROCm kernel",
+        "path": "src/main/cpp/rocm/RocmKernelLaunchers.hip",
+        "description": "ROCm/HIP kernel launchers for matrix operations"
+      }
+    ],
+    "native": {
+      "cuda": {
+        "path": "src/main/cpp/cuda/",
+        "files": ["CudaOperations.cpp", "kernels.cu", "CudaKernelLaunchers.cu"],
+        "buildSystem": "CMake"
+      },
+      "rocm": {
+        "path": "src/main/cpp/rocm/",
+        "files": ["RocmOperations.cpp", "kernels.hip", "RocmKernelLaunchers.hip"],
+        "buildSystem": "CMake"
+      }
+    }
+  },
+  "packages": [
+    {
+      "name": "org.apache.opennlp.gpu.common",
+      "description": "Common interfaces and base implementations"
+    },
+    {
+      "name": "org.apache.opennlp.gpu.compute",
+      "description": "Compute operation implementations"
+    },
+    {
+      "name": "org.apache.opennlp.gpu.cuda",
+      "description": "CUDA-specific implementations"
+    },
+    {
+      "name": "org.apache.opennlp.gpu.rocm",
+      "description": "ROCm/HIP-specific implementations"
+    },
+    {
+      "name": "org.apache.opennlp.gpu.kernels",
+      "description": "GPU kernel abstractions"
+    },
+    {
+      "name": "org.apache.opennlp.gpu.ml",
+      "description": "Machine learning model implementations"
+    },
+    {
+      "name": "org.apache.opennlp.gpu.util",
+      "description": "Utility classes"
+    }
+  ],
+  "dependencies": {
+    "external": [
+      {
+        "name": "JOCL",
+        "version": "2.0.4",
+        "description": "Java bindings for OpenCL"
+      },
+      {
+        "name": "SLF4J",
+        "version": "1.7.36",
+        "description": "Logging facade"
+      },
+      {
+        "name": "Lombok",
+        "version": "1.18.30",
+        "description": "Annotation processor for boilerplate reduction"
+      }
+    ]
+  },
+  "buildSystem": {
+    "type": "Maven",
+    "mainFile": "pom.xml",
+    "previousSystem": "Gradle"
+  },
+  "architecture": {
+    "patterns": [
+      {
+        "name": "Provider Pattern",
+        "components": ["ComputeProvider", "ComputeProviderFactory"],
+        "description": "Abstracts hardware-specific implementations behind common interfaces"
+      },
+      {
+        "name": "Strategy Pattern",
+        "components": ["MatrixOperation", "FeatureExtractionOperation"],
+        "description": "Different algorithms can be selected at runtime based on hardware"
+      },
+      {
+        "name": "Factory Pattern",
+        "components": ["ComputeProviderFactory", "OperationFactory"],
+        "description": "Creates appropriate implementations based on available hardware"
+      }
+    ],
+    "layers": [
+      {
+        "name": "API Layer",
+        "components": ["GpuMaxentModel"],
+        "description": "Top-level API for NLP models"
+      },
+      {
+        "name": "Operation Layer",
+        "components": ["MatrixOperation", "FeatureExtractionOperation"],
+        "description": "Abstract operations that can be performed on different hardware"
+      },
+      {
+        "name": "Provider Layer",
+        "components": ["ComputeProvider", "ResourceManager"],
+        "description": "Hardware abstraction layer"
+      },
+      {
+        "name": "Native Layer",
+        "components": ["CudaUtil", "RocmUtil", "NativeLibraryLoader"],
+        "description": "Interface with native GPU libraries"
+      }
+    ]
+  },
+  "dataFlow": {
+    "matrixMultiplication": [
+      "Application requests matrix multiplication",
+      "OperationFactory creates appropriate MatrixOperation implementation",
+      "MatrixOperation delegates to compute provider",
+      "Compute provider allocates GPU memory via ResourceManager",
+      "Data is transferred to GPU",
+      "GPU kernel is executed",
+      "Results are transferred back to host",
+      "GPU resources are released"
+    ]
+  }
+}

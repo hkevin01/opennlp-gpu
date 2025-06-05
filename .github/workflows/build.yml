@@ -18,20 +18,17 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        cache: gradle
+        cache: maven
     
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-    
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
     
     - name: Run tests
-      run: ./gradlew test
+      run: mvn test
     
     - name: Upload test results
       uses: actions/upload-artifact@v3
       if: always()
       with:
         name: test-results
-        path: build/reports/tests/test/
+        path: target/surefire-reports/

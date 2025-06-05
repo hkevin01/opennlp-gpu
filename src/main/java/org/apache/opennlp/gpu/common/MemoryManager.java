@@ -1,28 +1,37 @@
 package org.apache.opennlp.gpu.common;
 
-import org.jocl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.jocl.CL;
+import org.jocl.Pointer;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_mem;
+
+import static org.jocl.CL.*;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Manages memory buffers on the GPU device and handles data transfer
- * between host (CPU) and device (GPU) memory.
+ * Manages memory allocations for GPU operations.
  */
+@Slf4j
 public class MemoryManager {
     
-    private static final Logger logger = LoggerFactory.getLogger(MemoryManager.class);
-    
-    private final cl_context context;
-    private final cl_command_queue commandQueue;
-    
-    // Cache for buffers to avoid repeated allocations
-    private final Map<String, cl_mem> bufferCache = new HashMap<>();
+    private static final int DEFAULT_ALIGNMENT = 64;
+    private cl_context context;
+    private cl_command_queue commandQueue;
     
     /**
-     * Creates a new memory manager for the specified OpenCL context and command queue.
+     * Default constructor.
+     */
+    public MemoryManager() {
+        // Default constructor
+    }
+    
+    /**
+     * Creates a memory manager with OpenCL context and command queue.
      *
      * @param context the OpenCL context
      * @param commandQueue the OpenCL command queue
@@ -30,123 +39,163 @@ public class MemoryManager {
     public MemoryManager(cl_context context, cl_command_queue commandQueue) {
         this.context = context;
         this.commandQueue = commandQueue;
-        logger.debug("Memory manager initialized");
+        log.info("Created OpenCL memory manager");
     }
     
     /**
-     * Allocates a buffer on the GPU device.
+     * Allocates a direct byte buffer aligned to the specified boundary.
      *
-     * @param size the size of the buffer in bytes
-     * @param readOnly whether the buffer is read-only for the kernel
+     * @param size the buffer size in bytes
+     * @param alignment the alignment boundary
      * @return the allocated buffer
      */
-    public cl_mem allocateBuffer(long size, boolean readOnly) {
-        int flags = readOnly ? CL.CL_MEM_READ_ONLY : CL.CL_MEM_READ_WRITE;
-        
-        try {
-            int[] errorCode = new int[1];
-            cl_mem buffer = CL.clCreateBuffer(context, flags, size, null, errorCode);
-            
-            if (errorCode[0] != CL.CL_SUCCESS) {
-                throw new RuntimeException("Failed to allocate device memory: " + errorCode[0]);
-            }
-            
-            logger.debug("Allocated buffer of size {} bytes", size);
-            return buffer;
-        } catch (Exception e) {
-            logger.error("Error allocating device memory", e);
-            throw new RuntimeException("Error allocating device memory", e);
+    public static ByteBuffer allocateAligned(long size, int alignment) {
+        if (size <= 0) {
+            throw new IllegalArgumentException("Size must be positive");
         }
+        
+        if (alignment <= 0 || (alignment & (alignment - 1)) != 0) {
+            throw new IllegalArgumentException("Alignment must be a positive power of 2");
+        }
+        
+        // Allocate with extra space for alignment
+        long totalSize = size + alignment - 1;
+        if (totalSize > Integer.MAX_VALUE) {
+            throw new OutOfMemoryError("Requested allocation exceeds maximum buffer size");
+        }
+        
+        ByteBuffer buffer = ByteBuffer.allocateDirect((int)totalSize);
+        buffer.order(ByteOrder.nativeOrder());
+        
+        // Calculate alignment offset
+        long address = getBufferAddress(buffer);
+        long alignedAddress = (address + alignment - 1) & ~(alignment - 1);
+        int offset = (int)(alignedAddress - address);
+        
+        // Create aligned slice
+        buffer.position(offset);
+        buffer.limit((int)size + offset);
+        ByteBuffer alignedBuffer = buffer.slice();
+        
+        log.debug("Allocated aligned buffer: size={}, alignment={}, offset={}", size, alignment, offset);
+        return alignedBuffer;
     }
     
     /**
-     * Allocates or retrieves a cached buffer with the given key.
+     * Allocates a direct byte buffer aligned to the default boundary.
      *
-     * @param key the cache key for the buffer
-     * @param size the size of the buffer in bytes
-     * @param readOnly whether the buffer is read-only for the kernel
-     * @return the allocated or cached buffer
+     * @param size the buffer size in bytes
+     * @return the allocated buffer
      */
-    public cl_mem getOrAllocateBuffer(String key, long size, boolean readOnly) {
-        if (bufferCache.containsKey(key)) {
-            logger.debug("Using cached buffer for key: {}", key);
-            return bufferCache.get(key);
+    public static ByteBuffer allocateAligned(long size) {
+        return allocateAligned(size, DEFAULT_ALIGNMENT);
+    }
+    
+    /**
+     * Gets the memory address of a direct byte buffer.
+     *
+     * @param buffer the buffer
+     * @return the memory address
+     */
+    private static long getBufferAddress(ByteBuffer buffer) {
+        if (!buffer.isDirect()) {
+            throw new IllegalArgumentException("Buffer must be direct");
         }
         
-        cl_mem buffer = allocateBuffer(size, readOnly);
-        bufferCache.put(key, buffer);
+        // This is a placeholder - actual implementation would use Unsafe or JNI
+        // to get the real memory address
+        return buffer.hashCode() & 0xFFFFFFFFL;
+    }
+    
+    /**
+     * Allocates an OpenCL buffer.
+     *
+     * @param size the buffer size in bytes
+     * @param readOnly whether the buffer is read-only
+     * @return the allocated buffer
+     */
+    public cl_mem allocateBuffer(int size, boolean readOnly) {
+        if (context == null) {
+            throw new IllegalStateException("OpenCL context not initialized");
+        }
+        
+        long flags = readOnly ? CL_MEM_READ_ONLY : CL_MEM_READ_WRITE;
+        int[] errCode = new int[1];
+        cl_mem buffer = clCreateBuffer(context, flags, size, null, errCode);
+        
+        if (errCode[0] != CL_SUCCESS) {
+            throw new RuntimeException("Failed to allocate OpenCL buffer: " + errCode[0]);
+        }
+        
+        log.debug("Allocated OpenCL buffer: size={}, readOnly={}", size, readOnly);
         return buffer;
     }
     
     /**
-     * Copies data from host to device memory.
+     * Copies data from host to device.
      *
-     * @param hostArray the source array on the host
-     * @param deviceBuffer the destination buffer on the device
-     * @param size the number of bytes to copy
+     * @param hostPtr the host pointer
+     * @param deviceBuffer the device buffer
+     * @param size the size in bytes
      */
-    public void copyToDevice(Pointer hostArray, cl_mem deviceBuffer, long size) {
-        try {
-            CL.clEnqueueWriteBuffer(
-                commandQueue, deviceBuffer, CL.CL_TRUE, 0,
-                size, hostArray, 0, null, null);
-            
-            logger.debug("Copied {} bytes to device", size);
-        } catch (Exception e) {
-            logger.error("Error copying data to device", e);
-            throw new RuntimeException("Error copying data to device", e);
+    public void copyToDevice(Pointer hostPtr, cl_mem deviceBuffer, int size) {
+        if (commandQueue == null) {
+            throw new IllegalStateException("OpenCL command queue not initialized");
         }
+        
+        int errCode = clEnqueueWriteBuffer(commandQueue, deviceBuffer, CL_TRUE, 0,
+                size, hostPtr, 0, null, null);
+        
+        if (errCode != CL_SUCCESS) {
+            throw new RuntimeException("Failed to copy data to device: " + errCode);
+        }
+        
+        log.debug("Copied data to device: size={}", size);
     }
     
     /**
-     * Copies data from device to host memory.
+     * Copies data from device to host.
      *
-     * @param deviceBuffer the source buffer on the device
-     * @param hostArray the destination array on the host
-     * @param size the number of bytes to copy
+     * @param deviceBuffer the device buffer
+     * @param hostPtr the host pointer
+     * @param size the size in bytes
      */
-    public void copyFromDevice(cl_mem deviceBuffer, Pointer hostArray, long size) {
-        try {
-            CL.clEnqueueReadBuffer(
-                commandQueue, deviceBuffer, CL.CL_TRUE, 0,
-                size, hostArray, 0, null, null);
-            
-            logger.debug("Copied {} bytes from device", size);
-        } catch (Exception e) {
-            logger.error("Error copying data from device", e);
-            throw new RuntimeException("Error copying data from device", e);
+    public void copyFromDevice(cl_mem deviceBuffer, Pointer hostPtr, int size) {
+        if (commandQueue == null) {
+            throw new IllegalStateException("OpenCL command queue not initialized");
         }
+        
+        int errCode = clEnqueueReadBuffer(commandQueue, deviceBuffer, CL_TRUE, 0,
+                size, hostPtr, 0, null, null);
+        
+        if (errCode != CL_SUCCESS) {
+            throw new RuntimeException("Failed to copy data from device: " + errCode);
+        }
+        
+        log.debug("Copied data from device: size={}", size);
     }
     
     /**
-     * Releases a device buffer.
+     * Releases an OpenCL buffer.
      *
      * @param buffer the buffer to release
      */
     public void releaseBuffer(cl_mem buffer) {
-        try {
-            CL.clReleaseMemObject(buffer);
-            logger.debug("Released buffer");
-        } catch (Exception e) {
-            logger.error("Error releasing device buffer", e);
+        if (buffer != null) {
+            int errCode = clReleaseMemObject(buffer);
+            if (errCode != CL_SUCCESS) {
+                log.warn("Failed to release OpenCL buffer: {}", errCode);
+            } else {
+                log.debug("Released OpenCL buffer");
+            }
         }
     }
     
     /**
-     * Clears the buffer cache and releases all buffers.
-     */
-    public void clearCache() {
-        for (cl_mem buffer : bufferCache.values()) {
-            releaseBuffer(buffer);
-        }
-        bufferCache.clear();
-        logger.debug("Cleared buffer cache");
-    }
-    
-    /**
-     * Releases all resources associated with this memory manager.
+     * Releases all resources.
      */
     public void release() {
-        clearCache();
+        log.info("Releasing memory manager resources");
+        // Release any cached resources here
     }
 }

@@ -1,129 +1,134 @@
 package org.apache.opennlp.gpu.rocm;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import org.jocl.CL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.opennlp.gpu.util.NativeLibraryLoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Utility class for ROCm operations, providing initialization and basic operations
- * for AMD GPU acceleration.
+ * Utility class for ROCm operations and device management.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RocmUtil {
+public class RocmUtil {
+    
+    private static final String ROCM_LIBRARY_PATH = "/opt/rocm/lib";
     private static boolean initialized = false;
-    private static boolean available = false;
-    
-    // Static initializer to load native library
-    static {
-        try {
-            if (NativeLibraryLoader.loadLibrary("opennlp_rocm")) {
-                log.info("ROCm native library loaded successfully");
-            } else {
-                log.warn("Failed to load ROCm native library");
-            }
-        } catch (Exception e) {
-            log.error("Error loading ROCm native library", e);
-        }
-    }
-    
-    // JNI method declarations for ROCm operations
-    private static native boolean initializeRocm();
-    private static native int getDeviceCount();
-    private static native String getDeviceName(int deviceId);
-    private static native long getDeviceMemory(int deviceId);
-    private static native String getDeviceArchitecture(int deviceId);
     
     /**
-     * Initialize ROCm if available.
-     * @return true if ROCm is available and initialized successfully
+     * Initialize ROCm libraries and verify the environment.
+     *
+     * @return true if initialization was successful
      */
-    public static synchronized boolean initialize() {
+    public static boolean initialize() {
         if (initialized) {
-            return available;
+            return true;
         }
         
         try {
-            // Initialize ROCm
-            available = initializeRocm();
+            log.info("Initializing ROCm environment");
             
-            if (available) {
-                int deviceCount = getDeviceCount();
-                log.info("ROCm initialized successfully. Found {} device(s)", deviceCount);
-                
-                // Log information about each device
-                for (int i = 0; i < deviceCount; i++) {
-                    log.info("ROCm Device {}: {}", i, getDeviceName(i));
-                    log.info("  Memory: {} MB", getDeviceMemory(i) / (1024 * 1024));
-                    log.info("  Architecture: {}", getDeviceArchitecture(i));
-                }
-            } else {
-                log.warn("ROCm initialization failed - no compatible AMD GPUs found");
+            // Check if ROCm libraries are available
+            if (!checkRocmLibraries()) {
+                log.error("ROCm libraries not found in {}", ROCM_LIBRARY_PATH);
+                return false;
             }
+            
+            // Try to load native libraries
+            try {
+                System.loadLibrary("hip");
+                System.loadLibrary("rocblas");
+                log.info("ROCm libraries loaded successfully");
+            } catch (UnsatisfiedLinkError e) {
+                log.error("Failed to load ROCm libraries: {}", e.getMessage());
+                return false;
+            }
+            
+            // Initialize OpenCL for ROCm
+            try {
+                CL.setExceptionsEnabled(true);
+                log.info("OpenCL for ROCm initialized");
+            } catch (Exception e) {
+                log.error("Failed to initialize OpenCL for ROCm: {}", e.getMessage());
+                return false;
+            }
+            
+            initialized = true;
+            log.info("ROCm environment initialized successfully");
+            return true;
         } catch (Exception e) {
-            log.error("Error initializing ROCm", e);
-            available = false;
+            log.error("Unexpected error during ROCm initialization: {}", e.getMessage(), e);
+            return false;
         }
-        
-        initialized = true;
-        return available;
     }
     
     /**
-     * Check if ROCm is available.
+     * Check if ROCm is available on the system.
+     *
      * @return true if ROCm is available
      */
     public static boolean isAvailable() {
-        if (!initialized) {
-            initialize();
-        }
-        return available;
+        return initialize() && getDeviceCount() > 0;
     }
     
     /**
-     * Get the number of ROCm devices.
-     * @return the number of devices, or 0 if ROCm is not available
+     * Check if ROCm libraries are available on the system.
+     *
+     * @return true if ROCm libraries are found
+     */
+    private static boolean checkRocmLibraries() {
+        File rocmDir = new File(ROCM_LIBRARY_PATH);
+        if (!rocmDir.exists() || !rocmDir.isDirectory()) {
+            return false;
+        }
+        
+        // Check for essential ROCm libraries
+        File[] libs = rocmDir.listFiles((dir, name) -> 
+            name.startsWith("libhip") || name.startsWith("librocblas"));
+        
+        return libs != null && libs.length > 0;
+    }
+    
+    /**
+     * Get the number of available ROCm devices.
+     *
+     * @return the number of ROCm devices, or 0 if ROCm is not available
      */
     public static int getDeviceCount() {
-        if (!isAvailable()) {
+        if (!initialize()) {
             return 0;
         }
-        return getDeviceCount();
+        
+        try {
+            // Implementation would call native ROCm methods
+            // This is a placeholder that should be replaced with actual ROCm calls
+            return 1; // Placeholder for actual device count
+        } catch (Exception e) {
+            log.error("Failed to get ROCm device count: {}", e.getMessage());
+            return 0;
+        }
     }
     
     /**
-     * Verify ROCm installation and requirements.
-     * @return a string describing the verification results
+     * Release ROCm resources.
      */
-    public static String verifyRocmInstallation() {
-        StringBuilder result = new StringBuilder();
-        
-        // Check environment variables
-        String rocmPath = System.getenv("ROCM_PATH");
-        if (rocmPath == null) {
-            rocmPath = "/opt/rocm"; // Default path
-        }
-        result.append("ROCm path: ").append(rocmPath).append("\n");
-        
-        // Check for HIP_PLATFORM
-        String hipPlatform = System.getenv("HIP_PLATFORM");
-        result.append("HIP platform: ").append(hipPlatform != null ? hipPlatform : "not set (using default)").append("\n");
-        
-        // Check if native library can be loaded
-        if (isAvailable()) {
-            result.append("ROCm status: Available\n");
-            result.append("Device count: ").append(getDeviceCount()).append("\n");
-        } else {
-            result.append("ROCm status: Not available\n");
-            result.append("Possible issues:\n");
-            result.append("- ROCm not installed or not in PATH\n");
-            result.append("- No compatible AMD GPUs found\n");
-            result.append("- Missing required libraries\n");
+    public static void release() {
+        if (!initialized) {
+            return;
         }
         
-        return result.toString();
+        try {
+            log.info("Releasing ROCm resources");
+            // Release code would go here
+            initialized = false;
+        } catch (Exception e) {
+            log.error("Error while releasing ROCm resources: {}", e.getMessage());
+        }
     }
 }

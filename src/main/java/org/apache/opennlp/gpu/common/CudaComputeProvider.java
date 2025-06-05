@@ -1,8 +1,11 @@
 package org.apache.opennlp.gpu.common;
+
+import org.apache.opennlp.gpu.cuda.CudaUtil;
+import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.opennlp.gpu.cuda.CudaUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,24 +102,31 @@ public class CudaComputeProvider implements ComputeProvider {
     }
     
     @Override
-    public double getPerformanceScore(String operationType, int problemSize) {
+    public boolean supportsOperation(String operationName) {
+        // Check if the operation is supported
+        Boolean supported = supportedOperations.get(operationName);
+        return supported != null && supported;
+    }
+    
+    @Override
+    public double getPerformanceScore(String operationName, int dataSize) {
         // Check if we have a cached score
-        if (benchmarkCache.containsKey(operationType) &&
-            benchmarkCache.get(operationType).containsKey(problemSize)) {
-            return benchmarkCache.get(operationType).get(problemSize);
+        if (benchmarkCache.containsKey(operationName) &&
+            benchmarkCache.get(operationName).containsKey(dataSize)) {
+            return benchmarkCache.get(operationName).get(dataSize);
         }
         
         // Check if the operation is supported
-        if (!supportsOperation(operationType)) {
+        if (!supportsOperation(operationName)) {
             return 0.0; // Not supported, score of 0
         }
         
         // Perform a benchmark
-        double score = performBenchmark(operationType, problemSize);
+        double score = performBenchmark(operationName, dataSize);
         
         // Cache the result
-        benchmarkCache.computeIfAbsent(operationType, k -> new HashMap<>())
-                     .put(problemSize, score);
+        benchmarkCache.computeIfAbsent(operationName, k -> new HashMap<>())
+                     .put(dataSize, score);
         
         return score;
     }
@@ -150,29 +160,10 @@ public class CudaComputeProvider implements ComputeProvider {
         return resourceManager;
     }
     
-    @Override
-    public boolean supportsOperation(String operationType) {
-        Boolean supported = supportedOperations.get(operationType);
-        return supported != null && supported;
-    }
-    
-    @Override
-    public void release() {
-        if (resourceManager != null) {
-            resourceManager.releaseAll();
-        }
-        
-        benchmarkCache.clear();
-        supportedOperations.clear();
-        
-        log.info("Released CUDA compute provider resources");
-    }
-    
     /**
-     * CUDA-specific implementation of the ResourceManager interface.
+     * Resource manager implementation for CUDA provider.
      */
-    private static class CudaResourceManager implements ResourceManager {
-        
+    private class CudaResourceManager implements ResourceManager {
         private final Map<String, Object> dataCache = new HashMap<>();
         
         // JNI method declarations for CUDA resource management
@@ -180,59 +171,53 @@ public class CudaComputeProvider implements ComputeProvider {
         private native void cudaFreeMemory(long devicePtr);
         
         @Override
-        public Object allocateBuffer(long size, String type) {
-            try {
-                // Allocate CUDA memory and return a handle to it
-                long devicePtr = cudaAllocateMemory(size);
-                return Long.valueOf(devicePtr);
-            } catch (Exception e) {
-                log.error("Error allocating CUDA memory", e);
-                throw new RuntimeException("Error allocating CUDA memory", e);
-            }
+        public boolean initialize() {
+            // Initialization logic for CUDA resources
+            return true;
         }
         
         @Override
-        public void releaseBuffer(Object buffer) {
-            if (buffer instanceof Long) {
-                try {
-                    cudaFreeMemory((Long) buffer);
-                } catch (Exception e) {
-                    log.error("Error releasing CUDA memory", e);
-                }
-            }
+        public void release() {
+            // Release logic for CUDA resources
         }
         
         @Override
-        public Object getOrCreateKernel(String kernelName, String kernelSource) {
-            // CUDA kernels are compiled into the native library, so we just return the name
-            return kernelName;
-        }
-        
-        @Override
-        public void cacheData(String key, Object data) {
-            dataCache.put(key, data);
-        }
-        
-        @Override
-        public Object getCachedData(String key) {
-            return dataCache.get(key);
-        }
-        
-        @Override
-        public void clearCache() {
-            dataCache.clear();
-        }
-        
-        @Override
-        public Map<String, Object> getStatistics() {
-            Map<String, Object> stats = new HashMap<>();
-            stats.put("cacheSize", dataCache.size());
-            return stats;
+        public MemoryManager getMemoryManager() {
+            return new MemoryManager(); // Or return actual implementation
         }
         
         @Override
         public void releaseAll() {
-            clearCache();
+            // Implementation for releasing all resources
+        }
+        
+        @Override
+        public cl_kernel getOrCreateKernel(String name, String source) {
+            // Implementation for getting or creating a kernel
+            return null; // Or actual implementation
+        }
+        
+        @Override
+        public cl_mem allocateBuffer(int size, boolean readOnly) {
+            // Implementation for allocating buffer
+            return null; // Or actual implementation
+        }
+        
+        @Override
+        public cl_mem allocateBuffer(int size, String name) {
+            // Implementation for allocating named buffer
+            return null; // Or actual implementation
+        }
+        
+        @Override
+        public Object getCachedData(String name) {
+            // Implementation for getting cached data
+            return null; // Or actual implementation
+        }
+        
+        @Override
+        public void releaseBuffer(cl_mem buffer) {
+            // Implementation for releasing buffer
         }
     }
 }

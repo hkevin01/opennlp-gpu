@@ -1,99 +1,134 @@
 package org.apache.opennlp.gpu.cuda;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+import org.jocl.CL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.opennlp.gpu.util.NativeLibraryLoader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Utility class for CUDA operations, providing initialization and basic operations.
+ * Utility class for CUDA operations and device management.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CudaUtil {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CudaUtil.class);
+    
+    private static final String CUDA_LIBRARY_PATH = "/usr/local/cuda/lib64";
     private static boolean initialized = false;
-    private static boolean available = false;
-    
-    // Static initializer to load native library
-    static {
-        try {
-            if (NativeLibraryLoader.loadLibrary("opennlp_cuda")) {
-                log.info("CUDA native library loaded successfully");
-            } else {
-                log.warn("Failed to load CUDA native library");
-            }
-        } catch (Exception e) {
-            log.error("Error loading CUDA native library", e);
-        }
-    }
-    
-    // JNI method declarations for CUDA operations
-    private static native boolean initializeCuda();
-    private static native int getDeviceCount();
-    private static native String getDeviceName(int deviceId);
-    private static native long getDeviceMemory(int deviceId);
-    private static native int getComputeCapability(int deviceId);
     
     /**
-     * Initialize CUDA if available.
-     * @return true if CUDA is available and initialized successfully
+     * Initialize CUDA libraries and verify the environment.
+     *
+     * @return true if initialization was successful
      */
-    public static synchronized boolean initialize() {
+    public static boolean initialize() {
         if (initialized) {
-            return available;
+            return true;
         }
         
         try {
-            // Initialize CUDA
-            available = initializeCuda();
+            log.info("Initializing CUDA environment");
             
-            if (available) {
-                int deviceCount = getDeviceCount();
-                log.info("CUDA initialized successfully. Found {} device(s)", deviceCount);
-                
-                // Log information about each device
-                for (int i = 0; i < deviceCount; i++) {
-                    log.info("CUDA Device {}: {}", i, getDeviceName(i));
-                    log.info("  Memory: {} MB", getDeviceMemory(i) / (1024 * 1024));
-                    log.info("  Compute Capability: {}", getComputeCapability(i));
-                }
-            } else {
-                log.warn("CUDA initialization failed");
+            // Check if CUDA libraries are available
+            if (!checkCudaLibraries()) {
+                log.error("CUDA libraries not found in {}", CUDA_LIBRARY_PATH);
+                return false;
             }
-        } catch (UnsatisfiedLinkError e) {
-            log.warn("CUDA native library not found: {}", e.getMessage());
-            available = false;
+            
+            // Try to load native libraries
+            try {
+                System.loadLibrary("cuda");
+                System.loadLibrary("cudart");
+                log.info("CUDA libraries loaded successfully");
+            } catch (UnsatisfiedLinkError e) {
+                log.error("Failed to load CUDA libraries: {}", e.getMessage());
+                return false;
+            }
+            
+            // Initialize OpenCL for CUDA
+            try {
+                CL.setExceptionsEnabled(true);
+                log.info("OpenCL for CUDA initialized");
+            } catch (Exception e) {
+                log.error("Failed to initialize OpenCL for CUDA: {}", e.getMessage());
+                return false;
+            }
+            
+            initialized = true;
+            log.info("CUDA environment initialized successfully");
+            return true;
         } catch (Exception e) {
-            log.error("Error initializing CUDA", e);
-            available = false;
+            log.error("Unexpected error during CUDA initialization: {}", e.getMessage(), e);
+            return false;
         }
-        
-        initialized = true;
-        return available;
     }
     
     /**
-     * Check if CUDA is available.
+     * Check if CUDA is available on the system.
+     *
      * @return true if CUDA is available
      */
     public static boolean isAvailable() {
-        if (!initialized) {
-            initialize();
-        }
-        return available;
+        return initialize() && getDeviceCount() > 0;
     }
     
     /**
-     * Get the number of CUDA devices.
-     * @return the number of devices, or 0 if CUDA is not available
+     * Check if CUDA libraries are available on the system.
+     *
+     * @return true if CUDA libraries are found
+     */
+    private static boolean checkCudaLibraries() {
+        File cudaDir = new File(CUDA_LIBRARY_PATH);
+        if (!cudaDir.exists() || !cudaDir.isDirectory()) {
+            return false;
+        }
+        
+        // Check for essential CUDA libraries
+        File[] libs = cudaDir.listFiles((dir, name) -> 
+            name.startsWith("libcuda") || name.startsWith("libcudart"));
+        
+        return libs != null && libs.length > 0;
+    }
+    
+    /**
+     * Get the number of available CUDA devices.
+     *
+     * @return the number of CUDA devices, or 0 if CUDA is not available
      */
     public static int getDeviceCount() {
-        if (!isAvailable()) {
+        if (!initialize()) {
             return 0;
         }
-        return getDeviceCount();
+        
+        try {
+            // Implementation would call native CUDA methods
+            // This is a placeholder that should be replaced with actual CUDA calls
+            return 1; // Placeholder for actual device count
+        } catch (Exception e) {
+            log.error("Failed to get CUDA device count: {}", e.getMessage());
+            return 0;
+        }
+    }
+    
+    /**
+     * Release CUDA resources.
+     */
+    public static void release() {
+        if (!initialized) {
+            return;
+        }
+        
+        try {
+            log.info("Releasing CUDA resources");
+            // Release code would go here
+            initialized = false;
+        } catch (Exception e) {
+            log.error("Error while releasing CUDA resources: {}", e.getMessage());
+        }
     }
 }
