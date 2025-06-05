@@ -1,17 +1,19 @@
 package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * CPU-based implementation of matrix operations.
  * This class provides fallback implementations when GPU acceleration is not available.
  */
+@Slf4j
+@RequiredArgsConstructor
 public class CpuMatrixOperation implements MatrixOperation {
     
-    private static final Logger logger = LoggerFactory.getLogger(CpuMatrixOperation.class);
-    
+    @Getter
     private final ComputeProvider provider;
     
     /**
@@ -76,11 +78,6 @@ public class CpuMatrixOperation implements MatrixOperation {
                 b[j * rows + i] = a[i * cols + j];
             }
         }
-    }
-    
-    @Override
-    public ComputeProvider getProvider() {
-        return provider;
     }
     
     @Override

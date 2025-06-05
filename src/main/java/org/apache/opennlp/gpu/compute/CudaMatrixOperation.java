@@ -2,17 +2,17 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.cuda.CudaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * CUDA implementation of matrix operations.
  * This class uses NVIDIA's CUDA platform for GPU-accelerated matrix operations.
  */
+@Slf4j
 public class CudaMatrixOperation implements MatrixOperation {
     
-    private static final Logger logger = LoggerFactory.getLogger(CudaMatrixOperation.class);
-    
+    @Getter
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
@@ -35,7 +35,7 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     public CudaMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
-        logger.info("Initializing CUDA matrix operations with provider: {}", provider.getName());
+        log.info("Initializing CUDA matrix operations with provider: {}", provider.getName());
         
         // Initialize CUDA
         if (!CudaUtil.isAvailable()) {
@@ -46,9 +46,9 @@ public class CudaMatrixOperation implements MatrixOperation {
             // Load the native library for CUDA matrix operations
             System.loadLibrary("opennlp_cuda_matrix");
             initialized = true;
-            logger.info("CUDA matrix operations initialized successfully");
+            log.info("CUDA matrix operations initialized successfully");
         } catch (UnsatisfiedLinkError e) {
-            logger.error("Failed to load CUDA matrix operations library", e);
+            log.error("Failed to load CUDA matrix operations library", e);
             throw new RuntimeException("Failed to initialize CUDA matrix operations", e);
         }
     }
@@ -59,7 +59,7 @@ public class CudaMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("CUDA matrix operations not initialized");
         }
         
-        logger.debug("CUDA matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
+        log.debug("CUDA matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(a.length * Float.BYTES);
@@ -90,7 +90,7 @@ public class CudaMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("CUDA matrix operations not initialized");
         }
         
-        logger.debug("CUDA matrix add: {} elements", elements);
+        log.debug("CUDA matrix add: {} elements", elements);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(elements * Float.BYTES);
@@ -121,7 +121,7 @@ public class CudaMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("CUDA matrix operations not initialized");
         }
         
-        logger.debug("CUDA matrix subtract: {} elements", elements);
+        log.debug("CUDA matrix subtract: {} elements", elements);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(elements * Float.BYTES);
@@ -152,7 +152,7 @@ public class CudaMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("CUDA matrix operations not initialized");
         }
         
-        logger.debug("CUDA scalar multiply: {} elements by {}", elements, scalar);
+        log.debug("CUDA scalar multiply: {} elements by {}", elements, scalar);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(elements * Float.BYTES);
@@ -180,7 +180,7 @@ public class CudaMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("CUDA matrix operations not initialized");
         }
         
-        logger.debug("CUDA matrix transpose: {}x{}", rows, cols);
+        log.debug("CUDA matrix transpose: {}x{}", rows, cols);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(rows * cols * Float.BYTES);
@@ -203,13 +203,8 @@ public class CudaMatrixOperation implements MatrixOperation {
     }
     
     @Override
-    public ComputeProvider getProvider() {
-        return provider;
-    }
-    
-    @Override
     public void release() {
-        logger.info("Releasing CUDA matrix operation resources");
+        log.info("Releasing CUDA matrix operation resources");
         // No resources to release at this level
         // Native resources are managed per-operation
     }

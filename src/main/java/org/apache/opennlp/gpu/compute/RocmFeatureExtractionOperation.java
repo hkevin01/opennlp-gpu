@@ -2,17 +2,17 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * ROCm implementation of feature extraction operations.
  * This class uses AMD's ROCm platform for GPU-accelerated feature extraction.
  */
+@Slf4j
 public class RocmFeatureExtractionOperation implements FeatureExtractionOperation {
     
-    private static final Logger logger = LoggerFactory.getLogger(RocmFeatureExtractionOperation.class);
-    
+    @Getter
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
@@ -35,7 +35,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     public RocmFeatureExtractionOperation(ComputeProvider provider) {
         this.provider = provider;
-        logger.info("Initializing ROCm feature extraction with provider: {}", provider.getName());
+        log.info("Initializing ROCm feature extraction with provider: {}", provider.getName());
         
         // Initialize ROCm
         if (!RocmUtil.isAvailable()) {
@@ -46,9 +46,9 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             // Load the native library for ROCm feature extraction operations
             System.loadLibrary("opennlp_rocm_features");
             initialized = true;
-            logger.info("ROCm feature extraction operations initialized successfully");
+            log.info("ROCm feature extraction operations initialized successfully");
         } catch (UnsatisfiedLinkError e) {
-            logger.error("Failed to load ROCm feature extraction library", e);
+            log.error("Failed to load ROCm feature extraction library", e);
             throw new RuntimeException("Failed to initialize ROCm feature extraction operations", e);
         }
     }
@@ -59,7 +59,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
         }
         
-        logger.debug("ROCm extracting n-grams: {} tokens, max length {}", numTokens, maxNGramLength);
+        log.debug("ROCm extracting n-grams: {} tokens, max length {}", numTokens, maxNGramLength);
         
         // Allocate device memory
         long tokensPtr = allocateDeviceMemory(numTokens * Integer.BYTES);
@@ -89,7 +89,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
         }
         
-        logger.debug("ROCm computing TF-IDF: {} terms, {} docs", numTerms, numDocs);
+        log.debug("ROCm computing TF-IDF: {} terms, {} docs", numTerms, numDocs);
         
         // Allocate device memory
         long termFreqPtr = allocateDeviceMemory(numTerms * Float.BYTES);
@@ -120,7 +120,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
         }
         
-        logger.debug("ROCm computing cosine similarity: {} docs, vector size {}", numDocs, vectorSize);
+        log.debug("ROCm computing cosine similarity: {} docs, vector size {}", numDocs, vectorSize);
         
         // Allocate device memory
         long docVectorsPtr = allocateDeviceMemory(numDocs * vectorSize * Float.BYTES);
@@ -143,13 +143,8 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     
     @Override
-    public ComputeProvider getProvider() {
-        return provider;
-    }
-    
-    @Override
     public void release() {
-        logger.info("Releasing ROCm feature extraction resources");
+        log.info("Releasing ROCm feature extraction resources");
         // No resources to release at this level
         // Native resources are managed per-operation
     }

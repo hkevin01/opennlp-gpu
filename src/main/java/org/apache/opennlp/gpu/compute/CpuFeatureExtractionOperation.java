@@ -1,17 +1,19 @@
 package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * CPU-based implementation of feature extraction operations.
  * This class provides fallback implementations when GPU acceleration is not available.
  */
+@Slf4j
+@RequiredArgsConstructor
 public class CpuFeatureExtractionOperation implements FeatureExtractionOperation {
     
-    private static final Logger logger = LoggerFactory.getLogger(CpuFeatureExtractionOperation.class);
-    
+    @Getter
     private final ComputeProvider provider;
     
     /**
@@ -103,11 +105,6 @@ public class CpuFeatureExtractionOperation implements FeatureExtractionOperation
                 similarities[j * numDocs + i] = similarity;
             }
         }
-    }
-    
-    @Override
-    public ComputeProvider getProvider() {
-        return provider;
     }
     
     @Override

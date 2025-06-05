@@ -1,21 +1,22 @@
 package org.apache.opennlp.gpu.common;
 
-import org.apache.opennlp.gpu.rocm.RocmUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.opennlp.gpu.rocm.RocmUtil;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * ROCm implementation of the ComputeProvider interface.
  * This provider uses AMD's ROCm platform for GPU acceleration.
  */
+@Slf4j
 public class RocmComputeProvider implements ComputeProvider {
     
-    private static final Logger logger = LoggerFactory.getLogger(RocmComputeProvider.class);
+    @Getter
+    private final ResourceManager resourceManager;
     
-    private RocmResourceManager resourceManager;
     private String deviceName;
     private int computeUnits;
     private long globalMemSize;
@@ -30,29 +31,26 @@ public class RocmComputeProvider implements ComputeProvider {
      * Creates a new ROCm compute provider.
      */
     public RocmComputeProvider() {
-        // Default constructor
+        this.resourceManager = new RocmResourceManager();
     }
     
     @Override
     public boolean initialize() {
-        logger.info("Initializing ROCm compute provider");
+        log.info("Initializing ROCm compute provider");
         
         if (!RocmUtil.isAvailable()) {
-            logger.warn("ROCm is not available on this system");
+            log.warn("ROCm is not available on this system");
             return false;
         }
         
         try {
-            // Initialize resource manager
-            resourceManager = new RocmResourceManager();
-            
             // Initialize supported operations
             initializeSupportedOperations();
             
-            logger.info("ROCm compute provider initialized successfully");
+            log.info("ROCm compute provider initialized successfully");
             return true;
         } catch (Exception e) {
-            logger.error("Error initializing ROCm compute provider", e);
+            log.error("Error initializing ROCm compute provider", e);
             return false;
         }
     }
@@ -121,10 +119,6 @@ public class RocmComputeProvider implements ComputeProvider {
     
     /**
      * Perform a benchmark for the specified operation type and problem size.
-     *
-     * @param operationType the type of operation
-     * @param problemSize the size of the problem
-     * @return a performance score
      */
     private double performBenchmark(String operationType, int problemSize) {
         // Base score for ROCm - generally high for larger problems
@@ -134,18 +128,13 @@ public class RocmComputeProvider implements ComputeProvider {
         if (problemSize < 1000) {
             baseScore *= 0.5; // Small problems may not be worth the transfer overhead
         } else if (problemSize > 10000) {
-            baseScore *= 2.0; // Large problems benefit more from GPU parallelism
+            baseScore *= 1.8; // Large problems benefit more from GPU parallelism
         }
         
-        logger.debug("ROCm benchmark for {} with size {}: score {}", 
-                    operationType, problemSize, baseScore);
+        log.debug("ROCm benchmark for {} with size {}: score {}", 
+                 operationType, problemSize, baseScore);
         
         return baseScore;
-    }
-    
-    @Override
-    public ResourceManager getResourceManager() {
-        return resourceManager;
     }
     
     @Override
@@ -163,7 +152,7 @@ public class RocmComputeProvider implements ComputeProvider {
         benchmarkCache.clear();
         supportedOperations.clear();
         
-        logger.info("Released ROCm compute provider resources");
+        log.info("Released ROCm compute provider resources");
     }
     
     /**
@@ -184,7 +173,7 @@ public class RocmComputeProvider implements ComputeProvider {
                 long devicePtr = rocmAllocateMemory(size);
                 return Long.valueOf(devicePtr);
             } catch (Exception e) {
-                logger.error("Error allocating ROCm memory", e);
+                log.error("Error allocating ROCm memory", e);
                 throw new RuntimeException("Error allocating ROCm memory", e);
             }
         }
@@ -195,7 +184,7 @@ public class RocmComputeProvider implements ComputeProvider {
                 try {
                     rocmFreeMemory((Long) buffer);
                 } catch (Exception e) {
-                    logger.error("Error releasing ROCm memory", e);
+                    log.error("Error releasing ROCm memory", e);
                 }
             }
         }

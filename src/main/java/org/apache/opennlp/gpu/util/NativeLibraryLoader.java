@@ -11,13 +11,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Utility class for loading native libraries.
  * Handles both loading from system library path and extracting from JAR.
  */
-public class NativeLibraryLoader {
-    
-    private static final Logger logger = LoggerFactory.getLogger(NativeLibraryLoader.class);
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class NativeLibraryLoader {
     
     /**
      * Attempt to load a native library.
@@ -30,10 +34,10 @@ public class NativeLibraryLoader {
         try {
             // Try to load directly first
             System.loadLibrary(libraryName);
-            logger.info("Successfully loaded library '{}' from system library path", libraryName);
+            log.info("Successfully loaded library '{}' from system library path", libraryName);
             return true;
         } catch (UnsatisfiedLinkError e) {
-            logger.debug("Could not load library '{}' from system library path: {}", libraryName, e.getMessage());
+            log.debug("Could not load library '{}' from system library path: {}", libraryName, e.getMessage());
             
             // Try to load from JAR
             return loadLibraryFromJar(libraryName);
@@ -52,7 +56,7 @@ public class NativeLibraryLoader {
         
         try (InputStream in = NativeLibraryLoader.class.getResourceAsStream(resourcePath)) {
             if (in == null) {
-                logger.error("Could not find native library '{}' in JAR at {}", libraryName, resourcePath);
+                log.error("Could not find native library '{}' in JAR at {}", libraryName, resourcePath);
                 return false;
             }
             
@@ -71,13 +75,13 @@ public class NativeLibraryLoader {
             
             // Load the library
             System.load(tempFile.getAbsolutePath());
-            logger.info("Successfully loaded library '{}' from JAR", libraryName);
+            log.info("Successfully loaded library '{}' from JAR", libraryName);
             
             // Mark for deletion on exit
             tempFile.deleteOnExit();
             return true;
         } catch (IOException | UnsatisfiedLinkError e) {
-            logger.error("Failed to load native library '{}' from JAR: {}", libraryName, e.getMessage());
+            log.error("Failed to load native library '{}' from JAR: {}", libraryName, e.getMessage());
             return false;
         }
     }

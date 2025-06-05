@@ -4,9 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Configuration for compute providers, allowing fine-tuning of provider selection and behavior.
  */
+@Data
+@NoArgsConstructor
 public class ComputeConfiguration {
     
     // The preferred provider type, null for automatic selection
@@ -23,13 +28,6 @@ public class ComputeConfiguration {
     
     // Provider-specific options
     private final Map<String, String> providerOptions = new HashMap<>();
-    
-    /**
-     * Creates a default configuration.
-     */
-    public ComputeConfiguration() {
-        // Default constructor
-    }
     
     /**
      * Creates a configuration from a Properties object.
@@ -79,78 +77,6 @@ public class ComputeConfiguration {
                 providerOptions.put(key, properties.getProperty(key));
             }
         }
-    }
-    
-    /**
-     * Get the preferred provider type.
-     *
-     * @return the preferred provider type, or null for automatic selection
-     */
-    public ComputeProvider.Type getPreferredProviderType() {
-        return preferredProviderType;
-    }
-    
-    /**
-     * Set the preferred provider type.
-     *
-     * @param preferredProviderType the preferred provider type, or null for automatic selection
-     */
-    public void setPreferredProviderType(ComputeProvider.Type preferredProviderType) {
-        this.preferredProviderType = preferredProviderType;
-    }
-    
-    /**
-     * Get the small problem threshold.
-     *
-     * @return the threshold below which CPU is preferred
-     */
-    public int getSmallProblemThreshold() {
-        return smallProblemThreshold;
-    }
-    
-    /**
-     * Set the small problem threshold.
-     *
-     * @param smallProblemThreshold the threshold below which CPU is preferred
-     */
-    public void setSmallProblemThreshold(int smallProblemThreshold) {
-        this.smallProblemThreshold = smallProblemThreshold;
-    }
-    
-    /**
-     * Check if automatic benchmarking is enabled.
-     *
-     * @return true if automatic benchmarking is enabled
-     */
-    public boolean isAutoBenchmark() {
-        return autoBenchmark;
-    }
-    
-    /**
-     * Set whether automatic benchmarking is enabled.
-     *
-     * @param autoBenchmark true to enable automatic benchmarking
-     */
-    public void setAutoBenchmark(boolean autoBenchmark) {
-        this.autoBenchmark = autoBenchmark;
-    }
-    
-    /**
-     * Get the benchmark cache time in milliseconds.
-     *
-     * @return the time in ms that benchmark results are considered valid
-     */
-    public long getBenchmarkCacheTimeMs() {
-        return benchmarkCacheTimeMs;
-    }
-    
-    /**
-     * Set the benchmark cache time in milliseconds.
-     *
-     * @param benchmarkCacheTimeMs the time in ms that benchmark results are considered valid
-     */
-    public void setBenchmarkCacheTimeMs(long benchmarkCacheTimeMs) {
-        this.benchmarkCacheTimeMs = benchmarkCacheTimeMs;
     }
     
     /**

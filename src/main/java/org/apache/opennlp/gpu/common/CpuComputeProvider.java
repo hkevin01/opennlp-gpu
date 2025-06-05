@@ -3,17 +3,15 @@ package org.apache.opennlp.gpu.common;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * CPU-based fallback implementation of the ComputeProvider interface.
  * This provider is always available and serves as a fallback when GPU providers
  * are not available or not suitable for a task.
  */
+@Slf4j
 public class CpuComputeProvider implements ComputeProvider {
-    
-    private static final Logger logger = LoggerFactory.getLogger(CpuComputeProvider.class);
     
     // Resource manager for CPU operations
     private final CpuResourceManager resourceManager = new CpuResourceManager();
@@ -30,7 +28,7 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        logger.info("Initializing CPU compute provider");
+        log.info("Initializing CPU compute provider");
         return true; // CPU provider is always available
     }
     
@@ -91,7 +89,7 @@ public class CpuComputeProvider implements ComputeProvider {
             baseScore = baseScore / (problemSize / 1000.0);
         }
         
-        logger.debug("CPU benchmark for {} with size {}: score {}", 
+        log.debug("CPU benchmark for {} with size {}: score {}", 
                     operationType, problemSize, baseScore);
         
         return baseScore;
@@ -112,7 +110,7 @@ public class CpuComputeProvider implements ComputeProvider {
     public void release() {
         resourceManager.releaseAll();
         benchmarkCache.clear();
-        logger.info("Released CPU compute provider resources");
+        log.info("Released CPU compute provider resources");
     }
     
     /**

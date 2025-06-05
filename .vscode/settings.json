@@ -1,0 +1,43 @@
+{
+    // Java settings
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.autobuild.enabled": true,
+    "java.server.launchMode": "Standard",
+    "java.compile.nullAnalysis.mode": "automatic",
+    
+    // Maven settings
+    "maven.executable.preferMavenWrapper": false,
+    "maven.terminal.useJavaHome": true,
+    "maven.terminal.customEnv": [
+        {
+            "environmentVariable": "JAVA_HOME",
+            "value": "${env:JAVA_HOME}"
+        }
+    ],
+    
+    // Performance settings
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m",
+    
+    // Editor settings
+    "editor.suggestSelection": "first",
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    
+    // Files to exclude
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true,
+        "**/target": false
+    },
+    
+    // Search exclusions
+    "search.exclude": {
+        "**/target": true,
+        "**/node_modules": true,
+        "**/.gradle": true,
+        "**/build": true
+    }
+,
+  "java.jdt.ls.lombokSupport": true
+}

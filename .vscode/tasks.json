@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "mvn: compile",
+            "type": "shell",
+            "command": "mvn compile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$maven"
+        },
+        {
+            "label": "mvn: clean",
+            "type": "shell",
+            "command": "mvn clean",
+            "group": "build",
+            "problemMatcher": "$maven"
+        },
+        {
+            "label": "mvn: test",
+            "type": "shell",
+            "command": "mvn test",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": "$maven"
+        },
+        {
+            "label": "mvn: package",
+            "type": "shell",
+            "command": "mvn package",
+            "group": "build",
+            "problemMatcher": "$maven"
+        },
+        {
+            "label": "mvn: clean install",
+            "type": "shell",
+            "command": "mvn clean install",
+            "group": "build",
+            "problemMatcher": "$maven"
+        }
+    ]
+}

@@ -5,10 +5,14 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Utility class for adjusting logging settings programmatically.
  */
-public class LoggingUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LoggingUtil {
 
     /**
      * Sets the logging level for a specific package.

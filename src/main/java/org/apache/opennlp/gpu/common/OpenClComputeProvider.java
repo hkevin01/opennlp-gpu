@@ -1,8 +1,8 @@
 package org.apache.opennlp.gpu.common;
 
 import org.jocl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +10,8 @@ import java.util.Map;
 /**
  * OpenCL-based implementation of the ComputeProvider interface using JOCL.
  */
+@Slf4j
 public class OpenClComputeProvider implements ComputeProvider {
-    
-    private static final Logger logger = LoggerFactory.getLogger(OpenClComputeProvider.class);
     
     // OpenCL context and command queue
     private cl_context context;
@@ -42,7 +41,7 @@ public class OpenClComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        logger.info("Initializing OpenCL compute provider");
+        log.info("Initializing OpenCL compute provider");
         
         try {
             // Enable exceptions
@@ -54,7 +53,7 @@ public class OpenClComputeProvider implements ComputeProvider {
             int numPlatforms = numPlatformsArray[0];
             
             if (numPlatforms == 0) {
-                logger.error("No OpenCL platforms found");
+                log.error("No OpenCL platforms found");
                 return false;
             }
             
@@ -88,14 +87,14 @@ public class OpenClComputeProvider implements ComputeProvider {
                                                 null, null, errorCode);
                     
                     if (errorCode[0] != CL.CL_SUCCESS) {
-                        logger.error("Failed to create OpenCL context: {}", errorCode[0]);
+                        log.error("Failed to create OpenCL context: {}", errorCode[0]);
                         return false;
                     }
                     
                     commandQueue = CL.clCreateCommandQueue(context, deviceId, 0, errorCode);
                     
                     if (errorCode[0] != CL.CL_SUCCESS) {
-                        logger.error("Failed to create command queue: {}", errorCode[0]);
+                        log.error("Failed to create command queue: {}", errorCode[0]);
                         CL.clReleaseContext(context);
                         return false;
                     }
@@ -106,16 +105,16 @@ public class OpenClComputeProvider implements ComputeProvider {
                     // Initialize supported operations
                     initializeSupportedOperations();
                     
-                    logger.info("Initialized OpenCL compute provider using device: {}", deviceName);
+                    log.info("Initialized OpenCL compute provider using device: {}", deviceName);
                     return true;
                 }
             }
             
-            logger.error("No GPU devices found");
+            log.error("No GPU devices found");
             return false;
             
         } catch (Exception e) {
-            logger.error("Error initializing OpenCL compute provider", e);
+            log.error("Error initializing OpenCL compute provider", e);
             return false;
         }
     }
@@ -237,7 +236,7 @@ public class OpenClComputeProvider implements ComputeProvider {
             baseScore *= (1.0 + Math.log10(problemSize / 1000.0));
         }
         
-        logger.debug("OpenCL benchmark for {} with size {}: score {}", 
+        log.debug("OpenCL benchmark for {} with size {}: score {}", 
                     operationType, problemSize, baseScore);
         
         return baseScore;
@@ -273,7 +272,7 @@ public class OpenClComputeProvider implements ComputeProvider {
         benchmarkCache.clear();
         supportedOperations.clear();
         
-        logger.info("Released OpenCL compute provider resources");
+        log.info("Released OpenCL compute provider resources");
     }
     
     /**

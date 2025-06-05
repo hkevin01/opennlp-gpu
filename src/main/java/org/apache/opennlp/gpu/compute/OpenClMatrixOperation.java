@@ -3,19 +3,19 @@ package org.apache.opennlp.gpu.compute;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.ResourceManager;
 import org.jocl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.nio.charset.StandardCharsets;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * OpenCL implementation of matrix operations.
  * This class uses OpenCL for GPU-accelerated matrix operations.
  */
+@Slf4j
+@RequiredArgsConstructor
 public class OpenClMatrixOperation implements MatrixOperation {
     
-    private static final Logger logger = LoggerFactory.getLogger(OpenClMatrixOperation.class);
-    
+    @Getter
     private final ComputeProvider provider;
     private final ResourceManager resourceManager;
     

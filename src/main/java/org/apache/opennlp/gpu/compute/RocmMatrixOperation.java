@@ -2,17 +2,17 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * ROCm implementation of matrix operations.
  * This class uses AMD's ROCm platform for GPU-accelerated matrix operations.
  */
+@Slf4j
 public class RocmMatrixOperation implements MatrixOperation {
     
-    private static final Logger logger = LoggerFactory.getLogger(RocmMatrixOperation.class);
-    
+    @Getter
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
@@ -35,7 +35,7 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     public RocmMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
-        logger.info("Initializing ROCm matrix operations with provider: {}", provider.getName());
+        log.info("Initializing ROCm matrix operations with provider: {}", provider.getName());
         
         // Initialize ROCm
         if (!RocmUtil.isAvailable()) {
@@ -46,9 +46,9 @@ public class RocmMatrixOperation implements MatrixOperation {
             // Load the native library for ROCm matrix operations
             System.loadLibrary("opennlp_rocm_matrix");
             initialized = true;
-            logger.info("ROCm matrix operations initialized successfully");
+            log.info("ROCm matrix operations initialized successfully");
         } catch (UnsatisfiedLinkError e) {
-            logger.error("Failed to load ROCm matrix operations library", e);
+            log.error("Failed to load ROCm matrix operations library", e);
             throw new RuntimeException("Failed to initialize ROCm matrix operations", e);
         }
     }
@@ -59,7 +59,7 @@ public class RocmMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("ROCm matrix operations not initialized");
         }
         
-        logger.debug("ROCm matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
+        log.debug("ROCm matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(a.length * Float.BYTES);
@@ -90,7 +90,7 @@ public class RocmMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("ROCm matrix operations not initialized");
         }
         
-        logger.debug("ROCm matrix add: {} elements", elements);
+        log.debug("ROCm matrix add: {} elements", elements);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(elements * Float.BYTES);
@@ -121,7 +121,7 @@ public class RocmMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("ROCm matrix operations not initialized");
         }
         
-        logger.debug("ROCm matrix subtract: {} elements", elements);
+        log.debug("ROCm matrix subtract: {} elements", elements);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(elements * Float.BYTES);
@@ -152,7 +152,7 @@ public class RocmMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("ROCm matrix operations not initialized");
         }
         
-        logger.debug("ROCm scalar multiply: {} elements by {}", elements, scalar);
+        log.debug("ROCm scalar multiply: {} elements by {}", elements, scalar);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(elements * Float.BYTES);
@@ -180,7 +180,7 @@ public class RocmMatrixOperation implements MatrixOperation {
             throw new IllegalStateException("ROCm matrix operations not initialized");
         }
         
-        logger.debug("ROCm matrix transpose: {}x{}", rows, cols);
+        log.debug("ROCm matrix transpose: {}x{}", rows, cols);
         
         // Allocate device memory
         long aPtr = allocateDeviceMemory(rows * cols * Float.BYTES);
@@ -203,13 +203,8 @@ public class RocmMatrixOperation implements MatrixOperation {
     }
     
     @Override
-    public ComputeProvider getProvider() {
-        return provider;
-    }
-    
-    @Override
     public void release() {
-        logger.info("Releasing ROCm matrix operation resources");
+        log.info("Releasing ROCm matrix operation resources");
         // No resources to release at this level
         // Native resources are managed per-operation
     }

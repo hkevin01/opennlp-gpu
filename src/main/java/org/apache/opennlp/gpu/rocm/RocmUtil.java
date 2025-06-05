@@ -1,15 +1,17 @@
 package org.apache.opennlp.gpu.rocm;
 
 import org.apache.opennlp.gpu.util.NativeLibraryLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Utility class for ROCm operations, providing initialization and basic operations.
- * This enables support for AMD GPUs using the ROCm platform.
+ * Utility class for ROCm operations, providing initialization and basic operations
+ * for AMD GPU acceleration.
  */
-public class RocmUtil {
-    private static final Logger logger = LoggerFactory.getLogger(RocmUtil.class);
+@Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RocmUtil {
     private static boolean initialized = false;
     private static boolean available = false;
     
@@ -17,12 +19,12 @@ public class RocmUtil {
     static {
         try {
             if (NativeLibraryLoader.loadLibrary("opennlp_rocm")) {
-                logger.info("ROCm native library loaded successfully");
+                log.info("ROCm native library loaded successfully");
             } else {
-                logger.warn("Failed to load ROCm native library");
+                log.warn("Failed to load ROCm native library");
             }
         } catch (Exception e) {
-            logger.error("Error loading ROCm native library", e);
+            log.error("Error loading ROCm native library", e);
         }
     }
     
@@ -31,7 +33,7 @@ public class RocmUtil {
     private static native int getDeviceCount();
     private static native String getDeviceName(int deviceId);
     private static native long getDeviceMemory(int deviceId);
-    private static native int getComputeCapability(int deviceId);
+    private static native String getDeviceArchitecture(int deviceId);
     
     /**
      * Initialize ROCm if available.
@@ -48,22 +50,19 @@ public class RocmUtil {
             
             if (available) {
                 int deviceCount = getDeviceCount();
-                logger.info("ROCm initialized successfully. Found {} device(s)", deviceCount);
+                log.info("ROCm initialized successfully. Found {} device(s)", deviceCount);
                 
                 // Log information about each device
                 for (int i = 0; i < deviceCount; i++) {
-                    logger.info("ROCm Device {}: {}", i, getDeviceName(i));
-                    logger.info("  Memory: {} MB", getDeviceMemory(i) / (1024 * 1024));
-                    logger.info("  Compute Capability: {}", getComputeCapability(i));
+                    log.info("ROCm Device {}: {}", i, getDeviceName(i));
+                    log.info("  Memory: {} MB", getDeviceMemory(i) / (1024 * 1024));
+                    log.info("  Architecture: {}", getDeviceArchitecture(i));
                 }
             } else {
-                logger.warn("ROCm initialization failed");
+                log.warn("ROCm initialization failed - no compatible AMD GPUs found");
             }
-        } catch (UnsatisfiedLinkError e) {
-            logger.warn("ROCm native library not found: {}", e.getMessage());
-            available = false;
         } catch (Exception e) {
-            logger.error("Error initializing ROCm", e);
+            log.error("Error initializing ROCm", e);
             available = false;
         }
         
@@ -91,5 +90,38 @@ public class RocmUtil {
             return 0;
         }
         return getDeviceCount();
+    }
+    
+    /**
+     * Verify ROCm installation and requirements.
+     * @return a string describing the verification results
+     */
+    public static String verifyRocmInstallation() {
+        StringBuilder result = new StringBuilder();
+        
+        // Check environment variables
+        String rocmPath = System.getenv("ROCM_PATH");
+        if (rocmPath == null) {
+            rocmPath = "/opt/rocm"; // Default path
+        }
+        result.append("ROCm path: ").append(rocmPath).append("\n");
+        
+        // Check for HIP_PLATFORM
+        String hipPlatform = System.getenv("HIP_PLATFORM");
+        result.append("HIP platform: ").append(hipPlatform != null ? hipPlatform : "not set (using default)").append("\n");
+        
+        // Check if native library can be loaded
+        if (isAvailable()) {
+            result.append("ROCm status: Available\n");
+            result.append("Device count: ").append(getDeviceCount()).append("\n");
+        } else {
+            result.append("ROCm status: Not available\n");
+            result.append("Possible issues:\n");
+            result.append("- ROCm not installed or not in PATH\n");
+            result.append("- No compatible AMD GPUs found\n");
+            result.append("- Missing required libraries\n");
+        }
+        
+        return result.toString();
     }
 }

@@ -1,8 +1,8 @@
 package org.apache.opennlp.gpu.common;
 
 import org.apache.opennlp.gpu.cuda.CudaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +11,8 @@ import java.util.Map;
  * CUDA implementation of the ComputeProvider interface.
  * This provider uses NVIDIA's CUDA platform for GPU acceleration.
  */
+@Slf4j
 public class CudaComputeProvider implements ComputeProvider {
-    
-    private static final Logger logger = LoggerFactory.getLogger(CudaComputeProvider.class);
     
     private CudaResourceManager resourceManager;
     private String deviceName;

@@ -11,10 +11,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Tests for the GPU-accelerated matrix operations.
  * These tests will be skipped if no GPU is available.
  */
+@Slf4j
 @EnabledIf("isGpuAvailable")
 public class MatrixOpsTest {
     

@@ -1,16 +1,35 @@
-# Compiled class files
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
 *.class
-
-# Log files
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.ear
@@ -18,92 +37,15 @@
 *.tar.gz
 *.rar
 
-# Virtual machine crash logs
-hs_err_pid*
-replay_pid*
-*.hprof
+# Logs
+*.log
 
-# Gradle
+# Gradle (old)
 .gradle/
 build/
-gradle-app.setting
-.gradletasknamecache
-**/build/
-local.properties
-
-# Explicitly allow gradle wrapper files
-!gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.properties
-!gradlew
-!gradlew.bat
-
-# Gradle Profiler
-gradle-user-home/
-
-# Eclipse
-.classpath
-.project
-.settings/
-bin/
-.apt_generated/
-.factorypath
-.springBeans
-.sts4-cache
-
-# IntelliJ IDEA
-.idea/
-*.iml
-*.iws
-*.ipr
-out/
-.idea_modules/
-
-# NetBeans
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-.nb-gradle/
-nbactions.xml
-
-# VS Code
-.vscode/
-.code-workspace
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Coverage reports
-jacoco/
-*.exec
-coverage/
-htmlReport/
-
-# Native libraries
-*.so
-*.dylib
-*.dll
-*.jnilib
-
-# Temporary build files
-tmp/
-temp/
-
-# Lombok
-.lombok/
-lombok.config
-
-# Kotlin
-.kotlin/
-
-# Node (for docs or web components)
-node_modules/
-npm-debug.log
-yarn-error.log
+gradle/
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+gradle.properties
