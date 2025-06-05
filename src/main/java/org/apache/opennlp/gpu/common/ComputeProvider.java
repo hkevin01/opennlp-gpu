@@ -15,7 +15,8 @@ public interface ComputeProvider {
   enum Type {
     CPU,     // CPU-based fallback implementation
     OPENCL,  // OpenCL implementation via JOCL
-    CUDA     // CUDA implementation (if available)
+    CUDA,    // NVIDIA CUDA implementation
+    ROCM     // AMD ROCm implementation
   }
   
   /**

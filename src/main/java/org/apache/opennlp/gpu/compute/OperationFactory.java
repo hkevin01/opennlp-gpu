@@ -54,9 +54,9 @@ public class OperationFactory {
             case OPENCL:
                 return new OpenClMatrixOperation(provider);
             case CUDA:
-                // TODO: Implement CUDA matrix operations
-                logger.warn("CUDA matrix operations not implemented yet, falling back to CPU");
-                return new CpuMatrixOperation(provider);
+                return new CudaMatrixOperation(provider);
+            case ROCM:
+                return new RocmMatrixOperation(provider);
             case CPU:
             default:
                 return new CpuMatrixOperation(provider);
@@ -87,12 +87,9 @@ public class OperationFactory {
             case OPENCL:
                 return new OpenClFeatureExtractionOperation(provider);
             case CUDA:
-                // TODO: Implement CUDA feature extraction
-                // Implementation will be similar to:
-                // return new CudaFeatureExtractionOperation(provider);
-                // For now, fall back to CPU
-                logger.warn("CUDA feature extraction not implemented yet, falling back to CPU");
-                return new CpuFeatureExtractionOperation(provider);
+                return new CudaFeatureExtractionOperation(provider);
+            case ROCM:
+                return new RocmFeatureExtractionOperation(provider);
             case CPU:
             default:
                 return new CpuFeatureExtractionOperation(provider);
