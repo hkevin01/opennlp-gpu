@@ -1,52 +1,45 @@
-plugins {
-    id 'java'
-    id 'io.freefair.lombok' version '8.4'
-}
+// The rest of your build.gradle file...
 
-group = 'org.apache.opennlp'
-version = '0.1.0-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+// Define a custom task to build CUDA native code with CMake
+task buildCudaNative(type: Exec) {
+    description = 'Build CUDA native library using CMake'
+    group = 'Build'
+    
+    // Create build directory if it doesn't exist
+    doFirst {
+        mkdir("${buildDir}/cmake")
+    }
+    
+    // Configure CMake
+    workingDir "${buildDir}/cmake"
+    commandLine 'cmake', "${projectDir}/src/main/cpp", 
+                '-DCMAKE_BUILD_TYPE=Release',
+                "-DCMAKE_INSTALL_PREFIX=${buildDir}/natives"
+    
+    // Build and install
+    doLast {
+        exec {
+            workingDir "${buildDir}/cmake"
+            commandLine 'cmake', '--build', '.', '--target', 'install'
+        }
     }
 }
 
-repositories {
-    mavenCentral()
+// Make Java compilation depend on native library
+compileJava.dependsOn buildCudaNative
+
+// Add native library directory to Java library path
+tasks.withType(Test) {
+    systemProperty 'java.library.path', "${buildDir}/natives/lib"
 }
 
-dependencies {
-    // OpenNLP Dependencies
-    implementation 'org.apache.opennlp:opennlp-tools:2.3.0'
-
-    // JOCL Dependencies
-    implementation 'org.jocl:jocl:2.0.4'
-
-    // Aparapi Dependencies (Optional)
-    implementation 'com.aparapi:aparapi:3.0.0'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-    testCompileOnly 'org.projectlombok:lombok:1.18.30'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-    // Logging - Replace simple with Logback for better configuration options
-    implementation 'org.slf4j:slf4j-api:2.0.7'
-    implementation 'ch.qos.logback:logback-classic:1.4.11'
-    implementation 'ch.qos.logback:logback-core:1.4.11'
-    
-    // Testing Dependencies
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+// Task to copy native libraries to the JAR
+task copyNativesToJar(type: Copy) {
+    from "${buildDir}/natives/lib"
+    into "${buildDir}/resources/main/natives"
+    include '*.so', '*.dll', '*.dylib', '*.jnilib'
 }
 
-test {
-    useJUnitPlatform()
-}
+// Make processResources depend on copying natives
+processResources.dependsOn copyNativesToJar
 
-// This makes the project more resilient to different Java versions
-wrapper {
-    gradleVersion = '8.4'
-}

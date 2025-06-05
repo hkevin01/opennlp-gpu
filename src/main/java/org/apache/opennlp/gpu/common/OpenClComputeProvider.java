@@ -341,6 +341,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         public OpenClResourceManager(cl_context context, cl_command_queue commandQueue) {
             this.context = context;
             this.commandQueue = commandQueue;
+            
+            // Cache the command queue for easy access
+            this.dataCache.put("commandQueue", commandQueue);
         }
         
         @Override

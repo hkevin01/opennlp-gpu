@@ -1,0 +1,3 @@
+org.apache.opennlp.gpu.common.CpuComputeProvider
+org.apache.opennlp.gpu.common.OpenClComputeProvider
+org.apache.opennlp.gpu.common.CudaComputeProvider
