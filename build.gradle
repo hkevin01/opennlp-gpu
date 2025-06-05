@@ -1,3 +1,6 @@
+plugins {
+    id 'java'
+    // Existing plugins will be merged
 // The rest of your build.gradle file...
 
 // Define a custom task to build CUDA native code with CMake
@@ -43,3 +46,4 @@ task copyNativesToJar(type: Copy) {
 // Make processResources depend on copying natives
 processResources.dependsOn copyNativesToJar
 
+}

@@ -38,6 +38,33 @@ If you encounter Java version compatibility issues:
 3. Run `./gradlew --version` to verify Gradle is using the correct Java version
 4. If needed, update `gradle.properties` to set the correct JVM arguments
 
+## Troubleshooting
+
+### Gradle Wrapper Issues
+
+If you encounter issues with the Gradle wrapper (`./gradlew`):
+
+```bash
+# Manually download the wrapper JAR if needed
+mkdir -p gradle/wrapper
+curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.6.0/gradle/wrapper/gradle-wrapper.jar
+chmod +x gradlew
+```
+
+### Java Version Issues
+
+If you see "Unsupported Java Runtime":
+
+1. Install Java 11 or 17 (instead of Java 21)
+2. Set `JAVA_HOME` to point to this installation 
+3. Run: `./gradlew --version` to verify Gradle is using the correct Java
+
+Alternatively, run the script to update Gradle to support Java 21:
+
+```bash
+./scripts/upgrade_gradle.sh
+```
+
 ## Usage Examples
 
 ```java

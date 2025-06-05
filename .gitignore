@@ -27,11 +27,15 @@ replay_pid*
 .gradle/
 build/
 gradle-app.setting
-!gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.jar
 .gradletasknamecache
 **/build/
 local.properties
+
+# Explicitly allow gradle wrapper files
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
 
 # Gradle Profiler
 gradle-user-home/
