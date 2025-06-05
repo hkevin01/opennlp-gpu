@@ -24,7 +24,7 @@ dependencies {
     implementation 'org.jocl:jocl:2.0.4'
 
     // Aparapi Dependencies (Optional)
-    implementation 'com.aparapi:aparapi:3.0.0'
+    implementation 'com.aparapi:aparapi:3.0.2'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'
