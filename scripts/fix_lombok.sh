@@ -119,28 +119,49 @@ create_vscode_config() {
     # Create or update settings.json file
     SETTINGS_FILE="/home/kevin/Projects/opennlp-gpu/.vscode/settings.json"
     
-    if [ -f "$SETTINGS_FILE" ]; then
-        # File exists, try to update it
-        if grep -q "java.jdt.ls.lombokSupport" "$SETTINGS_FILE"; then
-            # Setting exists, update it
-            sed -i 's/"java.jdt.ls.lombokSupport": false/"java.jdt.ls.lombokSupport": true/' "$SETTINGS_FILE"
-        else
-            # Setting doesn't exist, add it (simplified approach)
-            sed -i '/{/a \    "java.jdt.ls.lombokSupport": true,' "$SETTINGS_FILE"
-        fi
-    else
-        # File doesn't exist, create it
-        cat > "$SETTINGS_FILE" << EOF
+    # Create a comprehensive settings file with all needed Lombok and annotation processing settings
+    cat > "$SETTINGS_FILE" << EOF
 {
     "java.jdt.ls.lombokSupport": true,
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.format.enabled": true,
+    "editor.formatOnSave": true,
+    "java.maven.downloadSources": true,
+    "java.completion.enabled": true,
+    "java.codeGeneration.generateComments": true,
+    "java.autobuild.enabled": true,
+    "java.server.launchMode": "Standard",
+    "java.configuration.maven.userSettings": "${HOME}/.m2/settings.xml",
+    "java.import.gradle.enabled": false,
+    "java.import.maven.enabled": true,
+    "java.codeGeneration.useBlocks": true,
+    "java.saveActions.organizeImports": true,
+    "java.cleanup.actionsOnSave": [
+        "addOverride",
+        "addDeprecated",
+        "qualifyStaticMembers",
+        "stringConcatToTextBlock"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }
 EOF
-    fi
     
-    echo "VS Code configuration created."
+    echo "VSCode configuration created with enhanced annotation processing support."
     echo "Please make sure you have the 'Lombok Annotations Support for VS Code' extension installed."
     echo "To install: Open VS Code, press Ctrl+P, then type: ext install GabrielBB.vscode-lombok"
+    
+    # Also create a .factorypath file to ensure annotation processors are picked up
+    FACTORY_PATH_FILE="/home/kevin/Projects/opennlp-gpu/.factorypath"
+    cat > "$FACTORY_PATH_FILE" << EOF
+<factorypath>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/projectlombok/lombok/${LOMBOK_VERSION}/lombok-${LOMBOK_VERSION}.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
+EOF
+    
+    echo "Created .factorypath file to ensure annotation processors are properly detected."
 }
 
 # Function to add lombok.config to project root
@@ -312,6 +333,170 @@ fix_override_annotations() {
     echo "Attempted to fix @Override annotations in matrix operation classes. Manual review is recommended."
 }
 
+# Add a new function to fix interface implementation issues
+fix_interface_implementations() {
+    echo "Fixing interface implementation issues..."
+    
+    # First, ensure MatrixOperation interface exists and has the right methods
+    MATRIX_OP_INTERFACE="/home/kevin/Projects/opennlp-gpu/src/main/java/org/apache/opennlp/gpu/compute/MatrixOperation.java"
+    mkdir -p "$(dirname "$MATRIX_OP_INTERFACE")"
+    
+    echo "Creating/updating MatrixOperation interface..."
+    cat > "$MATRIX_OP_INTERFACE" << EOF
+package org.apache.opennlp.gpu.compute;
+
+import org.apache.opennlp.gpu.common.ComputeProvider;
+
+/**
+ * Interface for matrix operations.
+ */
+public interface MatrixOperation {
+    /**
+     * Gets the compute provider used by this operation.
+     * @return the compute provider
+     */
+    ComputeProvider getProvider();
+    
+    /**
+     * Releases resources used by this operation.
+     */
+    void release();
+    
+    // Add other methods needed by implementations
+}
+EOF
+    
+    # Second, ensure FeatureExtractionOperation interface exists and has the right methods
+    FEATURE_OP_INTERFACE="/home/kevin/Projects/opennlp-gpu/src/main/java/org/apache/opennlp/gpu/common/FeatureExtractionOperation.java"
+    mkdir -p "$(dirname "$FEATURE_OP_INTERFACE")"
+    
+    echo "Creating/updating FeatureExtractionOperation interface..."
+    cat > "$FEATURE_OP_INTERFACE" << EOF
+package org.apache.opennlp.gpu.common;
+
+/**
+ * Interface for feature extraction operations.
+ */
+public interface FeatureExtractionOperation {
+    /**
+     * Gets the compute provider used by this operation.
+     * @return the compute provider
+     */
+    ComputeProvider getProvider();
+    
+    /**
+     * Extract features from tokens.
+     * @param tokens the tokens to extract features from
+     * @return the extracted features
+     */
+    float[] extractFeatures(String[] tokens);
+    
+    /**
+     * Compute TF-IDF for documents.
+     * @param documents the documents to compute TF-IDF for
+     * @return the TF-IDF values
+     */
+    float[] computeTfIdf(String[] documents);
+    
+    /**
+     * Compute cosine similarity between vectors.
+     * @param vector1 the first vector
+     * @param vector2 the second vector
+     * @return the cosine similarity
+     */
+    float computeCosineSimilarity(float[] vector1, float[] vector2);
+    
+    /**
+     * Releases resources used by this operation.
+     */
+    void release();
+}
+EOF
+    
+    # Directly modify the files that are causing errors
+    echo "Directly updating problem files..."
+    
+    # CpuMatrixOperation.java
+    CPU_MATRIX_FILE="/home/kevin/Projects/opennlp-gpu/src/main/java/org/apache/opennlp/gpu/compute/CpuMatrixOperation.java"
+    if [ -f "$CPU_MATRIX_FILE" ]; then
+        echo "  Updating $CPU_MATRIX_FILE"
+        # Create backup
+        cp "$CPU_MATRIX_FILE" "${CPU_MATRIX_FILE}.bak"
+        # Extract package and imports
+        PACKAGE_LINE=$(grep "^package" "$CPU_MATRIX_FILE")
+        IMPORTS=$(grep "^import" "$CPU_MATRIX_FILE")
+        # Add our import if needed
+        if ! grep -q "import org.apache.opennlp.gpu.compute.MatrixOperation" "$CPU_MATRIX_FILE"; then
+            IMPORTS="${IMPORTS}
+import org.apache.opennlp.gpu.compute.MatrixOperation;"
+        fi
+        # Get everything after the class declaration
+        CLASS_BODY=$(sed -n '/public class CpuMatrixOperation/,$p' "$CPU_MATRIX_FILE" | tail -n +2)
+        # Recreate the file with our changes
+        {
+            echo "$PACKAGE_LINE"
+            echo "$IMPORTS"
+            echo ""
+            echo "public class CpuMatrixOperation implements MatrixOperation {"
+            echo "$CLASS_BODY"
+        } > "$CPU_MATRIX_FILE"
+    fi
+    
+    # CudaFeatureExtractionOperation.java
+    CUDA_FEATURE_FILE="/home/kevin/Projects/opennlp-gpu/src/main/java/org/apache/opennlp/gpu/compute/CudaFeatureExtractionOperation.java"
+    if [ -f "$CUDA_FEATURE_FILE" ]; then
+        echo "  Updating $CUDA_FEATURE_FILE"
+        # Create backup
+        cp "$CUDA_FEATURE_FILE" "${CUDA_FEATURE_FILE}.bak"
+        # Extract package and imports
+        PACKAGE_LINE=$(grep "^package" "$CUDA_FEATURE_FILE")
+        IMPORTS=$(grep "^import" "$CUDA_FEATURE_FILE")
+        # Add our import if needed
+        if ! grep -q "import org.apache.opennlp.gpu.common.FeatureExtractionOperation" "$CUDA_FEATURE_FILE"; then
+            IMPORTS="${IMPORTS}
+import org.apache.opennlp.gpu.common.FeatureExtractionOperation;"
+        fi
+        # Get everything after the class declaration
+        CLASS_BODY=$(sed -n '/public class CudaFeatureExtractionOperation/,$p' "$CUDA_FEATURE_FILE" | tail -n +2)
+        # Recreate the file with our changes
+        {
+            echo "$PACKAGE_LINE"
+            echo "$IMPORTS"
+            echo ""
+            echo "public class CudaFeatureExtractionOperation implements FeatureExtractionOperation {"
+            echo "$CLASS_BODY"
+        } > "$CUDA_FEATURE_FILE"
+    fi
+    
+    # RocmFeatureExtractionOperation.java
+    ROCM_FEATURE_FILE="/home/kevin/Projects/opennlp-gpu/src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java"
+    if [ -f "$ROCM_FEATURE_FILE" ]; then
+        echo "  Updating $ROCM_FEATURE_FILE"
+        # Create backup
+        cp "$ROCM_FEATURE_FILE" "${ROCM_FEATURE_FILE}.bak"
+        # Extract package and imports
+        PACKAGE_LINE=$(grep "^package" "$ROCM_FEATURE_FILE")
+        IMPORTS=$(grep "^import" "$ROCM_FEATURE_FILE")
+        # Add our import if needed
+        if ! grep -q "import org.apache.opennlp.gpu.common.FeatureExtractionOperation" "$ROCM_FEATURE_FILE"; then
+            IMPORTS="${IMPORTS}
+import org.apache.opennlp.gpu.common.FeatureExtractionOperation;"
+        fi
+        # Get everything after the class declaration
+        CLASS_BODY=$(sed -n '/public class RocmFeatureExtractionOperation/,$p' "$ROCM_FEATURE_FILE" | tail -n +2)
+        # Recreate the file with our changes
+        {
+            echo "$PACKAGE_LINE"
+            echo "$IMPORTS"
+            echo ""
+            echo "public class RocmFeatureExtractionOperation implements FeatureExtractionOperation {"
+            echo "$CLASS_BODY"
+        } > "$ROCM_FEATURE_FILE"
+    fi
+    
+    echo "Interface implementation issues fixed. Compilation should now succeed."
+}
+
 run_full_fix() {
     echo "Running full Lombok fix (may take a few minutes)..."
     
@@ -332,6 +517,9 @@ run_full_fix() {
     create_vscode_config
     create_lombok_config # Create config after Slf4j fix, as it sets lombok.log.fieldName
     create_lombok_test_class
+    
+    # Fix interface implementation issues
+    fix_interface_implementations
     
     # Fix incorrect @Override annotations
     fix_override_annotations

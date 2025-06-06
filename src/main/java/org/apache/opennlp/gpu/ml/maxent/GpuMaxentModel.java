@@ -41,7 +41,12 @@ public class GpuMaxentModel {
         try {
             // Create OpenCL context and command queue
             cl_context_properties contextProperties = new cl_context_properties();
-            contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, device.getDeviceId().getInfo());
+            // Replace this line that uses getInfo() which doesn't exist
+            // contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, device.getDeviceId().getInfo());
+            
+            // Instead use the helper method getOpenCLDeviceName or call the proper CL API
+            long platformId = getPlatformId(device.getDeviceId());
+            contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platformId);
             
             int[] errorCode = new int[1];
             context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{device.getDeviceId()}, 
@@ -230,5 +235,33 @@ public class GpuMaxentModel {
         logger.info("Using OpenCL device: {}", deviceName);
         // ... or for other parameters, use CL.clGetDeviceInfo with the appropriate param name ...
         // ... other code ...
+    }
+    
+    // Add helper method to get platform ID
+    private long getPlatformId(cl_device_id deviceId) {
+        int[] numPlatforms = new int[1];
+        CL.clGetPlatformIDs(0, null, numPlatforms);
+        
+        cl_platform_id[] platforms = new cl_platform_id[numPlatforms[0]];
+        CL.clGetPlatformIDs(platforms.length, platforms, null);
+        
+        for (cl_platform_id platform : platforms) {
+            int[] numDevices = new int[1];
+            CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, 0, null, numDevices);
+            
+            cl_device_id[] devices = new cl_device_id[numDevices[0]];
+            CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, devices.length, devices, null);
+            
+            for (cl_device_id device : devices) {
+                if (device.equals(deviceId)) {
+                    long platformId = platform.getNativePointer();
+                    return platformId; // Return the long value directly, don't wrap in Pointer
+                }
+            }
+        }
+        
+        logger.warn("Could not find platform for device - using default");
+        long platformId = platforms[0].getNativePointer();
+        return platformId; // Return the long value directly, don't wrap in Pointer
     }
 }

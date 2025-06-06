@@ -4,38 +4,36 @@ package org.apache.opennlp.gpu.common;
  * Interface for feature extraction operations.
  */
 public interface FeatureExtractionOperation {
-    
     /**
-     * Gets the compute provider.
-     *
+     * Gets the compute provider used by this operation.
      * @return the compute provider
      */
     ComputeProvider getProvider();
     
     /**
-     * Extracts features from the input data.
-     * 
-     * @param inputData the input data
+     * Extract features from tokens.
+     * @param tokens the tokens to extract features from
      * @return the extracted features
      */
-    default Object extract(Object inputData) {
-        // Default implementation does nothing
-        return null;
-    }
+    float[] extractFeatures(String[] tokens);
     
     /**
-     * Checks if this operation is supported on the current device.
-     * 
-     * @return true if the operation is supported
+     * Compute TF-IDF for documents.
+     * @param documents the documents to compute TF-IDF for
+     * @return the TF-IDF values
      */
-    default boolean isSupported() {
-        return true;
-    }
+    float[] computeTfIdf(String[] documents);
     
-    // Add any other methods that are required by implementations
-    // For example:
-    // float[] extractFeatures(String[] tokens);
-    // float[] computeTfIdf(String[] documents);
-    // float computeCosineSimilarity(float[] vector1, float[] vector2);
-    // void release();
+    /**
+     * Compute cosine similarity between vectors.
+     * @param vector1 the first vector
+     * @param vector2 the second vector
+     * @return the cosine similarity
+     */
+    float computeCosineSimilarity(float[] vector1, float[] vector2);
+    
+    /**
+     * Releases resources used by this operation.
+     */
+    void release();
 }

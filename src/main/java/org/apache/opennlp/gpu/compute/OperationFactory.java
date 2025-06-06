@@ -49,7 +49,7 @@ public class OperationFactory {
      * @param matrixSize the size of matrices to be processed
      * @return a matrix operation
      */
-    public MatrixOperation createMatrixOperation(int matrixSize) {
+    public org.apache.opennlp.gpu.compute.MatrixOperation createMatrixOperation(int matrixSize) {
         ComputeProvider provider = providerFactory.getBestProvider("matrixOperations", matrixSize);
         
         if (provider == null) {
@@ -72,8 +72,8 @@ public class OperationFactory {
                 return new RocmMatrixOperation(provider);
             case CPU:
             default:
-                // Fix the implementation or cast to ensure CpuMatrixOperation implements MatrixOperation
-                return new CpuMatrixOperation(provider);
+                // Use fully qualified name to avoid ambiguity
+                return new org.apache.opennlp.gpu.compute.CpuMatrixOperation(provider);
         }
     }
     

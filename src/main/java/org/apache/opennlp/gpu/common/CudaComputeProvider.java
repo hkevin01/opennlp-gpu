@@ -201,17 +201,27 @@ public class CudaComputeProvider implements ComputeProvider {
             // Return an actual CUDA-specific MemoryManager implementation
             logger.warn("CudaResourceManager.getMemoryManager() returning placeholder. Implement CudaMemoryManager.");
             return new MemoryManager() {
-                // Placeholder implementation
-                @Override
-                public long allocate(long size) { logger.debug("Placeholder allocate: " + size); return 0; }
-                @Override
-                public void free(long ptr) { logger.debug("Placeholder free: " + ptr); }
-                @Override
-                public void copyHostToDevice(long devicePtr, byte[] hostData, long size) { logger.debug("Placeholder copyHostToDevice"); }
-                @Override
-                public void copyDeviceToHost(long devicePtr, byte[] hostData, long size) { logger.debug("Placeholder copyDeviceToHost"); }
-                @Override
-                public void releaseAll() { logger.debug("Placeholder MemoryManager releaseAll"); }
+                // Placeholder implementation - remove @Override annotations since they're not valid
+                public int allocate(long size) { 
+                    logger.debug("Placeholder allocate: " + size); 
+                    return 0;
+                }
+                
+                public void free(long ptr) { 
+                    logger.debug("Placeholder free: " + ptr); 
+                }
+                
+                public void copyHostToDevice(long devicePtr, byte[] hostData, long size) { 
+                    logger.debug("Placeholder copyHostToDevice"); 
+                }
+                
+                public void copyDeviceToHost(long devicePtr, byte[] hostData, long size) { 
+                    logger.debug("Placeholder copyDeviceToHost"); 
+                }
+                
+                public void releaseAll() { 
+                    logger.debug("Placeholder MemoryManager releaseAll"); 
+                }
             };
         }
         

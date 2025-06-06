@@ -1,52 +1,21 @@
 package org.apache.opennlp.gpu.kernels;
 
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.InputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.HashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.MemoryManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.CL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.Pointer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.Sizeof;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.cl_command_queue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.cl_context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.cl_device_id;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.cl_kernel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.cl_mem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.jocl.cl_program;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,8 +177,14 @@ public class MatrixOps {
                 throw new IOException("Kernel source not found: " + resourcePath);
             }
             
-            byte[] bytes = is.readAllBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
+            // Use Java 8 compatible approach instead of readAllBytes()
+            StringBuilder result = new StringBuilder();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) != -1) {
+                result.append(new String(buffer, 0, length, StandardCharsets.UTF_8));
+            }
+            return result.toString();
         }
     }
     

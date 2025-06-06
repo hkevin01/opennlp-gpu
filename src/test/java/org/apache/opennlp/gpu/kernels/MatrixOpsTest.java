@@ -1,33 +1,20 @@
 package org.apache.opennlp.gpu.kernels;
 
-import org.apache.opennlp.gpu.common.GpuDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.jocl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.junit.jupiter.api.condition.EnabledIf;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import lombok.extern.slf4j.Slf4j;
+import org.apache.opennlp.gpu.common.GpuDevice;
+import org.jocl.CL;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_context_properties;
+import org.jocl.cl_device_id;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,13 +58,25 @@ public class MatrixOpsTest {
             
             // Create context and command queue
             cl_context_properties contextProperties = new cl_context_properties();
-            contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, device.getDeviceId().getInfo());
+            
+            // Fix: Get platform ID correctly - cannot call getInfo() on cl_device_id
+            // Need to get the platform ID associated with the device
+            cl_device_id deviceId = device.getDeviceId();
+            
+            // Get platform ID from device
+            long[] platformIdArray = new long[1];
+            CL.clGetDeviceInfo(deviceId, CL.CL_DEVICE_PLATFORM, Sizeof.cl_platform_id, 
+                              Pointer.to(platformIdArray), null);
+            long platformId = platformIdArray[0];
+            
+            // Set platform property correctly
+            contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platformId);
             
             int[] errorCode = new int[1];
-            context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{device.getDeviceId()}, 
+            context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{deviceId}, 
                                         null, null, errorCode);
             
-            commandQueue = CL.clCreateCommandQueue(context, device.getDeviceId(), 0, errorCode);
+            commandQueue = CL.clCreateCommandQueue(context, deviceId, 0, errorCode);
             
             // Create matrix operations
             matrixOps = new MatrixOps(context, commandQueue);

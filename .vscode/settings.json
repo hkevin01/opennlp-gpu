@@ -1,25 +1,26 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic",
     "java.jdt.ls.lombokSupport": true,
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
     "java.format.enabled": true,
+    "editor.formatOnSave": true,
+    "java.maven.downloadSources": true,
+    "java.completion.enabled": true,
+    "java.codeGeneration.generateComments": true,
+    "java.autobuild.enabled": true,
+    "java.server.launchMode": "Standard",
+    "java.configuration.maven.userSettings": "/home/kevin/.m2/settings.xml",
     "java.import.gradle.enabled": false,
     "java.import.maven.enabled": true,
-    "java.completion.importOrder": [
-        "java",
-        "javax",
-        "org",
-        "com",
-        "",
-        "#"
+    "java.codeGeneration.useBlocks": true,
+    "java.saveActions.organizeImports": true,
+    "java.cleanup.actionsOnSave": [
+        "addOverride",
+        "addDeprecated",
+        "qualifyStaticMembers",
+        "stringConcatToTextBlock"
     ],
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/target": false,
-        "**/bin": false
-    },
-    "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }

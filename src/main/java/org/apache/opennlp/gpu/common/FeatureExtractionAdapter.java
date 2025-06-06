@@ -21,39 +21,51 @@ public class FeatureExtractionAdapter implements FeatureExtractionOperation {
         logger.warn("Default constructor called - adapter may not function properly");
     }
     
-    // Keep the existing constructor if it exists
-    
-    // Remove @Override for methods that aren't in the interface
-    public ComputeProvider getProvider() {
-        return provider;
+    // Add constructor that takes both parameters 
+    public FeatureExtractionAdapter(CpuFeatureExtractionOperation delegate, ComputeProvider provider) {
+        this.delegate = delegate;
+        this.provider = provider;
     }
     
-    // Remove @Override for methods that aren't in the interface
-    public float[] extractFeatures(String[] tokens) {
-        logger.debug("Delegating extractFeatures to CpuFeatureExtractionOperation");
-        // If delegate.extractFeatures doesn't exist, implement the method here
-        // For example:
-        if (delegate == null) {
-            return new float[tokens.length];
+    // Implement all methods from the FeatureExtractionOperation interface
+    public int extractNGrams(int[] tokens, int numTokens, int maxNGramLength, int[] featureMap) {
+        // Use delegate if available, otherwise provide fallback implementation
+        if (delegate != null) {
+            return delegate.extractNGrams(tokens, numTokens, maxNGramLength, featureMap);
         }
-        // If this method exists in CpuFeatureExtractionOperation:
-        return delegate.extractFeatures(tokens);
+        return 0; // Fallback
     }
     
     public float[] computeTfIdf(String[] documents) {
-        // Default implementation since delegate doesn't have this method
-        logger.warn("computeTfIdf not implemented in delegate, using default implementation");
-        return new float[documents.length]; // Return empty TF-IDF vector
+        logger.debug("Delegating computeTfIdf to CpuFeatureExtractionOperation");
+        // Direct call with matching parameter types
+        return delegate.computeTfIdf(documents);
     }
     
     public float computeCosineSimilarity(float[] vector1, float[] vector2) {
-        // Default implementation since delegate doesn't have this method
-        logger.warn("computeCosineSimilarity not implemented in delegate, using default implementation");
-        return 0.0f; // Return default similarity
+        logger.debug("Delegating computeCosineSimilarity to CpuFeatureExtractionOperation");
+        // Direct call with matching parameter types
+        return delegate.computeCosineSimilarity(vector1, vector2);
     }
     
     public void release() {
-        logger.info("Releasing feature extraction adapter resources");
-        // No delegate.release() since it doesn't exist
+        // Use delegate if available, otherwise do nothing
+        if (delegate != null) {
+            delegate.release();
+        }
+    }
+    
+    // Fix the extractFeatures method to safely use delegate when available
+    public float[] extractFeatures(String[] tokens) {
+        logger.debug("Delegating extractFeatures to CpuFeatureExtractionOperation");
+        if (delegate != null && delegate instanceof CpuFeatureExtractionOperation) {
+            return ((CpuFeatureExtractionOperation) delegate).extractFeatures(tokens);
+        }
+        // Fallback implementation
+        return new float[tokens.length];
+    }
+    
+    public ComputeProvider getProvider() {
+        return provider;
     }
 }

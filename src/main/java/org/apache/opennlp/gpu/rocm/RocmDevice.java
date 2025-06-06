@@ -3,6 +3,7 @@ package org.apache.opennlp.gpu.rocm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
@@ -12,19 +13,21 @@ import lombok.NonNull;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor(force = true) // Keep this annotation
 public class RocmDevice {
     
-    private final int deviceId;
+    // Add default values for all final fields
+    private final int deviceId = 0;
     
     @NonNull
-    private final String name;
+    private final String name = "Unknown"; // Default non-null value
     
     @NonNull
-    private final String architecture;
+    private final String architecture = "Unknown"; // Default non-null value
     
-    private final long memoryBytes;
+    private final long memoryBytes = 0L;
     
-    private final int computeUnits;
+    private final int computeUnits = 0;
     
     /**
      * Get the amount of memory in megabytes.
