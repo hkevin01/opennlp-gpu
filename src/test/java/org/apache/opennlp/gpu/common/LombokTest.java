@@ -2,18 +2,16 @@ package org.apache.opennlp.gpu.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test; // Keep for testing if @Slf4j works after fixes
-
-import lombok.extern.slf4j.Slf4j;
-
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Simple test class to verify Lombok annotation processing is working.
+ * Simple test class to verify Lombok functionality.
  */
-@Slf4j // This will be replaced by fix_slf4j_annotations if it runs after this
 public class LombokTest {
-    // If fix_slf4j_annotations runs, 'log' will become 'logger'
-    // private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LombokTest.class);
+    // Add explicit logger declaration
+    private static final Logger log = LoggerFactory.getLogger(LombokTest.class);
     
     // Remove Lombok annotations since they're not being processed
     private String testField;
