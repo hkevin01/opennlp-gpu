@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=./dependabot-schema.json
 version: 2
 updates:
   - package-ecosystem: "maven"

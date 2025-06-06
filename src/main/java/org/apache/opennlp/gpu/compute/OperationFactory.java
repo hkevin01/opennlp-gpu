@@ -59,6 +59,7 @@ public class OperationFactory {
                 return new RocmMatrixOperation(provider);
             case CPU:
             default:
+                // Fix the implementation or cast to ensure CpuMatrixOperation implements MatrixOperation
                 return new CpuMatrixOperation(provider);
         }
     }
@@ -69,7 +70,7 @@ public class OperationFactory {
      * @param dataSize the size of data to be processed
      * @return a feature extraction operation
      */
-    public FeatureExtractionOperation createFeatureExtractionOperation(int dataSize) {
+    public org.apache.opennlp.gpu.common.FeatureExtractionOperation createFeatureExtractionOperation(int dataSize) {
         ComputeProvider provider = providerFactory.getBestProvider("featureExtraction", dataSize);
         
         if (provider == null) {
@@ -92,7 +93,8 @@ public class OperationFactory {
                 return new RocmFeatureExtractionOperation(provider);
             case CPU:
             default:
-                return new CpuFeatureExtractionOperation(provider);
+                // Cast or wrap the CPU implementation to match the expected interface
+                return new org.apache.opennlp.gpu.common.FeatureExtractionAdapter(new CpuFeatureExtractionOperation(provider));
         }
     }
     

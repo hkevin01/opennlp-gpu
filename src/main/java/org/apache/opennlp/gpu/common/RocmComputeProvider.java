@@ -149,12 +149,11 @@ public class RocmComputeProvider implements ComputeProvider {
         return "ROCm Compute Provider (" + deviceName + ")";
     }
 
-    @Override
     public int getComputeCapability() {
         // ROCm has a base compute capability
         return 15; // Example value, adjust as needed
     }
-    
+
     @Override
     public void release() {
         log.info("Releasing ROCm compute provider resources");

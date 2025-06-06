@@ -2,15 +2,15 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
-
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenCL implementation of feature extraction operations.
  */
-@Slf4j
 public class OpenClFeatureExtractionOperation implements FeatureExtractionOperation {
     
+    private static final Logger log = LoggerFactory.getLogger(OpenClFeatureExtractionOperation.class);
     private final ComputeProvider provider;
     
     /**

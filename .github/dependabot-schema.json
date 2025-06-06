@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Dependabot Configuration Schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "integer",
+      "enum": [2],
+      "description": "The version of the Dependabot configuration file."
+    },
+    "updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "package-ecosystem": {
+            "type": "string",
+            "description": "The package manager or ecosystem to update."
+          },
+          "directory": {
+            "type": "string",
+            "description": "The directory to look for dependencies."
+          },
+          "schedule": {
+            "type": "object",
+            "properties": {
+              "interval": {
+                "type": "string",
+                "enum": ["daily", "weekly", "monthly"],
+                "description": "The interval at which to check for updates."
+              }
+            },
+            "required": ["interval"]
+          },
+          "open-pull-requests-limit": {
+            "type": "integer",
+            "description": "The maximum number of open pull requests."
+          }
+        },
+        "required": ["package-ecosystem", "directory", "schedule"]
+      }
+    }
+  },
+  "required": ["version", "updates"]
+}

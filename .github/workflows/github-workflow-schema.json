@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GitHub Actions Workflow Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the workflow."
+    },
+    "on": {
+      "type": "object",
+      "description": "The events that trigger the workflow.",
+      "additionalProperties": {
+        "type": ["object", "array", "string"]
+      }
+    },
+    "jobs": {
+      "type": "object",
+      "description": "The jobs that make up the workflow.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "runs-on": {
+            "type": "string",
+            "description": "The type of machine to run the job on."
+          },
+          "steps": {
+            "type": "array",
+            "description": "The steps to run in the job.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the step."
+                },
+                "uses": {
+                  "type": "string",
+                  "description": "The action to use in the step."
+                },
+                "run": {
+                  "type": "string",
+                  "description": "The command to run in the step."
+                },
+                "with": {
+                  "type": "object",
+                  "description": "Input parameters for the action."
+                },
+                "if": {
+                  "type": "string",
+                  "description": "A condition to determine whether to run the step."
+                }
+              },
+              "required": ["name"]
+            }
+          }
+        },
+        "required": ["runs-on", "steps"]
+      }
+    }
+  },
+  "required": ["name", "on", "jobs"]
+}

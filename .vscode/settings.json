@@ -20,5 +20,6 @@
         "**/.DS_Store": true,
         "**/target": false,
         "**/bin": false
-    }
+    },
+    "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
 }

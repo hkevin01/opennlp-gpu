@@ -2,11 +2,14 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.MatrixOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CPU implementation of matrix operations.
  */
 public class CpuMatrixOperation implements MatrixOperation {
+    private static final Logger log = LoggerFactory.getLogger(CpuMatrixOperation.class);
     
     private final ComputeProvider provider;
     
@@ -17,7 +20,62 @@ public class CpuMatrixOperation implements MatrixOperation {
      */
     public CpuMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
+        log.info("Initializing CPU matrix operations");
     }
     
-    // Implementation methods
+    public ComputeProvider getProvider() {
+        return provider;
+    }
+    
+    @Override
+    public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
+        // CPU implementation of matrix multiplication
+        for (int i = 0; i < rowsA; i++) {
+            for (int j = 0; j < colsB; j++) {
+                c[i * colsB + j] = 0;
+                for (int k = 0; k < sharedDim; k++) {
+                    c[i * colsB + j] += a[i * sharedDim + k] * b[k * colsB + j];
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void add(float[] a, float[] b, float[] c, int elements) {
+        // CPU implementation of matrix addition
+        for (int i = 0; i < elements; i++) {
+            c[i] = a[i] + b[i];
+        }
+    }
+    
+    @Override
+    public void subtract(float[] a, float[] b, float[] c, int elements) {
+        // CPU implementation of matrix subtraction
+        for (int i = 0; i < elements; i++) {
+            c[i] = a[i] - b[i];
+        }
+    }
+    
+    @Override
+    public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
+        // CPU implementation of scalar multiplication
+        for (int i = 0; i < elements; i++) {
+            b[i] = a[i] * scalar;
+        }
+    }
+    
+    @Override
+    public void transpose(float[] a, float[] b, int rows, int cols) {
+        // CPU implementation of matrix transpose
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                b[j * rows + i] = a[i * cols + j];
+            }
+        }
+    }
+    
+    public void release() {
+        // No resources to release for CPU implementation
+        log.info("Releasing CPU matrix operation resources");
+    }
 }

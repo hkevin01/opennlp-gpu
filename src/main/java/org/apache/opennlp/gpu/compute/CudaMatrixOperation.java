@@ -4,21 +4,24 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.cuda.CudaUtil;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * CUDA implementation of matrix operations.
  * This class uses NVIDIA's CUDA platform for GPU-accelerated matrix operations.
  */
-@Slf4j
 public class CudaMatrixOperation implements MatrixOperation {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CudaMatrixOperation.class);
+    // Add explicit logger declaration
+    private static final Logger log = LoggerFactory.getLogger(CudaMatrixOperation.class);
     
-    @Getter
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
+    
+    // Implement the required method from the MatrixOperation interface
+    @Override
+    public ComputeProvider getProvider() {
+        return provider;
+    }
     
     // JNI method declarations for CUDA matrix operations
     private native long allocateDeviceMemory(long size);
