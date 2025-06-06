@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "GitHub Actions Workflow Schema",
+  "title": "GitHub Actions Workflow Schema for OpenNLP GPU",
+  "description": "Extended schema for OpenNLP GPU project workflows with Java-specific properties",
   "type": "object",
   "properties": {
     "name": {
@@ -10,8 +11,36 @@
     "on": {
       "type": "object",
       "description": "The events that trigger the workflow.",
+      "properties": {
+        "push": {
+          "type": "object",
+          "properties": {
+            "branches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "pull_request": {
+          "type": "object",
+          "properties": {
+            "branches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
       "additionalProperties": {
-        "type": ["object", "array", "string"]
+        "type": [
+          "object",
+          "array",
+          "string"
+        ]
       }
     },
     "jobs": {
@@ -22,7 +51,28 @@
         "properties": {
           "runs-on": {
             "type": "string",
-            "description": "The type of machine to run the job on."
+            "description": "The type of machine to run the job on.",
+            "enum": [
+              "ubuntu-latest",
+              "ubuntu-20.04",
+              "ubuntu-18.04",
+              "windows-latest",
+              "windows-2022",
+              "windows-2019",
+              "macos-latest",
+              "macos-12",
+              "macos-11"
+            ]
+          },
+          "needs": {
+            "type": [
+              "string",
+              "array"
+            ],
+            "description": "Jobs that must complete successfully before this job runs.",
+            "items": {
+              "type": "string"
+            }
           },
           "steps": {
             "type": "array",
@@ -36,7 +86,8 @@
                 },
                 "uses": {
                   "type": "string",
-                  "description": "The action to use in the step."
+                  "description": "The action to use in the step.",
+                  "pattern": "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+@[a-zA-Z0-9._-]+$"
                 },
                 "run": {
                   "type": "string",
@@ -44,20 +95,177 @@
                 },
                 "with": {
                   "type": "object",
-                  "description": "Input parameters for the action."
+                  "description": "Input parameters for the action.",
+                  "properties": {
+                    "java-version": {
+                      "type": [
+                        "string",
+                        "number"
+                      ],
+                      "description": "Java version to set up",
+                      "examples": [
+                        "8",
+                        "11",
+                        "17",
+                        "21"
+                      ],
+                      "pattern": "^(8|11|17|21)$"
+                    },
+                    "distribution": {
+                      "type": "string",
+                      "description": "Java distribution to use",
+                      "enum": [
+                        "temurin",
+                        "zulu",
+                        "adopt",
+                        "corretto",
+                        "liberica",
+                        "microsoft",
+                        "oracle"
+                      ]
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "File or directory path"
+                    },
+                    "key": {
+                      "type": "string",
+                      "description": "Cache key"
+                    },
+                    "restore-keys": {
+                      "type": [
+                        "string",
+                        "array"
+                      ],
+                      "description": "Cache restore keys",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Artifact name"
+                    },
+                    "maven-args": {
+                      "type": "string",
+                      "description": "Additional Maven arguments",
+                      "examples": [
+                        "-X",
+                        "-e",
+                        "-DskipTests",
+                        "-Dmaven.compiler.debug=true",
+                        "-Dtest=Slf4jTester",
+                        "-Dmaven.test.skip=false"
+                      ]
+                    },
+                    "test-profile": {
+                      "type": "string",
+                      "description": "Maven test profile to activate",
+                      "enum": [
+                        "unit-tests",
+                        "integration-tests",
+                        "gpu-tests",
+                        "all-tests"
+                      ]
+                    },
+                    "junit-version": {
+                      "type": "string",
+                      "description": "JUnit version to use",
+                      "examples": [
+                        "5.8.2",
+                        "5.9.0",
+                        "5.10.0"
+                      ]
+                    }
+                    "working-directory": {
+                      "type": "string",
+                      "description": "Working directory for the step"
+                    }
+                  }
                 },
                 "if": {
                   "type": "string",
                   "description": "A condition to determine whether to run the step."
+                },
+                "env": {
+                  "type": "object",
+                  "description": "Environment variables for the step.",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "continue-on-error": {
+                  "type": "boolean",
+                  "description": "Allow a job to continue when this step fails."
+                },
+                "timeout-minutes": {
+                  "type": "number",
+                  "description": "The maximum number of minutes to run the step before canceling."
                 }
               },
-              "required": ["name"]
+              "oneOf": [
+                {
+                  "required": [
+                    "name",
+                    "uses"
+                  ]
+                },
+                {
+                  "required": [
+                    "name",
+                    "run"
+                  ]
+                },
+                {
+                  "required": [
+                    "uses"
+                  ]
+                },
+                {
+                  "required": [
+                    "run"
+                  ]
+                }
+              ]
+            }
+          },
+          "timeout-minutes": {
+            "type": "number",
+            "description": "The maximum number of minutes to let a job run before GitHub automatically cancels it."
+          },
+          "strategy": {
+            "type": "object",
+            "description": "Strategy for running multiple variants of a job.",
+            "properties": {
+              "matrix": {
+                "type": "object",
+                "description": "Matrix strategy configuration."
+              },
+              "fail-fast": {
+                "type": "boolean",
+                "description": "When true, GitHub cancels all in-progress jobs if any matrix job fails."
+              },
+              "max-parallel": {
+                "type": "number",
+                "description": "Maximum number of jobs that can run simultaneously."
+              }
             }
           }
         },
-        "required": ["runs-on", "steps"]
+        "required": [
+          "runs-on",
+          "steps"
+        ]
       }
+    },
+    "env": {
+      "type": "object",
+      "description": "Global environment variables for the workflow."
     }
   },
-  "required": ["name", "on", "jobs"]
+  "required": [
+    "name",
+    "on",
+    "jobs"
+  ]
 }

@@ -1,14 +1,16 @@
 package org.apache.opennlp.gpu.ml.maxent;
 
-import org.apache.opennlp.gpu.common.GpuDevice;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.opennlp.gpu.kernels.MatrixOps;
-import org.jocl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
+
+import org.apache.opennlp.gpu.common.GpuDevice;
+import org.apache.opennlp.gpu.kernels.MatrixOps;
+import org.jocl.CL;
+import org.jocl.Pointer;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_context_properties;
+import org.jocl.cl_device_id;
+import org.jocl.cl_platform_id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,9 @@ public class GpuMaxentModel {
     private int numOutcomes; // Number of outcomes
     private int numFeatures; // Number of features
     
+    // Fix type issues by using proper cl_device_id instead of int
+    private cl_device_id deviceId;
+    
     /**
      * Creates a new GPU-accelerated MaxEnt model.
      *
@@ -44,18 +49,19 @@ public class GpuMaxentModel {
             // contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, device.getDeviceId().getInfo());
             
             // Instead use the helper method getOpenCLDeviceName or call the proper CL API
-            long platformId = getPlatformId(device.getDeviceId());
+            this.deviceId = getDeviceById(device.getDeviceId());
+            long platformId = getPlatformId(this.deviceId);
             contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platformId);
             
             int[] errorCode = new int[1];
-            context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{device.getDeviceId()}, 
+            context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{this.deviceId}, 
                                         null, null, errorCode);
             
             if (errorCode[0] != CL.CL_SUCCESS) {
                 throw new RuntimeException("Failed to create OpenCL context: " + errorCode[0]);
             }
             
-            commandQueue = CL.clCreateCommandQueue(context, device.getDeviceId(), 0, errorCode);
+            commandQueue = CL.clCreateCommandQueue(context, this.deviceId, 0, errorCode);
             
             if (errorCode[0] != CL.CL_SUCCESS) {
                 throw new RuntimeException("Failed to create command queue: " + errorCode[0]);
@@ -68,6 +74,9 @@ public class GpuMaxentModel {
             this.weights = weights;
             this.numOutcomes = numOutcomes;
             this.numFeatures = numFeatures;
+            
+            // Fix type issues by using proper cl_device_id instead of int
+            this.deviceId = getDeviceById(device.getDeviceId());
             
             logger.info("Initialized GPU MaxEnt model with {} outcomes and {} features", 
                        numOutcomes, numFeatures);
@@ -263,4 +272,36 @@ public class GpuMaxentModel {
         long platformId = platforms[0].getNativePointer();
         return platformId; // Return the long value directly, don't wrap in Pointer
     }
+    
+    // Update methods to use proper types
+    private void initializeGpu(cl_device_id device) {
+        this.deviceId = device;
+        // ...existing code...
+    }
+        // Add helper method to convert int to cl_device_id
+        private cl_device_id getDeviceById(int deviceIndex) {
+            // Get available devices and return the one at the specified index
+            try {
+                int[] numPlatforms = new int[1];
+                CL.clGetPlatformIDs(0, null, numPlatforms);
+                if (numPlatforms[0] > 0) {
+                    cl_platform_id[] platforms = new cl_platform_id[numPlatforms[0]];
+                    CL.clGetPlatformIDs(platforms.length, platforms, null);
+                    for (cl_platform_id platform : platforms) {
+                        int[] numDevices = new int[1];
+                        CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, 0, null, numDevices);
+                        if (numDevices[0] > deviceIndex) {
+                            cl_device_id[] devices = new cl_device_id[numDevices[0]];
+                            CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, numDevices[0], devices, null);
+                            return devices[deviceIndex];
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Return null if device not found
+            }
+            return null;
+        }
+        // Add helper method to convert int to cl_device_id    private cl_device_id getDeviceById(int deviceIndex) {        // Get available devices and return the one at the specified index        try {            int[] numPlatforms = new int[1];            CL.clGetPlatformIDs(0, null, numPlatforms);                        if (numPlatforms[0] > 0) {                cl_platform_id[] platforms = new cl_platform_id[numPlatforms[0]];                CL.clGetPlatformIDs(platforms.length, platforms, null);                                for (cl_platform_id platform : platforms) {                    int[] numDevices = new int[1];                    CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, 0, null, numDevices);                                        if (numDevices[0] > deviceIndex) {                        cl_device_id[] devices = new cl_device_id[numDevices[0]];                        CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, numDevices[0], devices, null);                        return devices[deviceIndex];                    }                }            }        } catch (Exception e) {            // Return null if device not found        }        return null;    }
+        // Add helper method to convert int to cl_device_id    private cl_device_id getDeviceById(int deviceIndex) {        // Get available devices and return the one at the specified index        try {            int[] numPlatforms = new int[1];            CL.clGetPlatformIDs(0, null, numPlatforms);                        if (numPlatforms[0] > 0) {                cl_platform_id[] platforms = new cl_platform_id[numPlatforms[0]];                CL.clGetPlatformIDs(platforms.length, platforms, null);                                for (cl_platform_id platform : platforms) {                    int[] numDevices = new int[1];                    CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, 0, null, numDevices);                                        if (numDevices[0] > deviceIndex) {                        cl_device_id[] devices = new cl_device_id[numDevices[0]];                        CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, numDevices[0], devices, null);                        return devices[deviceIndex];                    }                }            }        } catch (Exception e) {            // Return null if device not found        }        return null;    }
 }

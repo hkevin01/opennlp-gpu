@@ -4,14 +4,11 @@ import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 public class RocmFeatureExtractionOperation implements FeatureExtractionOperation {
     private static final Logger logger = LoggerFactory.getLogger(RocmFeatureExtractionOperation.class);
-    
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
-    
     // JNI method declarations for ROCm feature extraction operations
     private native long allocateDeviceMemory(long size);
     private native void freeDeviceMemory(long devicePtr);
@@ -22,7 +19,6 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     private native int rocmExtractNGrams(long tokensPtr, int numTokens, int maxNGramLength, long featureMapPtr, int featureMapSize);
     private native void rocmComputeTfIdf(long termFreqPtr, long docFreqPtr, int numDocs, long tfidfPtr, int numTerms);
     private native void rocmComputeCosineSimilarity(long docVectorsPtr, int numDocs, int vectorSize, long similaritiesPtr);
-    
     /**
      * Creates a new ROCm feature extraction operation with the specified provider.
      *
@@ -31,12 +27,10 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     public RocmFeatureExtractionOperation(ComputeProvider provider) {
         this.provider = provider;
         logger.info("Initializing ROCm feature extraction with provider: {}", provider.getName());
-        
         // Initialize ROCm
         if (!RocmUtil.isAvailable()) {
             throw new RuntimeException("ROCm is not available");
         }
-        
         try {
             // Load the native library for ROCm feature extraction operations
             System.loadLibrary("opennlp_rocm_features");
@@ -47,29 +41,22 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             throw new RuntimeException("Failed to initialize ROCm feature extraction operations", e);
         }
     }
-    
     // Remove @Override annotation
     public int extractNGrams(int[] tokens, int numTokens, int maxNGramLength, int[] featureMap) {
         if (!initialized) {
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
         }
-        
         logger.debug("ROCm extracting n-grams: {} tokens, max length {}", numTokens, maxNGramLength);
-        
         // Allocate device memory
         long tokensPtr = allocateDeviceMemory(numTokens * Integer.BYTES);
         long featureMapPtr = allocateDeviceMemory(featureMap.length * Integer.BYTES);
-        
         try {
             // Copy input data to device
             copyIntHostToDevice(tokens, tokensPtr, numTokens);
-            
             // Extract n-grams
             int numFeatures = rocmExtractNGrams(tokensPtr, numTokens, maxNGramLength, featureMapPtr, featureMap.length);
-            
             // Copy result back to host
             copyIntDeviceToHost(featureMapPtr, featureMap, featureMap.length);
-            
             return numFeatures;
         } finally {
             // Free device memory
@@ -77,28 +64,22 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             freeDeviceMemory(featureMapPtr);
         }
     }
-    
     // Remove @Override annotation
     public void computeTfIdf(float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms) {
         if (!initialized) {
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
         }
-        
         logger.debug("ROCm computing TF-IDF: {} terms, {} docs", numTerms, numDocs);
-        
         // Allocate device memory
         long termFreqPtr = allocateDeviceMemory(numTerms * Float.BYTES);
         long docFreqPtr = allocateDeviceMemory(numTerms * Float.BYTES);
         long tfidfPtr = allocateDeviceMemory(numTerms * Float.BYTES);
-        
         try {
             // Copy input data to device
             copyFloatHostToDevice(termFreq, termFreqPtr, numTerms);
             copyFloatHostToDevice(docFreq, docFreqPtr, numTerms);
-            
             // Compute TF-IDF
             rocmComputeTfIdf(termFreqPtr, docFreqPtr, numDocs, tfidfPtr, numTerms);
-            
             // Copy result back to host
             copyFloatDeviceToHost(tfidfPtr, tfidf, numTerms);
         } finally {
@@ -108,26 +89,20 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             freeDeviceMemory(tfidfPtr);
         }
     }
-    
     // Remove @Override annotation
     public void computeCosineSimilarity(float[] docVectors, int numDocs, int vectorSize, float[] similarities) {
         if (!initialized) {
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
         }
-        
         logger.debug("ROCm computing cosine similarity: {} docs, vector size {}", numDocs, vectorSize);
-        
         // Allocate device memory
         long docVectorsPtr = allocateDeviceMemory(numDocs * vectorSize * Float.BYTES);
         long similaritiesPtr = allocateDeviceMemory(numDocs * numDocs * Float.BYTES);
-        
         try {
             // Copy input data to device
             copyFloatHostToDevice(docVectors, docVectorsPtr, numDocs * vectorSize);
-            
             // Compute cosine similarity
             rocmComputeCosineSimilarity(docVectorsPtr, numDocs, vectorSize, similaritiesPtr);
-            
             // Copy result back to host
             copyFloatDeviceToHost(similaritiesPtr, similarities, numDocs * numDocs);
         } finally {
@@ -136,7 +111,6 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             freeDeviceMemory(similaritiesPtr);
         }
     }
-    
     // Add missing interface method implementation
     @Override
     public float[] extractFeatures(String[] tokens) {
@@ -147,20 +121,16 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         for (int i = 0; i < tokens.length; i++) {
             tokenIds[i] = tokens[i].hashCode() & 0x7FFFFFFF; // Positive hash code
         }
-        
         int maxFeatures = tokens.length * 3; // Estimate for features
         int[] featureMap = new int[maxFeatures];
         int featuresExtracted = extractNGrams(tokenIds, tokens.length, 3, featureMap);
-        
         // Convert to float array
         float[] features = new float[featuresExtracted];
         for (int i = 0; i < featuresExtracted; i++) {
             features[i] = featureMap[i];
         }
-        
         return features;
     }
-    
     // Add missing interface method implementation
     @Override
     public float[] computeTfIdf(String[] documents) {
@@ -169,7 +139,6 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         int estimatedTerms = 1000;
         float[] termFreq = new float[estimatedTerms];
         float[] docFreq = new float[estimatedTerms];
-        
         // Very simple term counting
         for (String doc : documents) {
             String[] terms = doc.split("\\s+");
@@ -179,44 +148,35 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
                 docFreq[termId] = 1.0f; // Simplified - just mark as present
             }
         }
-        
         // Compute TF-IDF
         float[] tfidf = new float[estimatedTerms];
         computeTfIdf(termFreq, docFreq, documents.length, tfidf, estimatedTerms);
-        
         return tfidf;
     }
-    
     // Existing method stays to provide implementation detail
     public float computeCosineSimilarity(float[] vector1, float[] vector2) {
         if (vector1.length != vector2.length) {
             throw new IllegalArgumentException("Vector dimensions must match");
         }
-        
         float dotProduct = 0.0f;
         float norm1 = 0.0f;
         float norm2 = 0.0f;
-        
         for (int i = 0; i < vector1.length; i++) {
             dotProduct += vector1[i] * vector2[i];
             norm1 += vector1[i] * vector1[i];
             norm2 += vector2[i] * vector2[i];
         }
-        
         if (norm1 == 0.0f || norm2 == 0.0f) {
             return 0.0f;
         }
-        
         return dotProduct / (float) Math.sqrt(norm1 * norm2);
     }
-
     @Override
     public void release() {
         logger.info("Releasing ROCm feature extraction resources");
         // No resources to release at this level
         // Native resources are managed per-operation
     }
-
     /**
      * Explicitly implement the getProvider method required by the interface
      * @return the compute provider
@@ -225,32 +185,4 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     public ComputeProvider getProvider() {
         return provider;
     }
-    public static getFinal() {
-        return final;
-    }
-
-    public final getComputeProvider() {
-        return ComputeProvider;
-    }
-
-    public boolean getInitialized() {
-        return initialized;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public native getLong() {
-        return long;
-    }
-
-    public native getVoid() {
-        return void;
-    }
-
-    public native getInt() {
-        return int;
-    }
-
 }

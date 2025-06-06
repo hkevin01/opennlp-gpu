@@ -1,17 +1,16 @@
 package org.apache.opennlp.gpu.kernels;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.apache.opennlp.gpu.common.GpuDevice;
+import org.apache.opennlp.gpu.common.ComputeProvider;
+import org.apache.opennlp.gpu.common.OpenClComputeProvider;
 import org.jocl.CL;
-import org.jocl.Pointer;
-import org.jocl.Sizeof;
 import org.jocl.cl_command_queue;
 import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
+import org.jocl.cl_platform_id;
 import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -35,9 +34,15 @@ public class MatrixOpsTest {
      */
     public static boolean isGpuAvailable() {
         try {
-            List<GpuDevice> devices = GpuDevice.getAvailableDevices();
-            return !devices.isEmpty();
+            // Try to create an OpenCL compute provider
+            ComputeProvider provider = new OpenClComputeProvider();
+            boolean available = provider.initialize();
+            if (available) {
+                provider.release();
+            }
+            return available;
         } catch (Exception e) {
+            logger.debug("GPU not available: {}", e.getMessage());
             return false;
         }
     }
@@ -48,40 +53,79 @@ public class MatrixOpsTest {
             // Initialize OpenCL
             CL.setExceptionsEnabled(true);
             
-            // Get GPU device
-            List<GpuDevice> devices = GpuDevice.getAvailableDevices();
-            if (devices.isEmpty()) {
-                throw new RuntimeException("No GPU devices available");
+            // Create OpenCL compute provider
+            ComputeProvider provider = new OpenClComputeProvider();
+            if (!provider.initialize()) {
+                throw new RuntimeException("Failed to initialize OpenCL provider");
             }
             
-            GpuDevice device = devices.get(0);
+            // Get the OpenCL context and command queue from the provider
+            // This is a simplified approach - in practice you'd need proper access methods
             
-            // Create context and command queue
-            cl_context_properties contextProperties = new cl_context_properties();
-            
-            // Fix: Get platform ID correctly - cannot call getInfo() on cl_device_id
-            // Need to get the platform ID associated with the device
-            cl_device_id deviceId = device.getDeviceId();
-            
-            // Get platform ID from device
-            long[] platformIdArray = new long[1];
-            CL.clGetDeviceInfo(deviceId, CL.CL_DEVICE_PLATFORM, Sizeof.cl_platform_id, 
-                              Pointer.to(platformIdArray), null);
-            long platformId = platformIdArray[0];
-            
-            // Set platform property correctly
-            contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platformId);
-            
-            int[] errorCode = new int[1];
-            context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{deviceId}, 
-                                        null, null, errorCode);
-            
-            commandQueue = CL.clCreateCommandQueue(context, deviceId, 0, errorCode);
+            // For testing purposes, create a minimal OpenCL setup
+            setupOpenClContext();
             
             // Create matrix operations
             matrixOps = new MatrixOps(context, commandQueue);
         } catch (Exception e) {
             throw new RuntimeException("Error setting up test", e);
+        }
+    }
+    
+    /**
+     * Set up OpenCL context for testing.
+     */
+    private void setupOpenClContext() throws Exception {
+        // Get platform
+        int[] numPlatformsArray = new int[1];
+        CL.clGetPlatformIDs(0, null, numPlatformsArray);
+        int numPlatforms = numPlatformsArray[0];
+        
+        if (numPlatforms == 0) {
+            throw new RuntimeException("No OpenCL platforms found");
+        }
+        
+        // Get first platform
+        cl_platform_id[] platforms = new cl_platform_id[numPlatforms];
+        CL.clGetPlatformIDs(platforms.length, platforms, null);
+        cl_platform_id platform = platforms[0];
+        
+        // Get GPU device
+        int[] numDevicesArray = new int[1];
+        CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_GPU, 0, null, numDevicesArray);
+        int numDevices = numDevicesArray[0];
+        
+        if (numDevices == 0) {
+            // Fall back to CPU if no GPU available
+            CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_CPU, 0, null, numDevicesArray);
+            numDevices = numDevicesArray[0];
+        }
+        
+        if (numDevices == 0) {
+            throw new RuntimeException("No OpenCL devices found");
+        }
+        
+        cl_device_id[] devices = new cl_device_id[numDevices];
+        CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, numDevices, devices, null);
+        cl_device_id deviceId = devices[0];
+        
+        // Create context and command queue
+        cl_context_properties contextProperties = new cl_context_properties();
+        contextProperties.addProperty(CL.CL_CONTEXT_PLATFORM, platform);
+        
+        int[] errorCode = new int[1];
+        context = CL.clCreateContext(contextProperties, 1, new cl_device_id[]{deviceId}, 
+                                    null, null, errorCode);
+        
+        if (errorCode[0] != CL.CL_SUCCESS) {
+            throw new RuntimeException("Failed to create OpenCL context: " + errorCode[0]);
+        }
+        
+        commandQueue = CL.clCreateCommandQueue(context, deviceId, 0, errorCode);
+        
+        if (errorCode[0] != CL.CL_SUCCESS) {
+            CL.clReleaseContext(context);
+            throw new RuntimeException("Failed to create command queue: " + errorCode[0]);
         }
     }
     

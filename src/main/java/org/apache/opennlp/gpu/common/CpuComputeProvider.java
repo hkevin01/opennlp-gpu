@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * CPU-based fallback implementation of the ComputeProvider interface.
- * This provider is always available and serves as a fallback when GPU providers
- * are not available or not suitable for a task.
  */
 public class CpuComputeProvider implements ComputeProvider {
     // Explicit logger declaration
@@ -156,7 +154,7 @@ public class CpuComputeProvider implements ComputeProvider {
         
         @Override
         public cl_kernel getOrCreateKernel(String name, String source) {
-            // CPU doesn't use kernels, return null as a placeholder
+            // CPU implementation doesn't use kernels, return null as a placeholder
             return null;
         }
         

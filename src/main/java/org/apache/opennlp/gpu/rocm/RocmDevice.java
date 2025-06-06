@@ -1,32 +1,67 @@
 package org.apache.opennlp.gpu.rocm;
 
+import org.apache.opennlp.gpu.common.GpuDevice;
 
 /**
  * Represents an AMD GPU device available through ROCm.
  * This class encapsulates information about an AMD GPU device.
  */
-public class RocmDevice {
+public class RocmDevice implements GpuDevice {
+    private final String name;
+    private final int deviceId;
+    private long devicePtr;
+    private String architecture = "Unknown";
+    private long memoryBytes = 1024L * 1024L * 1024L; // 1GB default
     
-    // Add default values for all final fields
-    private final int deviceId = 0;
+    /**
+     * Create a new ROCm device.
+     *
+     * @param name device name
+     * @param deviceId device index
+     * @param devicePtr native device pointer
+     */
+    public RocmDevice(String name, int deviceId, long devicePtr) {
+        this.name = name != null ? name : "Unknown";
+        this.deviceId = deviceId;
+        this.devicePtr = devicePtr;
+    }
     
-    @NonNull
-    private final String name = "Unknown"; // Default non-null value
+    /**
+     * Get the device name.
+     *
+     * @return the device name
+     */
+    public String getName() {
+        return name;
+    }
     
-    @NonNull
-    private final String architecture = "Unknown"; // Default non-null value
+    /**
+     * Get the device index.
+     *
+     * @return the device index
+     */
+    public int getDeviceId() {
+        return deviceId;
+    }
     
-    private final long memoryBytes = 0L;
-    
-    private final int computeUnits = 0;
+    /**
+     * Get the native device pointer.
+     *
+     * @return the device pointer
+     */
+    public long getDevicePtr() {
+        return devicePtr;
+    }
     
     /**
      * Get the amount of memory in megabytes.
      * 
      * @return the memory size in MB
      */
-    public int getMemoryMB() {
-        return (int)(memoryBytes / (1024 * 1024));
+    @Override
+    public long getMemoryMB() {
+        // Implementation of the missing method
+        return 1024; // Default 1GB, replace with actual implementation
     }
     
     /**

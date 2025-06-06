@@ -3,6 +3,7 @@ package org.apache.opennlp.gpu.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.opennlp.gpu.rocm.RocmMemoryManager;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 public class RocmComputeProvider implements ComputeProvider {
     private static final Logger log = LoggerFactory.getLogger(RocmComputeProvider.class);
     
-    @Getter
     private final ResourceManager resourceManager;
     
     private String deviceName;
@@ -125,6 +125,11 @@ public class RocmComputeProvider implements ComputeProvider {
         return baseScore;
     }
     
+    /**
+     * Get the resource manager.
+     * 
+     * @return the resource manager
+     */
     @Override
     public ResourceManager getResourceManager() {
         return resourceManager;
@@ -182,7 +187,7 @@ public class RocmComputeProvider implements ComputeProvider {
         
         @Override
         public MemoryManager getMemoryManager() {
-            return new RocmMemoryManager(); // Or return actual implementation
+            return new RocmMemoryManager();
         }
         
         @Override

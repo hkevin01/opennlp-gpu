@@ -1,49 +1,63 @@
 package org.apache.opennlp.gpu.compute;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.opennlp.gpu.common.ComputeProvider;
 
-/**
- * Factory for creating operations.
- */
 public class OperationFactory {
     
-    private static final Logger logger = LoggerFactory.getLogger(OperationFactory.class);
-    
-    /**
-     * Create a matrix operation for the specified device.
-     * 
-     * @param deviceIndex the device index
-     * @return the matrix operation
-     */
-    public MatrixOperation createMatrixOperation(int deviceIndex) {
-        logger.info("Creating matrix operation for device index: {}", deviceIndex);
-        
-        // Simplified implementation - just return a dummy matrix operation
+    public static MatrixOperation createMatrixOperation() {
         return new DummyMatrixOperation();
     }
     
-    /**
-     * Dummy matrix operation implementation for testing.
-     */
+    public static MatrixOperation createMatrixOperation(ComputeProvider provider) {
+        return new DummyMatrixOperation();
+    }
+    
     private static class DummyMatrixOperation implements MatrixOperation {
-        @Override
-        public void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k) {
-            // Simple CPU implementation of matrix multiplication
-            for (int i = 0; i < m; i++) {
-                for (int j = 0; j < n; j++) {
-                    float sum = 0;
-                    for (int x = 0; x < k; x++) {
-                        sum += a[i * k + x] * b[x * n + j];
+        public ComputeProvider getProvider() { 
+            return null; 
+        }
+        
+        public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) { 
+            // CPU fallback implementation
+            for (int i = 0; i < rowsA; i++) {
+                for (int j = 0; j < colsB; j++) {
+                    float sum = 0.0f;
+                    for (int k = 0; k < sharedDim; k++) {
+                        sum += a[i * sharedDim + k] * b[k * colsB + j];
                     }
-                    result[i * n + j] = sum;
+                    c[i * colsB + j] = sum;
                 }
             }
         }
         
-        @Override
-        public void release() {
-            // Nothing to release in dummy implementation
+        public void add(float[] a, float[] b, float[] c, int elements) { 
+            for (int i = 0; i < elements; i++) {
+                c[i] = a[i] + b[i];
+            }
+        }
+        
+        public void subtract(float[] a, float[] b, float[] c, int elements) { 
+            for (int i = 0; i < elements; i++) {
+                c[i] = a[i] - b[i];
+            }
+        }
+        
+        public void scalarMultiply(float[] a, float[] b, float scalar, int elements) { 
+            for (int i = 0; i < elements; i++) {
+                b[i] = a[i] * scalar;
+            }
+        }
+        
+        public void transpose(float[] a, float[] b, int rows, int cols) { 
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    b[j * rows + i] = a[i * cols + j];
+                }
+            }
+        }
+        
+        public void release() { 
+            // No-op
         }
     }
 }

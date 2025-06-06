@@ -418,7 +418,7 @@ public class OpenClComputeProvider implements ComputeProvider {
         
         @Override
         public cl_mem allocateBuffer(int size, boolean readOnly) {
-            int flags = readOnly ? CL.CL_MEM_READ_ONLY : CL.CL_MEM_READ_WRITE;
+            long flags = readOnly ? CL.CL_MEM_READ_ONLY : CL.CL_MEM_READ_WRITE;
             return CL.clCreateBuffer(context, flags, (long)size, null, null);
         }
         
@@ -429,7 +429,7 @@ public class OpenClComputeProvider implements ComputeProvider {
                 throw new IllegalArgumentException("Buffer size cannot be negative");
             }
             
-            // Create the buffer
+            // Create the buffer - cast int to long for clCreateBuffer
             cl_mem buffer = CL.clCreateBuffer(context, CL.CL_MEM_READ_WRITE, (long)size, null, null);
             
             // Cache the buffer if name is provided
@@ -458,12 +458,12 @@ public class OpenClComputeProvider implements ComputeProvider {
         private class OpenClMemoryManager implements MemoryManager {
             @Override
             public int allocate(long size) {
-                // Convert to int safely
+                // Convert to int safely - fix line 421
                 if (size > Integer.MAX_VALUE) {
                     throw new IllegalArgumentException("Size too large for OpenCL buffer");
                 }
                 
-                // Create the buffer
+                // Create the buffer with explicit cast
                 cl_mem buffer = CL.clCreateBuffer(context, CL.CL_MEM_READ_WRITE, (int)size, null, null);
                 
                 // Store in data cache with a generated key

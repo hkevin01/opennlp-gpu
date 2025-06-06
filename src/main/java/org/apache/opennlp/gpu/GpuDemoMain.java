@@ -1,12 +1,10 @@
 package org.apache.opennlp.gpu;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.ComputeProviderFactory;
-import org.apache.opennlp.gpu.common.GpuDevice;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.compute.OperationFactory;
 import org.slf4j.Logger;
@@ -27,71 +25,14 @@ public class GpuDemoMain {
         logger.info("Starting OpenNLP GPU Demo");
         
         try {
-            // Parse command line arguments
-            boolean listDevices = Arrays.asList(args).contains("--list-devices");
-            boolean benchmark = Arrays.asList(args).contains("--benchmark");
-            boolean useRocm = Arrays.asList(args).contains("--rocm");
-            boolean useCuda = Arrays.asList(args).contains("--cuda");
-            boolean useOpenCL = Arrays.asList(args).contains("--opencl");
-            
-            // Get available devices
-            List<GpuDevice> availableDevices = GpuDevice.getAvailableDevices();
-            
-            if (availableDevices.isEmpty()) {
-                logger.warn("No GPU devices found. Using CPU fallback.");
-            } else {
-                logger.info("Found {} GPU devices:", availableDevices.size());
-                for (int i = 0; i < availableDevices.size(); i++) {
-                    GpuDevice device = availableDevices.get(i);
-                    logger.info("  Device {}: {} with {} MB memory", 
-                               i, device.getName(), device.getMemoryMB());
-                }
-            }
-            
-            if (listDevices) {
-                // Just list devices and exit
-                return;
-            }
-            
-            // Create the appropriate compute provider
-            ComputeProviderFactory providerFactory = ComputeProviderFactory.getInstance(); // Get factory instance
-            ComputeProvider provider;
-            if (useCuda) {
-                provider = providerFactory.getProvider(ComputeProvider.Type.CUDA);
-            } else if (useRocm) {
-                provider = providerFactory.getProvider(ComputeProvider.Type.ROCM);
-            } else if (useOpenCL) {
-                provider = providerFactory.getProvider(ComputeProvider.Type.OPENCL);
-            } else {
-                // Auto-select best provider - provide the required arguments
-                // First argument: operation type (e.g., "matrixOperations")
-                // Second argument: problem size (using the matrix size from the benchmark)
-                provider = providerFactory.getBestProvider("matrixOperations", MATRIX_SIZE * MATRIX_SIZE);
-            }
-            
-            if (provider == null) {
-                logger.error("No suitable compute provider found. Exiting.");
-                return;
-            }
-            
+            // Initialize compute provider
+            ComputeProvider provider = ComputeProviderFactory.getDefaultProvider();
             logger.info("Using compute provider: {}", provider.getName());
             
-            // Initialize provider
-            if (!provider.initialize()) {
-                logger.error("Failed to initialize compute provider. Exiting.");
-                return;
-            }
+            // Demo matrix operations
+            demoMatrixOperations(provider);
             
-            if (benchmark) {
-                runMatrixBenchmark(provider);
-            } else {
-                runSimpleDemo(provider);
-            }
-            
-            // Cleanup
-            provider.release();
             logger.info("Demo completed successfully");
-            
         } catch (Exception e) {
             logger.error("Error running demo", e);
         }
@@ -100,12 +41,14 @@ public class GpuDemoMain {
     /**
      * Run a simple matrix multiplication demo.
      */
-    private static void runSimpleDemo(ComputeProvider provider) {
-        logger.info("Running simple matrix operation demo");
+    private static void demoMatrixOperations(ComputeProvider provider) {
+        // Create a matrix operation
+        MatrixOperation matrixOp = OperationFactory.createMatrixOperation();
         
-        // Pass a device index (0 for primary device) instead of the provider
-        OperationFactory operationFactory = new OperationFactory();
-        MatrixOperation matrixOp = operationFactory.createMatrixOperation(0); // Use device index 0
+        // Matrix multiplication demo
+        int m = 100;
+        int n = 100;
+        int k = 100;
         
         // Create simple matrices for demo
         float[] matrixA = {1.0f, 2.0f, 3.0f, 4.0f};
@@ -130,65 +73,7 @@ public class GpuDemoMain {
             logger.error("Error performing matrix multiplication", e);
         }
         
-        // Release resources
-        matrixOp.release();
-    }
-    
-    /**
-     * Run a benchmark of matrix operations.
-     */
-    private static void runMatrixBenchmark(ComputeProvider provider) {
-        logger.info("Running matrix operation benchmark");
-        
-        // Pass a device index (0 for primary device) instead of the provider
-        OperationFactory operationFactory = new OperationFactory();
-        MatrixOperation matrixOp = operationFactory.createMatrixOperation(0); // Use device index 0
-        
-        // Create large random matrices for benchmark
-        float[] matrixA = generateRandomMatrix(MATRIX_SIZE * MATRIX_SIZE);
-        float[] matrixB = generateRandomMatrix(MATRIX_SIZE * MATRIX_SIZE);
-        float[] result = new float[MATRIX_SIZE * MATRIX_SIZE];
-        
-        logger.info("Matrix size: {}x{}", MATRIX_SIZE, MATRIX_SIZE);
-        logger.info("Warming up...");
-        
-        // Find the appropriate matrix multiplication method
-        java.lang.reflect.Method multiplyMethod;
-        try {
-            multiplyMethod = findMatrixMultiplyMethod(matrixOp.getClass());
-            if (multiplyMethod == null) {
-                logger.error("No suitable matrix multiplication method found");
-                return;
-            }
-            
-            // Warm-up run
-            multiplyMethod.invoke(matrixOp, matrixA, matrixB, result, MATRIX_SIZE, MATRIX_SIZE, MATRIX_SIZE);
-            
-            // Benchmark
-            logger.info("Running benchmark ({} iterations)...", ITERATIONS);
-            long totalTime = 0;
-            
-            for (int i = 0; i < ITERATIONS; i++) {
-                long startTime = System.currentTimeMillis();
-                multiplyMethod.invoke(matrixOp, matrixA, matrixB, result, MATRIX_SIZE, MATRIX_SIZE, MATRIX_SIZE);
-                long endTime = System.currentTimeMillis();
-                long iterationTime = endTime - startTime;
-                
-                totalTime += iterationTime;
-                logger.info("  Iteration {}: {} ms", i + 1, iterationTime);
-            }
-            
-            // Report results
-            double avgTime = (double) totalTime / ITERATIONS;
-            logger.info("Benchmark results:");
-            logger.info("  Average time: {:.2f} ms", avgTime);
-            logger.info("  Estimated GFLOPS: {:.2f}", 
-                       (2.0 * MATRIX_SIZE * MATRIX_SIZE * MATRIX_SIZE / (avgTime / 1000.0)) / 1e9);
-        } catch (Exception e) {
-            logger.error("Error performing matrix multiplication", e);
-        }
-        
-        // Release resources
+        // Clean up
         matrixOp.release();
     }
     

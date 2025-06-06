@@ -1,9 +1,8 @@
 package org.apache.opennlp.gpu.compute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ROCm implementation of matrix operations.
@@ -205,34 +204,10 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    // Removed // Removed @Override
+    @Override
     public void release() {
         log.info("Releasing ROCm matrix operation resources");
         // No resources to release at this level
         // Native resources are managed per-operation
     }
-    public static getFinal() {
-        return final;
-    }
-
-    public final getComputeProvider() {
-        return ComputeProvider;
-    }
-
-    public boolean getInitialized() {
-        return initialized;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public native getLong() {
-        return long;
-    }
-
-    public native getVoid() {
-        return void;
-    }
-
 }

@@ -1,24 +1,13 @@
 package org.apache.opennlp.gpu.compute;
 
-/**
- * Interface for matrix operations.
- */
+import org.apache.opennlp.gpu.common.ComputeProvider;
+
 public interface MatrixOperation {
-    
-    /**
-     * Multiply two matrices.
-     * 
-     * @param a matrix A
-     * @param b matrix B
-     * @param result the result matrix
-     * @param m rows in A
-     * @param n columns in B
-     * @param k columns in A / rows in B
-     */
-    void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k);
-    
-    /**
-     * Release resources.
-     */
+    ComputeProvider getProvider();
+    void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim);
+    void add(float[] a, float[] b, float[] c, int elements);
+    void subtract(float[] a, float[] b, float[] c, int elements);
+    void scalarMultiply(float[] a, float[] b, float scalar, int elements);
+    void transpose(float[] a, float[] b, int rows, int cols);
     void release();
 }

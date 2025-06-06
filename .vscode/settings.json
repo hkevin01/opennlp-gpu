@@ -1,5 +1,6 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
     "java.format.enabled": true,
     "editor.formatOnSave": true,
     "java.maven.downloadSources": true,
@@ -18,6 +19,27 @@
         "stringConcatToTextBlock"
     ],
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
-    }
+        "source.organizeImports": "explicit"
+    },
+    // Logging-specific settings
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable -Dorg.slf4j.simpleLogger.defaultLogLevel=info",
+    "maven.terminal.customEnv": [
+        {
+            "environmentVariable": "SLF4J_PROVIDER",
+            "value": "slf4j-simple"
+        }
+    ],
+    // Recommended problem exclusions
+    "java.debug.settings.enableRunDebugCodeLens": true,
+    "java.debug.settings.showLogicalStructure": true,
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-1.8",
+            "path": "/usr/lib/jvm/java-8-openjdk-amd64",
+            "default": true
+        }
+    ],
+    "java.errors.incompleteClasspath.severity": "warning",
+    "java.requirements.JDK11Warning": false,
+    "problems.decorations.enabled": true
 }
