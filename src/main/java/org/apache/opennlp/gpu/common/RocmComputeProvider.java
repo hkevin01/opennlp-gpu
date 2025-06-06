@@ -1,15 +1,14 @@
 package org.apache.opennlp.gpu.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.opennlp.gpu.rocm.RocmUtil;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import lombok.Getter;
 
 /**
  * ROCm implementation of the ComputeProvider interface.
@@ -183,7 +182,7 @@ public class RocmComputeProvider implements ComputeProvider {
         
         @Override
         public MemoryManager getMemoryManager() {
-            return new MemoryManager(); // Or return actual implementation
+            return new RocmMemoryManager(); // Or return actual implementation
         }
         
         @Override

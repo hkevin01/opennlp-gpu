@@ -2,16 +2,13 @@ package org.apache.opennlp.gpu.common;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Configuration for compute providers, allowing fine-tuning of provider selection and behavior.
  */
-@Data
-@NoArgsConstructor
+// Remove Lombok annotations and implement manually
 public class ComputeConfiguration {
     
     // The preferred provider type, null for automatic selection
@@ -28,6 +25,13 @@ public class ComputeConfiguration {
     
     // Provider-specific options
     private final Map<String, String> providerOptions = new HashMap<>();
+    
+    /**
+     * Default constructor.
+     */
+    public ComputeConfiguration() {
+        // Default constructor with no parameters
+    }
     
     /**
      * Creates a configuration from a Properties object.
@@ -106,5 +110,72 @@ public class ComputeConfiguration {
      */
     public Map<String, String> getAllProviderOptions() {
         return new HashMap<>(providerOptions);
+    }
+    
+    public ComputeProvider.Type getPreferredProviderType() {
+        return preferredProviderType;
+    }
+    
+    public void setPreferredProviderType(ComputeProvider.Type preferredProviderType) {
+        this.preferredProviderType = preferredProviderType;
+    }
+    
+    public int getSmallProblemThreshold() {
+        return smallProblemThreshold;
+    }
+    
+    public void setSmallProblemThreshold(int smallProblemThreshold) {
+        this.smallProblemThreshold = smallProblemThreshold;
+    }
+    
+    public boolean isAutoBenchmark() {
+        return autoBenchmark;
+    }
+    
+    public void setAutoBenchmark(boolean autoBenchmark) {
+        this.autoBenchmark = autoBenchmark;
+    }
+    
+    public long getBenchmarkCacheTimeMs() {
+        return benchmarkCacheTimeMs;
+    }
+    
+    public void setBenchmarkCacheTimeMs(long benchmarkCacheTimeMs) {
+        this.benchmarkCacheTimeMs = benchmarkCacheTimeMs;
+    }
+    
+    public Map<String, String> getProviderOptions() {
+        return providerOptions;
+    }
+    
+    // Implement equals, hashCode, and toString methods
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ComputeConfiguration that = (ComputeConfiguration) o;
+        return smallProblemThreshold == that.smallProblemThreshold &&
+               autoBenchmark == that.autoBenchmark &&
+               benchmarkCacheTimeMs == that.benchmarkCacheTimeMs &&
+               Objects.equals(preferredProviderType, that.preferredProviderType) &&
+               Objects.equals(providerOptions, that.providerOptions);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(preferredProviderType, smallProblemThreshold, autoBenchmark, 
+                          benchmarkCacheTimeMs, providerOptions);
+    }
+    
+    @Override
+    public String toString() {
+        return "ComputeConfiguration{" +
+               "preferredProviderType=" + preferredProviderType +
+               ", smallProblemThreshold=" + smallProblemThreshold +
+               ", autoBenchmark=" + autoBenchmark +
+               ", benchmarkCacheTimeMs=" + benchmarkCacheTimeMs +
+               ", providerOptions=" + providerOptions +
+               '}';
     }
 }

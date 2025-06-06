@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 public class RocmFeatureExtractionOperation implements FeatureExtractionOperation {
     private static final Logger logger = LoggerFactory.getLogger(RocmFeatureExtractionOperation.class);
     
-    // Remove @Getter annotation if present
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
@@ -226,4 +225,32 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     public ComputeProvider getProvider() {
         return provider;
     }
+    public static getFinal() {
+        return final;
+    }
+
+    public final getComputeProvider() {
+        return ComputeProvider;
+    }
+
+    public boolean getInitialized() {
+        return initialized;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public native getLong() {
+        return long;
+    }
+
+    public native getVoid() {
+        return void;
+    }
+
+    public native getInt() {
+        return int;
+    }
+
 }

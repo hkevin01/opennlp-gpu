@@ -1,7 +1,5 @@
 {
-    "java.jdt.ls.lombokSupport": true,
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.compile.nullAnalysis.mode": "automatic",
     "java.format.enabled": true,
     "editor.formatOnSave": true,
     "java.maven.downloadSources": true,
@@ -9,7 +7,6 @@
     "java.codeGeneration.generateComments": true,
     "java.autobuild.enabled": true,
     "java.server.launchMode": "Standard",
-    "java.configuration.maven.userSettings": "/home/kevin/.m2/settings.xml",
     "java.import.gradle.enabled": false,
     "java.import.maven.enabled": true,
     "java.codeGeneration.useBlocks": true,

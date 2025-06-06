@@ -1,19 +1,10 @@
 package org.apache.opennlp.gpu.rocm;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 /**
  * Represents an AMD GPU device available through ROCm.
  * This class encapsulates information about an AMD GPU device.
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(force = true) // Keep this annotation
 public class RocmDevice {
     
     // Add default values for all final fields

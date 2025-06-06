@@ -3,6 +3,8 @@ package org.apache.opennlp.gpu.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +145,8 @@ public class CpuComputeProvider implements ComputeProvider {
         
         @Override
         public MemoryManager getMemoryManager() {
-            return new MemoryManager();
+            // Return concrete implementation instead of interface
+            return new CpuMemoryManager();
         }
         
         @Override
@@ -152,19 +155,19 @@ public class CpuComputeProvider implements ComputeProvider {
         }
         
         @Override
-        public org.jocl.cl_kernel getOrCreateKernel(String name, String source) {
+        public cl_kernel getOrCreateKernel(String name, String source) {
             // CPU doesn't use kernels, return null as a placeholder
             return null;
         }
         
         @Override
-        public org.jocl.cl_mem allocateBuffer(int size, boolean readOnly) {
+        public cl_mem allocateBuffer(int size, boolean readOnly) {
             // CPU implementation doesn't use OpenCL buffers
             return null;
         }
         
         @Override
-        public org.jocl.cl_mem allocateBuffer(int size, String name) {
+        public cl_mem allocateBuffer(int size, String name) {
             // CPU implementation doesn't use OpenCL buffers
             return null;
         }
@@ -175,7 +178,7 @@ public class CpuComputeProvider implements ComputeProvider {
         }
         
         @Override
-        public void releaseBuffer(org.jocl.cl_mem buffer) {
+        public void releaseBuffer(cl_mem buffer) {
             // No-op for CPU implementation
         }
         
@@ -205,6 +208,59 @@ public class CpuComputeProvider implements ComputeProvider {
             Map<String, Object> stats = new HashMap<>();
             stats.put("cacheSize", dataCache.size());
             return stats;
+        }
+    }
+    
+    /**
+     * CPU-specific implementation of MemoryManager.
+     */
+    private class CpuMemoryManager implements MemoryManager {
+        private final Map<Long, byte[]> memoryBlocks = new HashMap<>();
+        private long nextHandle = 1; // Start handles at 1
+        
+        @Override
+        public int allocate(long size) {
+            if (size <= 0) {
+                throw new IllegalArgumentException("Size must be positive");
+            }
+            
+            if (size > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("Size exceeds maximum array size");
+            }
+            
+            // Allocate a byte array
+            byte[] block = new byte[(int)size];
+            long handle = nextHandle++;
+            memoryBlocks.put(handle, block);
+            
+            return (int)handle; // Return the handle as an int
+        }
+        
+        @Override
+        public void free(long ptr) {
+            memoryBlocks.remove(ptr);
+        }
+        
+        @Override
+        public void copyHostToDevice(long devicePtr, byte[] hostData, long size) {
+            byte[] deviceMem = memoryBlocks.get(devicePtr);
+            if (deviceMem != null) {
+                System.arraycopy(hostData, 0, deviceMem, 0, (int)Math.min(size, deviceMem.length));
+            }
+        }
+        
+        @Override
+        public void copyDeviceToHost(long devicePtr, byte[] hostData, long size) {
+            byte[] deviceMem = memoryBlocks.get(devicePtr);
+            if (deviceMem != null) {
+                System.arraycopy(deviceMem, 0, hostData, 0, (int)Math.min(size, hostData.length));
+            }
+        }
+        
+        @Override
+        public void releaseAll() {
+            memoryBlocks.clear();
+            nextHandle = 1;
         }
     }
 }

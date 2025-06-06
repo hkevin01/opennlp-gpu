@@ -4,7 +4,6 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
-import lombok.Getter;
 
 /**
  * ROCm implementation of matrix operations.
@@ -17,7 +16,6 @@ public class RocmMatrixOperation implements MatrixOperation {
         return this.provider;
     }
     
-    @Getter
     private final ComputeProvider provider;
     private boolean initialized = false;
     private int deviceId = 0;
@@ -213,4 +211,28 @@ public class RocmMatrixOperation implements MatrixOperation {
         // No resources to release at this level
         // Native resources are managed per-operation
     }
+    public static getFinal() {
+        return final;
+    }
+
+    public final getComputeProvider() {
+        return ComputeProvider;
+    }
+
+    public boolean getInitialized() {
+        return initialized;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public native getLong() {
+        return long;
+    }
+
+    public native getVoid() {
+        return void;
+    }
+
 }

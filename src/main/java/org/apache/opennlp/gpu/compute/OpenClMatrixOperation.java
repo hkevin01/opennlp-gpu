@@ -5,18 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.ResourceManager;
 import org.jocl.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * OpenCL implementation of matrix operations.
  * This class uses OpenCL for GPU-accelerated matrix operations.
  */
-@RequiredArgsConstructor
 public class OpenClMatrixOperation implements MatrixOperation {
     private static final Logger log = LoggerFactory.getLogger(OpenClMatrixOperation.class);
     
-    @Getter
     private final ComputeProvider provider;
     private final ResourceManager resourceManager;
     
@@ -356,4 +352,12 @@ public class OpenClMatrixOperation implements MatrixOperation {
         log.info("Releasing OpenCL matrix operation resources");
         // No specific resources to release, as ResourceManager handles cleanup
     }
+    public static getFinal() {
+        return final;
+    }
+
+    public final getComputeProvider() {
+        return ComputeProvider;
+    }
+
 }

@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.opennlp.gpu.common.MemoryManager;
+import org.apache.opennlp.gpu.common.DefaultMemoryManager;
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -28,7 +28,7 @@ public class MatrixOps {
     
     private final cl_context context;
     private final cl_command_queue commandQueue;
-    private final MemoryManager memoryManager;
+    private final DefaultMemoryManager memoryManager;
     
     // Cache of compiled OpenCL programs
     private final Map<String, cl_program> programCache = new HashMap<>();
@@ -43,7 +43,7 @@ public class MatrixOps {
     public MatrixOps(cl_context context, cl_command_queue commandQueue) {
         this.context = context;
         this.commandQueue = commandQueue;
-        this.memoryManager = new MemoryManager(context, commandQueue);
+        this.memoryManager = new DefaultMemoryManager(context, commandQueue);
         
         // Initialize OpenCL programs
         try {
@@ -70,22 +70,22 @@ public class MatrixOps {
                 m, k, k, n, m, n);
         
         // Allocate device memory
-        cl_mem aBuffer = memoryManager.allocateBuffer(m * k * Sizeof.cl_float, true);
-        cl_mem bBuffer = memoryManager.allocateBuffer(k * n * Sizeof.cl_float, true);
-        cl_mem cBuffer = memoryManager.allocateBuffer(m * n * Sizeof.cl_float, false);
+        long aBuffer = memoryManager.allocate(m * k * Sizeof.cl_float);
+        long bBuffer = memoryManager.allocate(k * n * Sizeof.cl_float);
+        long cBuffer = memoryManager.allocate(m * n * Sizeof.cl_float);
         
         try {
             // Copy input data to device
-            memoryManager.copyToDevice(Pointer.to(a), aBuffer, m * k * Sizeof.cl_float);
-            memoryManager.copyToDevice(Pointer.to(b), bBuffer, k * n * Sizeof.cl_float);
+            memoryManager.copyHostToDevice(Pointer.to(a), aBuffer, m * k * Sizeof.cl_float);
+            memoryManager.copyHostToDevice(Pointer.to(b), bBuffer, k * n * Sizeof.cl_float);
             
             // Get the kernel
             cl_kernel kernel = getKernel("matrixMultiply");
             
             // Set kernel arguments
-            CL.clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(aBuffer));
-            CL.clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(bBuffer));
-            CL.clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(cBuffer));
+            CL.clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(new cl_mem[]{ (cl_mem) memoryManager.getBuffer(aBuffer) }));
+            CL.clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(new cl_mem[]{ (cl_mem) memoryManager.getBuffer(bBuffer) }));
+            CL.clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(new cl_mem[]{ (cl_mem) memoryManager.getBuffer(cBuffer) }));
             CL.clSetKernelArg(kernel, 3, Sizeof.cl_int, Pointer.to(new int[]{m}));
             CL.clSetKernelArg(kernel, 4, Sizeof.cl_int, Pointer.to(new int[]{n}));
             CL.clSetKernelArg(kernel, 5, Sizeof.cl_int, Pointer.to(new int[]{k}));
@@ -96,13 +96,13 @@ public class MatrixOps {
                     globalWorkSize, null, 0, null, null);
             
             // Read the result back
-            memoryManager.copyFromDevice(cBuffer, Pointer.to(c), m * n * Sizeof.cl_float);
+            memoryManager.copyDeviceToHost(cBuffer, c, m * n * Sizeof.cl_float);
             
         } finally {
             // Clean up
-            memoryManager.releaseBuffer(aBuffer);
-            memoryManager.releaseBuffer(bBuffer);
-            memoryManager.releaseBuffer(cBuffer);
+            memoryManager.free(aBuffer);
+            memoryManager.free(bBuffer);
+            memoryManager.free(cBuffer);
         }
     }
     
@@ -118,22 +118,22 @@ public class MatrixOps {
         logger.debug("Matrix add: size={}", size);
         
         // Allocate device memory
-        cl_mem aBuffer = memoryManager.allocateBuffer(size * Sizeof.cl_float, true);
-        cl_mem bBuffer = memoryManager.allocateBuffer(size * Sizeof.cl_float, true);
-        cl_mem cBuffer = memoryManager.allocateBuffer(size * Sizeof.cl_float, false);
+        long aBuffer = memoryManager.allocate(size * Sizeof.cl_float);
+        long bBuffer = memoryManager.allocate(size * Sizeof.cl_float);
+        long cBuffer = memoryManager.allocate(size * Sizeof.cl_float);
         
         try {
             // Copy input data to device
-            memoryManager.copyToDevice(Pointer.to(a), aBuffer, size * Sizeof.cl_float);
-            memoryManager.copyToDevice(Pointer.to(b), bBuffer, size * Sizeof.cl_float);
+            memoryManager.copyHostToDevice(Pointer.to(a), aBuffer, size * Sizeof.cl_float);
+            memoryManager.copyHostToDevice(Pointer.to(b), bBuffer, size * Sizeof.cl_float);
             
             // Get the kernel
             cl_kernel kernel = getKernel("matrixAdd");
             
             // Set kernel arguments
-            CL.clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(aBuffer));
-            CL.clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(bBuffer));
-            CL.clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(cBuffer));
+             CL.clSetKernelArg(kernel, 0, Sizeof.cl_mem, Pointer.to(new cl_mem[]{ (cl_mem) memoryManager.getBuffer(aBuffer) }));
+            CL.clSetKernelArg(kernel, 1, Sizeof.cl_mem, Pointer.to(new cl_mem[]{ (cl_mem) memoryManager.getBuffer(bBuffer) }));
+            CL.clSetKernelArg(kernel, 2, Sizeof.cl_mem, Pointer.to(new cl_mem[]{ (cl_mem) memoryManager.getBuffer(cBuffer) }));
             CL.clSetKernelArg(kernel, 3, Sizeof.cl_int, Pointer.to(new int[]{size}));
             
             // Execute the kernel
@@ -142,13 +142,13 @@ public class MatrixOps {
                     globalWorkSize, null, 0, null, null);
             
             // Read the result back
-            memoryManager.copyFromDevice(cBuffer, Pointer.to(c), size * Sizeof.cl_float);
+            memoryManager.copyDeviceToHost(cBuffer, c, size * Sizeof.cl_float);
             
         } finally {
             // Clean up
-            memoryManager.releaseBuffer(aBuffer);
-            memoryManager.releaseBuffer(bBuffer);
-            memoryManager.releaseBuffer(cBuffer);
+            memoryManager.free(aBuffer);
+            memoryManager.free(bBuffer);
+            memoryManager.free(cBuffer);
         }
     }
     
@@ -286,5 +286,9 @@ public class MatrixOps {
         memoryManager.release();
         
         logger.info("Matrix operations released");
+    }
+    
+    public Object getBuffer(long ptr) {
+        return null;
     }
 }

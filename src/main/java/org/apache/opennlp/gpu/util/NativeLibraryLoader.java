@@ -1,7 +1,5 @@
 package org.apache.opennlp.gpu.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +15,6 @@ import java.nio.file.Paths;
  * Utility class for loading native libraries.
  * Handles both loading from system library path and extracting from JAR.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NativeLibraryLoader {
     
     // Add logger declaration

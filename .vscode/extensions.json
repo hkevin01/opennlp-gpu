@@ -1,7 +1,6 @@
 {
     "recommendations": [
         "vscjava.vscode-java-pack",
-        "vscjava.vscode-maven",
-        "gabrielbb.vscode-lombok"
+        "vscjava.vscode-maven"
     ]
 }

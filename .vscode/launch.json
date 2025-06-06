@@ -13,6 +13,66 @@
             "request": "launch",
             "mainClass": "com.example.Main",
             "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Launch GPU Demo",
+            "request": "launch",
+            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "projectName": "opennlp-gpu"
+        },
+        {
+            "type": "java",
+            "name": "List GPU Devices",
+            "request": "launch",
+            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "projectName": "opennlp-gpu",
+            "args": [
+                "--list-devices"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Run Benchmark (Auto)",
+            "request": "launch",
+            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "projectName": "opennlp-gpu",
+            "args": [
+                "--benchmark"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Run Benchmark (CUDA)",
+            "request": "launch",
+            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "projectName": "opennlp-gpu",
+            "args": [
+                "--benchmark",
+                "--cuda"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Run Benchmark (ROCm)",
+            "request": "launch",
+            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "projectName": "opennlp-gpu",
+            "args": [
+                "--benchmark",
+                "--rocm"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Run Benchmark (OpenCL)",
+            "request": "launch",
+            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "projectName": "opennlp-gpu",
+            "args": [
+                "--benchmark",
+                "--opencl"
+            ]
         }
     ]
 }

@@ -1,15 +1,21 @@
 package org.apache.opennlp.gpu.common;
 
-import org.jocl.cl_kernel;
-import org.jocl.cl_mem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.jocl.*;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jocl.CL;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_context_properties;
+import org.jocl.cl_device_id;
+import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
+import org.jocl.cl_platform_id;
+import org.jocl.cl_program;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * OpenCL-based implementation of the ComputeProvider interface using JOCL.
@@ -201,11 +207,8 @@ public class OpenClComputeProvider implements ComputeProvider {
     @Override
     public boolean supportsOperation(String operationName) {
         // Check if the operation is supported
-        if (!supportsOperation(operationName)) {
-            return false;
-        }
-        
-        return true; // Or actual implementation
+        Boolean supported = supportedOperations.get(operationName);
+        return supported != null && supported;
     }
     
     @Override
@@ -365,46 +368,174 @@ public class OpenClComputeProvider implements ComputeProvider {
         
         @Override
         public MemoryManager getMemoryManager() {
-            return new MemoryManager(); // Or return actual implementation
+            // Return a concrete implementation of MemoryManager
+            return new OpenClMemoryManager();
         }
         
         @Override
         public void releaseAll() {
-            // Implementation for releasing all resources
+            // Release all kernels and programs
+            for (cl_kernel kernel : kernelCache.values()) {
+                CL.clReleaseKernel(kernel);
+            }
+            kernelCache.clear();
+            
+            for (cl_program program : programCache.values()) {
+                CL.clReleaseProgram(program);
+            }
+            programCache.clear();
+            
+            // Clear data cache (actual objects will be released elsewhere)
+            dataCache.clear();
         }
         
         @Override
         public cl_kernel getOrCreateKernel(String name, String source) {
-            // Implementation for getting or creating a kernel
-            return null; // Or actual implementation
+            // Check if the kernel is already cached
+            if (kernelCache.containsKey(name)) {
+                return kernelCache.get(name);
+            }
+            
+            try {
+                // Create and build the program
+                cl_program program = CL.clCreateProgramWithSource(context, 1, 
+                        new String[] { source }, null, null);
+                CL.clBuildProgram(program, 0, null, null, null, null);
+                
+                // Create the kernel
+                cl_kernel kernel = CL.clCreateKernel(program, name, null);
+                
+                // Cache the program and kernel
+                programCache.put(name, program);
+                kernelCache.put(name, kernel);
+                
+                return kernel;
+            } catch (Exception e) {
+                log.error("Error creating kernel {}: {}", name, e.getMessage());
+                return null;
+            }
         }
         
         @Override
         public cl_mem allocateBuffer(int size, boolean readOnly) {
-            // Implementation for allocating buffer
-            return null; // Or actual implementation
+            int flags = readOnly ? CL.CL_MEM_READ_ONLY : CL.CL_MEM_READ_WRITE;
+            return CL.clCreateBuffer(context, flags, (long)size, null, null);
         }
         
-        // This fixes the long to int conversion issue
         @Override
         public cl_mem allocateBuffer(int size, String name) {
-            // Safe casting from long to int with bound checking
+            // Validate size
             if (size < 0) {
-                throw new IllegalArgumentException("Size cannot be negative");
+                throw new IllegalArgumentException("Buffer size cannot be negative");
             }
-            // Implementation for allocating named buffer
-            return null; // Or actual implementation
+            
+            // Create the buffer
+            cl_mem buffer = CL.clCreateBuffer(context, CL.CL_MEM_READ_WRITE, (long)size, null, null);
+            
+            // Cache the buffer if name is provided
+            if (name != null && !name.isEmpty()) {
+                dataCache.put("buffer:" + name, buffer);
+            }
+            
+            return buffer;
         }
         
         @Override
         public Object getCachedData(String name) {
-            // Implementation for getting cached data
-            return null; // Or actual implementation
+            return dataCache.get(name);
         }
         
         @Override
         public void releaseBuffer(cl_mem buffer) {
-            // Implementation for releasing buffer
+            if (buffer != null) {
+                CL.clReleaseMemObject(buffer);
+            }
+        }
+        
+        /**
+         * OpenCL-specific implementation of MemoryManager.
+         */
+        private class OpenClMemoryManager implements MemoryManager {
+            @Override
+            public int allocate(long size) {
+                // Convert to int safely
+                if (size > Integer.MAX_VALUE) {
+                    throw new IllegalArgumentException("Size too large for OpenCL buffer");
+                }
+                
+                // Create the buffer
+                cl_mem buffer = CL.clCreateBuffer(context, CL.CL_MEM_READ_WRITE, (int)size, null, null);
+                
+                // Store in data cache with a generated key
+                String key = "buffer:" + System.nanoTime();
+                dataCache.put(key, buffer);
+                
+                // Return a handle (using hashCode as a simple approach)
+                return buffer.hashCode();
+            }
+            
+            @Override
+            public void free(long ptr) {
+                // Find and release the buffer
+                for (Map.Entry<String, Object> entry : dataCache.entrySet()) {
+                    if (entry.getKey().startsWith("buffer:") && entry.getValue() instanceof cl_mem) {
+                        cl_mem buffer = (cl_mem)entry.getValue();
+                        if (buffer.hashCode() == ptr) {
+                            CL.clReleaseMemObject(buffer);
+                            dataCache.remove(entry.getKey());
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            @Override
+            public void copyHostToDevice(long devicePtr, byte[] hostData, long size) {
+                // Find the buffer
+                cl_mem buffer = findBufferByPtr(devicePtr);
+                if (buffer != null) {
+                    CL.clEnqueueWriteBuffer(commandQueue, buffer, CL.CL_TRUE, 0, 
+                            size, Pointer.to(hostData), 0, null, null);
+                }
+            }
+            
+            @Override
+            public void copyDeviceToHost(long devicePtr, byte[] hostData, long size) {
+                // Find the buffer
+                cl_mem buffer = findBufferByPtr(devicePtr);
+                if (buffer != null) {
+                    CL.clEnqueueReadBuffer(commandQueue, buffer, CL.CL_TRUE, 0, 
+                            size, Pointer.to(hostData), 0, null, null);
+                }
+            }
+            
+            @Override
+            public void releaseAll() {
+                // Release all buffers
+                for (Map.Entry<String, Object> entry : dataCache.entrySet()) {
+                    if (entry.getKey().startsWith("buffer:") && entry.getValue() instanceof cl_mem) {
+                        CL.clReleaseMemObject((cl_mem)entry.getValue());
+                    }
+                }
+                
+                // Remove buffer entries from the cache
+                dataCache.entrySet().removeIf(entry -> entry.getKey().startsWith("buffer:"));
+            }
+            
+            /**
+             * Find a buffer by its pointer value.
+             */
+            private cl_mem findBufferByPtr(long ptr) {
+                for (Map.Entry<String, Object> entry : dataCache.entrySet()) {
+                    if (entry.getKey().startsWith("buffer:") && entry.getValue() instanceof cl_mem) {
+                        cl_mem buffer = (cl_mem)entry.getValue();
+                        if (buffer.hashCode() == ptr) {
+                            return buffer;
+                        }
+                    }
+                }
+                return null;
+            }
         }
     }
 }

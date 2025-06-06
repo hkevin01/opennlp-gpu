@@ -6,24 +6,13 @@ package org.apache.opennlp.gpu.common;
 public interface ComputeProvider {
     
     /**
-     * Enum defining the types of compute providers.
+     * Enum of supported compute provider types.
      */
     enum Type {
-        CPU,
         CUDA,
         ROCM,
         OPENCL,
-        AUTO;
-        
-        /**
-         * Returns a string representation of the compute provider type.
-         *
-         * @return the string representation
-         */
-        @Override
-        public String toString() {
-            return name().toLowerCase();
-        }
+        CPU    // Add CPU type for the CPU compute provider
     }
     
     /**
@@ -34,33 +23,40 @@ public interface ComputeProvider {
     boolean initialize();
     
     /**
-     * Get the name of the compute provider.
-     * 
-     * @return the provider name
-     */
-    String getName();
-    
-    /**
-     * Check if this provider is available on the system.
-     * 
-     * @return true if available
-     */
-    boolean isAvailable();
-    
-    /**
-     * Get the type of this compute provider.
+     * Get the type of the compute provider.
      * 
      * @return the provider type
      */
     Type getType();
     
     /**
-     * Release resources used by this provider.
+     * Check if the provider is available.
+     * 
+     * @return true if the provider is available
+     */
+    boolean isAvailable();
+    
+    /**
+     * Get the name of the provider.
+     * 
+     * @return the provider name
+     */
+    String getName();
+    
+    /**
+     * Release resources held by the provider.
      */
     void release();
     
     /**
-     * Check if this provider supports the specified operation.
+     * Get a resource manager for this provider.
+     * 
+     * @return the resource manager
+     */
+    ResourceManager getResourceManager();
+    
+    /**
+     * Check if the provider supports the specified operation.
      * 
      * @param operationName the name of the operation
      * @return true if the operation is supported
@@ -68,18 +64,11 @@ public interface ComputeProvider {
     boolean supportsOperation(String operationName);
     
     /**
-     * Get the performance score for an operation.
+     * Get a performance score for the specified operation and data size.
      * 
      * @param operationName the name of the operation
-     * @param dataSize the size of the data to process
-     * @return the performance score (higher is better)
+     * @param dataSize the size of the data
+     * @return a performance score
      */
     double getPerformanceScore(String operationName, int dataSize);
-    
-    /**
-     * Get the resource manager for this provider.
-     * 
-     * @return the resource manager
-     */
-    ResourceManager getResourceManager();
 }
