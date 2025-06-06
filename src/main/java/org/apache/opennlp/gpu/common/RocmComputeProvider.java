@@ -10,7 +10,6 @@ import org.jocl.cl_mem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * ROCm implementation of the ComputeProvider interface.
  * This provider uses AMD's ROCm platform for GPU acceleration.
@@ -21,8 +20,6 @@ public class RocmComputeProvider implements ComputeProvider {
     private final ResourceManager resourceManager;
     
     private String deviceName;
-    private int computeUnits;
-    private long globalMemSize;
     
     // Performance benchmark cache
     private final Map<String, Map<Integer, Double>> benchmarkCache = new HashMap<>();
@@ -39,10 +36,10 @@ public class RocmComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        log.info("Initializing ROCm compute provider");
+        RocmComputeProvider.log.info("Initializing ROCm compute provider");
         
         if (!RocmUtil.isAvailable()) {
-            log.warn("ROCm is not available on this system");
+            RocmComputeProvider.log.warn("ROCm is not available on this system");
             return false;
         }
         
@@ -50,10 +47,10 @@ public class RocmComputeProvider implements ComputeProvider {
             // Initialize supported operations
             initializeSupportedOperations();
             
-            log.info("ROCm compute provider initialized successfully");
+            RocmComputeProvider.log.info("ROCm compute provider initialized successfully");
             return true;
         } catch (Exception e) {
-            log.error("Error initializing ROCm compute provider", e);
+            RocmComputeProvider.log.error("Error initializing ROCm compute provider", e);
             return false;
         }
     }
@@ -119,7 +116,7 @@ public class RocmComputeProvider implements ComputeProvider {
             baseScore *= 1.8; // Large problems benefit more from GPU parallelism
         }
         
-        log.debug("ROCm benchmark for {} with size {}: score {}", 
+        RocmComputeProvider.log.debug("ROCm benchmark for {} with size {}: score {}", 
                  operationType, problemSize, baseScore);
         
         return baseScore;
@@ -158,7 +155,7 @@ public class RocmComputeProvider implements ComputeProvider {
 
     @Override
     public void release() {
-        log.info("Releasing ROCm compute provider resources");
+        RocmComputeProvider.log.info("Releasing ROCm compute provider resources");
         if (resourceManager != null) {
             resourceManager.releaseAll();
         }
@@ -170,11 +167,6 @@ public class RocmComputeProvider implements ComputeProvider {
      * Resource manager implementation for ROCm provider.
      */
     private class RocmResourceManager implements ResourceManager {
-        private final Map<String, Object> dataCache = new HashMap<>();
-        
-        // JNI method declarations for ROCm resource management
-        private native long rocmAllocateMemory(long size);
-        private native void rocmFreeMemory(long devicePtr);
         
         @Override
         public boolean initialize() {

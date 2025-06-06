@@ -5,9 +5,8 @@ package org.apache.opennlp.gpu.common;
  */
 public interface ComputeProvider {
     
-    /**
-     * Enum of supported compute provider types.
-     */
+    // Suppress warnings for unused enum constants (these values are part of the public API)
+    @SuppressWarnings("unused")
     enum Type {
         CUDA,
         ROCM,

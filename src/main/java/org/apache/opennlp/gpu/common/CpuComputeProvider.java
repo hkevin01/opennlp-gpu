@@ -30,7 +30,7 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        log.info("Initializing CPU compute provider");
+        CpuComputeProvider.log.info("Initializing CPU compute provider");
         return true; // CPU provider is always available
     }
     
@@ -101,7 +101,7 @@ public class CpuComputeProvider implements ComputeProvider {
             baseScore = baseScore / (problemSize / 1000.0);
         }
         
-        log.debug("CPU benchmark for {} with size {}: score {}", 
+        CpuComputeProvider.log.debug("CPU benchmark for {} with size {}: score {}", 
                     operationType, problemSize, baseScore);
         
         return baseScore;
@@ -117,7 +117,7 @@ public class CpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void release() {
-        log.info("Releasing CPU compute provider resources");
+        CpuComputeProvider.log.info("Releasing CPU compute provider resources");
         if (resourceManager != null) {
             resourceManager.release();
         }
@@ -149,7 +149,7 @@ public class CpuComputeProvider implements ComputeProvider {
         
         @Override
         public void releaseAll() {
-            clearCache();
+            dataCache.clear();
         }
         
         @Override
@@ -178,34 +178,6 @@ public class CpuComputeProvider implements ComputeProvider {
         @Override
         public void releaseBuffer(cl_mem buffer) {
             // No-op for CPU implementation
-        }
-        
-        // The existing allocateBuffer method with long parameter can remain as an additional helper
-        public Object allocateBuffer(long size, String type) {
-            // For CPU, we simply allocate a float array
-            if ("float".equals(type)) {
-                return new float[(int)size / 4]; // 4 bytes per float
-            } else if ("double".equals(type)) {
-                return new double[(int)size / 8]; // 8 bytes per double
-            } else if ("int".equals(type)) {
-                return new int[(int)size / 4]; // 4 bytes per int
-            } else {
-                return new byte[(int)size]; // Default to byte array
-            }
-        }
-        
-        public void cacheData(String key, Object data) {
-            dataCache.put(key, data);
-        }
-        
-        public void clearCache() {
-            dataCache.clear();
-        }
-        
-        public Map<String, Object> getStatistics() {
-            Map<String, Object> stats = new HashMap<>();
-            stats.put("cacheSize", dataCache.size());
-            return stats;
         }
     }
     

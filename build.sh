@@ -215,142 +215,72 @@ EOF
     return 0
 }
 
-# Function to fix syntax errors (missing braces)
+# Function to fix syntax errors (missing closing braces)
 fix_syntax_errors() {
     echo -e "${BLUE}Checking and fixing syntax errors...${NC}"
     
-    # Enhanced syntax error fixing with better brace detection and specific line fixes
-    
-    # Fix OpenClMatrixOperation.java - specifically target line 297 error
-    if [ -f "src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java" ]; then
-        echo -e "${YELLOW}Analyzing OpenClMatrixOperation.java for 'illegal start of type' errors...${NC}"
-        
-        # Check line 297 specifically and surrounding lines
-        if [ -f "src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java" ]; then
-            # Create a backup first
-            cp src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java.backup
-            
-            # Remove any orphaned code at line 297 and surrounding area
-            sed -i '295,300d' src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java
-            
-            # Check for proper class/method structure
-            opening=$(grep -o '{' src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java | wc -l)
-            closing=$(grep -o '}' src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java | wc -l)
-            missing=$((opening - closing))
-            
-            echo "Opening braces: $opening, Closing braces: $closing, Missing: $missing"
-            
-            if [ $missing -gt 0 ]; then
-                echo -e "${YELLOW}Adding $missing missing closing brace(s) to OpenClMatrixOperation.java...${NC}"
-                for ((i=1; i<=missing; i++)); do
-                    echo "}" >> src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java
-                done
-            fi
-            
-            echo -e "${GREEN}Fixed OpenClMatrixOperation.java illegal start of type error${NC}"
-        fi
-    fi
-    
     # Fix RocmFeatureExtractionOperation.java
     if [ -f "src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java" ]; then
-        echo -e "${YELLOW}Analyzing RocmFeatureExtractionOperation.java...${NC}"
-        
-        # Count braces more accurately
         opening=$(grep -o '{' src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java | wc -l)
         closing=$(grep -o '}' src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java | wc -l)
         missing=$((opening - closing))
-        
-        echo "Opening braces: $opening, Closing braces: $closing, Missing: $missing"
-        
         if [ $missing -gt 0 ]; then
             echo -e "${YELLOW}Adding $missing missing closing brace(s) to RocmFeatureExtractionOperation.java...${NC}"
             for ((i=1; i<=missing; i++)); do
                 echo "}" >> src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java
             done
-            echo -e "${GREEN}Fixed RocmFeatureExtractionOperation.java${NC}"
-        else
-            echo -e "${GREEN}RocmFeatureExtractionOperation.java syntax is correct${NC}"
         fi
     fi
     
-    # Additional syntax validation - check for common issues
-    echo -e "${BLUE}Performing additional syntax checks...${NC}"
-    
-    # Check for unclosed string literals, comments, etc.
-    for file in "src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java" \
-                "src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java"; do
-        if [ -f "$file" ]; then
-            # Remove any incomplete method declarations or orphaned code
-            sed -i '/public static getFinal()/d' "$file"
-            sed -i '/public final getComputeProvider()/d' "$file"
-            sed -i '/public native get/d' "$file"
-            sed -i '/public boolean get/d' "$file"
-            sed -i '/public int get/d' "$file"
-            
-            # Check if file ends properly
-            if [ -s "$file" ]; then
-                last_char=$(tail -c 1 "$file")
-                if [ -n "$last_char" ] && [ "$last_char" != $'\n' ]; then
-                    echo "" >> "$file"  # Add newline if missing
-                fi
-            fi
-            
-            # Remove trailing empty lines and fix formatting
-            sed -i ':a;N;$!ba;s/\n\n*$/\n/' "$file"
-            
-            echo -e "${GREEN}Cleaned up $file${NC}"
+    # Fix OpenClMatrixOperation.java
+    if [ -f "src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java" ]; then
+        opening=$(grep -o '{' src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java | wc -l)
+        closing=$(grep -o '}' src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java | wc -l)
+        missing=$((opening - closing))
+        if [ $missing -gt 0 ]; then
+            echo -e "${YELLOW}Adding $missing missing closing brace(s) to OpenClMatrixOperation.java...${NC}"
+            for ((i=1; i<=missing; i++)); do
+                echo "}" >> src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java
+            done
         fi
-    done
-    
-    return 0
+    fi
+    echo -e "${GREEN}Syntax errors fixed.${NC}"
 }
 
-# Function to create a comprehensive fix script
+# Function to create and run a comprehensive fix script
 create_fix_script() {
     echo -e "${BLUE}Creating comprehensive fix script...${NC}"
-    
     cat > fix-all-issues.sh << 'EOF'
 #!/bin/bash
-# Comprehensive fix script for all known compilation issues
+# Comprehensive fix script for known issues
 
-echo "Starting comprehensive fixes..."
+echo "Running comprehensive fixes..."
 
-# Fix OpenClMatrixOperation.java - target the specific "illegal start of type" error
-if [ -f "src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java" ]; then
-    echo "Fixing OpenClMatrixOperation.java illegal start of type error..."
-    
-    # Remove problematic lines around line 297
-    sed -i '295,300d' src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java
-    
-    # Ensure proper class structure - check last few lines
-    tail_content=$(tail -n 5 src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java)
-    if [[ ! "$tail_content" =~ ^[[:space:]]*}[[:space:]]*$ ]]; then
-        echo "}" >> src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java
-    fi
-fi
-
-# Fix RocmFeatureExtractionOperation.java
+# Fix missing closing braces in RocmFeatureExtractionOperation.java
 if [ -f "src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java" ]; then
-    echo "Fixing RocmFeatureExtractionOperation.java..."
-    
-    # Remove any problematic lines
-    sed -i '/public static getFinal()/d' src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java
-    sed -i '/public final getComputeProvider()/d' src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java
-    
-    # Ensure proper class structure
-    tail_content=$(tail -n 5 src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java)
-    if [[ ! "$tail_content" =~ ^[[:space:]]*}[[:space:]]*$ ]]; then
+    if ! grep -q "^}[[:space:]]*$" src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java; then
         echo "}" >> src/main/java/org/apache/opennlp/gpu/compute/RocmFeatureExtractionOperation.java
     fi
 fi
 
-# Clean up all Java files - remove orphaned method signatures
-for java_file in $(find src/main/java -name "*.java" 2>/dev/null); do
-    if [ -f "$java_file" ]; then
-        echo "Cleaning up $java_file..."
-        
-        # Remove any orphaned method signatures or incomplete code blocks
-        sed -i '/^[[:space:]]*public static getFinal()[[:space:]]*{*[[:space:]]*$/d' "$java_file"
+# Fix missing closing braces in OpenClMatrixOperation.java
+if [ -f "src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java" ]; then
+    if ! grep -q "^}[[:space:]]*$" src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java; then
+        echo "}" >> src/main/java/org/apache/opennlp/gpu/compute/OpenClMatrixOperation.java
+    fi
+fi
+
+echo "Comprehensive fixes completed."
+EOF
+    chmod +x fix-all-issues.sh
+    echo -e "${GREEN}Running comprehensive fix script...${NC}"
+    ./fix-all-issues.sh
+}
+
+# Check if we should attempt to fix Lombok issues
+if [ "$1" == "--fix" ]; then
+    echo -e "${YELLOW}Attempting to fix code errors...${NC}"
+    fix_invalid_methods
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to fix some files. Please check the errors manually.${NC}"
     else
@@ -368,14 +298,15 @@ if [ "$1" == "--fix-all" ]; then
     fix_compilation_errors
     if [ $? -ne 0 ]; then
         echo -e "${RED}Failed to fix some files. Please check the errors manually.${NC}"
+        exit 1
     else
         echo -e "${GREEN}All fixes applied successfully.${NC}"
     fi
 fi
 
-# Build the project with Maven - with more verbose output for debugging
+# Build the project with Maven
 echo -e "${BLUE}Compiling the project...${NC}"
-mvn clean compile -X
+mvn clean compile
 
 # Check if compilation was successful
 if [ $? -ne 0 ]; then

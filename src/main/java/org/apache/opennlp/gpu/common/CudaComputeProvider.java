@@ -1,13 +1,13 @@
 package org.apache.opennlp.gpu.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.opennlp.gpu.cuda.CudaUtil;
 import org.jocl.cl_kernel;
 import org.jocl.cl_mem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * CUDA implementation of the ComputeProvider interface.
@@ -19,9 +19,6 @@ public class CudaComputeProvider implements ComputeProvider {
     private static final Logger logger = LoggerFactory.getLogger(CudaComputeProvider.class);
     
     private final ResourceManager resourceManager;
-    private String deviceName;
-    private int computeUnits;
-    private long globalMemSize;
     
     // Performance benchmark cache
     private final Map<String, Map<Integer, Double>> benchmarkCache = new HashMap<>();
@@ -39,10 +36,10 @@ public class CudaComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        logger.info("Initializing CUDA compute provider");
+        CudaComputeProvider.logger.info("Initializing CUDA compute provider");
         
         if (!CudaUtil.isAvailable()) {
-            logger.warn("CUDA is not available on this system");
+            CudaComputeProvider.logger.warn("CUDA is not available on this system");
             return false;
         }
         
@@ -50,10 +47,10 @@ public class CudaComputeProvider implements ComputeProvider {
             // Initialize supported operations
             initializeSupportedOperations();
             
-            logger.info("CUDA compute provider initialized successfully");
+            CudaComputeProvider.logger.info("CUDA compute provider initialized successfully");
             return true;
         } catch (Exception e) {
-            logger.error("Error initializing CUDA compute provider", e);
+            CudaComputeProvider.logger.error("Error initializing CUDA compute provider", e);
             return false;
         }
     }
@@ -94,7 +91,7 @@ public class CudaComputeProvider implements ComputeProvider {
             baseScore *= 2.0; // Large problems benefit more from GPU parallelism
         }
         
-        logger.debug("CUDA benchmark for {} with size {}: score {}", 
+        CudaComputeProvider.logger.debug("CUDA benchmark for {} with size {}: score {}", 
                    operationType, problemSize, baseScore);
         
         return baseScore;
@@ -162,7 +159,7 @@ public class CudaComputeProvider implements ComputeProvider {
     
     @Override
     public void release() {
-        logger.info("Releasing CUDA compute provider resources");
+        CudaComputeProvider.logger.info("Releasing CUDA compute provider resources");
         if (resourceManager != null) {
             resourceManager.release();
         }
@@ -182,7 +179,7 @@ public class CudaComputeProvider implements ComputeProvider {
         
         @Override
         public boolean initialize() {
-            logger.info("Initializing CudaResourceManager");
+            CudaComputeProvider.logger.info("Initializing CudaResourceManager");
             // Initialization logic for CUDA resources
             // e.g., load native libraries, initialize CUDA context if needed here
             return true;
@@ -190,7 +187,7 @@ public class CudaComputeProvider implements ComputeProvider {
         
         @Override
         public void release() {
-            logger.info("Releasing CudaResourceManager resources");
+            CudaComputeProvider.logger.info("Releasing CudaResourceManager resources");
             // Release logic for CUDA resources
             // e.g., free all allocated CUDA memory, destroy context
             dataCache.clear();
@@ -199,61 +196,70 @@ public class CudaComputeProvider implements ComputeProvider {
         @Override
         public MemoryManager getMemoryManager() {
             // Return an actual CUDA-specific MemoryManager implementation
-            logger.warn("CudaResourceManager.getMemoryManager() returning placeholder. Implement CudaMemoryManager.");
+            CudaComputeProvider.logger.warn("CudaResourceManager.getMemoryManager() returning placeholder. Implement CudaMemoryManager.");
             return new MemoryManager() {
-                // Placeholder implementation - remove @Override annotations since they're not valid
+                @Override
                 public int allocate(long size) { 
-                    logger.debug("Placeholder allocate: " + size); 
+                    CudaComputeProvider.logger.debug("Placeholder allocate: " + size); 
                     return 0;
                 }
                 
+                @Override
                 public void free(long ptr) { 
-                    logger.debug("Placeholder free: " + ptr); 
+                    CudaComputeProvider.logger.debug("Placeholder free: " + ptr); 
                 }
                 
+                @Override
                 public void copyHostToDevice(long devicePtr, byte[] hostData, long size) { 
-                    logger.debug("Placeholder copyHostToDevice"); 
+                    CudaComputeProvider.logger.debug("Placeholder copyHostToDevice"); 
                 }
                 
+                @Override
                 public void copyDeviceToHost(long devicePtr, byte[] hostData, long size) { 
-                    logger.debug("Placeholder copyDeviceToHost"); 
+                    CudaComputeProvider.logger.debug("Placeholder copyDeviceToHost"); 
                 }
                 
+                @Override
                 public void releaseAll() { 
-                    logger.debug("Placeholder MemoryManager releaseAll"); 
+                    CudaComputeProvider.logger.debug("Placeholder MemoryManager releaseAll"); 
                 }
             };
         }
         
         @Override
         public void releaseAll() {
-            logger.info("CudaResourceManager.releaseAll() called.");
+            CudaComputeProvider.logger.info("CudaResourceManager.releaseAll() called.");
             // Implementation for releasing all resources managed by this ResourceManager
             release(); // Delegate to the existing release or add more specific logic
         }
         
+        @Override
         public cl_kernel getOrCreateKernel(String name, String source) {
-            logger.warn("CudaResourceManager.getOrCreateKernel() not applicable for CUDA, returning null.");
+            CudaComputeProvider.logger.warn("CudaResourceManager.getOrCreateKernel() not applicable for CUDA, returning null.");
             return null; 
         }
         
+        @Override
         public cl_mem allocateBuffer(int size, boolean readOnly) {
-            logger.warn("CudaResourceManager.allocateBuffer(int, boolean) not applicable for CUDA, returning null.");
+            CudaComputeProvider.logger.warn("CudaResourceManager.allocateBuffer(int, boolean) not applicable for CUDA, returning null.");
             return null; 
         }
         
+        @Override
         public cl_mem allocateBuffer(int size, String name) {
-            logger.warn("CudaResourceManager.allocateBuffer(int, String) not applicable for CUDA, returning null.");
+            CudaComputeProvider.logger.warn("CudaResourceManager.allocateBuffer(int, String) not applicable for CUDA, returning null.");
             return null; 
         }
         
+        @Override
         public Object getCachedData(String name) {
-            logger.debug("CudaResourceManager.getCachedData for name: {}", name);
+            CudaComputeProvider.logger.debug("CudaResourceManager.getCachedData for name: {}", name);
             return dataCache.get(name);
         }
         
+        @Override
         public void releaseBuffer(cl_mem buffer) {
-            logger.warn("CudaResourceManager.releaseBuffer() not applicable for CUDA.");
+            CudaComputeProvider.logger.warn("CudaResourceManager.releaseBuffer() not applicable for CUDA.");
         }
     }
 }

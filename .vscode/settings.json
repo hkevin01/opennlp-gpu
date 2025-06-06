@@ -12,7 +12,7 @@
     "java.import.maven.enabled": true,
     "java.codeGeneration.useBlocks": true,
     "java.saveActions.organizeImports": true,
-    "java.cleanup.actionsOnSave": [
+    "java.cleanup.actions": [
         "addOverride",
         "addDeprecated",
         "qualifyStaticMembers",
@@ -41,5 +41,9 @@
     ],
     "java.errors.incompleteClasspath.severity": "warning",
     "java.requirements.JDK11Warning": false,
-    "problems.decorations.enabled": true
+    "problems.decorations.enabled": true,
+    // YAML schema configuration - disable custom schema to avoid conflicts
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*.yml"
+    }
 }

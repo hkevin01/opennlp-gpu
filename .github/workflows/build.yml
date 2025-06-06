@@ -1,5 +1,3 @@
-# Add schema reference for GitHub Actions workflow
-# yaml-language-server: $schema=./github-workflow-schema.json
 name: Build and Test
 
 on:

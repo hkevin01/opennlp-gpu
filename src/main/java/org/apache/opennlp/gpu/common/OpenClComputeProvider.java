@@ -51,7 +51,7 @@ public class OpenClComputeProvider implements ComputeProvider {
     
     @Override
     public boolean initialize() {
-        log.info("Initializing OpenCL compute provider");
+        OpenClComputeProvider.log.info("Initializing OpenCL compute provider");
         
         try {
             // Enable exceptions
@@ -63,7 +63,7 @@ public class OpenClComputeProvider implements ComputeProvider {
             int numPlatforms = numPlatformsArray[0];
             
             if (numPlatforms == 0) {
-                log.error("No OpenCL platforms found");
+                OpenClComputeProvider.log.error("No OpenCL platforms found");
                 return false;
             }
             
@@ -97,14 +97,15 @@ public class OpenClComputeProvider implements ComputeProvider {
                                                 null, null, errorCode);
                     
                     if (errorCode[0] != CL.CL_SUCCESS) {
-                        log.error("Failed to create OpenCL context: {}", errorCode[0]);
+                        OpenClComputeProvider.log.error("Failed to create OpenCL context: {}", errorCode[0]);
                         return false;
                     }
                     
-                    commandQueue = CL.clCreateCommandQueue(context, deviceId, 0, errorCode);
+                    // Use the newer non-deprecated method to create command queue
+                    commandQueue = CL.clCreateCommandQueueWithProperties(context, deviceId, null, errorCode);
                     
                     if (errorCode[0] != CL.CL_SUCCESS) {
-                        log.error("Failed to create command queue: {}", errorCode[0]);
+                        OpenClComputeProvider.log.error("Failed to create command queue: {}", errorCode[0]);
                         CL.clReleaseContext(context);
                         return false;
                     }
@@ -115,16 +116,16 @@ public class OpenClComputeProvider implements ComputeProvider {
                     // Initialize supported operations
                     initializeSupportedOperations();
                     
-                    log.info("Initialized OpenCL compute provider using device: {}", deviceName);
+                    OpenClComputeProvider.log.info("Initialized OpenCL compute provider using device: {}", deviceName);
                     return true;
                 }
             }
             
-            log.error("No GPU devices found");
+            OpenClComputeProvider.log.error("No GPU devices found");
             return false;
             
         } catch (Exception e) {
-            log.error("Error initializing OpenCL compute provider", e);
+            OpenClComputeProvider.log.error("Error initializing OpenCL compute provider", e);
             return false;
         }
     }
@@ -252,7 +253,7 @@ public class OpenClComputeProvider implements ComputeProvider {
             baseScore *= (1.0 + Math.log10(problemSize / 1000.0));
         }
         
-        log.debug("OpenCL benchmark for {} with size {}: score {}", 
+        OpenClComputeProvider.log.debug("OpenCL benchmark for {} with size {}: score {}", 
                     operationType, problemSize, baseScore);
         
         return baseScore;
@@ -282,7 +283,7 @@ public class OpenClComputeProvider implements ComputeProvider {
         benchmarkCache.clear();
         supportedOperations.clear();
         
-        log.info("Released OpenCL compute provider resources");
+        OpenClComputeProvider.log.info("Released OpenCL compute provider resources");
     }
     
     /**
@@ -411,7 +412,7 @@ public class OpenClComputeProvider implements ComputeProvider {
                 
                 return kernel;
             } catch (Exception e) {
-                log.error("Error creating kernel {}: {}", name, e.getMessage());
+                OpenClComputeProvider.log.error("Error creating kernel {}: {}", name, e.getMessage());
                 return null;
             }
         }
