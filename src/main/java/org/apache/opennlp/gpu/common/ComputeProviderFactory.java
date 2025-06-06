@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ComputeProviderFactory {
     
-    private static final Logger logger = LoggerFactory.getLogger(ComputeProviderFactory.class);
+    // Rename to standardize on "log" instead of "logger"
+    private static final Logger log = LoggerFactory.getLogger(ComputeProviderFactory.class);
     
     // Singleton instance
     private static ComputeProviderFactory instance;
@@ -65,9 +66,9 @@ public class ComputeProviderFactory {
         for (ComputeProvider provider : serviceLoader) {
             if (provider.initialize() && provider.isAvailable()) {
                 availableProviders.add(provider);
-                logger.info("Discovered compute provider: {}", provider.getName());
+                log.info("Discovered compute provider: {}", provider.getName());
             } else {
-                logger.info("Provider {} is not available on this system", provider.getName());
+                log.info("Provider {} is not available on this system", provider.getName());
             }
         }
         
@@ -77,10 +78,10 @@ public class ComputeProviderFactory {
                 ComputeProvider cpuProvider = new CpuComputeProvider();
                 if (cpuProvider.initialize()) {
                     availableProviders.add(cpuProvider);
-                    logger.info("Added CPU fallback provider");
+                    log.info("Added CPU fallback provider");
                 }
             } catch (Exception e) {
-                logger.error("Failed to initialize CPU fallback provider", e);
+                log.error("Failed to initialize CPU fallback provider", e);
             }
         }
     }
@@ -101,17 +102,17 @@ public class ComputeProviderFactory {
             field.setAccessible(true);
             preferredType = (ComputeProvider.Type) field.get(configuration);
         } catch (Exception e) {
-            logger.warn("Could not access preferredProviderType: {}", e.getMessage());
+            log.warn("Could not access preferredProviderType: {}", e.getMessage());
         }
         
         if (preferredType != null) {
             for (ComputeProvider provider : availableProviders) {
                 if (provider.getType() == preferredType && provider.supportsOperation(operationType)) {
-                    logger.debug("Using user-specified provider: {}", provider.getName());
+                    log.debug("Using user-specified provider: {}", provider.getName());
                     return provider;
                 }
             }
-            logger.warn("User-specified provider type {} not available, falling back to automatic selection", 
+            log.warn("User-specified provider type {} not available, falling back to automatic selection", 
                        preferredType);
         }
         
@@ -123,13 +124,13 @@ public class ComputeProviderFactory {
             field.setAccessible(true);
             smallProblemThreshold = field.getInt(configuration);
         } catch (Exception e) {
-            logger.warn("Could not access smallProblemThreshold: {}", e.getMessage());
+            log.warn("Could not access smallProblemThreshold: {}", e.getMessage());
         }
         
         if (problemSize < smallProblemThreshold) {
             for (ComputeProvider provider : availableProviders) {
                 if (provider.getType() == ComputeProvider.Type.CPU && provider.supportsOperation(operationType)) {
-                    logger.debug("Using CPU provider for small problem size: {}", problemSize);
+                    log.debug("Using CPU provider for small problem size: {}", problemSize);
                     return provider;
                 }
             }
@@ -153,7 +154,7 @@ public class ComputeProviderFactory {
         }
         
         if (bestProvider != null) {
-            logger.debug("Selected provider {} with score {} for operation {} and size {}", 
+            log.debug("Selected provider {} with score {} for operation {} and size {}", 
                        bestProvider.getName(), bestScore, operationType, problemSize);
             return bestProvider;
         }
@@ -161,12 +162,12 @@ public class ComputeProviderFactory {
         // If no suitable provider was found, try to use CPU fallback
         for (ComputeProvider provider : availableProviders) {
             if (provider.getType() == ComputeProvider.Type.CPU) {
-                logger.warn("No suitable provider found for operation {}, falling back to CPU", operationType);
+                log.warn("No suitable provider found for operation {}, falling back to CPU", operationType);
                 return provider;
             }
         }
         
-        logger.error("No compute provider available for operation: {}", operationType);
+        log.error("No compute provider available for operation: {}", operationType);
         return null;
     }
     
@@ -258,7 +259,7 @@ public class ComputeProviderFactory {
             try {
                 provider.release();
             } catch (Exception e) {
-                logger.error("Error releasing provider: {}", provider.getName(), e);
+                log.error("Error releasing provider: {}", provider.getName(), e);
             }
         }
         availableProviders.clear();

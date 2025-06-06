@@ -1,23 +1,33 @@
 package org.apache.opennlp.gpu.cuda;
 
 import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.StandardCopyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jocl.CL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for CUDA operations and device management.
  */
-@Slf4j
 public class CudaUtil {
-    
+    private static final Logger logger = LoggerFactory.getLogger(CudaUtil.class);
     private static final String CUDA_LIBRARY_PATH = "/usr/local/cuda/lib64";
     private static boolean initialized = false;
     
@@ -32,11 +42,11 @@ public class CudaUtil {
         }
         
         try {
-            log.info("Initializing CUDA environment");
+            logger.info("Initializing CUDA environment");
             
             // Check if CUDA libraries are available
             if (!checkCudaLibraries()) {
-                log.error("CUDA libraries not found in {}", CUDA_LIBRARY_PATH);
+                logger.error("CUDA libraries not found in {}", CUDA_LIBRARY_PATH);
                 return false;
             }
             
@@ -44,26 +54,26 @@ public class CudaUtil {
             try {
                 System.loadLibrary("cuda");
                 System.loadLibrary("cudart");
-                log.info("CUDA libraries loaded successfully");
+                logger.info("CUDA libraries loaded successfully");
             } catch (UnsatisfiedLinkError e) {
-                log.error("Failed to load CUDA libraries: {}", e.getMessage());
+                logger.error("Failed to load CUDA libraries: {}", e.getMessage());
                 return false;
             }
             
             // Initialize OpenCL for CUDA
             try {
                 CL.setExceptionsEnabled(true);
-                log.info("OpenCL for CUDA initialized");
+                logger.info("OpenCL for CUDA initialized");
             } catch (Exception e) {
-                log.error("Failed to initialize OpenCL for CUDA: {}", e.getMessage());
+                logger.error("Failed to initialize OpenCL for CUDA: {}", e.getMessage());
                 return false;
             }
             
             initialized = true;
-            log.info("CUDA environment initialized successfully");
+            logger.info("CUDA environment initialized successfully");
             return true;
         } catch (Exception e) {
-            log.error("Unexpected error during CUDA initialization: {}", e.getMessage(), e);
+            logger.error("Unexpected error during CUDA initialization: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -110,7 +120,7 @@ public class CudaUtil {
             // This is a placeholder that should be replaced with actual CUDA calls
             return 1; // Placeholder for actual device count
         } catch (Exception e) {
-            log.error("Failed to get CUDA device count: {}", e.getMessage());
+            logger.error("Failed to get CUDA device count: {}", e.getMessage());
             return 0;
         }
     }
@@ -124,11 +134,11 @@ public class CudaUtil {
         }
         
         try {
-            log.info("Releasing CUDA resources");
+            logger.info("Releasing CUDA resources");
             // Release code would go here
             initialized = false;
         } catch (Exception e) {
-            log.error("Error while releasing CUDA resources: {}", e.getMessage());
+            logger.error("Error while releasing CUDA resources: {}", e.getMessage());
         }
     }
 }

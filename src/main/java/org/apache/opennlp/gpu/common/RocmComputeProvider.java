@@ -10,15 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * ROCm implementation of the ComputeProvider interface.
  * This provider uses AMD's ROCm platform for GPU acceleration.
  */
-@Slf4j
 public class RocmComputeProvider implements ComputeProvider {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RocmComputeProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(RocmComputeProvider.class);
     
     @Getter
     private final ResourceManager resourceManager;

@@ -5,15 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * ROCm implementation of feature extraction operations.
  * This class uses AMD's ROCm platform for GPU-accelerated feature extraction.
  */
-@Slf4j
 public class RocmFeatureExtractionOperation implements FeatureExtractionOperation {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RocmFeatureExtractionOperation.class);
+    private static final Logger log = LoggerFactory.getLogger(RocmFeatureExtractionOperation.class);
     
     @Getter
     private final ComputeProvider provider;
@@ -150,5 +148,11 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         log.info("Releasing ROCm feature extraction resources");
         // No resources to release at this level
         // Native resources are managed per-operation
+    }
+
+    // Add the missing getProvider method
+    @Override
+    public ComputeProvider getProvider() {
+        return provider; // Assuming you have a provider field; if not, you need to add one
     }
 }

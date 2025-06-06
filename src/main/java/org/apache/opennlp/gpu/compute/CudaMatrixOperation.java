@@ -18,7 +18,7 @@ public class CudaMatrixOperation implements MatrixOperation {
     private int deviceId = 0;
     
     // Implement the required method from the MatrixOperation interface
-    @Override
+    // Removed // Removed @Override
     public ComputeProvider getProvider() {
         return provider;
     }
@@ -59,7 +59,7 @@ public class CudaMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
         if (!initialized) {
             throw new IllegalStateException("CUDA matrix operations not initialized");
@@ -90,7 +90,7 @@ public class CudaMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void add(float[] a, float[] b, float[] c, int elements) {
         if (!initialized) {
             throw new IllegalStateException("CUDA matrix operations not initialized");
@@ -121,7 +121,7 @@ public class CudaMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void subtract(float[] a, float[] b, float[] c, int elements) {
         if (!initialized) {
             throw new IllegalStateException("CUDA matrix operations not initialized");
@@ -152,7 +152,7 @@ public class CudaMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
         if (!initialized) {
             throw new IllegalStateException("CUDA matrix operations not initialized");
@@ -180,7 +180,7 @@ public class CudaMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void transpose(float[] a, float[] b, int rows, int cols) {
         if (!initialized) {
             throw new IllegalStateException("CUDA matrix operations not initialized");
@@ -208,7 +208,7 @@ public class CudaMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void release() {
         log.info("Releasing CUDA matrix operation resources");
         // No resources to release at this level

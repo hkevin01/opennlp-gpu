@@ -5,16 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * ROCm implementation of matrix operations.
  * This class uses AMD's ROCm platform for GPU-accelerated matrix operations.
  */
-@Slf4j
 public class RocmMatrixOperation implements MatrixOperation {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RocmMatrixOperation.class);
-    @Override
+    private static final Logger log = LoggerFactory.getLogger(RocmMatrixOperation.class);
+    // Removed // Removed @Override
     public ComputeProvider getProvider() {
         return this.provider;
     }
@@ -60,7 +58,7 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
         if (!initialized) {
             throw new IllegalStateException("ROCm matrix operations not initialized");
@@ -91,7 +89,7 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void add(float[] a, float[] b, float[] c, int elements) {
         if (!initialized) {
             throw new IllegalStateException("ROCm matrix operations not initialized");
@@ -122,7 +120,7 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void subtract(float[] a, float[] b, float[] c, int elements) {
         if (!initialized) {
             throw new IllegalStateException("ROCm matrix operations not initialized");
@@ -153,7 +151,7 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
         if (!initialized) {
             throw new IllegalStateException("ROCm matrix operations not initialized");
@@ -181,7 +179,7 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void transpose(float[] a, float[] b, int rows, int cols) {
         if (!initialized) {
             throw new IllegalStateException("ROCm matrix operations not initialized");
@@ -209,7 +207,7 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void release() {
         log.info("Releasing ROCm matrix operation resources");
         // No resources to release at this level

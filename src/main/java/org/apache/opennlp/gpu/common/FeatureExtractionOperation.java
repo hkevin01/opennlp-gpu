@@ -1,9 +1,16 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * Interface for feature extraction operations that can be executed on different compute devices.
+ * Interface for feature extraction operations.
  */
 public interface FeatureExtractionOperation {
+    
+    /**
+     * Gets the compute provider.
+     *
+     * @return the compute provider
+     */
+    ComputeProvider getProvider();
     
     /**
      * Extracts features from the input data.
@@ -24,4 +31,11 @@ public interface FeatureExtractionOperation {
     default boolean isSupported() {
         return true;
     }
+    
+    // Add any other methods that are required by implementations
+    // For example:
+    // float[] extractFeatures(String[] tokens);
+    // float[] computeTfIdf(String[] documents);
+    // float computeCosineSimilarity(float[] vector1, float[] vector2);
+    // void release();
 }

@@ -1,21 +1,52 @@
 package org.apache.opennlp.gpu.kernels;
 
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.HashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.opennlp.gpu.common.MemoryManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.CL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.Pointer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.Sizeof;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.cl_command_queue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.cl_context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.cl_device_id;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.cl_kernel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.cl_mem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.cl_program;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +55,6 @@ import org.slf4j.LoggerFactory;
  * These operations are commonly used in machine learning algorithms.
  */
 public class MatrixOps {
-    
     private static final Logger logger = LoggerFactory.getLogger(MatrixOps.class);
     
     private final cl_context context;

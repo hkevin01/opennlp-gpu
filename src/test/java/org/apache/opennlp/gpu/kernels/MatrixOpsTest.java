@@ -1,25 +1,43 @@
 package org.apache.opennlp.gpu.kernels;
 
 import org.apache.opennlp.gpu.common.GpuDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jocl.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.AfterEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests for the GPU-accelerated matrix operations.
  * These tests will be skipped if no GPU is available.
  */
-@Slf4j
 @EnabledIf("isGpuAvailable")
 public class MatrixOpsTest {
+    private static final Logger logger = LoggerFactory.getLogger(MatrixOpsTest.class);
     
     private cl_context context;
     private cl_command_queue commandQueue;

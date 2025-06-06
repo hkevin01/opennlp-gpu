@@ -1,5 +1,6 @@
 package org.apache.opennlp.gpu.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,8 +8,7 @@ import org.slf4j.LoggerFactory;
  * Utility class for logging operations.
  */
 public class LoggingUtil {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(LoggingUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoggingUtil.class);
     
     /**
      * Private constructor to prevent instantiation.
@@ -21,7 +21,7 @@ public class LoggingUtil {
      * Configure logging for the application.
      */
     public static void configureLogging() {
-        LOG.info("Configuring logging system");
+        logger.info("Configuring logging system");
         // Simple implementation that doesn't depend on LoggingEventAware
     }
     
@@ -31,7 +31,7 @@ public class LoggingUtil {
      * @param level the logging level name
      */
     public static void setLoggingLevel(String level) {
-        LOG.info("Setting logging level to: {}", level);
+        logger.info("Setting logging level to: {}", level);
         // Implementation would go here
     }
 }

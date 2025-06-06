@@ -1,17 +1,30 @@
 package org.apache.opennlp.gpu.compute;
 
+import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.opennlp.gpu.common.ComputeProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.opennlp.gpu.common.ComputeProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.opennlp.gpu.common.FeatureExtractionAdapter;
+import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
 
 /**
  * Factory for creating operations with the most suitable compute provider.
  */
 public class OperationFactory {
-    
     private static final Logger logger = LoggerFactory.getLogger(OperationFactory.class);
     
+    @Getter
     private final ComputeProviderFactory providerFactory;
     
     /**
@@ -94,16 +107,35 @@ public class OperationFactory {
             case CPU:
             default:
                 // Cast or wrap the CPU implementation to match the expected interface
-                return new org.apache.opennlp.gpu.common.FeatureExtractionAdapter(new CpuFeatureExtractionOperation(provider));
+                return new org.apache.opennlp.gpu.common.FeatureExtractionAdapter(new CpuFeatureExtractionOperation(provider), provider);
         }
     }
     
-    /**
-     * Get the provider factory used by this operation factory.
-     *
-     * @return the provider factory
-     */
-    public ComputeProviderFactory getProviderFactory() {
-        return providerFactory;
+    public static FeatureExtractionOperation createFeatureExtractionOperation(ComputeProvider.Type type) {
+        logger.info("Creating feature extraction operation for type: {}", type);
+        ComputeProvider provider = ComputeProviderFactory.getInstance().getProvider(type);
+        if (provider == null) {
+            logger.error("No provider found for type: {}. Falling back to CPU.", type);
+            provider = ComputeProviderFactory.getInstance().getProvider(ComputeProvider.Type.CPU);
+            if (provider == null) {
+                throw new IllegalStateException("CPU ComputeProvider is not available.");
+            }
+        }
+
+        switch (type) {
+            case CUDA:
+                return new CudaFeatureExtractionOperation(provider);
+            case ROCM:
+                return new RocmFeatureExtractionOperation(provider);
+            case OPENCL:
+                logger.warn("OpenCL feature extraction not fully implemented, returning CPU fallback.");
+                // Fall through to CPU
+            case CPU:
+            default:
+                logger.debug("Creating CpuFeatureExtractionOperation and wrapping with FeatureExtractionAdapter");
+                CpuFeatureExtractionOperation cpuOperation = new CpuFeatureExtractionOperation(provider);
+                // Pass both required arguments to the adapter
+                return new FeatureExtractionAdapter(cpuOperation, provider);
+        }
     }
 }

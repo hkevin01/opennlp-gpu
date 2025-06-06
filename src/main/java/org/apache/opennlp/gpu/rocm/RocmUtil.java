@@ -1,23 +1,33 @@
 package org.apache.opennlp.gpu.rocm;
 
 import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.nio.file.StandardCopyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.jocl.CL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for ROCm operations and device management.
  */
-@Slf4j
 public class RocmUtil {
-    
+    private static final Logger logger = LoggerFactory.getLogger(RocmUtil.class);
     private static final String ROCM_LIBRARY_PATH = "/opt/rocm/lib";
     private static boolean initialized = false;
     
@@ -32,11 +42,11 @@ public class RocmUtil {
         }
         
         try {
-            log.info("Initializing ROCm environment");
+            logger.info("Initializing ROCm environment");
             
             // Check if ROCm libraries are available
             if (!checkRocmLibraries()) {
-                log.error("ROCm libraries not found in {}", ROCM_LIBRARY_PATH);
+                logger.error("ROCm libraries not found in {}", ROCM_LIBRARY_PATH);
                 return false;
             }
             
@@ -44,26 +54,26 @@ public class RocmUtil {
             try {
                 System.loadLibrary("hip");
                 System.loadLibrary("rocblas");
-                log.info("ROCm libraries loaded successfully");
+                logger.info("ROCm libraries loaded successfully");
             } catch (UnsatisfiedLinkError e) {
-                log.error("Failed to load ROCm libraries: {}", e.getMessage());
+                logger.error("Failed to load ROCm libraries: {}", e.getMessage());
                 return false;
             }
             
             // Initialize OpenCL for ROCm
             try {
                 CL.setExceptionsEnabled(true);
-                log.info("OpenCL for ROCm initialized");
+                logger.info("OpenCL for ROCm initialized");
             } catch (Exception e) {
-                log.error("Failed to initialize OpenCL for ROCm: {}", e.getMessage());
+                logger.error("Failed to initialize OpenCL for ROCm: {}", e.getMessage());
                 return false;
             }
             
             initialized = true;
-            log.info("ROCm environment initialized successfully");
+            logger.info("ROCm environment initialized successfully");
             return true;
         } catch (Exception e) {
-            log.error("Unexpected error during ROCm initialization: {}", e.getMessage(), e);
+            logger.error("Unexpected error during ROCm initialization: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -110,7 +120,7 @@ public class RocmUtil {
             // This is a placeholder that should be replaced with actual ROCm calls
             return 1; // Placeholder for actual device count
         } catch (Exception e) {
-            log.error("Failed to get ROCm device count: {}", e.getMessage());
+            logger.error("Failed to get ROCm device count: {}", e.getMessage());
             return 0;
         }
     }
@@ -124,11 +134,11 @@ public class RocmUtil {
         }
         
         try {
-            log.info("Releasing ROCm resources");
+            logger.info("Releasing ROCm resources");
             // Release code would go here
             initialized = false;
         } catch (Exception e) {
-            log.error("Error while releasing ROCm resources: {}", e.getMessage());
+            logger.error("Error while releasing ROCm resources: {}", e.getMessage());
         }
     }
 }

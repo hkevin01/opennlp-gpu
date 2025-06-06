@@ -1,5 +1,7 @@
 package org.apache.opennlp.gpu.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,17 +13,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * Utility class for loading native libraries.
  * Handles both loading from system library path and extracting from JAR.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NativeLibraryLoader {
+    
+    // Add logger declaration
+    private static final Logger logger = LoggerFactory.getLogger(NativeLibraryLoader.class);
     
     /**
      * Attempt to load a native library.
@@ -34,10 +34,10 @@ public final class NativeLibraryLoader {
         try {
             // Try to load directly first
             System.loadLibrary(libraryName);
-            log.info("Successfully loaded library '{}' from system library path", libraryName);
+            logger.info("Successfully loaded library '{}' from system library path", libraryName);
             return true;
         } catch (UnsatisfiedLinkError e) {
-            log.debug("Could not load library '{}' from system library path: {}", libraryName, e.getMessage());
+            logger.debug("Could not load library '{}' from system library path: {}", libraryName, e.getMessage());
             
             // Try to load from JAR
             return loadLibraryFromJar(libraryName);
@@ -56,7 +56,7 @@ public final class NativeLibraryLoader {
         
         try (InputStream in = NativeLibraryLoader.class.getResourceAsStream(resourcePath)) {
             if (in == null) {
-                log.error("Could not find native library '{}' in JAR at {}", libraryName, resourcePath);
+                logger.error("Could not find native library '{}' in JAR at {}", libraryName, resourcePath);
                 return false;
             }
             
@@ -75,13 +75,13 @@ public final class NativeLibraryLoader {
             
             // Load the library
             System.load(tempFile.getAbsolutePath());
-            log.info("Successfully loaded library '{}' from JAR", libraryName);
+            logger.info("Successfully loaded library '{}' from JAR", libraryName);
             
             // Mark for deletion on exit
             tempFile.deleteOnExit();
             return true;
         } catch (IOException | UnsatisfiedLinkError e) {
-            log.error("Failed to load native library '{}' from JAR: {}", libraryName, e.getMessage());
+            logger.error("Failed to load native library '{}' from JAR: {}", libraryName, e.getMessage());
             return false;
         }
     }

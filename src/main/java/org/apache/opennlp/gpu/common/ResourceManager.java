@@ -1,77 +1,76 @@
 package org.apache.opennlp.gpu.common;
 
-import org.jocl.cl_mem;
-import org.jocl.cl_kernel;
-import org.jocl.Pointer;
+import org.jocl.cl_kernel; // If these types are part of the interface
+import org.jocl.cl_mem;    // If these types are part of the interface
 
 /**
- * Interface for resource managers used by compute providers.
+ * Interface for managing GPU resources.
+ * This includes memory, kernels, and other platform-specific resources.
  */
 public interface ResourceManager {
-    
+
     /**
-     * Initialize the resource manager.
-     * 
-     * @return true if initialization was successful
+     * Initializes the resource manager.
+     * @return true if initialization was successful, false otherwise.
      */
     boolean initialize();
-    
+
     /**
-     * Release all resources.
+     * Releases all resources managed by this manager.
      */
-    void release();
-    
+    void release(); // This is a common method.
+
     /**
-     * Release all cached resources.
+     * Gets the memory manager associated with this resource manager.
+     * @return The memory manager.
      */
-    void releaseAll();
-    
+    MemoryManager getMemoryManager(); // This is a common method.
+
     /**
-     * Get the memory manager.
-     * 
-     * @return the memory manager
+     * Releases all allocated resources.
+     * This might be redundant if 'release()' already does this,
+     * but ensure its definition is clear.
      */
-    MemoryManager getMemoryManager();
-    
+    void releaseAll(); // This is a common method.
+
+    // The following methods are causing @Override errors in CudaResourceManager.
+    // If they ARE part of this interface, their signatures must match exactly.
+    // If they ARE NOT part of this interface, remove @Override in CudaResourceManager.
+
     /**
-     * Get or create an OpenCL kernel.
-     * 
-     * @param name the kernel name
-     * @param source the kernel source code
-     * @return the kernel
+     * Gets or creates a compute kernel. (Primarily for OpenCL)
+     * @param name The name of the kernel.
+     * @param source The source code of the kernel.
+     * @return The compiled kernel, or null if not applicable/error.
      */
     cl_kernel getOrCreateKernel(String name, String source);
-    
+
     /**
-     * Allocate a buffer with the specified size.
-     * 
-     * @param size the buffer size in bytes
-     * @param readOnly whether the buffer is read-only
-     * @return the allocated buffer
+     * Allocates a memory buffer on the device. (Primarily for OpenCL)
+     * @param size The size of the buffer in bytes.
+     * @param readOnly True if the buffer is read-only, false otherwise.
+     * @return A reference to the allocated memory buffer, or null if not applicable/error.
      */
     cl_mem allocateBuffer(int size, boolean readOnly);
-    
+
     /**
-     * Allocate a buffer with the specified size and name.
-     * 
-     * @param size the buffer size in bytes
-     * @param name the buffer name for caching
-     * @return the allocated buffer
+     * Allocates a named memory buffer on the device. (Primarily for OpenCL)
+     * @param size The size of the buffer in bytes.
+     * @param name The name to associate with the buffer.
+     * @return A reference to the allocated memory buffer, or null if not applicable/error.
      */
     cl_mem allocateBuffer(int size, String name);
-    
+
     /**
-     * Get cached data by name.
-     * 
-     * @param name the data name
-     * @return the cached data
+     * Retrieves cached data by name.
+     * @param name The name of the cached data.
+     * @return The cached data object, or null if not found.
      */
     Object getCachedData(String name);
-    
+
     /**
-     * Release a buffer.
-     * 
-     * @param buffer the buffer to release
+     * Releases a specific memory buffer. (Primarily for OpenCL)
+     * @param buffer The memory buffer to release.
      */
     void releaseBuffer(cl_mem buffer);
 }

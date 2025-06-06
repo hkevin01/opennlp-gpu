@@ -1,6 +1,7 @@
 package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
+import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
 import org.apache.opennlp.gpu.cuda.CudaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,6 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     
-    @Override
     public int extractNGrams(int[] tokens, int numTokens, int maxNGramLength, int[] featureMap) {
         if (!initialized) {
             throw new IllegalStateException("CUDA feature extraction operations not initialized");
@@ -83,7 +83,6 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     
-    @Override
     public void computeTfIdf(float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms) {
         if (!initialized) {
             throw new IllegalStateException("CUDA feature extraction operations not initialized");
@@ -114,7 +113,6 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     
-    @Override
     public void computeCosineSimilarity(float[] docVectors, int numDocs, int vectorSize, float[] similarities) {
         if (!initialized) {
             throw new IllegalStateException("CUDA feature extraction operations not initialized");

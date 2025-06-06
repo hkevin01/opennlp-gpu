@@ -1,12 +1,17 @@
 package org.apache.opennlp.gpu.ml.maxent;
 
 import org.apache.opennlp.gpu.common.GpuDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.opennlp.gpu.kernels.MatrixOps;
 import org.jocl.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * GPU-accelerated implementation of the Maximum Entropy model.
@@ -14,7 +19,6 @@ import java.util.List;
  * pre-trained MaxEnt models.
  */
 public class GpuMaxentModel {
-    
     private static final Logger logger = LoggerFactory.getLogger(GpuMaxentModel.class);
     
     private final cl_context context;
@@ -202,5 +206,29 @@ public class GpuMaxentModel {
         info.append("Device ID: ").append(device.toString());
         
         return info.toString();
+    }
+    
+    private String getOpenCLDeviceName(cl_device_id device) {
+        // Obtain the length of the device name
+        long[] size = new long[1];
+        CL.clGetDeviceInfo(device, CL.CL_DEVICE_NAME, 0, null, size);
+
+        // Allocate buffer for the name
+        byte[] buffer = new byte[(int)size[0]];
+        CL.clGetDeviceInfo(device, CL.CL_DEVICE_NAME, buffer.length, Pointer.to(buffer), null);
+
+        // Convert to String, excluding the null terminator
+        return new String(buffer, 0, buffer.length-1);
+    }
+
+    // Example of how you might use it if line 44 was trying to get device info:
+    public void someMethodThatUsesDeviceInfo(cl_device_id openClDevice) {
+        // ... other code ...
+        // String deviceInfo = openClDevice.getInfo(); // THIS IS THE ERRONEOUS LINE
+        // Replace with:
+        String deviceName = getOpenCLDeviceName(openClDevice);
+        logger.info("Using OpenCL device: {}", deviceName);
+        // ... or for other parameters, use CL.clGetDeviceInfo with the appropriate param name ...
+        // ... other code ...
     }
 }

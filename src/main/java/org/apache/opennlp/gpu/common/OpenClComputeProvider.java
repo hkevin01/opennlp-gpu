@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import org.jocl.*;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +14,8 @@ import java.util.Map;
 /**
  * OpenCL-based implementation of the ComputeProvider interface using JOCL.
  */
-@Slf4j
 public class OpenClComputeProvider implements ComputeProvider {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpenClComputeProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenClComputeProvider.class);
     
     // OpenCL context and command queue
     private cl_context context;

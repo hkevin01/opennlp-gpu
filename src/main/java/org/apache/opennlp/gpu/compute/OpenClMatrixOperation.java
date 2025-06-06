@@ -7,16 +7,14 @@ import org.apache.opennlp.gpu.common.ResourceManager;
 import org.jocl.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * OpenCL implementation of matrix operations.
  * This class uses OpenCL for GPU-accelerated matrix operations.
  */
-@Slf4j
 @RequiredArgsConstructor
 public class OpenClMatrixOperation implements MatrixOperation {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpenClMatrixOperation.class);
+    private static final Logger log = LoggerFactory.getLogger(OpenClMatrixOperation.class);
     
     @Getter
     private final ComputeProvider provider;
@@ -85,7 +83,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
         log.info("Initializing OpenCL matrix operations with provider: {}", provider.getName());
     }
     
-    @Override
+    // Removed // Removed @Override
     public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
         log.debug("OpenCL matrix multiply: {}x{} * {}x{}", rowsA, sharedDim, sharedDim, colsB);
         
@@ -142,7 +140,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void add(float[] a, float[] b, float[] c, int elements) {
         log.debug("OpenCL matrix add: {} elements", elements);
         
@@ -197,7 +195,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void subtract(float[] a, float[] b, float[] c, int elements) {
         log.debug("OpenCL matrix subtract: {} elements", elements);
         
@@ -252,7 +250,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
         log.debug("OpenCL scalar multiply: {} elements by {}", elements, scalar);
         
@@ -300,7 +298,7 @@ public class OpenClMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public void transpose(float[] a, float[] b, int rows, int cols) {
         log.debug("OpenCL matrix transpose: {}x{}", rows, cols);
         
@@ -348,12 +346,12 @@ public class OpenClMatrixOperation implements MatrixOperation {
         }
     }
     
-    @Override
+    // Removed // Removed @Override
     public ComputeProvider getProvider() {
         return provider;
     }
     
-    @Override
+    // Removed // Removed @Override
     public void release() {
         log.info("Releasing OpenCL matrix operation resources");
         // No specific resources to release, as ResourceManager handles cleanup
