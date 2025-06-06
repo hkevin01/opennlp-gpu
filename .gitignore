@@ -49,3 +49,15 @@ gradlew.bat
 build.gradle
 settings.gradle
 gradle.properties
+
+# Java heap dumps and large files
+*.hprof
+java_pid*.hprof
+java_pid*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+.DS_Store
