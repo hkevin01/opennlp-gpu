@@ -84,3 +84,22 @@ java_pid*.hprof
 .DS_Store
 Thumbs.db
 
+
+# Large files and heap dumps
+*.hprof
+*.log
+java_pid*.hprof
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
