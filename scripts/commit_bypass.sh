@@ -330,14 +330,64 @@ fi
 
 # Check for sensitive files
 echo -e "${BLUE}🔒 Checking for sensitive files...${NC}"
-SENSITIVE_PATTERNS="*.key *.p12 *.jks *.keystore *.hprof java_pid*.log"
+SENSITIVE_PATTERNS="*.key *.p12 *.jks *.keystore *.hprof java_pid*.log *.hprof java_pid*.hprof heap_dump*.hprof"
 for pattern in $SENSITIVE_PATTERNS; do
     if echo "$STAGED_CHANGES" | grep -q "$pattern"; then
         echo -e "${RED}❌ Sensitive file detected: $pattern${NC}"
         echo -e "${RED}   This file should not be committed to version control${NC}"
-        exit 1
+        
+        # Find the actual file and remove it from staging
+        SENSITIVE_FILE=$(echo "$STAGED_CHANGES" | grep "$pattern")
+        if [ -n "$SENSITIVE_FILE" ]; then
+            echo -e "${BLUE}📝 Removing $SENSITIVE_FILE from staging...${NC}"
+            git reset HEAD "$SENSITIVE_FILE"
+            
+            # Add to .gitignore if not already there
+            if ! grep -q "$SENSITIVE_FILE" .gitignore; then
+                echo "$SENSITIVE_FILE" >> .gitignore
+                echo -e "${GREEN}✅ Added $SENSITIVE_FILE to .gitignore${NC}"
+            fi
+            
+            # Add pattern to .gitignore if not already there
+            if ! grep -q "$pattern" .gitignore; then
+                echo "$pattern" >> .gitignore
+                echo -e "${GREEN}✅ Added $pattern pattern to .gitignore${NC}"
+            fi
+            
+            # Stage .gitignore
+            git add .gitignore
+            echo -e "${GREEN}✅ Updated .gitignore staged for commit${NC}"
+        fi
     fi
 done
+
+# Additional specific check for Java heap dumps with dynamic detection
+HEAP_DUMP_FILES=$(echo "$STAGED_CHANGES" | grep -E "(\.hprof$|java_pid[0-9]+|heap_dump)")
+if [ -n "$HEAP_DUMP_FILES" ]; then
+    echo -e "${RED}❌ Java heap dump files detected in staging area:${NC}"
+    echo "$HEAP_DUMP_FILES" | while IFS= read -r file; do
+        if [ -n "$file" ]; then
+            echo -e "${RED}  Removing: $file${NC}"
+            git reset HEAD "$file"
+            
+            # Add specific file to .gitignore
+            if ! grep -q "^$file$" .gitignore; then
+                echo "$file" >> .gitignore
+            fi
+        fi
+    done
+    
+    # Add comprehensive heap dump patterns to .gitignore
+    HEAP_PATTERNS=("*.hprof" "java_pid*.hprof" "heap_dump*" "java_pid*.log")
+    for heap_pattern in "${HEAP_PATTERNS[@]}"; do
+        if ! grep -q "^$heap_pattern$" .gitignore; then
+            echo "$heap_pattern" >> .gitignore
+        fi
+    done
+    
+    git add .gitignore
+    echo -e "${GREEN}✅ Heap dump files removed from staging and patterns added to .gitignore${NC}"
+fi
 
 # Perform the commit
 echo -e "${BLUE}💾 Performing emergency commit...${NC}"
