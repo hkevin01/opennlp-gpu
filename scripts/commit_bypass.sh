@@ -532,12 +532,31 @@ if [ $? -eq 0 ]; then
         # Get current branch
         CURRENT_BRANCH=$(git branch --show-current)
         
+        # Check if we have a remote configured
+        REMOTE_NAME=$(git remote | head -n1)
+        if [ -z "$REMOTE_NAME" ]; then
+            echo -e "${RED}❌ No remote repository configured${NC}"
+            echo -e "${YELLOW}💡 Add a remote first: git remote add origin <github-url>${NC}"
+            exit 1
+        fi
+        
+        echo -e "${BLUE}📡 Remote repository: $REMOTE_NAME${NC}"
+        
         # Check if remote tracking branch exists
         REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
         
         if [ $? -eq 0 ]; then
+            echo -e "${BLUE}📡 Fetching latest changes from $REMOTE_BRANCH...${NC}"
+            git fetch $REMOTE_NAME
+            
+            if [ $? -ne 0 ]; then
+                echo -e "${RED}❌ Failed to fetch from remote${NC}"
+                echo -e "${YELLOW}💡 Check your internet connection and GitHub authentication${NC}"
+                exit 1
+            fi
+            
             echo -e "${BLUE}📡 Pulling latest changes from $REMOTE_BRANCH...${NC}"
-            git pull --rebase
+            git pull --rebase $REMOTE_NAME $CURRENT_BRANCH
             
             if [ $? -eq 0 ]; then
                 echo -e "${GREEN}✅ Successfully pulled and rebased${NC}"
@@ -545,38 +564,85 @@ if [ $? -eq 0 ]; then
                 echo -e "${YELLOW}⚠️  Pull/rebase had conflicts. Please resolve manually.${NC}"
                 echo -e "${YELLOW}   Run: git status to see conflicts${NC}"
                 echo -e "${YELLOW}   After resolving: git rebase --continue${NC}"
+                echo -e "${YELLOW}   Then run: git push${NC}"
+                exit 1
             fi
             
-            echo -e "${BLUE}🚀 Pushing changes to remote...${NC}"
-            git push
+            echo -e "${BLUE}🚀 Pushing changes to $REMOTE_NAME/$CURRENT_BRANCH...${NC}"
+            git push $REMOTE_NAME $CURRENT_BRANCH
             
             if [ $? -eq 0 ]; then
                 echo -e "${GREEN}✅ Successfully pushed to remote${NC}"
+                echo -e "${GREEN}🌐 Changes should now be visible on GitHub${NC}"
+                
+                # Get the remote URL for display
+                REMOTE_URL=$(git remote get-url $REMOTE_NAME)
+                if [[ $REMOTE_URL == *"github.com"* ]]; then
+                    # Convert SSH URL to HTTPS for display
+                    HTTPS_URL=$(echo "$REMOTE_URL" | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
+                    echo -e "${BLUE}🔗 View changes at: $HTTPS_URL${NC}"
+                fi
             else
                 echo -e "${RED}❌ Failed to push to remote${NC}"
-                echo -e "${YELLOW}💡 You may need to force push if rebase changed history: git push --force-with-lease${NC}"
+                echo -e "${YELLOW}💡 Possible solutions:${NC}"
+                echo -e "${YELLOW}   • Check GitHub authentication: gh auth status${NC}"
+                echo -e "${YELLOW}   • Try force push: git push --force-with-lease${NC}"
+                echo -e "${YELLOW}   • Check if branch protection rules are blocking push${NC}"
+                
+                # Check if it's an authentication issue
+                git ls-remote $REMOTE_NAME &>/dev/null
+                if [ $? -ne 0 ]; then
+                    echo -e "${RED}❌ Authentication failed or remote unreachable${NC}"
+                    echo -e "${YELLOW}💡 Run: gh auth login or check your SSH keys${NC}"
+                fi
+                exit 1
             fi
         else
             echo -e "${YELLOW}⚠️  No upstream branch set. Setting up tracking...${NC}"
             
-            # Try to push and set upstream
-            REMOTE_NAME=$(git remote | head -n1)
-            if [ -n "$REMOTE_NAME" ]; then
-                echo -e "${BLUE}🔗 Setting upstream to $REMOTE_NAME/$CURRENT_BRANCH${NC}"
-                git push -u "$REMOTE_NAME" "$CURRENT_BRANCH"
+            # Check if remote branch exists
+            git ls-remote --heads $REMOTE_NAME $CURRENT_BRANCH | grep -q $CURRENT_BRANCH
+            if [ $? -eq 0 ]; then
+                echo -e "${BLUE}🔗 Remote branch exists, setting up tracking...${NC}"
+                git branch --set-upstream-to=$REMOTE_NAME/$CURRENT_BRANCH $CURRENT_BRANCH
+                git pull --rebase
+            fi
+            
+            echo -e "${BLUE}🔗 Pushing and setting upstream to $REMOTE_NAME/$CURRENT_BRANCH${NC}"
+            git push -u $REMOTE_NAME $CURRENT_BRANCH
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✅ Successfully pushed and set upstream${NC}"
+                echo -e "${GREEN}🌐 Changes should now be visible on GitHub${NC}"
                 
-                if [ $? -eq 0 ]; then
-                    echo -e "${GREEN}✅ Successfully pushed and set upstream${NC}"
-                else
-                    echo -e "${RED}❌ Failed to push and set upstream${NC}"
+                # Get the remote URL for display
+                REMOTE_URL=$(git remote get-url $REMOTE_NAME)
+                if [[ $REMOTE_URL == *"github.com"* ]]; then
+                    HTTPS_URL=$(echo "$REMOTE_URL" | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
+                    echo -e "${BLUE}🔗 View changes at: $HTTPS_URL${NC}"
                 fi
             else
-                echo -e "${RED}❌ No remote configured. Cannot sync.${NC}"
-                echo -e "${YELLOW}💡 Add a remote first: git remote add origin <url>${NC}"
+                echo -e "${RED}❌ Failed to push and set upstream${NC}"
+                echo -e "${YELLOW}💡 Check GitHub authentication and permissions${NC}"
+                exit 1
             fi
         fi
+        
+        # Verify the push was successful by checking remote
+        echo -e "${BLUE}🔍 Verifying changes were pushed successfully...${NC}"
+        LOCAL_COMMIT=$(git rev-parse HEAD)
+        REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/$CURRENT_BRANCH 2>/dev/null)
+        
+        if [ "$LOCAL_COMMIT" = "$REMOTE_COMMIT" ]; then
+            echo -e "${GREEN}✅ Verification successful: Local and remote are in sync${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Warning: Local and remote commits don't match${NC}"
+            echo -e "${YELLOW}   Local:  $LOCAL_COMMIT${NC}"
+            echo -e "${YELLOW}   Remote: $REMOTE_COMMIT${NC}"
+            echo -e "${YELLOW}   You may need to refresh GitHub or wait a moment${NC}"
+        fi
     fi
-    
+
     # Show helpful next steps
     echo -e "\n${PURPLE}📋 Next Steps:${NC}"
     echo -e "${YELLOW}1. Verify commit: git log --oneline -1${NC}"
