@@ -19,16 +19,18 @@ DEFAULT_COMMIT_MESSAGE="Emergency commit - bypass pre-commit hooks"
 
 if [ $# -eq 0 ]; then
     echo -e "${YELLOW}No commit message provided. Using default: '$DEFAULT_COMMIT_MESSAGE'${NC}"
-    echo -e "${BLUE}Usage: $0 'commit message' [--fix-java] [--check-license] [--phase-tag]${NC}"
+    echo -e "${BLUE}Usage: $0 'commit message' [--fix-java] [--check-license] [--phase-tag] [--no-sync]${NC}"
     echo -e "${YELLOW}OpenNLP GPU Project Options:${NC}"
     echo -e "  --fix-java        Fix Java code formatting and imports"
     echo -e "  --check-license   Verify Apache license headers are present"
     echo -e "  --phase-tag       Auto-tag commit with current project phase"
     echo -e "  --gpu-test        Run quick GPU availability test before commit"
+    echo -e "  --sync            Sync changes with remote after commit (default)"
+    echo -e "  --no-sync         Skip syncing with remote repository"
     echo -e "\n${BLUE}Examples:${NC}"
     echo -e "${YELLOW}  $0 'Add matrix operations' --fix-java --phase-tag${NC}"
-    echo -e "${YELLOW}  $0 'Fix memory leak in GPU provider' --check-license${NC}"
-    echo -e "${YELLOW}  $0  # Uses default commit message${NC}"
+    echo -e "${YELLOW}  $0 'Fix memory leak in GPU provider' --check-license --no-sync${NC}"
+    echo -e "${YELLOW}  $0  # Uses default commit message and syncs${NC}"
     
     COMMIT_MESSAGE="$DEFAULT_COMMIT_MESSAGE"
 else
@@ -39,6 +41,7 @@ FIX_JAVA=false
 CHECK_LICENSE=false
 PHASE_TAG=false
 GPU_TEST=false
+SYNC_REMOTE=true  # Changed to default to true
 
 # Parse all arguments
 shift
@@ -58,6 +61,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --gpu-test)
             GPU_TEST=true
+            shift
+            ;;
+        --sync)
+            SYNC_REMOTE=true
+            shift
+            ;;
+        --no-sync)
+            SYNC_REMOTE=false
             shift
             ;;
         *)
@@ -188,7 +199,33 @@ fi
 
 # Check for large files that might cause issues
 echo -e "${BLUE}📦 Checking for large files...${NC}"
-LARGE_FILES=$(git diff --cached --name-only | xargs -I {} find {} -size +10M 2>/dev/null)
+
+# Check if there are any staged changes
+STAGED_CHANGES=$(git diff --cached --name-only)
+if [ -z "$STAGED_CHANGES" ]; then
+    echo -e "${YELLOW}⚠️  No staged changes found. Checking for unstaged changes...${NC}"
+    
+    # Check for unstaged changes
+    UNSTAGED_CHANGES=$(git diff --name-only)
+    UNTRACKED_FILES=$(git ls-files --others --exclude-standard)
+    
+    if [ -n "$UNSTAGED_CHANGES" ] || [ -n "$UNTRACKED_FILES" ]; then
+        echo -e "${BLUE}📝 Found unstaged/untracked files. Auto-staging all changes...${NC}"
+        
+        # Stage all changes
+        git add -A
+        
+        echo -e "${GREEN}✅ All changes have been staged${NC}"
+        
+        # Update staged files for large file check
+        STAGED_CHANGES=$(git diff --cached --name-only)
+    else
+        echo -e "${RED}❌ No changes to commit${NC}"
+        exit 1
+    fi
+fi
+
+LARGE_FILES=$(echo "$STAGED_CHANGES" | xargs -I {} find {} -size +10M 2>/dev/null)
 if [ -n "$LARGE_FILES" ]; then
     echo -e "${YELLOW}⚠️  Large files detected:${NC}"
     echo "$LARGE_FILES" | while IFS= read -r file; do
@@ -202,7 +239,7 @@ fi
 echo -e "${BLUE}🔒 Checking for sensitive files...${NC}"
 SENSITIVE_PATTERNS="*.key *.p12 *.jks *.keystore *.hprof java_pid*.log"
 for pattern in $SENSITIVE_PATTERNS; do
-    if git diff --cached --name-only | grep -q "$pattern"; then
+    if echo "$STAGED_CHANGES" | grep -q "$pattern"; then
         echo -e "${RED}❌ Sensitive file detected: $pattern${NC}"
         echo -e "${RED}   This file should not be committed to version control${NC}"
         exit 1
@@ -216,6 +253,58 @@ git commit --no-verify -m "$COMMIT_MESSAGE"
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Emergency commit completed for $PROJECT_NAME${NC}"
     echo -e "${BLUE}📝 Commit message: '$COMMIT_MESSAGE'${NC}"
+    
+    # Sync with remote if requested
+    if [ "$SYNC_REMOTE" = true ]; then
+        echo -e "\n${BLUE}🔄 Syncing changes with remote...${NC}"
+        
+        # Get current branch
+        CURRENT_BRANCH=$(git branch --show-current)
+        
+        # Check if remote tracking branch exists
+        REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+        
+        if [ $? -eq 0 ]; then
+            echo -e "${BLUE}📡 Pulling latest changes from $REMOTE_BRANCH...${NC}"
+            git pull --rebase
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✅ Successfully pulled and rebased${NC}"
+            else
+                echo -e "${YELLOW}⚠️  Pull/rebase had conflicts. Please resolve manually.${NC}"
+                echo -e "${YELLOW}   Run: git status to see conflicts${NC}"
+                echo -e "${YELLOW}   After resolving: git rebase --continue${NC}"
+            fi
+            
+            echo -e "${BLUE}🚀 Pushing changes to remote...${NC}"
+            git push
+            
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✅ Successfully pushed to remote${NC}"
+            else
+                echo -e "${RED}❌ Failed to push to remote${NC}"
+                echo -e "${YELLOW}💡 You may need to force push if rebase changed history: git push --force-with-lease${NC}"
+            fi
+        else
+            echo -e "${YELLOW}⚠️  No upstream branch set. Setting up tracking...${NC}"
+            
+            # Try to push and set upstream
+            REMOTE_NAME=$(git remote | head -n1)
+            if [ -n "$REMOTE_NAME" ]; then
+                echo -e "${BLUE}🔗 Setting upstream to $REMOTE_NAME/$CURRENT_BRANCH${NC}"
+                git push -u "$REMOTE_NAME" "$CURRENT_BRANCH"
+                
+                if [ $? -eq 0 ]; then
+                    echo -e "${GREEN}✅ Successfully pushed and set upstream${NC}"
+                else
+                    echo -e "${RED}❌ Failed to push and set upstream${NC}"
+                fi
+            else
+                echo -e "${RED}❌ No remote configured. Cannot sync.${NC}"
+                echo -e "${YELLOW}💡 Add a remote first: git remote add origin <url>${NC}"
+            fi
+        fi
+    fi
     
     # Show helpful next steps
     echo -e "\n${PURPLE}📋 Next Steps:${NC}"
@@ -232,6 +321,13 @@ if [ $? -eq 0 ]; then
     echo -e "${YELLOW}• Update project progress docs if this completes a milestone${NC}"
     echo -e "${YELLOW}• Test on both CPU and GPU if hardware-related changes${NC}"
     echo -e "${YELLOW}• Update user guide if API changes were made${NC}"
+    
+    if [ "$SYNC_REMOTE" = true ]; then
+        echo -e "${YELLOW}• Changes have been synced with remote repository${NC}"
+        echo -e "${YELLOW}• Team members can now pull your latest changes${NC}"
+    else
+        echo -e "${YELLOW}• Remember to push changes: git push (or use --sync next time)${NC}"
+    fi
     
 else
     echo -e "${RED}❌ Commit failed${NC}"
