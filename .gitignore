@@ -121,3 +121,21 @@ build/
 *.war
 *.ear
 
+java_pid*.hprof
+
+# Large files and heap dumps
+*.hprof
+*.log
+java_pid*.hprof
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build artifacts that shouldn't be in git
+target/
+build/
+*.jar
+*.war
+*.ear
+
