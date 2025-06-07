@@ -553,74 +553,85 @@ if [ $? -eq 0 ]; then
             exit 1
         fi
         
-        # Check if remote tracking branch exists
+        # Fix missing remote refs by ensuring proper remote branch setup
+        echo -e "${BLUE}🔧 Ensuring remote branch references are properly set up...${NC}"
+        
+        # Check if remote main branch exists
+        if git ls-remote --heads $REMOTE_NAME main | grep -q main; then
+            echo -e "${GREEN}✓ Remote main branch exists${NC}"
+            
+            # Ensure local main branch tracks remote main
+            if ! git rev-parse --verify $REMOTE_NAME/main >/dev/null 2>&1; then
+                echo -e "${YELLOW}⚠️  Remote tracking branch missing, fetching again...${NC}"
+                git fetch $REMOTE_NAME main:refs/remotes/$REMOTE_NAME/main
+            fi
+            
+            # Set up tracking if not already set
+            if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+                echo -e "${BLUE}🔗 Setting up remote tracking for main branch...${NC}"
+                git branch --set-upstream-to=$REMOTE_NAME/main main
+            fi
+        else
+            echo -e "${YELLOW}⚠️  Remote main branch doesn't exist, will create it${NC}"
+        fi
+        
+        # Check if remote tracking branch exists now
         REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
         
         if [ $? -eq 0 ]; then
             # Remote tracking branch exists
             echo -e "${BLUE}📡 Remote tracking branch: $REMOTE_BRANCH${NC}"
             
-            # Check if we're behind remote
-            LOCAL_COMMIT=$(git rev-parse HEAD)
-            REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/$CURRENT_BRANCH 2>/dev/null)
-            
-            if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
-                echo -e "${YELLOW}⚠️  Local and remote are out of sync${NC}"
-                echo -e "${BLUE}📡 Attempting to pull and rebase...${NC}"
+            # Check if we need to sync with remote
+            if git rev-parse --verify $REMOTE_NAME/main >/dev/null 2>&1; then
+                LOCAL_COMMIT=$(git rev-parse HEAD)
+                REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/main)
                 
-                git pull --rebase $REMOTE_NAME $CURRENT_BRANCH
-                
-                if [ $? -eq 0 ]; then
-                    echo -e "${GREEN}✅ Successfully pulled and rebased${NC}"
-                else
-                    echo -e "${RED}❌ Pull/rebase failed with conflicts${NC}"
-                    echo -e "${YELLOW}💡 Manual resolution required:${NC}"
-                    echo -e "${YELLOW}   1. Run: git status to see conflicts${NC}"
-                    echo -e "${YELLOW}   2. Resolve conflicts manually${NC}"
-                    echo -e "${YELLOW}   3. Run: git rebase --continue${NC}"
-                    echo -e "${YELLOW}   4. Then run: git push${NC}"
-                    exit 1
-                fi
-            fi
-            
-            echo -e "${BLUE}🚀 Pushing changes to $REMOTE_NAME/$CURRENT_BRANCH...${NC}"
-            git push $REMOTE_NAME $CURRENT_BRANCH
-            
-        else
-            # No remote tracking branch set
-            echo -e "${YELLOW}⚠️  No upstream branch set${NC}"
-            
-            # Check if remote branch exists
-            if git ls-remote --heads $REMOTE_NAME $CURRENT_BRANCH | grep -q $CURRENT_BRANCH; then
-                echo -e "${BLUE}🔗 Remote branch exists, setting up tracking...${NC}"
-                git branch --set-upstream-to=$REMOTE_NAME/$CURRENT_BRANCH $CURRENT_BRANCH
-                
-                # Try to merge/rebase with remote
-                echo -e "${BLUE}📡 Pulling from remote branch...${NC}"
-                git pull --rebase $REMOTE_NAME $CURRENT_BRANCH
-                
-                if [ $? -ne 0 ]; then
-                    echo -e "${RED}❌ Failed to sync with existing remote branch${NC}"
-                    echo -e "${YELLOW}💡 You may need to force push: git push --force-with-lease${NC}"
+                if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
+                    echo -e "${YELLOW}⚠️  Local and remote are out of sync${NC}"
+                    echo -e "${BLUE}📡 Attempting to pull and rebase...${NC}"
                     
-                    # Offer force push option
-                    read -p "Force push to overwrite remote? (y/N): " FORCE_PUSH
-                    if [[ $FORCE_PUSH =~ ^[Yy]$ ]]; then
-                        git push --force-with-lease $REMOTE_NAME $CURRENT_BRANCH
+                    # Check if we're ahead, behind, or diverged
+                    AHEAD_BEHIND=$(git rev-list --left-right --count HEAD...$REMOTE_NAME/main 2>/dev/null)
+                    if [ $? -eq 0 ]; then
+                        AHEAD=$(echo $AHEAD_BEHIND | cut -d' ' -f1)
+                        BEHIND=$(echo $AHEAD_BEHIND | cut -d' ' -f2)
+                        
+                        echo -e "${BLUE}📊 Local is $AHEAD commits ahead, $BEHIND commits behind${NC}"
+                        
+                        if [ "$BEHIND" -gt 0 ]; then
+                            git pull --rebase $REMOTE_NAME main
+                            
+                            if [ $? -ne 0 ]; then
+                                echo -e "${RED}❌ Pull/rebase failed with conflicts${NC}"
+                                echo -e "${YELLOW}💡 Manual resolution required:${NC}"
+                                echo -e "${YELLOW}   1. Run: git status to see conflicts${NC}"
+                                echo -e "${YELLOW}   2. Resolve conflicts manually${NC}"
+                                echo -e "${YELLOW}   3. Run: git rebase --continue${NC}"
+                                echo -e "${YELLOW}   4. Then run: git push${NC}"
+                                exit 1
+                            fi
+                        fi
                     else
-                        echo -e "${YELLOW}Push cancelled. Please resolve manually.${NC}"
-                        exit 1
+                        # Fallback to simple pull if rev-list fails
+                        git pull --rebase $REMOTE_NAME main
                     fi
                 else
-                    # Normal push after successful pull
-                    git push $REMOTE_NAME $CURRENT_BRANCH
+                    echo -e "${GREEN}✅ Local and remote are already in sync${NC}"
                 fi
-            else
-                echo -e "${BLUE}🔗 Creating new remote branch...${NC}"
-                git push -u $REMOTE_NAME $CURRENT_BRANCH
             fi
+            
+            echo -e "${BLUE}🚀 Pushing changes to $REMOTE_NAME/main...${NC}"
+            git push $REMOTE_NAME main
+            
+        else
+            # No remote tracking branch set up
+            echo -e "${YELLOW}⚠️  No upstream branch set${NC}"
+            echo -e "${BLUE}🔗 Creating remote branch and setting up tracking...${NC}"
+            
+            git push -u $REMOTE_NAME main
         fi
-        
+
         # Check final push result
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}✅ Successfully pushed to remote${NC}"
