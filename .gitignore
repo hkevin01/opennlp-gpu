@@ -64,3 +64,4 @@ java_pid*.log
 ./java_pid1266980.hprof
 java_pid1266980.hprof
 *.hprof
+*.a
