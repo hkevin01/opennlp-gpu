@@ -65,3 +65,22 @@ java_pid*.log
 java_pid1266980.hprof
 *.hprof
 *.a
+
+# Large files and heap dumps
+*.hprof
+*.log
+java_pid*.hprof
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
