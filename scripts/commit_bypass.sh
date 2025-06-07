@@ -6,7 +6,7 @@
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+YIGHLLOW='\033[0;33m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
@@ -18,9 +18,9 @@ PROJECT_PREFIX="[GPU]"
 DEFAULT_COMMIT_MESSAGE="Emergency commit - bypass pre-commit hooks"
 
 if [ $# -eq 0 ]; then
-    echo -e "${YELLOW}No commit message provided. Using default: '$DEFAULT_COMMIT_MESSAGE'${NC}"
+    echo -e "${YIGHLLOW}No commit message provided. Using default: '$DEFAULT_COMMIT_MESSAGE'${NC}"
     echo -e "${BLUE}Usage: $0 'commit message' [--fix-java] [--check-license] [--phase-tag] [--no-sync]${NC}"
-    echo -e "${YELLOW}OpenNLP GPU Project Options:${NC}"
+    echo -e "${YIGHLLOW}OpenNLP GPU Project Options:${NC}"
     echo -e "  --fix-java        Fix Java code formatting and imports"
     echo -e "  --check-license   Verify Apache license headers are present"
     echo -e "  --phase-tag       Auto-tag commit with current project phase"
@@ -28,9 +28,9 @@ if [ $# -eq 0 ]; then
     echo -e "  --sync            Sync changes with remote after commit (default)"
     echo -e "  --no-sync         Skip syncing with remote repository"
     echo -e "\n${BLUE}Examples:${NC}"
-    echo -e "${YELLOW}  $0 'Add matrix operations' --fix-java --phase-tag${NC}"
-    echo -e "${YELLOW}  $0 'Fix memory leak in GPU provider' --check-license --no-sync${NC}"
-    echo -e "${YELLOW}  $0  # Uses default commit message and syncs${NC}"
+    echo -e "${YIGHLLOW}  $0 'Add matrix operations' --fix-java --phase-tag${NC}"
+    echo -e "${YIGHLLOW}  $0 'Fix memory leak in GPU provider' --check-license --no-sync${NC}"
+    echo -e "${YIGHLLOW}  $0  # Uses default commit message and syncs${NC}"
     
     COMMIT_MESSAGE="$DEFAULT_COMMIT_MESSAGE"
 else
@@ -72,19 +72,19 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         *)
-            echo -e "${YELLOW}Unknown option: $1${NC}"
+            echo -e "${YIGHLOW}Unknown option: $1${NC}"
             shift
             ;;
     esac
 done
 
 echo -e "${PURPLE}🚀 $PROJECT_NAME Emergency Commit Tool${NC}"
-echo -e "${YELLOW}⚠️  Bypassing pre-commit hooks for emergency commit${NC}"
+echo -e "${YIGHLOW}⚠️  Bypassing pre-commit hooks for emergency commit${NC}"
 
 # Check if we're in the right project directory
 if [ ! -f "pom.xml" ] || ! grep -q "opennlp-gpu" pom.xml 2>/dev/null; then
     echo -e "${RED}❌ Error: Not in OpenNLP GPU project root directory${NC}"
-    echo -e "${YELLOW}💡 Please run this script from the project root where pom.xml is located${NC}"
+    echo -e "${YIGHLOW}💡 Please run this script from the project root where pom.xml is located${NC}"
     exit 1
 fi
 
@@ -92,7 +92,7 @@ fi
 echo -e "${BLUE}🔄 Checking current branch and switching to main...${NC}"
 CURRENT_BRANCH=$(git branch --show-current)
 if [ "$CURRENT_BRANCH" != "main" ]; then
-    echo -e "${YELLOW}⚠️  Currently on branch: $CURRENT_BRANCH${NC}"
+    echo -e "${YIGHLOW}⚠️  Currently on branch: $CURRENT_BRANCH${NC}"
     echo -e "${BLUE}📝 Switching to main branch...${NC}"
     
     # Stash any changes if they exist
@@ -116,8 +116,8 @@ if [ "$CURRENT_BRANCH" != "main" ]; then
         echo -e "${BLUE}📤 Restoring stashed changes...${NC}"
         git stash pop
         if [ $? -ne 0 ]; then
-            echo -e "${YELLOW}⚠️  Failed to restore stashed changes automatically${NC}"
-            echo -e "${YELLOW}💡 Please resolve manually with: git stash list; git stash apply${NC}"
+            echo -e "${YIGHLOW}⚠️  Failed to restore stashed changes automatically${NC}"
+            echo -e "${YIGHLOW}💡 Please resolve manually with: git stash list; git stash apply${NC}"
         fi
     fi
     
@@ -134,14 +134,14 @@ if [ "$GPU_TEST" = true ]; then
     if command -v nvidia-smi &> /dev/null; then
         echo -e "${GREEN}  ✓ NVIDIA GPU detected${NC}"
     else
-        echo -e "${YELLOW}  ⚠ NVIDIA GPU not detected or drivers not installed${NC}"
+        echo -e "${YIGHLOW}  ⚠ NVIDIA GPU not detected or drivers not installed${NC}"
     fi
     
     # Check if OpenCL is available (basic check)
     if [ -d "/usr/lib/x86_64-linux-gnu" ] && ls /usr/lib/x86_64-linux-gnu/libOpenCL* &> /dev/null; then
         echo -e "${GREEN}  ✓ OpenCL libraries found${NC}"
     else
-        echo -e "${YELLOW}  ⚠ OpenCL libraries not found${NC}"
+        echo -e "${YIGHLOW}  ⚠ OpenCL libraries not found${NC}"
     fi
 fi
 
@@ -181,7 +181,7 @@ if [ "$FIX_JAVA" = true ]; then
         echo "$JAVA_FILES" | xargs git add
         echo -e "${GREEN}✅ Java formatting fixed and files re-staged${NC}"
     else
-        echo -e "${YELLOW}No staged Java files found${NC}"
+        echo -e "${YIGHLOW}No staged Java files found${NC}"
     fi
 fi
 
@@ -195,14 +195,14 @@ if [ "$CHECK_LICENSE" = true ]; then
     if [ -n "$JAVA_FILES" ]; then
         echo "$JAVA_FILES" | while IFS= read -r file; do
             if [ -f "$file" ] && ! grep -q "Licensed to the Apache Software Foundation" "$file"; then
-                echo -e "${YELLOW}  ⚠ Missing license header: $file${NC}"
+                echo -e "${YIGHLOW}  ⚠ Missing license header: $file${NC}"
                 MISSING_LICENSE=true
             fi
         done
         
         if [ "$MISSING_LICENSE" = true ]; then
-            echo -e "${YELLOW}💡 Consider adding Apache license headers to new files${NC}"
-            echo -e "${YELLOW}   Template available in existing project files${NC}"
+            echo -e "${YIGHLOW}💡 Consider adding Apache license headers to new files${NC}"
+            echo -e "${YIGHLOW}   Template available in existing project files${NC}"
         else
             echo -e "${GREEN}✅ All Java files have proper license headers${NC}"
         fi
@@ -241,7 +241,7 @@ echo -e "${BLUE}📦 Checking for large files...${NC}"
 # Check if there are any staged changes
 STAGED_CHANGES=$(git diff --cached --name-only)
 if [ -z "$STAGED_CHANGES" ]; then
-    echo -e "${YELLOW}⚠️  No staged changes found. Checking for unstaged changes...${NC}"
+    echo -e "${YIGHLOW}⚠️  No staged changes found. Checking for unstaged changes...${NC}"
     
     # Check for unstaged changes
     UNSTAGED_CHANGES=$(git diff --name-only)
@@ -322,7 +322,7 @@ if [ -z "$STAGED_CHANGES" ]; then
                     git add $FILTERED_FILES
                     echo -e "${GREEN}✅ Staged only files under 10MB${NC}"
                 else
-                    echo -e "${YELLOW}⚠️  Only .gitignore changes to commit${NC}"
+                    echo -e "${YIGHLOW}⚠️  Only .gitignore changes to commit${NC}"
                 fi
             else
                 # No large files, stage everything as normal
@@ -364,7 +364,7 @@ if [ "$TOTAL_SIZE_BYTES" -gt 10485760 ]; then  # Reduced to 10MB total (was 50MB
     TOTAL_SIZE_HUMAN=$(echo "$TOTAL_SIZE_BYTES" | awk '{printf "%.1f MB", $1/1024/1024}')
     echo -e "${RED}❌ Large commit detected: $TOTAL_SIZE_HUMAN total${NC}"
     echo -e "${RED}❌ This is too large for a typical code commit${NC}"
-    echo -e "${YELLOW}💡 Investigating large files...${NC}"
+    echo -e "${YIGHLOW}💡 Investigating large files...${NC}"
     
     # List all staged files with sizes
     echo -e "${BLUE}📋 Staged files breakdown:${NC}"
@@ -392,8 +392,8 @@ if [ "$TOTAL_SIZE_BYTES" -gt 10485760 ]; then  # Reduced to 10MB total (was 50MB
     
     if [ "$TOTAL_SIZE_BYTES" -gt 10485760 ]; then  # Still too large
         echo -e "${RED}❌ Commit is still too large after cleanup${NC}"
-        echo -e "${YELLOW}💡 Please manually review and remove unnecessary files${NC}"
-        echo -e "${YELLOW}💡 Consider committing in smaller chunks${NC}"
+        echo -e "${YIGHLOW}💡 Please manually review and remove unnecessary files${NC}"
+        echo -e "${YIGHLOW}💡 Consider committing in smaller chunks${NC}"
         exit 1
     fi
 fi
@@ -517,191 +517,194 @@ if [ "$FOUND_INAPPROPRIATE" = true ]; then
     STAGED_CHANGES=$(git diff --cached --name-only)
 fi
 
-# Perform the commit
-echo -e "${BLUE}💾 Performing emergency commit...${NC}"
-git commit --no-verify -m "$COMMIT_MESSAGE"
+# Perform the commit (unless we're skipping because we already have commits to push)
+if [ "${SKIP_COMMIT:-false}" = "false" ]; then
+    echo -e "${BLUE}💾 Performing emergency commit...${NC}"
+    git commit --no-verify -m "$COMMIT_MESSAGE"
 
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✅ Emergency commit completed for $PROJECT_NAME${NC}"
-    echo -e "${BLUE}📝 Commit message: '$COMMIT_MESSAGE'${NC}"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ Emergency commit completed for $PROJECT_NAME${NC}"
+        echo -e "${BLUE}📝 Commit message: '$COMMIT_MESSAGE'${NC}"
+    else
+        echo -e "${RED}❌ Commit failed${NC}"
+        echo -e "${YIGHLOW}💡 Check for remaining issues and try again${NC}"
+        exit 1
+    fi
+else
+    echo -e "${BLUE}⏭️  Skipping commit (already have commits to push)${NC}"
+fi
+
+# Sync with remote if requested (this section remains the same)
+if [ "$SYNC_REMOTE" = true ]; then
+    echo -e "\n${BLUE}🔄 Syncing changes with remote...${NC}"
     
-    # Sync with remote if requested
-    if [ "$SYNC_REMOTE" = true ]; then
-        echo -e "\n${BLUE}🔄 Syncing changes with remote...${NC}"
+    # Get current branch
+    CURRENT_BRANCH=$(git branch --show-current)
+    
+    # Check if we have a remote configured
+    REMOTE_NAME=$(git remote | head -n1)
+    if [ -z "$REMOTE_NAME" ]; then
+        echo -e "${RED}❌ No remote repository configured${NC}"
+        echo -e "${YIGHLOW}💡 Add a remote first: git remote add origin <github-url>${NC}"
+        exit 1
+    fi
+    
+    echo -e "${BLUE}📡 Remote repository: $REMOTE_NAME${NC}"
+    
+    # Always fetch first to ensure we have latest remote state
+    echo -e "${BLUE}📡 Fetching latest changes from remote...${NC}"
+    git fetch $REMOTE_NAME
+    
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Failed to fetch from remote${NC}"
+        echo -e "${YIGHLOW}💡 Check your internet connection and GitHub authentication${NC}"
+        echo -e "${YIGHLOW}💡 Try: gh auth login or verify your SSH keys${NC}"
+        exit 1
+    fi
+    
+    # Fix missing remote refs by ensuring proper remote branch setup
+    echo -e "${BLUE}🔧 Ensuring remote branch references are properly set up...${NC}"
+    
+    # Check if remote main branch exists
+    if git ls-remote --heads $REMOTE_NAME main | grep -q main; then
+        echo -e "${GREEN}✓ Remote main branch exists${NC}"
         
-        # Get current branch
-        CURRENT_BRANCH=$(git branch --show-current)
-        
-        # Check if we have a remote configured
-        REMOTE_NAME=$(git remote | head -n1)
-        if [ -z "$REMOTE_NAME" ]; then
-            echo -e "${RED}❌ No remote repository configured${NC}"
-            echo -e "${YELLOW}💡 Add a remote first: git remote add origin <github-url>${NC}"
-            exit 1
+        # Ensure local main branch tracks remote main
+        if ! git rev-parse --verify $REMOTE_NAME/main >/dev/null 2>&1; then
+            echo -e "${YIGHLOW}⚠️  Remote tracking branch missing, fetching again...${NC}"
+            git fetch $REMOTE_NAME main:refs/remotes/$REMOTE_NAME/main
         fi
         
-        echo -e "${BLUE}📡 Remote repository: $REMOTE_NAME${NC}"
-        
-        # Always fetch first to ensure we have latest remote state
-        echo -e "${BLUE}📡 Fetching latest changes from remote...${NC}"
-        git fetch $REMOTE_NAME
-        
-        if [ $? -ne 0 ]; then
-            echo -e "${RED}❌ Failed to fetch from remote${NC}"
-            echo -e "${YELLOW}💡 Check your internet connection and GitHub authentication${NC}"
-            echo -e "${YELLOW}💡 Try: gh auth login or verify your SSH keys${NC}"
-            exit 1
+        # Set up tracking if not already set
+        if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+            echo -e "${BLUE}🔗 Setting up remote tracking for main branch...${NC}"
+            git branch --set-upstream-to=$REMOTE_NAME/main main
         fi
+    else
+        echo -e "${YIGHLOW}⚠️  Remote main branch doesn't exist, will create it${NC}"
+    fi
+    
+    # Check if remote tracking branch exists now
+    REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+    
+    if [ $? -eq 0 ]; then
+        # Remote tracking branch exists
+        echo -e "${BLUE}📡 Remote tracking branch: $REMOTE_BRANCH${NC}"
         
-        # Fix missing remote refs by ensuring proper remote branch setup
-        echo -e "${BLUE}🔧 Ensuring remote branch references are properly set up...${NC}"
-        
-        # Check if remote main branch exists
-        if git ls-remote --heads $REMOTE_NAME main | grep -q main; then
-            echo -e "${GREEN}✓ Remote main branch exists${NC}"
+        # Check if we need to sync with remote
+        if git rev-parse --verify $REMOTE_NAME/main >/dev/null 2>&1; then
+            LOCAL_COMMIT=$(git rev-parse HEAD)
+            REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/main)
             
-            # Ensure local main branch tracks remote main
-            if ! git rev-parse --verify $REMOTE_NAME/main >/dev/null 2>&1; then
-                echo -e "${YELLOW}⚠️  Remote tracking branch missing, fetching again...${NC}"
-                git fetch $REMOTE_NAME main:refs/remotes/$REMOTE_NAME/main
-            fi
-            
-            # Set up tracking if not already set
-            if ! git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
-                echo -e "${BLUE}🔗 Setting up remote tracking for main branch...${NC}"
-                git branch --set-upstream-to=$REMOTE_NAME/main main
-            fi
-        else
-            echo -e "${YELLOW}⚠️  Remote main branch doesn't exist, will create it${NC}"
-        fi
-        
-        # Check if remote tracking branch exists now
-        REMOTE_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
-        
-        if [ $? -eq 0 ]; then
-            # Remote tracking branch exists
-            echo -e "${BLUE}📡 Remote tracking branch: $REMOTE_BRANCH${NC}"
-            
-            # Check if we need to sync with remote
-            if git rev-parse --verify $REMOTE_NAME/main >/dev/null 2>&1; then
-                LOCAL_COMMIT=$(git rev-parse HEAD)
-                REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/main)
+            if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
+                echo -e "${YIGHLOW}⚠️  Local and remote are out of sync${NC}"
+                echo -e "${BLUE}📡 Attempting to pull and rebase...${NC}"
                 
-                if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
-                    echo -e "${YELLOW}⚠️  Local and remote are out of sync${NC}"
-                    echo -e "${BLUE}📡 Attempting to pull and rebase...${NC}"
+                # Check if we're ahead, behind, or diverged
+                AHEAD_BEHIND=$(git rev-list --left-right --count HEAD...$REMOTE_NAME/main 2>/dev/null)
+                if [ $? -eq 0 ]; then
+                    AHEAD=$(echo $AHEAD_BEHIND | cut -d' ' -f1)
+                    BEHIND=$(echo $AHEAD_BEHIND | cut -d' ' -f2)
                     
-                    # Check if we're ahead, behind, or diverged
-                    AHEAD_BEHIND=$(git rev-list --left-right --count HEAD...$REMOTE_NAME/main 2>/dev/null)
-                    if [ $? -eq 0 ]; then
-                        AHEAD=$(echo $AHEAD_BEHIND | cut -d' ' -f1)
-                        BEHIND=$(echo $AHEAD_BEHIND | cut -d' ' -f2)
-                        
-                        echo -e "${BLUE}📊 Local is $AHEAD commits ahead, $BEHIND commits behind${NC}"
-                        
-                        if [ "$BEHIND" -gt 0 ]; then
-                            git pull --rebase $REMOTE_NAME main
-                            
-                            if [ $? -ne 0 ]; then
-                                echo -e "${RED}❌ Pull/rebase failed with conflicts${NC}"
-                                echo -e "${YELLOW}💡 Manual resolution required:${NC}"
-                                echo -e "${YELLOW}   1. Run: git status to see conflicts${NC}"
-                                echo -e "${YELLOW}   2. Resolve conflicts manually${NC}"
-                                echo -e "${YELLOW}   3. Run: git rebase --continue${NC}"
-                                echo -e "${YELLOW}   4. Then run: git push${NC}"
-                                exit 1
-                            fi
-                        fi
-                    else
-                        # Fallback to simple pull if rev-list fails
+                    echo -e "${BLUE}📊 Local is $AHEAD commits ahead, $BEHIND commits behind${NC}"
+                    
+                    if [ "$BEHIND" -gt 0 ]; then
                         git pull --rebase $REMOTE_NAME main
+                        
+                        if [ $? -ne 0 ]; then
+                            echo -e "${RED}❌ Pull/rebase failed with conflicts${NC}"
+                            echo -e "${YIGHLOW}💡 Manual resolution required:${NC}"
+                            echo -e "${YIGHLOW}   1. Run: git status to see conflicts${NC}"
+                            echo -e "${YIGHLOW}   2. Resolve conflicts manually${NC}"
+                            echo -e "${YIGHLOW}   3. Run: git rebase --continue${NC}"
+                            echo -e "${YIGHLOW}   4. Then run: git push${NC}"
+                            exit 1
+                        fi
                     fi
                 else
-                    echo -e "${GREEN}✅ Local and remote are already in sync${NC}"
+                    # Fallback to simple pull if rev-list fails
+                    git pull --rebase $REMOTE_NAME main
                 fi
-            fi
-            
-            echo -e "${BLUE}🚀 Pushing changes to $REMOTE_NAME/main...${NC}"
-            git push $REMOTE_NAME main
-            
-        else
-            # No remote tracking branch set up
-            echo -e "${YELLOW}⚠️  No upstream branch set${NC}"
-            echo -e "${BLUE}🔗 Creating remote branch and setting up tracking...${NC}"
-            
-            git push -u $REMOTE_NAME main
-        fi
-
-        # Check final push result
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✅ Successfully pushed to remote${NC}"
-            echo -e "${GREEN}🌐 Changes should now be visible on GitHub${NC}"
-            
-            # Get the remote URL for display
-            REMOTE_URL=$(git remote get-url $REMOTE_NAME)
-            if [[ $REMOTE_URL == *"github.com"* ]]; then
-                # Convert SSH URL to HTTPS for display
-                HTTPS_URL=$(echo "$REMOTE_URL" | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
-                echo -e "${BLUE}🔗 View changes at: $HTTPS_URL${NC}"
-            fi
-            
-            # Final verification
-            echo -e "${BLUE}🔍 Verifying push was successful...${NC}"
-            git fetch $REMOTE_NAME
-            LOCAL_COMMIT=$(git rev-parse HEAD)
-            REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/$CURRENT_BRANCH 2>/dev/null)
-            
-            if [ "$LOCAL_COMMIT" = "$REMOTE_COMMIT" ]; then
-                echo -e "${GREEN}✅ Verification successful: Local and remote are in sync${NC}"
             else
-                echo -e "${YELLOW}⚠️  Warning: Verification shows mismatch${NC}"
-                echo -e "${YELLOW}   This may be due to GitHub propagation delay${NC}"
-                echo -e "${YELLOW}   Check GitHub in a few moments${NC}"
+                echo -e "${GREEN}✅ Local and remote are already in sync${NC}"
             fi
-            
-        else
-            echo -e "${RED}❌ Failed to push to remote${NC}"
-            echo -e "${YELLOW}💡 Common solutions:${NC}"
-            echo -e "${YELLOW}   • Check authentication: gh auth status${NC}"
-            echo -e "${YELLOW}   • Try force push: git push --force-with-lease${NC}"
-            echo -e "${YELLOW}   • Check branch protection rules on GitHub${NC}"
-            echo -e "${YELLOW}   • Verify repository permissions${NC}"
-            
-            # Additional debugging info
-            echo -e "${BLUE}🔍 Debugging information:${NC}"
-            echo -e "${YELLOW}   Remote URL: $(git remote get-url $REMOTE_NAME)${NC}"
-            echo -e "${YELLOW}   Current branch: $CURRENT_BRANCH${NC}"
-            echo -e "${YELLOW}   Remote branches: $(git branch -r | tr '\n' ' ')${NC}"
-            
-            exit 1
         fi
+        
+        echo -e "${BLUE}🚀 Pushing changes to $REMOTE_NAME/main...${NC}"
+        git push $REMOTE_NAME main
+        
+    else
+        # No remote tracking branch set up
+        echo -e "${YIGHLOW}⚠️  No upstream branch set${NC}"
+        echo -e "${BLUE}🔗 Creating remote branch and setting up tracking...${NC}"
+        
+        git push -u $REMOTE_NAME main
     fi
 
-    # Show helpful next steps
-    echo -e "\n${PURPLE}📋 Next Steps:${NC}"
-    echo -e "${YELLOW}1. Verify commit: git log --oneline -1${NC}"
-    echo -e "${YELLOW}2. Run tests: mvn test${NC}"
-    echo -e "${YELLOW}3. Check build: mvn compile${NC}"
-    
-    if [ "$FIX_JAVA" = false ]; then
-        echo -e "${YELLOW}4. Fix pre-commit issues and amend if needed${NC}"
-    fi
-    
-    # Project-specific reminders
-    echo -e "\n${PURPLE}🔧 OpenNLP GPU Reminders:${NC}"
-    echo -e "${YELLOW}• Update project progress docs if this completes a milestone${NC}"
-    echo -e "${YELLOW}• Test on both CPU and GPU if hardware-related changes${NC}"
-    echo -e "${YELLOW}• Update user guide if API changes were made${NC}"
-    
-    if [ "$SYNC_REMOTE" = true ]; then
-        echo -e "${YELLOW}• Changes have been synced with remote repository${NC}"
-        echo -e "${YELLOW}• Team members can now pull your latest changes${NC}"
+    # Check final push result
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ Successfully pushed to remote${NC}"
+        echo -e "${GREEN}🌐 Changes should now be visible on GitHub${NC}"
+        
+        # Get the remote URL for display
+        REMOTE_URL=$(git remote get-url $REMOTE_NAME)
+        if [[ $REMOTE_URL == *"github.com"* ]]; then
+            # Convert SSH URL to HTTPS for display
+            HTTPS_URL=$(echo "$REMOTE_URL" | sed 's/git@github.com:/https:\/\/github.com\//' | sed 's/\.git$//')
+            echo -e "${BLUE}🔗 View changes at: $HTTPS_URL${NC}"
+        fi
+        
+        # Final verification
+        echo -e "${BLUE}🔍 Verifying push was successful...${NC}"
+        git fetch $REMOTE_NAME
+        LOCAL_COMMIT=$(git rev-parse HEAD)
+        REMOTE_COMMIT=$(git rev-parse $REMOTE_NAME/$CURRENT_BRANCH 2>/dev/null)
+        
+        if [ "$LOCAL_COMMIT" = "$REMOTE_COMMIT" ]; then
+            echo -e "${GREEN}✅ Verification successful: Local and remote are in sync${NC}"
+        else
+            echo -e "${YIGHLOW}⚠️  Warning: Verification shows mismatch${NC}"
+            echo -e "${YIGHLOW}   This may be due to GitHub propagation delay${NC}"
+            echo -e "${YIGHLOW}   Check GitHub in a few moments${NC}"
+        fi
+        
     else
-        echo -e "${YELLOW}• Remember to push changes: git push (or use --sync next time)${NC}"
+        echo -e "${RED}❌ Failed to push to remote${NC}"
+        echo -e "${YIGHLOW}💡 Common solutions:${NC}"
+        echo -e "${YIGHLOW}   • Check authentication: gh auth status${NC}"
+        echo -e "${YIGHLOW}   • Try force push: git push --force-with-lease${NC}"
+        echo -e "${YIGHLOW}   • Check branch protection rules on GitHub${NC}"
+        echo -e "${YIGHLOW}   • Verify repository permissions${NC}"
+        
+        # Additional debugging info
+        echo -e "${BLUE}🔍 Debugging information:${NC}"
+        echo -e "${YIGHLOW}   Remote URL: $(git remote get-url $REMOTE_NAME)${NC}"
+        echo -e "${YIGHLOW}   Current branch: $CURRENT_BRANCH${NC}"
+        echo -e "${YIGHLOW}   Remote branches: $(git branch -r | tr '\n' ' ')${NC}"
+        
+        exit 1
     fi
+fi
+
+# Show helpful next steps
+echo -e "\n${PURPLE}📋 Next Steps:${NC}"
+echo -e "${YIGHLOW}1. Verify commit: git log --oneline -1${NC}"
+echo -e "${YIGHLOW}2. Run tests: mvn test${NC}"
+echo -e "${YIGHLOW}3. Check build: mvn compile${NC}"
     
+if [ "$FIX_JAVA" = false ]; then
+    echo -e "${YIGHLOW}4. Fix pre-commit issues and amend if needed${NC}"
+fi
+    
+# Project-specific reminders
+echo -e "\n${PURPLE}🔧 OpenNLP GPU Reminders:${NC}"
+echo -e "${YIGHLOW}• Update project progress docs if this completes a milestone${NC}"
+echo -e "${YIGHLOW}• Test on both CPU and GPU if hardware-related changes${NC}"
+echo -e "${YIGHLOW}• Update user guide if API changes were made${NC}"
+    
+if [ "$SYNC_REMOTE" = true ]; then
+    echo -e "${YIGHLOW}• Changes have been synced with remote repository${NC}"
+    echo -e "${YIGHLOW}• Team members can now pull your latest changes${NC}"
 else
-    echo -e "${RED}❌ Commit failed${NC}"
-    echo -e "${YELLOW}💡 Check for remaining issues and try again${NC}"
-    exit 1
+    echo -e "${YIGHLOW}• Remember to push changes: git push (or use --sync next time)${NC}"
 fi
