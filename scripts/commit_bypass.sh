@@ -210,14 +210,93 @@ if [ -z "$STAGED_CHANGES" ]; then
     UNTRACKED_FILES=$(git ls-files --others --exclude-standard)
     
     if [ -n "$UNSTAGED_CHANGES" ] || [ -n "$UNTRACKED_FILES" ]; then
-        echo -e "${BLUE}📝 Found unstaged/untracked files. Auto-staging all changes...${NC}"
+        echo -e "${BLUE}📝 Found unstaged/untracked files. Checking for large files before staging...${NC}"
         
-        # Stage all changes
-        git add -A
+        # Check for large files before staging
+        ALL_CHANGED_FILES=$(echo -e "$UNSTAGED_CHANGES\n$UNTRACKED_FILES" | grep -v "^$")
+        LARGE_FILES_DETECTED=false
+        if [ -n "$ALL_CHANGED_FILES" ]; then
+            echo "$ALL_CHANGED_FILES" | while IFS= read -r file; do
+                if [ -f "$file" ]; then
+                    # Check file size (anything over 10MB)
+                    SIZE_BYTES=$(stat -c%s "$file" 2>/dev/null || echo "0")
+                    if [ "$SIZE_BYTES" -gt 10485760 ]; then
+                        SIZE_HUMAN=$(du -h "$file" | cut -f1)
+                        echo -e "${RED}❌ Large file detected: $file ($SIZE_HUMAN)${NC}"
+                        
+                        # Add to .gitignore automatically
+                        echo -e "${BLUE}📝 Adding $file to .gitignore...${NC}"
+                        echo "$file" >> .gitignore
+                        echo -e "${GREEN}✅ Added $file to .gitignore${NC}"
+                        
+                        # Also add the file pattern if it's a common large file type
+                        case "$file" in
+                            *.hprof)
+                                if ! grep -q "*.hprof" .gitignore; then
+                                    echo "*.hprof" >> .gitignore
+                                    echo -e "${GREEN}✅ Added *.hprof pattern to .gitignore${NC}"
+                                fi
+                                ;;
+                            *.log)
+                                if ! grep -q "*.log" .gitignore; then
+                                    echo "*.log" >> .gitignore
+                                    echo -e "${GREEN}✅ Added *.log pattern to .gitignore${NC}"
+                                fi
+                                ;;
+                            *.jar)
+                                if ! grep -q "*.jar" .gitignore; then
+                                    echo "*.jar" >> .gitignore
+                                    echo -e "${GREEN}✅ Added *.jar pattern to .gitignore${NC}"
+                                fi
+                                ;;
+                            *.zip|*.tar.gz|*.tgz)
+                                if ! grep -q "*.zip" .gitignore; then
+                                    echo -e "*.zip\n*.tar.gz\n*.tgz" >> .gitignore
+                                    echo -e "${GREEN}✅ Added archive patterns to .gitignore${NC}"
+                                fi
+                                ;;
+                        esac
+                        
+                        LARGE_FILES_DETECTED=true
+                    fi
+                fi
+            done
+            
+            # If large files were detected, stage .gitignore and remove large files from staging
+            if [ "$LARGE_FILES_DETECTED" = true ]; then
+                echo -e "${BLUE}📝 Staging updated .gitignore...${NC}"
+                git add .gitignore
+                
+                # Remove large files from the list of files to be staged
+                echo -e "${BLUE}📝 Filtering out large files from staging...${NC}"
+                FILTERED_FILES=""
+                echo "$ALL_CHANGED_FILES" | while IFS= read -r file; do
+                    if [ -f "$file" ]; then
+                        SIZE_BYTES=$(stat -c%s "$file" 2>/dev/null || echo "0")
+                        if [ "$SIZE_BYTES" -le 10485760 ]; then
+                            FILTERED_FILES="$FILTERED_FILES $file"
+                        fi
+                    fi
+                done
+                
+                # Stage only the non-large files
+                if [ -n "$FILTERED_FILES" ]; then
+                    git add $FILTERED_FILES
+                    echo -e "${GREEN}✅ Staged only files under 10MB${NC}"
+                else
+                    echo -e "${YELLOW}⚠️  Only .gitignore changes to commit${NC}"
+                fi
+            else
+                # No large files, stage everything as normal
+                git add -A
+                echo -e "${GREEN}✅ All changes have been staged${NC}"
+            fi
+        else
+            git add -A
+            echo -e "${GREEN}✅ All changes have been staged${NC}"
+        fi
         
-        echo -e "${GREEN}✅ All changes have been staged${NC}"
-        
-        # Update staged files for large file check
+        # Update staged files for final check
         STAGED_CHANGES=$(git diff --cached --name-only)
     else
         echo -e "${RED}❌ No changes to commit${NC}"
@@ -225,14 +304,28 @@ if [ -z "$STAGED_CHANGES" ]; then
     fi
 fi
 
-LARGE_FILES=$(echo "$STAGED_CHANGES" | xargs -I {} find {} -size +10M 2>/dev/null)
+# Final check for large files in staged changes (should be none now, but double-check)
+LARGE_FILES=$(echo "$STAGED_CHANGES" | xargs -I {} sh -c 'if [ -f "{}" ]; then find "{}" -size +10M 2>/dev/null; fi')
 if [ -n "$LARGE_FILES" ]; then
-    echo -e "${YELLOW}⚠️  Large files detected:${NC}"
+    echo -e "${RED}⚠️  Somehow large files are still in staging area:${NC}"
     echo "$LARGE_FILES" | while IFS= read -r file; do
-        SIZE=$(du -h "$file" | cut -f1)
-        echo -e "${YELLOW}  $file ($SIZE)${NC}"
+        if [ -n "$file" ]; then
+            SIZE=$(du -h "$file" | cut -f1)
+            echo -e "${RED}  $file ($SIZE) - removing from staging${NC}"
+            git reset HEAD "$file"
+            echo "$file" >> .gitignore
+        fi
     done
-    echo -e "${YELLOW}💡 Consider using Git LFS for large files${NC}"
+    git add .gitignore
+    echo -e "${GREEN}✅ Large files removed from staging and added to .gitignore${NC}"
+fi
+
+# Check total size of staged changes
+TOTAL_SIZE_BYTES=$(git diff --cached --name-only | xargs -I {} sh -c 'if [ -f "{}" ]; then stat -c%s "{}"; fi' 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+if [ "$TOTAL_SIZE_BYTES" -gt 52428800 ]; then  # 50MB total
+    TOTAL_SIZE_HUMAN=$(echo "$TOTAL_SIZE_BYTES" | awk '{printf "%.1f MB", $1/1024/1024}')
+    echo -e "${YELLOW}⚠️  Large commit detected: $TOTAL_SIZE_HUMAN total${NC}"
+    echo -e "${YELLOW}💡 This may cause slow push/pull operations${NC}"
 fi
 
 # Check for sensitive files
