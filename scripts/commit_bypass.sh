@@ -322,71 +322,161 @@ fi
 
 # Check total size of staged changes
 TOTAL_SIZE_BYTES=$(git diff --cached --name-only | xargs -I {} sh -c 'if [ -f "{}" ]; then stat -c%s "{}"; fi' 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
-if [ "$TOTAL_SIZE_BYTES" -gt 52428800 ]; then  # 50MB total
+if [ "$TOTAL_SIZE_BYTES" -gt 10485760 ]; then  # Reduced to 10MB total (was 50MB)
     TOTAL_SIZE_HUMAN=$(echo "$TOTAL_SIZE_BYTES" | awk '{printf "%.1f MB", $1/1024/1024}')
-    echo -e "${YELLOW}⚠️  Large commit detected: $TOTAL_SIZE_HUMAN total${NC}"
-    echo -e "${YELLOW}💡 This may cause slow push/pull operations${NC}"
+    echo -e "${RED}❌ Large commit detected: $TOTAL_SIZE_HUMAN total${NC}"
+    echo -e "${RED}❌ This is too large for a typical code commit${NC}"
+    echo -e "${YELLOW}💡 Investigating large files...${NC}"
+    
+    # List all staged files with sizes
+    echo -e "${BLUE}📋 Staged files breakdown:${NC}"
+    git diff --cached --name-only | while IFS= read -r file; do
+        if [ -f "$file" ]; then
+            SIZE_BYTES=$(stat -c%s "$file" 2>/dev/null || echo "0")
+            SIZE_HUMAN=$(du -h "$file" | cut -f1)
+            if [ "$SIZE_BYTES" -gt 1048576 ]; then  # Files over 1MB
+                echo -e "${RED}  $file: $SIZE_HUMAN (TOO LARGE)${NC}"
+                # Auto-remove files over 1MB
+                git reset HEAD "$file"
+                echo "$file" >> .gitignore
+                echo -e "${BLUE}    → Removed from staging and added to .gitignore${NC}"
+            else
+                echo -e "${GREEN}  $file: $SIZE_HUMAN${NC}"
+            fi
+        fi
+    done
+    
+    # Update .gitignore and re-calculate
+    git add .gitignore
+    TOTAL_SIZE_BYTES=$(git diff --cached --name-only | xargs -I {} sh -c 'if [ -f "{}" ]; then stat -c%s "{}"; fi' 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+    TOTAL_SIZE_HUMAN=$(echo "$TOTAL_SIZE_BYTES" | awk '{printf "%.1f MB", $1/1024/1024}')
+    echo -e "${GREEN}✅ New commit size after cleanup: $TOTAL_SIZE_HUMAN${NC}"
+    
+    if [ "$TOTAL_SIZE_BYTES" -gt 10485760 ]; then  # Still too large
+        echo -e "${RED}❌ Commit is still too large after cleanup${NC}"
+        echo -e "${YELLOW}💡 Please manually review and remove unnecessary files${NC}"
+        echo -e "${YELLOW}💡 Consider committing in smaller chunks${NC}"
+        exit 1
+    fi
 fi
 
-# Check for sensitive files
-echo -e "${BLUE}🔒 Checking for sensitive files...${NC}"
-SENSITIVE_PATTERNS="*.key *.p12 *.jks *.keystore *.hprof java_pid*.log *.hprof java_pid*.hprof heap_dump*.hprof"
-for pattern in $SENSITIVE_PATTERNS; do
-    if echo "$STAGED_CHANGES" | grep -q "$pattern"; then
-        echo -e "${RED}❌ Sensitive file detected: $pattern${NC}"
-        echo -e "${RED}   This file should not be committed to version control${NC}"
-        
-        # Find the actual file and remove it from staging
-        SENSITIVE_FILE=$(echo "$STAGED_CHANGES" | grep "$pattern")
-        if [ -n "$SENSITIVE_FILE" ]; then
-            echo -e "${BLUE}📝 Removing $SENSITIVE_FILE from staging...${NC}"
-            git reset HEAD "$SENSITIVE_FILE"
-            
-            # Add to .gitignore if not already there
-            if ! grep -q "$SENSITIVE_FILE" .gitignore; then
-                echo "$SENSITIVE_FILE" >> .gitignore
-                echo -e "${GREEN}✅ Added $SENSITIVE_FILE to .gitignore${NC}"
+# Enhanced check for common large file types that shouldn't be in git
+echo -e "${BLUE}🔍 Scanning for inappropriate file types...${NC}"
+INAPPROPRIATE_PATTERNS=(
+    "\.class$"          # Java compiled classes
+    "\.jar$"            # Java archives
+    "\.war$"            # Web archives
+    "\.ear$"            # Enterprise archives
+    "\.zip$"            # Zip archives
+    "\.tar\.gz$"        # Compressed archives
+    "\.rar$"            # WinRAR archives
+    "\.7z$"             # 7-Zip archives
+    "\.iso$"            # Disk images
+    "\.dmg$"            # Mac disk images
+    "\.exe$"            # Windows executables
+    "\.msi$"            # Windows installers
+    "\.deb$"            # Debian packages
+    "\.rpm$"            # RedHat packages
+    "\.bin$"            # Binary files
+    "\.so$"             # Shared libraries
+    "\.dll$"            # Windows libraries
+    "\.dylib$"          # Mac libraries
+    "\.a$"              # Static libraries (but not .sha, .java, etc.)
+    "\.lib$"            # Windows libraries
+    "\.hprof$"          # Java heap dumps
+    "\.log$"            # Log files (usually large)
+    "\.out$"            # Output files
+    "\.tmp$"            # Temporary files
+    "\.cache$"          # Cache files
+    "\.pid$"            # Process ID files
+    "\.lock$"           # Lock files
+    "^target/"          # Maven build directory
+    "^build/"           # Gradle build directory
+    "^\.idea/"          # IntelliJ IDEA files
+    "^\.vscode/"        # VS Code files
+    "\.iml$"            # IntelliJ module files
+    "\.swp$"            # Vim swap files
+    "\.swo$"            # Vim swap files
+    "~$"                # Backup files
+    "^\.DS_Store$"      # Mac system files
+    "^Thumbs\.db$"      # Windows thumbnail cache
+    "^node_modules/"    # Node.js dependencies
+)
+
+FOUND_INAPPROPRIATE=false
+for pattern in "${INAPPROPRIATE_PATTERNS[@]}"; do
+    MATCHING_FILES=$(git diff --cached --name-only | grep -E "$pattern" || true)
+    if [ -n "$MATCHING_FILES" ]; then
+        echo -e "${RED}❌ Inappropriate files found matching pattern: $pattern${NC}"
+        echo "$MATCHING_FILES" | while IFS= read -r file; do
+            if [ -n "$file" ]; then
+                echo -e "${RED}  Removing: $file${NC}"
+                git reset HEAD "$file"
+                
+                # Convert regex pattern back to gitignore pattern for common cases
+                GITIGNORE_PATTERN=""
+                case "$pattern" in
+                    "\.class$") GITIGNORE_PATTERN="*.class" ;;
+                    "\.jar$") GITIGNORE_PATTERN="*.jar" ;;
+                    "\.war$") GITIGNORE_PATTERN="*.war" ;;
+                    "\.ear$") GITIGNORE_PATTERN="*.ear" ;;
+                    "\.zip$") GITIGNORE_PATTERN="*.zip" ;;
+                    "\.tar\.gz$") GITIGNORE_PATTERN="*.tar.gz" ;;
+                    "\.rar$") GITIGNORE_PATTERN="*.rar" ;;
+                    "\.7z$") GITIGNORE_PATTERN="*.7z" ;;
+                    "\.iso$") GITIGNORE_PATTERN="*.iso" ;;
+                    "\.dmg$") GITIGNORE_PATTERN="*.dmg" ;;
+                    "\.exe$") GITIGNORE_PATTERN="*.exe" ;;
+                    "\.msi$") GITIGNORE_PATTERN="*.msi" ;;
+                    "\.deb$") GITIGNORE_PATTERN="*.deb" ;;
+                    "\.rpm$") GITIGNORE_PATTERN="*.rpm" ;;
+                    "\.bin$") GITIGNORE_PATTERN="*.bin" ;;
+                    "\.so$") GITIGNORE_PATTERN="*.so" ;;
+                    "\.dll$") GITIGNORE_PATTERN="*.dll" ;;
+                    "\.dylib$") GITIGNORE_PATTERN="*.dylib" ;;
+                    "\.a$") GITIGNORE_PATTERN="*.a" ;;
+                    "\.lib$") GITIGNORE_PATTERN="*.lib" ;;
+                    "\.hprof$") GITIGNORE_PATTERN="*.hprof" ;;
+                    "\.log$") GITIGNORE_PATTERN="*.log" ;;
+                    "\.out$") GITIGNORE_PATTERN="*.out" ;;
+                    "\.tmp$") GITIGNORE_PATTERN="*.tmp" ;;
+                    "\.cache$") GITIGNORE_PATTERN="*.cache" ;;
+                    "\.pid$") GITIGNORE_PATTERN="*.pid" ;;
+                    "\.lock$") GITIGNORE_PATTERN="*.lock" ;;
+                    "^target/") GITIGNORE_PATTERN="target/" ;;
+                    "^build/") GITIGNORE_PATTERN="build/" ;;
+                    "^\.idea/") GITIGNORE_PATTERN=".idea/" ;;
+                    "^\.vscode/") GITIGNORE_PATTERN=".vscode/" ;;
+                    "\.iml$") GITIGNORE_PATTERN="*.iml" ;;
+                    "\.swp$") GITIGNORE_PATTERN="*.swp" ;;
+                    "\.swo$") GITIGNORE_PATTERN="*.swo" ;;
+                    "~$") GITIGNORE_PATTERN="*~" ;;
+                    "^\.DS_Store$") GITIGNORE_PATTERN=".DS_Store" ;;
+                    "^Thumbs\.db$") GITIGNORE_PATTERN="Thumbs.db" ;;
+                    "^node_modules/") GITIGNORE_PATTERN="node_modules/" ;;
+                    *) GITIGNORE_PATTERN="$file" ;;  # Fallback to exact filename
+                esac
+                
+                # Add to .gitignore if not already there
+                if [ -n "$GITIGNORE_PATTERN" ] && ! grep -q "^$GITIGNORE_PATTERN$" .gitignore 2>/dev/null; then
+                    echo "$GITIGNORE_PATTERN" >> .gitignore
+                fi
             fi
-            
-            # Add pattern to .gitignore if not already there
-            if ! grep -q "$pattern" .gitignore; then
-                echo "$pattern" >> .gitignore
-                echo -e "${GREEN}✅ Added $pattern pattern to .gitignore${NC}"
-            fi
-            
-            # Stage .gitignore
-            git add .gitignore
-            echo -e "${GREEN}✅ Updated .gitignore staged for commit${NC}"
-        fi
+        done
+        FOUND_INAPPROPRIATE=true
     fi
 done
 
-# Additional specific check for Java heap dumps with dynamic detection
-HEAP_DUMP_FILES=$(echo "$STAGED_CHANGES" | grep -E "(\.hprof$|java_pid[0-9]+|heap_dump)")
-if [ -n "$HEAP_DUMP_FILES" ]; then
-    echo -e "${RED}❌ Java heap dump files detected in staging area:${NC}"
-    echo "$HEAP_DUMP_FILES" | while IFS= read -r file; do
-        if [ -n "$file" ]; then
-            echo -e "${RED}  Removing: $file${NC}"
-            git reset HEAD "$file"
-            
-            # Add specific file to .gitignore
-            if ! grep -q "^$file$" .gitignore; then
-                echo "$file" >> .gitignore
-            fi
-        fi
-    done
-    
-    # Add comprehensive heap dump patterns to .gitignore
-    HEAP_PATTERNS=("*.hprof" "java_pid*.hprof" "heap_dump*" "java_pid*.log")
-    for heap_pattern in "${HEAP_PATTERNS[@]}"; do
-        if ! grep -q "^$heap_pattern$" .gitignore; then
-            echo "$heap_pattern" >> .gitignore
-        fi
-    done
-    
+if [ "$FOUND_INAPPROPRIATE" = true ]; then
     git add .gitignore
-    echo -e "${GREEN}✅ Heap dump files removed from staging and patterns added to .gitignore${NC}"
+    echo -e "${GREEN}✅ Inappropriate files removed and patterns added to .gitignore${NC}"
+    
+    # Re-stage remaining valid files
+    echo -e "${BLUE}📝 Re-staging remaining valid files...${NC}"
+    git add -A
+    
+    # Update staged changes list
+    STAGED_CHANGES=$(git diff --cached --name-only)
 fi
 
 # Perform the commit
