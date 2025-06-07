@@ -61,3 +61,6 @@ java_pid*.log
 *.swp
 *~
 .DS_Store
+./java_pid1266980.hprof
+java_pid1266980.hprof
+*.hprof

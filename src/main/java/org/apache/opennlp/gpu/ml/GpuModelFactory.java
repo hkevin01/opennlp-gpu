@@ -1,3 +1,30 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * PHASE 2: CORE IMPLEMENTATION - ML FRAMEWORK INTEGRATION
+ * 
+ * Factory class for creating GPU-accelerated machine learning models.
+ * This class provides methods to create various GPU-accelerated models
+ * from standard OpenNLP models or from scratch, enabling seamless integration
+ * with existing OpenNLP codebase while providing GPU acceleration benefits.
+ * 
+ * Part of the OpenNLP GPU acceleration project.
+ */
 package org.apache.opennlp.gpu.ml;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
@@ -30,7 +57,7 @@ public class GpuModelFactory {
         // This is a placeholder implementation - would need to access the internal structure
         // of the MaxentModel, which might require changes to OpenNLP core
         
-        logger.info("Creating GPU-accelerated MaxEnt model from standard model");
+        GpuModelFactory.logger.info("Creating GPU-accelerated MaxEnt model from standard model");
         
         // Placeholder values - in a real implementation, we'd extract these from the model
         int numOutcomes = model.getNumOutcomes();
@@ -49,7 +76,7 @@ public class GpuModelFactory {
      * @return A GPU-accelerated MaxEnt model
      */
     public static GpuMaxentModel createGpuMaxentModel(MaxentModel model) {
-        return createGpuMaxentModel(model, ComputeProviderFactory.getDefaultProvider());
+        return GpuModelFactory.createGpuMaxentModel(model, ComputeProviderFactory.getDefaultProvider());
     }
     
     /**
@@ -63,7 +90,7 @@ public class GpuModelFactory {
      */
     public static GpuPerceptronModel createGpuPerceptronModel(int numOutcomes, int numFeatures,
                                                             float[] weights, ComputeProvider provider) {
-        logger.info("Creating GPU-accelerated Perceptron model");
+        GpuModelFactory.logger.info("Creating GPU-accelerated Perceptron model");
         return new GpuPerceptronModel(provider, numOutcomes, numFeatures, weights);
     }
     
@@ -83,7 +110,7 @@ public class GpuModelFactory {
                                                                   int outputSize, float[][] weights,
                                                                   float[][] biases, ActivationType activationType,
                                                                   ComputeProvider provider) {
-        logger.info("Creating GPU-accelerated Neural Network model");
+        GpuModelFactory.logger.info("Creating GPU-accelerated Neural Network model");
         return new GpuNeuralNetworkModel(provider, inputSize, hiddenSizes, outputSize,
                                        weights, biases, activationType);
     }

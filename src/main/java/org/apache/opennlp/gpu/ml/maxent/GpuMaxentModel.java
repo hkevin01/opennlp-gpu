@@ -1,3 +1,29 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * PHASE 2: CORE IMPLEMENTATION - ML FRAMEWORK INTEGRATION
+ * 
+ * GPU-accelerated implementation of the Maximum Entropy model.
+ * This class extends the standard OpenNLP MaxEnt model with GPU-accelerated
+ * computation for probability distributions and evaluations.
+ * 
+ * Part of the OpenNLP GPU acceleration project.
+ */
 package org.apache.opennlp.gpu.ml.maxent;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
@@ -41,7 +67,7 @@ public class GpuMaxentModel {
         this.parameters = parameters;
         this.contexts = contexts;
         
-        logger.info("Initialized GPU-accelerated MaxEnt model with {} outcomes and {} features",
+        GpuMaxentModel.logger.info("Initialized GPU-accelerated MaxEnt model with {} outcomes and {} features",
                 numOutcomes, numFeatures);
     }
     
@@ -124,6 +150,6 @@ public class GpuMaxentModel {
         if (matrixOp != null) {
             matrixOp.release();
         }
-        logger.info("Released GPU resources for MaxEnt model");
+        GpuMaxentModel.logger.info("Released GPU resources for MaxEnt model");
     }
 }
