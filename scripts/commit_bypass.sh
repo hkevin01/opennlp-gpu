@@ -88,6 +88,44 @@ if [ ! -f "pom.xml" ] || ! grep -q "opennlp-gpu" pom.xml 2>/dev/null; then
     exit 1
 fi
 
+# Ensure we're on the main branch
+echo -e "${BLUE}🔄 Checking current branch and switching to main...${NC}"
+CURRENT_BRANCH=$(git branch --show-current)
+if [ "$CURRENT_BRANCH" != "main" ]; then
+    echo -e "${YELLOW}⚠️  Currently on branch: $CURRENT_BRANCH${NC}"
+    echo -e "${BLUE}📝 Switching to main branch...${NC}"
+    
+    # Stash any changes if they exist
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo -e "${BLUE}💾 Stashing current changes...${NC}"
+        git stash push -m "Auto-stash before switching to main branch"
+        STASHED_CHANGES=true
+    else
+        STASHED_CHANGES=false
+    fi
+    
+    # Switch to main branch
+    git checkout main
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}❌ Failed to switch to main branch${NC}"
+        exit 1
+    fi
+    
+    # Pop stashed changes if any
+    if [ "$STASHED_CHANGES" = true ]; then
+        echo -e "${BLUE}📤 Restoring stashed changes...${NC}"
+        git stash pop
+        if [ $? -ne 0 ]; then
+            echo -e "${YELLOW}⚠️  Failed to restore stashed changes automatically${NC}"
+            echo -e "${YELLOW}💡 Please resolve manually with: git stash list; git stash apply${NC}"
+        fi
+    fi
+    
+    echo -e "${GREEN}✅ Successfully switched to main branch${NC}"
+else
+    echo -e "${GREEN}✅ Already on main branch${NC}"
+fi
+
 # Quick GPU test if requested
 if [ "$GPU_TEST" = true ]; then
     echo -e "${BLUE}🔍 Running quick GPU availability test...${NC}"
