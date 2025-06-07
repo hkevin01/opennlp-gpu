@@ -170,3 +170,34 @@ build/
 .DS_Store
 Thumbs.db
 
+
+# Java heap dumps and profiling files
+*.hprof
+java_pid*.hprof
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Build artifacts
+target/
+build/
+*.jar
+*.war
+*.ear
+*.class
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
+
