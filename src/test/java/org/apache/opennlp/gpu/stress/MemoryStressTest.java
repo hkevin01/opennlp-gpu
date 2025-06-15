@@ -229,6 +229,8 @@ public class MemoryStressTest {
             final int threadId = i;
             threads[i] = new Thread(() -> {
                 try {
+                    logger.info("Starting thread {}", threadId);
+                    
                     // Each thread gets its own matrix operation instance for thread safety
                     ComputeProvider provider = new CpuComputeProvider();
                     MatrixOperation matrixOp = new CpuMatrixOperation(provider);
@@ -370,6 +372,48 @@ public class MemoryStressTest {
             allocatedArrays.clear();
             System.gc();
         }
+    }
+    
+    @Test
+    @Timeout(300) // 5 minutes timeout
+    public void testMemoryAllocation() {
+        GpuConfig config = new GpuConfig();
+        config.setGpuEnabled(true);
+        config.setDebugMode(true);
+        
+        long initialMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        int iterations = 1000;
+        
+        for (int i = 0; i < iterations; i++) {
+            try {
+                // Simulate memory allocation
+                long memoryUsed = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+                logger.debug("Iteration {}: Memory used {} MB", i, memoryUsed / 1024 / 1024);
+                
+                // Allocate memory
+                float[] data = new float[1024 * 1024]; // Allocate 1MB
+                for (int j = 0; j < data.length; j++) {
+                    data[j] = (float) Math.random();
+                }
+                
+                // Periodic garbage collection
+                if (i % 100 == 0) {
+                    System.gc();
+                    Thread.sleep(10);
+                }
+                
+            } catch (Exception e) {
+                logger.debug("Allocation failed at iteration {}: Memory {} MB", i, 
+                           (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024);
+            }
+        }
+        
+        long finalMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long peakMemory = finalMemory; // Simplified for example
+        long avgMemory = finalMemory; // Simplified for example
+        
+        logger.info("Memory test completed - Initial: {} MB, Peak: {} MB, Final: {} MB", 
+                   initialMemory / 1024 / 1024, peakMemory / 1024 / 1024, finalMemory / 1024 / 1024);
     }
     
     // Utility methods

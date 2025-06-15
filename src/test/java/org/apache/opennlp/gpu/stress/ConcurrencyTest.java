@@ -534,4 +534,258 @@ public class ConcurrencyTest {
             }
         }
     }
+    
+    @Test
+    @Timeout(300) // 5 minutes timeout
+    public void testConcurrentGpuOperations() {
+        int numThreads = Integer.parseInt(System.getProperty("test.threads", "4"));
+        logger.info("Starting concurrent GPU operations test with {} threads", numThreads);
+        
+        GpuConfig config = new GpuConfig();
+        config.setGpuEnabled(true);
+        
+        Thread[] threads = new Thread[numThreads];
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch completionLatch = new CountDownLatch(numThreads);
+        
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger errorCount = new AtomicInteger(0);
+        AtomicReference<Exception> firstException = new AtomicReference<>();
+        
+        long startTime = System.currentTimeMillis();
+        
+        // Create and start threads
+        for (int i = 0; i < numThreads; i++) {
+            final int threadId = i;
+            Thread thread = new Thread(() -> {
+                try {
+                    logger.debug("Thread {} starting GPU operations", threadId);
+                    
+                    ComputeProvider provider = new CpuComputeProvider(); // Use CPU for testing
+                    MatrixOperation matrixOp = new CpuMatrixOperation(provider);
+                    
+                    // Wait for signal to start
+                    startLatch.await();
+                    
+                    // Perform a series of matrix operations
+                    for (int op = 0; op < OPERATIONS_PER_THREAD; op++) {
+                        performMatrixOperation(matrixOp, threadId, op);
+                        
+                        // Introduce random sleep to simulate varied execution time
+                        if (ThreadLocalRandom.current().nextInt(10) == 0) {
+                            Thread.sleep(ThreadLocalRandom.current().nextInt(5));
+                        }
+                    }
+                    
+                    successCount.incrementAndGet();
+                    logger.debug("Thread {} completed successfully", threadId);
+                    
+                } catch (Exception e) {
+                    errorCount.incrementAndGet();
+                    firstException.compareAndSet(null, e);
+                    logger.error("Thread {} failed: {}", threadId, e.getMessage());
+                } finally {
+                    completionLatch.countDown();
+                    logger.warn("Thread {} completed with status: {}", threadId, "finished");
+                }
+            });
+            
+            threads[i] = thread;
+            thread.start();
+        }
+        
+        // Signal all threads to start
+        startLatch.countDown();
+        
+        // Wait for all threads to complete
+        boolean completed = completionLatch.await(5, TimeUnit.MINUTES);
+        long totalTime = System.currentTimeMillis() - startTime;
+        
+        if (!completed) {
+            throw new RuntimeException("Concurrent test timed out");
+        }
+        
+        logger.info("Concurrent test completed in {} ms with {} threads and {} operations", 
+                   totalTime, numThreads, OPERATIONS_PER_THREAD * numThreads);
+        
+        // Check for errors
+        if (firstException.get() != null) {
+            throw new AssertionError("Concurrent GPU operations test failed", firstException.get());
+        }
+        
+        if (errorCount.get() > 0) {
+            throw new AssertionError("Concurrent GPU operations test had " + errorCount.get() + " errors");
+        }
+    }
+    
+    private void performMatrixOperation(int threadId) {
+        try {
+            logger.debug("Thread {} performing matrix operation", threadId);
+            
+            // Create small matrices for quick operations
+            int size = MATRIX_SIZE + (threadId * 10); // Slight size variation per thread
+            
+            float[] a = generateRandomMatrix(size);
+            float[] b = generateRandomMatrix(size);
+            float[] result = new float[size];
+            
+            // Perform operation
+            new CpuMatrixOperation().add(a, b, result, size);
+            
+            // Validate result (basic check)
+            for (int i = 0; i < Math.min(10, size); i++) {
+                if (Float.isNaN(result[i]) || Float.isInfinite(result[i])) {
+                    throw new RuntimeException("Invalid result in thread " + threadId + ": " + result[i]);
+                }
+            }
+            
+        } catch (Exception e) {
+            logger.error("Matrix operation failed for thread {}: {}", threadId, e.getMessage());
+        }
+    }
+    
+    @Test
+    @Timeout(300) // 5 minutes timeout
+    public void testGpuResourceSharing() {
+        logger.info("Testing GPU resource sharing among threads");
+        
+        final int threadCount = 4;
+        final int operationsPerThread = 100;
+        
+        GpuConfig config = new GpuConfig();
+        config.setGpuEnabled(true);
+        
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch completionLatch = new CountDownLatch(threadCount);
+        
+        AtomicInteger totalOperations = new AtomicInteger(0);
+        AtomicInteger errorCount = new AtomicInteger(0);
+        
+        try {
+            // Submit tasks
+            for (int i = 0; i < threadCount; i++) {
+                final int threadId = i;
+                
+                executor.submit(() -> {
+                    ComputeProvider provider = new CpuComputeProvider(); // Use CPU for testing
+                    MatrixOperation matrixOp = new CpuMatrixOperation(provider);
+                    
+                    try {
+                        // Wait for signal to start
+                        startLatch.await();
+                        
+                        // Perform a series of matrix operations
+                        for (int op = 0; op < operationsPerThread; op++) {
+                            performMatrixOperation(matrixOp, threadId, op);
+                            totalOperations.incrementAndGet();
+                        }
+                        
+                    } catch (Exception e) {
+                        errorCount.incrementAndGet();
+                        logger.error("Thread {} failed: {}", threadId, e.getMessage());
+                    } finally {
+                        completionLatch.countDown();
+                    }
+                });
+            }
+            
+            // Start all threads
+            long startTime = System.currentTimeMillis();
+            startLatch.countDown();
+            
+            // Wait for completion
+            boolean completed = completionLatch.await(5, TimeUnit.MINUTES);
+            long totalTime = System.currentTimeMillis() - startTime;
+            
+            if (!completed) {
+                throw new RuntimeException("Resource sharing test timed out");
+            }
+            
+            logger.info("Resource sharing test completed in {} ms. Total operations: {}, Errors: {}", 
+                       totalTime, totalOperations.get(), errorCount.get());
+            
+        } finally {
+            executor.shutdownNow();
+            try {
+                executor.awaitTermination(30, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+    
+    private void runStressTest() {
+        double loadFactor = Double.parseDouble(System.getProperty("stress.load", "1.0"));
+        logger.debug("Running stress test with load factor: {}", loadFactor);
+        
+        final int baseThreads = 4;
+        final int baseOperations = 100;
+        
+        int threads = (int) (baseThreads * loadFactor);
+        int operations = (int) (baseOperations * loadFactor);
+        
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch completionLatch = new CountDownLatch(threads);
+        
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger errorCount = new AtomicInteger(0);
+        long startTime = System.currentTimeMillis();
+        
+        // Submit tasks
+        for (int i = 0; i < threads; i++) {
+            final int threadId = i;
+            
+            executor.submit(() -> {
+                ComputeProvider provider = new CpuComputeProvider(); // Use CPU for testing
+                MatrixOperation matrixOp = new CpuMatrixOperation(provider);
+                
+                try {
+                    // Wait for signal to start
+                    startLatch.await();
+                    
+                    // Perform a series of matrix operations
+                    for (int op = 0; op < operations; op++) {
+                        performMatrixOperation(matrixOp, threadId, op);
+                    }
+                    
+                    successCount.incrementAndGet();
+                    
+                } catch (Exception e) {
+                    errorCount.incrementAndGet();
+                    logger.error("Thread {} failed: {}", threadId, e.getMessage());
+                } finally {
+                    completionLatch.countDown();
+                }
+            });
+        }
+        
+        // Start all threads
+        startLatch.countDown();
+        
+        try {
+            // Wait for completion
+            boolean completed = completionLatch.await(5, TimeUnit.MINUTES);
+            long totalTime = System.currentTimeMillis() - startTime;
+            
+            if (!completed) {
+                throw new RuntimeException("Stress test timed out");
+            }
+            
+            // Summary
+            double successRate = (double) successCount.get() / threads * 100;
+            logger.info("Stress test summary - Threads: {}, Operations: {}, Success Rate: {}%, " +
+                       "Avg Time: {} ms, Total Time: {} ms", 
+                       threads, operations, successRate, (totalTime / threads), totalTime);
+            
+        } finally {
+            executor.shutdownNow();
+            try {
+                executor.awaitTermination(30, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
 }

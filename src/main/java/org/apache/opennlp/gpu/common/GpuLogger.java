@@ -20,8 +20,16 @@ public class GpuLogger {
         System.out.println("[INFO] " + className + ": " + message);
     }
     
+    public void info(String message, Object... params) {
+        System.out.println("[INFO] " + className + ": " + formatMessage(message, params));
+    }
+    
     public void warn(String message) {
         System.out.println("[WARN] " + className + ": " + message);
+    }
+    
+    public void warn(String message, Object... params) {
+        System.out.println("[WARN] " + className + ": " + formatMessage(message, params));
     }
     
     public void error(String message) {
@@ -35,11 +43,37 @@ public class GpuLogger {
         }
     }
     
+    public void error(String message, Object... params) {
+        System.err.println("[ERROR] " + className + ": " + formatMessage(message, params));
+    }
+    
     public void debug(String message) {
         // Only print debug messages if debug mode is enabled
         String debugMode = System.getProperty("gpu.debug", "false");
         if ("true".equalsIgnoreCase(debugMode)) {
             System.out.println("[DEBUG] " + className + ": " + message);
         }
+    }
+    
+    public void debug(String message, Object... params) {
+        String debugMode = System.getProperty("gpu.debug", "false");
+        if ("true".equalsIgnoreCase(debugMode)) {
+            System.out.println("[DEBUG] " + className + ": " + formatMessage(message, params));
+        }
+    }
+    
+    private String formatMessage(String message, Object... params) {
+        if (params == null || params.length == 0) {
+            return message;
+        }
+        
+        // Simple parameter substitution - replace {} with parameters
+        String result = message;
+        for (Object param : params) {
+            if (result.contains("{}")) {
+                result = result.replaceFirst("\\{\\}", String.valueOf(param));
+            }
+        }
+        return result;
     }
 }
