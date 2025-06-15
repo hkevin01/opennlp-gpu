@@ -24,7 +24,7 @@ public class ComputeConfiguration {
     private long benchmarkCacheTimeMs = 3600000; // 1 hour
     
     // Provider-specific options
-    private final Map<String, String> providerOptions = new HashMap<>();
+    private final Map<String, String> providerOptions = new HashMap<String, String>();
     
     /**
      * Default constructor.

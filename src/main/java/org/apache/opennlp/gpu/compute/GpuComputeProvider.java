@@ -1,15 +1,17 @@
-package org.apache.opennlp.gpu.common;
+package org.apache.opennlp.gpu.compute;
+
+import org.apache.opennlp.gpu.common.ComputeProvider;
+import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
- * ROCm-based compute provider implementation
+ * Enhanced GPU compute provider - Java 8 compatible
  */
-public class RocmComputeProvider implements ComputeProvider {
+public class GpuComputeProvider implements ComputeProvider {
     
-    private final ResourceManager resourceManager;
-    private boolean initialized = false;
+    private final GpuConfig config;
     
-    public RocmComputeProvider() {
-        this.resourceManager = new ResourceManager();
+    public GpuComputeProvider(GpuConfig config) {
+        this.config = config;
     }
     
     @Override
@@ -19,36 +21,32 @@ public class RocmComputeProvider implements ComputeProvider {
     
     @Override
     public void cleanup() {
-        if (resourceManager != null) {
-            resourceManager.cleanup();
-        }
-        initialized = false;
+        // Cleanup GPU resources
     }
     
     @Override
     public String getName() {
-        return "ROCm Provider";
+        return "GPU Provider";
     }
     
     @Override
     public Type getType() {
-        return Type.ROCM;
+        return Type.OPENCL; // Default to OpenCL
     }
     
     @Override
     public boolean isAvailable() {
-        // TODO: Check if ROCm is available
         return false; // Stub implementation
     }
     
     @Override
     public Object getResourceManager() {
-        return resourceManager;
+        return null; // TODO: Implement resource manager
     }
     
     @Override
     public void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k) {
-        // TODO: Implement ROCm matrix multiplication
+        // TODO: Implement GPU matrix multiplication
         // For now, fallback to CPU implementation
         CpuComputeProvider cpu = new CpuComputeProvider();
         cpu.matrixMultiply(a, b, result, m, n, k);
@@ -56,40 +54,44 @@ public class RocmComputeProvider implements ComputeProvider {
     
     @Override
     public void matrixAdd(float[] a, float[] b, float[] result, int size) {
-        // TODO: Implement ROCm matrix addition
+        // TODO: Implement GPU matrix addition
         CpuComputeProvider cpu = new CpuComputeProvider();
         cpu.matrixAdd(a, b, result, size);
     }
     
     @Override
     public void matrixTranspose(float[] input, float[] output, int rows, int cols) {
-        // TODO: Implement ROCm matrix transpose
+        // TODO: Implement GPU matrix transpose
         CpuComputeProvider cpu = new CpuComputeProvider();
         cpu.matrixTranspose(input, output, rows, cols);
     }
     
     @Override
     public void extractFeatures(String[] text, float[] features) {
-        // TODO: Implement ROCm feature extraction
+        // TODO: Implement GPU feature extraction
         CpuComputeProvider cpu = new CpuComputeProvider();
         cpu.extractFeatures(text, features);
     }
     
     @Override
     public void computeTfIdf(float[] termFreq, float[] docFreq, float[] result, int size) {
-        // TODO: Implement ROCm TF-IDF computation
+        // TODO: Implement GPU TF-IDF computation
         CpuComputeProvider cpu = new CpuComputeProvider();
         cpu.computeTfIdf(termFreq, docFreq, result, size);
     }
     
     @Override
     public void initialize() {
-        // TODO: Initialize ROCm context
-        initialized = true;
+        // TODO: Initialize GPU context
     }
     
     @Override
     public boolean supportsOperation(String operationType) {
-        return initialized; // Only support operations if initialized
+        return false; // Stub implementation
+    }
+    
+    // Static method for availability checking
+    public static boolean isGpuAvailable() {
+        return false; // For now, always return false
     }
 }

@@ -1,103 +1,92 @@
 package org.apache.opennlp.gpu.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
- * Utility class for loading native libraries.
- * Handles both loading from system library path and extracting from JAR.
+ * Utility class for loading native libraries
+ * Java 8 compatible implementation
  */
-public final class NativeLibraryLoader {
+public class NativeLibraryLoader {
     
-    // Add logger declaration
-    private static final Logger logger = LoggerFactory.getLogger(NativeLibraryLoader.class);
+    private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
     
     /**
-     * Attempt to load a native library.
-     * First tries to load from system library path, then from JAR.
-     *
-     * @param libraryName the name of the library without platform-specific prefixes/suffixes
-     * @return true if library was loaded successfully
+     * Load a native library from resources
      */
-    public static boolean loadLibrary(String libraryName) {
+    public static void loadLibrary(String libraryName) {
         try {
-            // Try to load directly first
+            // Try system library first
             System.loadLibrary(libraryName);
-            logger.info("Successfully loaded library '{}' from system library path", libraryName);
-            return true;
-        } catch (UnsatisfiedLinkError e) {
-            logger.debug("Could not load library '{}' from system library path: {}", libraryName, e.getMessage());
-            
-            // Try to load from JAR
-            return loadLibraryFromJar(libraryName);
+        } catch (UnsatisfiedLinkError e1) {
+            try {
+                // Try loading from resources
+                loadLibraryFromResource(libraryName);
+            } catch (Exception e2) {
+                System.err.println("Failed to load native library: " + libraryName);
+                System.err.println("System load error: " + e1.getMessage());
+                System.err.println("Resource load error: " + e2.getMessage());
+                throw new RuntimeException("Could not load native library: " + libraryName, e2);
+            }
         }
     }
     
-    /**
-     * Load a library from the JAR file.
-     *
-     * @param libraryName the name of the library without platform-specific prefixes/suffixes
-     * @return true if library was loaded successfully
-     */
-    private static boolean loadLibraryFromJar(String libraryName) {
-        String fullLibraryName = System.mapLibraryName(libraryName);
-        String resourcePath = "/natives/" + fullLibraryName;
+    private static void loadLibraryFromResource(String libraryName) throws IOException {
+        String osName = System.getProperty("os.name").toLowerCase();
+        String architecture = System.getProperty("os.arch");
         
-        try (InputStream in = NativeLibraryLoader.class.getResourceAsStream(resourcePath)) {
-            if (in == null) {
-                logger.error("Could not find native library '{}' in JAR at {}", libraryName, resourcePath);
-                return false;
+        String libPath = getLibraryPath(libraryName, osName, architecture);
+        
+        try (InputStream is = NativeLibraryLoader.class.getResourceAsStream(libPath)) {
+            if (is == null) {
+                throw new IOException("Native library not found in resources: " + libPath);
             }
             
-            // Create temporary directory if it doesn't exist
-            Path tempDir = createTempDirectory();
-            File tempFile = new File(tempDir.toFile(), fullLibraryName);
+            // Create temporary file
+            File tempFile = File.createTempFile("native_", getLibraryExtension(osName));
+            tempFile.deleteOnExit();
             
-            // Extract library to temporary file
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            // Copy library to temporary file
+            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
                 byte[] buffer = new byte[8192];
                 int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
                 }
             }
             
             // Load the library
             System.load(tempFile.getAbsolutePath());
-            logger.info("Successfully loaded library '{}' from JAR", libraryName);
-            
-            // Mark for deletion on exit
-            tempFile.deleteOnExit();
-            return true;
-        } catch (IOException | UnsatisfiedLinkError e) {
-            logger.error("Failed to load native library '{}' from JAR: {}", libraryName, e.getMessage());
-            return false;
         }
     }
     
-    /**
-     * Create a temporary directory for extracting native libraries.
-     *
-     * @return the path to the temporary directory
-     * @throws IOException if the directory could not be created
-     */
-    private static Path createTempDirectory() throws IOException {
-        String tempDirName = "opennlp-gpu-native-" + System.nanoTime();
-        Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"), tempDirName);
+    private static String getLibraryPath(String libraryName, String osName, String architecture) {
+        StringBuilder path = new StringBuilder("/natives/");
         
-        if (Files.notExists(tempDir)) {
-            Files.createDirectory(tempDir);
-            tempDir.toFile().deleteOnExit();
+        if (osName.contains("windows")) {
+            path.append("windows/");
+        } else if (osName.contains("linux")) {
+            path.append("linux/");
+        } else if (osName.contains("mac")) {
+            path.append("macos/");
         }
         
-        return tempDir;
+        path.append(architecture).append("/");
+        path.append(libraryName);
+        path.append(getLibraryExtension(osName));
+        
+        return path.toString();
+    }
+    
+    private static String getLibraryExtension(String osName) {
+        if (osName.contains("windows")) {
+            return ".dll";
+        } else if (osName.contains("mac")) {
+            return ".dylib";
+        } else {
+            return ".so";
+        }
     }
 }

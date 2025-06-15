@@ -1,117 +1,73 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * PHASE 2: CORE IMPLEMENTATION - ML FRAMEWORK INTEGRATION
- * 
- * Factory class for creating GPU-accelerated machine learning models.
- * This class provides methods to create various GPU-accelerated models
- * from standard OpenNLP models or from scratch, enabling seamless integration
- * with existing OpenNLP codebase while providing GPU acceleration benefits.
- * 
- * Part of the OpenNLP GPU acceleration project.
- */
 package org.apache.opennlp.gpu.ml;
 
-import org.apache.opennlp.gpu.common.ComputeProvider;
-import org.apache.opennlp.gpu.common.ComputeProviderFactory;
+import org.apache.opennlp.gpu.common.GpuConfig;
+import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
-import org.apache.opennlp.gpu.ml.neural.GpuNeuralNetworkModel;
-import org.apache.opennlp.gpu.ml.neural.GpuNeuralNetworkModel.ActivationType;
-import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.opennlp.maxent.MaxentModel;
+import org.apache.opennlp.model.Context;
+
+
 
 /**
- * Factory class for creating GPU-accelerated machine learning models.
- * This class provides methods to create various GPU-accelerated models
- * from standard OpenNLP models or from scratch.
+ * Factory for creating GPU-accelerated ML models
+ * Provides a unified interface for creating GPU-enhanced versions
+ * of OpenNLP machine learning models.
  */
 public class GpuModelFactory {
     
-    private static final Logger logger = LoggerFactory.getLogger(GpuModelFactory.class);
+    private static final GpuLogger logger = GpuLogger.getLogger(GpuModelFactory.class);
+    
+    private final GpuConfig config;
     
     /**
-     * Creates a GPU-accelerated MaxEnt model from a standard OpenNLP MaxentModel.
-     * 
-     * @param model The standard OpenNLP MaxentModel
-     * @param provider The compute provider to use
-     * @return A GPU-accelerated MaxEnt model
+     * Creates a new GPU model factory with the given configuration
      */
-    public static GpuMaxentModel createGpuMaxentModel(MaxentModel model, ComputeProvider provider) {
-        // Extract model parameters from standard model
-        // This is a placeholder implementation - would need to access the internal structure
-        // of the MaxentModel, which might require changes to OpenNLP core
-        
-        GpuModelFactory.logger.info("Creating GPU-accelerated MaxEnt model from standard model");
-        
-        // Placeholder values - in a real implementation, we'd extract these from the model
-        int numOutcomes = model.getNumOutcomes();
-        int numFeatures = 1000; // Placeholder
-        float[] parameters = new float[numFeatures * numOutcomes]; // Placeholder
-        Context[] contexts = new Context[0]; // Placeholder
-        
-        return new GpuMaxentModel(provider, numOutcomes, numFeatures, parameters, contexts);
+    public GpuModelFactory(GpuConfig config) {
+        this.config = config;
+        logger.info("Created GPU model factory with GPU enabled: " + config.isGpuEnabled());
     }
     
     /**
-     * Creates a GPU-accelerated MaxEnt model from a standard OpenNLP MaxentModel
-     * using the default compute provider.
-     * 
-     * @param model The standard OpenNLP MaxentModel
-     * @return A GPU-accelerated MaxEnt model
+     * Creates a GPU-accelerated MaxEnt model
      */
-    public static GpuMaxentModel createGpuMaxentModel(MaxentModel model) {
-        return GpuModelFactory.createGpuMaxentModel(model, ComputeProviderFactory.getDefaultProvider());
+    public MaxentModel createGpuMaxentModel(MaxentModel cpuModel) {
+        try {
+            if (config.isGpuEnabled()) {
+                return new GpuMaxentModel(cpuModel, config);
+            } else {
+                logger.info("GPU disabled, returning CPU model");
+                return cpuModel;
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to create GPU MaxEnt model, falling back to CPU: " + e.getMessage());
+            return cpuModel;
+        }
     }
     
     /**
-     * Creates a GPU-accelerated Perceptron model with the given parameters.
-     * 
-     * @param numOutcomes The number of outcomes
-     * @param numFeatures The number of features
-     * @param weights The model weights
-     * @param provider The compute provider to use
-     * @return A GPU-accelerated Perceptron model
+     * Creates a GPU-accelerated model adapter
      */
-    public static GpuPerceptronModel createGpuPerceptronModel(int numOutcomes, int numFeatures,
-                                                            float[] weights, ComputeProvider provider) {
-        GpuModelFactory.logger.info("Creating GPU-accelerated Perceptron model");
-        return new GpuPerceptronModel(provider, numOutcomes, numFeatures, weights);
+    public MaxentModel createGpuModelAdapter(MaxentModel cpuModel) {
+        try {
+            return new GpuModelAdapter(cpuModel, config);
+        } catch (Exception e) {
+            logger.warn("Failed to create GPU model adapter, returning CPU model: " + e.getMessage());
+            return cpuModel;
+        }
     }
     
     /**
-     * Creates a GPU-accelerated Neural Network model with the given parameters.
-     * 
-     * @param inputSize The size of the input layer
-     * @param hiddenSizes The sizes of the hidden layers
-     * @param outputSize The size of the output layer
-     * @param weights The weight matrices for each layer
-     * @param biases The bias vectors for each layer
-     * @param activationType The activation function type
-     * @param provider The compute provider to use
-     * @return A GPU-accelerated Neural Network model
+     * Determines if GPU acceleration should be used for the given model
      */
-    public static GpuNeuralNetworkModel createGpuNeuralNetworkModel(int inputSize, int[] hiddenSizes,
-                                                                  int outputSize, float[][] weights,
-                                                                  float[][] biases, ActivationType activationType,
-                                                                  ComputeProvider provider) {
-        GpuModelFactory.logger.info("Creating GPU-accelerated Neural Network model");
-        return new GpuNeuralNetworkModel(provider, inputSize, hiddenSizes, outputSize,
-                                       weights, biases, activationType);
+    public boolean shouldUseGpu(MaxentModel model) {
+        return config.isGpuEnabled() && 
+               model.getNumOutcomes() > 10;
+    }
+    
+    /**
+     * Gets the current GPU configuration
+     */
+    public GpuConfig getConfig() {
+        return config;
     }
 }

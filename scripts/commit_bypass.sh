@@ -145,6 +145,124 @@ if [ "$GPU_TEST" = true ]; then
     fi
 fi
 
+# Add Java environment check
+echo -e "${BLUE}☕ Checking Java environment...${NC}"
+
+# Check JAVA_HOME
+if [ -n "$JAVA_HOME" ]; then
+    if [ -d "$JAVA_HOME" ]; then
+        echo -e "${GREEN}  ✓ JAVA_HOME is set and valid: $JAVA_HOME${NC}"
+        JAVA_VERSION=$("$JAVA_HOME/bin/java" -version 2>&1 | head -n1 | cut -d'"' -f2)
+        echo -e "${GREEN}  ✓ Java version: $JAVA_VERSION${NC}"
+    else
+        echo -e "${RED}  ❌ JAVA_HOME points to invalid directory: $JAVA_HOME${NC}"
+        echo -e "${YELLOW}  💡 Attempting to find Java installation...${NC}"
+        
+        # Try to find Java installations
+        POSSIBLE_JAVA_HOMES=(
+            "/usr/lib/jvm/java-11-openjdk-amd64"
+            "/usr/lib/jvm/java-17-openjdk-amd64"
+            "/usr/lib/jvm/java-21-openjdk-amd64"
+            "/usr/lib/jvm/default-java"
+            "/usr/lib/jvm/java-8-openjdk-amd64"
+        )
+        
+        for java_path in "${POSSIBLE_JAVA_HOMES[@]}"; do
+            if [ -d "$java_path" ]; then
+                echo -e "${GREEN}  ✓ Found Java at: $java_path${NC}"
+                echo -e "${YELLOW}  💡 Consider setting JAVA_HOME: export JAVA_HOME=$java_path${NC}"
+                break
+            fi
+        done
+    fi
+else
+    echo -e "${YELLOW}  ⚠ JAVA_HOME not set${NC}"
+    
+    # Check if java is in PATH
+    if command -v java &> /dev/null; then
+        JAVA_VERSION=$(java -version 2>&1 | head -n1 | cut -d'"' -f2)
+        echo -e "${GREEN}  ✓ Java found in PATH: $JAVA_VERSION${NC}"
+        JAVA_PATH=$(which java)
+        echo -e "${GREEN}  ✓ Java executable: $JAVA_PATH${NC}"
+    else
+        echo -e "${RED}  ❌ Java not found in PATH${NC}"
+        echo -e "${YELLOW}  💡 Install Java: sudo apt update && sudo apt install openjdk-11-jdk${NC}"
+    fi
+fi
+
+# Check Maven configuration
+if [ -f "pom.xml" ]; then
+    echo -e "${BLUE}🔧 Checking Maven configuration...${NC}"
+    
+    # Check for Java version in pom.xml
+    MAVEN_JAVA_VERSION=$(grep -oP '(?<=<maven.compiler.source>)[^<]+' pom.xml 2>/dev/null || \
+                        grep -oP '(?<=<java.version>)[^<]+' pom.xml 2>/dev/null || \
+                        grep -oP '(?<=<target>)[^<]+' pom.xml 2>/dev/null | head -1)
+    
+    if [ -n "$MAVEN_JAVA_VERSION" ]; then
+        echo -e "${GREEN}  ✓ Maven configured for Java: $MAVEN_JAVA_VERSION${NC}"
+        
+        # Check if the configured Java version is available
+        case "$MAVEN_JAVA_VERSION" in
+            "8"|"1.8")
+                EXPECTED_JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+                ;;
+            "11")
+                EXPECTED_JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+                ;;
+            "17")
+                EXPECTED_JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+                ;;
+            "21")
+                EXPECTED_JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+                ;;
+            *)
+                EXPECTED_JAVA_HOME="/usr/lib/jvm/default-java"
+                ;;
+        esac
+        
+        if [ ! -d "$EXPECTED_JAVA_HOME" ]; then
+            echo -e "${RED}  ❌ Required Java version not installed: $MAVEN_JAVA_VERSION${NC}"
+            echo -e "${YELLOW}  💡 Install required Java version:${NC}"
+            case "$MAVEN_JAVA_VERSION" in
+                "8"|"1.8")
+                    echo -e "${YELLOW}      sudo apt install openjdk-8-jdk${NC}"
+                    ;;
+                "11")
+                    echo -e "${YELLOW}      sudo apt install openjdk-11-jdk${NC}"
+                    ;;
+                "17")
+                    echo -e "${YELLOW}      sudo apt install openjdk-17-jdk${NC}"
+                    ;;
+                "21")
+                    echo -e "${YELLOW}      sudo apt install openjdk-21-jdk${NC}"
+                    ;;
+            esac
+            echo -e "${YELLOW}  💡 Then set JAVA_HOME: export JAVA_HOME=$EXPECTED_JAVA_HOME${NC}"
+        else
+            echo -e "${GREEN}  ✓ Required Java version is installed${NC}"
+        fi
+    else
+        echo -e "${YELLOW}  ⚠ Could not determine Java version from pom.xml${NC}"
+    fi
+    
+    # Test Maven compilation
+    if command -v mvn &> /dev/null; then
+        echo -e "${BLUE}  🔧 Testing Maven compilation...${NC}"
+        mvn compile -q -DskipTests 2>/dev/null
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}  ✅ Maven compilation successful${NC}"
+        else
+            echo -e "${RED}  ❌ Maven compilation failed${NC}"
+            echo -e "${YELLOW}  💡 Try: mvn clean compile${NC}"
+            echo -e "${YELLOW}  💡 Check Java version compatibility${NC}"
+        fi
+    else
+        echo -e "${YELLOW}  ⚠ Maven not found${NC}"
+        echo -e "${YELLOW}  💡 Install Maven: sudo apt install maven${NC}"
+    fi
+fi
+
 # Fix Java code formatting if requested
 if [ "$FIX_JAVA" = true ]; then
     echo -e "${BLUE}☕ Fixing Java code formatting and imports...${NC}"

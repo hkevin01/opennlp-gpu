@@ -1,73 +1,39 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * Interface for GPU compute providers.
+ * Enhanced interface for compute providers (CPU/GPU)
  */
 public interface ComputeProvider {
     
-    // Suppress warnings for unused enum constants (these values are part of the public API)
-    @SuppressWarnings("unused")
+    /**
+     * Provider type enumeration
+     */
     enum Type {
-        CUDA,
-        ROCM,
+        CPU,
         OPENCL,
-        CPU    // Add CPU type for the CPU compute provider
+        CUDA,
+        ROCM
     }
     
-    /**
-     * Initialize the compute provider.
-     * 
-     * @return true if initialization was successful
-     */
-    boolean initialize();
+    boolean isGpuProvider();
+    void cleanup();
     
-    /**
-     * Get the type of the compute provider.
-     * 
-     * @return the provider type
-     */
-    Type getType();
-    
-    /**
-     * Check if the provider is available.
-     * 
-     * @return true if the provider is available
-     */
-    boolean isAvailable();
-    
-    /**
-     * Get the name of the provider.
-     * 
-     * @return the provider name
-     */
+    // Additional methods needed by existing code
     String getName();
+    Type getType();
+    boolean isAvailable();
+    Object getResourceManager();
     
-    /**
-     * Release resources held by the provider.
-     */
-    void release();
+    // Matrix operation methods
+    void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k);
+    void matrixAdd(float[] a, float[] b, float[] result, int size);
+    void matrixTranspose(float[] input, float[] output, int rows, int cols);
     
-    /**
-     * Get a resource manager for this provider.
-     * 
-     * @return the resource manager
-     */
-    ResourceManager getResourceManager();
+    // Feature extraction methods
+    void extractFeatures(String[] text, float[] features);
+    void computeTfIdf(float[] termFreq, float[] docFreq, float[] result, int size);
     
-    /**
-     * Check if the provider supports the specified operation.
-     * 
-     * @param operationName the name of the operation
-     * @return true if the operation is supported
-     */
-    boolean supportsOperation(String operationName);
-    
-    /**
-     * Get a performance score for the specified operation and data size.
-     * 
-     * @param operationName the name of the operation
-     * @param dataSize the size of the data
-     * @return a performance score
-     */
-    double getPerformanceScore(String operationName, int dataSize);
+    // Initialization and configuration
+    void initialize();
+    boolean supportsOperation(String operationType);
 }

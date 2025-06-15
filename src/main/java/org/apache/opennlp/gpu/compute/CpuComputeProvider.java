@@ -1,15 +1,11 @@
-package org.apache.opennlp.gpu.common;
+package org.apache.opennlp.gpu.compute;
+
+import org.apache.opennlp.gpu.common.ComputeProvider;
 
 /**
- * CPU-based compute provider implementation
+ * CPU compute provider implementation
  */
 public class CpuComputeProvider implements ComputeProvider {
-    
-    private final ResourceManager resourceManager;
-    
-    public CpuComputeProvider() {
-        this.resourceManager = new ResourceManager();
-    }
     
     @Override
     public boolean isGpuProvider() {
@@ -18,9 +14,7 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public void cleanup() {
-        if (resourceManager != null) {
-            resourceManager.cleanup();
-        }
+        // Nothing to cleanup for CPU
     }
     
     @Override
@@ -40,7 +34,7 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public Object getResourceManager() {
-        return resourceManager;
+        return null; // CPU doesn't need resource management
     }
     
     @Override
