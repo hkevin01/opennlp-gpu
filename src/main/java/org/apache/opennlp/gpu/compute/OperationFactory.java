@@ -12,7 +12,7 @@ public class OperationFactory {
         return new DummyMatrixOperation();
     }
     
-    private static class DummyMatrixOperation implements MatrixOperation {
+    public static class DummyMatrixOperation implements MatrixOperation {
         @Override
         public ComputeProvider getProvider() { 
             return null; 

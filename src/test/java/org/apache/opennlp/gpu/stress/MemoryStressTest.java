@@ -247,8 +247,8 @@ public class MemoryStressTest {
                             gpuMatrixOp.add(a, b, result, size);
                             
                             // Validate result
-                            for (int i = 0; i < Math.min(10, size); i++) {
-                                if (Float.isNaN(result[i]) || Float.isInfinite(result[i])) {
+                            for (int j = 0; j < Math.min(10, size); j++) {
+                                if (Float.isNaN(result[j]) || Float.isInfinite(result[j])) {
                                     throw new RuntimeException("Invalid result in thread " + threadId);
                                 }
                             }

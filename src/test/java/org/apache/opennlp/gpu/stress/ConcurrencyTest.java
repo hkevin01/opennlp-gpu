@@ -67,8 +67,8 @@ public class ConcurrencyTest {
                         // Wait for all threads to be ready
                         startLatch.await();
                         
-                        // Each thread creates its own provider for thread safety
-                        provider = new CpuComputeProvider(); // Use CPU for reliable testing
+                        // Each thread gets its own matrix operation instance for thread safety
+                        provider = new CpuComputeProvider();
                         matrixOp = new CpuMatrixOperation(provider);
                         
                         // Perform operations
