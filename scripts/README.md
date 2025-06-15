@@ -1,6 +1,19 @@
-# OpenNLP GPU Scripts
+# OpenNLP GPU Scripts Directory
 
-This directory contains utility scripts for the OpenNLP GPU acceleration project.
+This directory contains comprehensive utility scripts for the OpenNLP GPU acceleration project, organized by functionality to support development, testing, IDE setup, and deployment workflows.
+
+## Directory Structure
+
+```
+.
+├── README.md                     # This file
+├── scripts                       # Directory containing all utility scripts
+│   ├── check_ide_setup.sh       # Script to check and fix IDE setup issues
+│   ├── fix_plugin_conflict.sh   # Script to fix plugin conflicts in the project
+│   ├── make_executable.sh       # Script to make other scripts executable
+│   └── upgrade_gradle.sh        # Script to upgrade the Gradle wrapper
+└── ...
+```
 
 ## Available Scripts
 
@@ -27,15 +40,7 @@ chmod +x scripts/check_ide_setup.sh
 bash scripts/check_ide_setup.sh
 ```
 
-**Expected Output**:
-````
-# OpenNLP GPU Build Scripts
-
-This directory contains scripts to help fix common build issues with the OpenNLP GPU project.
-
-## Available Scripts
-
-### fix_plugin_conflict.sh
+### `fix_plugin_conflict.sh`
 
 Fixes the conflict between the Java and C++ Gradle plugins by:
 - Removing the `cpp-library` and `cpp-unit-test` plugins
@@ -47,7 +52,7 @@ Usage:
 ./scripts/fix_plugin_conflict.sh
 ```
 
-### upgrade_gradle.sh
+### `upgrade_gradle.sh`
 
 Upgrades the Gradle wrapper to version 8.10 which supports Java 21:
 - Updates the Gradle wrapper properties
@@ -59,7 +64,7 @@ Usage:
 ./scripts/upgrade_gradle.sh
 ```
 
-### make_executable.sh
+### `make_executable.sh`
 
 Makes the other scripts executable:
 
