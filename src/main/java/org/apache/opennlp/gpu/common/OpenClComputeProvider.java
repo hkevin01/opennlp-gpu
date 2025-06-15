@@ -42,6 +42,16 @@ public class OpenClComputeProvider implements ComputeProvider {
     }
     
     @Override
+    public long getMaxMemoryMB() {
+        return 4096; // Stub implementation
+    }
+    
+    @Override
+    public long getCurrentMemoryUsageMB() {
+        return 0; // Stub implementation
+    }
+    
+    @Override
     public Object getResourceManager() {
         return resourceManager;
     }
@@ -50,35 +60,35 @@ public class OpenClComputeProvider implements ComputeProvider {
     public void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k) {
         // TODO: Implement OpenCL matrix multiplication
         // For now, fallback to CPU implementation
-        CpuComputeProvider cpu = new CpuComputeProvider();
+        org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.matrixMultiply(a, b, result, m, n, k);
     }
     
     @Override
     public void matrixAdd(float[] a, float[] b, float[] result, int size) {
         // TODO: Implement OpenCL matrix addition
-        CpuComputeProvider cpu = new CpuComputeProvider();
+        org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.matrixAdd(a, b, result, size);
     }
     
     @Override
     public void matrixTranspose(float[] input, float[] output, int rows, int cols) {
         // TODO: Implement OpenCL matrix transpose
-        CpuComputeProvider cpu = new CpuComputeProvider();
+        org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.matrixTranspose(input, output, rows, cols);
     }
     
     @Override
     public void extractFeatures(String[] text, float[] features) {
         // TODO: Implement OpenCL feature extraction
-        CpuComputeProvider cpu = new CpuComputeProvider();
+        org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.extractFeatures(text, features);
     }
     
     @Override
     public void computeTfIdf(float[] termFreq, float[] docFreq, float[] result, int size) {
         // TODO: Implement OpenCL TF-IDF computation
-        CpuComputeProvider cpu = new CpuComputeProvider();
+        org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.computeTfIdf(termFreq, docFreq, result, size);
     }
     
@@ -86,6 +96,11 @@ public class OpenClComputeProvider implements ComputeProvider {
     public void initialize() {
         // TODO: Initialize OpenCL context
         initialized = true;
+    }
+    
+    @Override
+    public void initialize(GpuConfig config) {
+        initialize();
     }
     
     @Override

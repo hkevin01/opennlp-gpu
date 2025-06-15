@@ -39,6 +39,16 @@ public class CpuComputeProvider implements ComputeProvider {
     }
     
     @Override
+    public long getMaxMemoryMB() {
+        return Runtime.getRuntime().maxMemory() / (1024 * 1024);
+    }
+    
+    @Override
+    public long getCurrentMemoryUsageMB() {
+        return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024);
+    }
+    
+    @Override
     public Object getResourceManager() {
         return resourceManager;
     }
@@ -90,7 +100,13 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public void initialize() {
-        // Nothing to initialize for CPU
+        // CPU provider doesn't need special initialization
+    }
+    
+    @Override
+    public void initialize(GpuConfig config) {
+        // CPU provider doesn't need configuration
+        initialize();
     }
     
     @Override

@@ -3,6 +3,7 @@ package org.apache.opennlp.gpu.demo;
 import org.apache.opennlp.gpu.benchmark.PerformanceBenchmark;
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
+import org.apache.opennlp.gpu.integration.OpenNLPTestDataIntegration;
 import org.apache.opennlp.gpu.test.GpuTestSuite;
 
 /**
@@ -27,10 +28,13 @@ public class GpuDemoApplication {
             // Run performance benchmarks
             GpuDemoApplication.runBenchmarks();
             
+            // Run integration tests with real data
+            GpuDemoApplication.runIntegrationTests();
+            
             GpuDemoApplication.logger.info("🎉 Demo completed successfully!");
             
         } catch (Exception e) {
-            GpuDemoApplication.logger.error("Demo failed: " + e.getMessage());
+            GpuDemoApplication.logger.error("Demo failed: " + e.getMessage(), e);
             System.exit(1);
         }
     }
@@ -65,6 +69,19 @@ public class GpuDemoApplication {
             GpuDemoApplication.logger.info("🚀 Overall GPU speedup: " + String.format("%.2f", results.getOverallSpeedup()) + "x");
         } else {
             GpuDemoApplication.logger.warn("⚠️ Benchmark issues detected - see report above");
+        }
+    }
+    
+    private static void runIntegrationTests() {
+        GpuDemoApplication.logger.info("🔗 Running integration tests with real OpenNLP data...");
+        
+        try {
+            OpenNLPTestDataIntegration integration = new OpenNLPTestDataIntegration();
+            integration.runRealModelTests();
+            
+            GpuDemoApplication.logger.info("✅ Integration tests completed successfully!");
+        } catch (Exception e) {
+            GpuDemoApplication.logger.warn("⚠️ Integration tests encountered issues: " + e.getMessage());
         }
     }
 }

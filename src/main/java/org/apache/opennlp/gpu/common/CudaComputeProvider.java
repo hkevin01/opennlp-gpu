@@ -92,4 +92,19 @@ public class CudaComputeProvider implements ComputeProvider {
     public boolean supportsOperation(String operationType) {
         return initialized; // Only support operations if initialized
     }
+
+    @Override
+    public long getMaxMemoryMB() {
+        return 4096; // Stub implementation
+    }
+    
+    @Override
+    public long getCurrentMemoryUsageMB() {
+        return 0; // Stub implementation
+    }
+
+    @Override
+    public void initialize(GpuConfig config) {
+        initialize();
+    }
 }

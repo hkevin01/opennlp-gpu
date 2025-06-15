@@ -2,16 +2,21 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuConfig;
+import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
  * Enhanced GPU compute provider - Java 8 compatible
  */
 public class GpuComputeProvider implements ComputeProvider {
     
+    private static final GpuLogger logger = GpuLogger.getLogger(GpuComputeProvider.class);
+    
     private final GpuConfig config;
+    private Object resourceManager; // Placeholder for resource manager
     
     public GpuComputeProvider(GpuConfig config) {
         this.config = config;
+        this.resourceManager = null; // TODO: Initialize resource manager
     }
     
     @Override
@@ -21,7 +26,11 @@ public class GpuComputeProvider implements ComputeProvider {
     
     @Override
     public void cleanup() {
-        // Cleanup GPU resources
+        if (resourceManager != null) {
+            // TODO: Implement resource manager cleanup
+            // resourceManager.release();
+        }
+        GpuComputeProvider.logger.debug("GPU compute provider cleaned up");
     }
     
     @Override
@@ -40,8 +49,18 @@ public class GpuComputeProvider implements ComputeProvider {
     }
     
     @Override
+    public long getMaxMemoryMB() {
+        return 4096; // Stub implementation
+    }
+    
+    @Override
+    public long getCurrentMemoryUsageMB() {
+        return 0; // Stub implementation
+    }
+    
+    @Override
     public Object getResourceManager() {
-        return null; // TODO: Implement resource manager
+        return resourceManager;
     }
     
     @Override
@@ -82,7 +101,14 @@ public class GpuComputeProvider implements ComputeProvider {
     
     @Override
     public void initialize() {
-        // TODO: Initialize GPU context
+        GpuComputeProvider.logger.debug("Initializing GPU compute provider");
+        // TODO: Initialize OpenCL/CUDA context
+        // For now, this is a no-op
+    }
+    
+    @Override
+    public void initialize(GpuConfig config) {
+        initialize();
     }
     
     @Override

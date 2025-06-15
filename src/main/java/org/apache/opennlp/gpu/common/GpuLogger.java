@@ -1,9 +1,11 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * Stub logger for GPU operations
+ * Simple logging wrapper for GPU operations
+ * Provides consistent logging interface across the GPU acceleration framework
  */
 public class GpuLogger {
+    
     private final String className;
     
     private GpuLogger(String className) {
@@ -15,14 +17,29 @@ public class GpuLogger {
     }
     
     public void info(String message) {
-        System.out.println("[GPU-INFO] " + className + ": " + message);
+        System.out.println("[INFO] " + className + ": " + message);
     }
     
     public void warn(String message) {
-        System.out.println("[GPU-WARN] " + className + ": " + message);
+        System.out.println("[WARN] " + className + ": " + message);
     }
     
     public void error(String message) {
-        System.err.println("[GPU-ERROR] " + className + ": " + message);
+        System.err.println("[ERROR] " + className + ": " + message);
+    }
+    
+    public void error(String message, Exception e) {
+        System.err.println("[ERROR] " + className + ": " + message);
+        if (e != null) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void debug(String message) {
+        // Only print debug messages if debug mode is enabled
+        String debugMode = System.getProperty("gpu.debug", "false");
+        if ("true".equalsIgnoreCase(debugMode)) {
+            System.out.println("[DEBUG] " + className + ": " + message);
+        }
     }
 }

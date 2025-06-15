@@ -1,11 +1,15 @@
 package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
+import org.apache.opennlp.gpu.common.GpuConfig;
+import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
  * CPU compute provider implementation
  */
 public class CpuComputeProvider implements ComputeProvider {
+    
+    private static final GpuLogger logger = GpuLogger.getLogger(CpuComputeProvider.class);
     
     @Override
     public boolean isGpuProvider() {
@@ -14,7 +18,7 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public void cleanup() {
-        // Nothing to cleanup for CPU
+        CpuComputeProvider.logger.debug("CPU compute provider cleaned up");
     }
     
     @Override
@@ -30,6 +34,16 @@ public class CpuComputeProvider implements ComputeProvider {
     @Override
     public boolean isAvailable() {
         return true; // CPU is always available
+    }
+    
+    @Override
+    public long getMaxMemoryMB() {
+        return Runtime.getRuntime().maxMemory() / (1024 * 1024);
+    }
+    
+    @Override
+    public long getCurrentMemoryUsageMB() {
+        return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024);
     }
     
     @Override
@@ -84,7 +98,13 @@ public class CpuComputeProvider implements ComputeProvider {
     
     @Override
     public void initialize() {
-        // Nothing to initialize for CPU
+        CpuComputeProvider.logger.debug("Initializing CPU compute provider");
+        // CPU provider doesn't need special initialization
+    }
+    
+    @Override
+    public void initialize(GpuConfig config) {
+        initialize();
     }
     
     @Override

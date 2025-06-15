@@ -178,4 +178,16 @@ public class ComputeConfiguration {
                ", providerOptions=" + providerOptions +
                '}';
     }
+
+    public void setPreferredProvider(ComputeProvider.Type type) {
+        this.preferredProviderType = type;
+    }
+
+    public ComputeProvider.Type getPreferredProvider() {
+        return this.preferredProviderType;
+    }
+
+    public ComputeProvider createProvider(ComputeProvider.Type type) {
+        return ComputeProviderFactory.createProvider(type);
+    }
 }

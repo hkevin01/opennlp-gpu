@@ -12,8 +12,16 @@ public class ComputeProviderFactory {
                 return new CpuComputeProvider();
             case OPENCL:
                 return new OpenClComputeProvider();
+            case CUDA:
+                return new CudaComputeProvider();
+            case ROCM:
+                return new RocmComputeProvider();
             default:
                 return new CpuComputeProvider();
         }
+    }
+    
+    public static ComputeProvider getProvider(ComputeProvider.Type type) {
+        return ComputeProviderFactory.createProvider(type);
     }
 }

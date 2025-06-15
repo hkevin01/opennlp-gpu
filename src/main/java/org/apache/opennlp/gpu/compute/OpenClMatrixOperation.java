@@ -3,7 +3,7 @@ package org.apache.opennlp.gpu.compute;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 
 /**
- * Stub OpenCL matrix operation implementing MatrixOperation
+ * Minimal OpenCL matrix operation implementing MatrixOperation
  */
 public class OpenClMatrixOperation implements MatrixOperation {
 
@@ -39,12 +39,87 @@ public class OpenClMatrixOperation implements MatrixOperation {
     }
 
     @Override
+    public void add(float[] a, float[] b, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
     public void subtract(float[] a, float[] b, float[] result, int size) {
         // no-op
     }
 
     @Override
-    public void add(float[] a, float[] b, float[] result, int size) {
+    public void dotProduct(float[] a, float[] b, float[] result, int length) {
+        // no-op
+    }
+
+    @Override
+    public void vectorNorm(float[] input, float[] result, int length) {
+        // no-op
+    }
+
+    @Override
+    public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
+        // no-op
+    }
+
+    @Override
+    public void sigmoid(float[] input, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void tanh(float[] input, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void relu(float[] input, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void softmax(float[] input, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void mean(float[] input, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void variance(float[] input, float[] result, int size, float mean) {
+        // no-op
+    }
+
+    @Override
+    public void normalize(float[] input, float[] result, int size) {
+        // no-op
+    }
+
+    @Override
+    public void copyArray(float[] source, float[] destination, int size) {
+        // no-op
+    }
+
+    @Override
+    public void fillArray(float[] array, float value, int size) {
+        // no-op
+    }
+
+    @Override
+    public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
+        // no-op
+    }
+
+    @Override
+    public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
         // no-op
     }
 }

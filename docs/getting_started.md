@@ -276,6 +276,74 @@ public class QuickTest {
 }
 ```
 
+## Testing with Real OpenNLP Data
+
+### Use Official OpenNLP Test Data
+
+```java
+import org.apache.opennlp.gpu.util.TestDataLoader;
+import org.apache.opennlp.gpu.integration.OpenNLPTestDataIntegration;
+
+public class RealDataDemo {
+    public static void main(String[] args) {
+        // Load real OpenNLP test sentences
+        List<String> sentences = TestDataLoader.loadSentences();
+        System.out.println("Loaded " + sentences.size() + " real test sentences");
+        
+        // Load POS tagging data
+        List<String> posData = TestDataLoader.loadPosTaggingData();
+        System.out.println("Loaded " + posData.size() + " POS tagging examples");
+        
+        // Test GPU acceleration with real data
+        String[] documents = sentences.toArray(new String[sentences.size()]);
+        
+        GpuFeatureExtractor extractor = new GpuFeatureExtractor(provider, config, matrixOp);
+        float[][] features = extractor.extractNGramFeatures(documents, 2, 1000);
+        
+        System.out.println("Extracted features from real OpenNLP data!");
+        System.out.printf("Feature matrix: %d documents × %d features\n", 
+                         features.length, features[0].length);
+    }
+}
+```
+
+### Performance Testing with Varying Data Sizes
+
+```java
+// Create test sets of different sizes
+List<List<String>> testSets = TestDataLoader.createPerformanceTestSets();
+
+for (List<String> testSet : testSets) {
+    System.out.println("Testing with " + testSet.size() + " documents...");
+    
+    // Convert to array
+    String[] documents = testSet.toArray(new String[testSet.size()]);
+    
+    // Benchmark GPU vs CPU performance
+    long startTime = System.currentTimeMillis();
+    float[][] gpuFeatures = gpuExtractor.extractNGramFeatures(documents, 2, 1000);
+    long gpuTime = System.currentTimeMillis() - startTime;
+    
+    startTime = System.currentTimeMillis();
+    float[][] cpuFeatures = cpuExtractor.extractNGramFeatures(documents, 2, 1000);
+    long cpuTime = System.currentTimeMillis() - startTime;
+    
+    double speedup = (double) cpuTime / gpuTime;
+    System.out.printf("Dataset size %d: GPU=%dms, CPU=%dms, Speedup=%.2fx\n", 
+                     documents.length, gpuTime, cpuTime, speedup);
+}
+```
+
+### Complete Integration Test
+
+```bash
+# Run comprehensive tests with real OpenNLP data
+mvn test -Dtest=OpenNLPTestDataIntegration
+
+# Run just the real data demo
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.integration.OpenNLPTestDataIntegration"
+```
+
 ## Configuration Options
 
 ### GPU Configuration
@@ -316,6 +384,28 @@ if (GpuComputeProvider.isGpuAvailable()) {
 } else {
     System.out.println("Using CPU fallback");
 }
+```
+
+## Available OpenNLP Test Datasets
+
+The integration automatically downloads and uses:
+
+1. **Sentence Detection**: Real sentences from OpenNLP test suite
+2. **Tokenization**: Complex tokenization examples with punctuation, URLs, emails
+3. **POS Tagging**: Part-of-speech tagged sentences for testing
+4. **Named Entity Recognition**: Text with person, location, organization entities
+5. **Large Datasets**: Automatically generated datasets of 10-10,000 documents
+
+### Dataset Examples
+
+```java
+// Load specific datasets
+List<String> sentences = TestDataLoader.loadDataset("sentences");
+List<String> nerData = TestDataLoader.loadDataset("ner");
+List<String> largeDataset = TestDataLoader.loadLargeDataset(1000);
+
+// Use with your GPU acceleration
+testGpuAcceleration(sentences.toArray(new String[sentences.size()]));
 ```
 
 ## Troubleshooting
