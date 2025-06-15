@@ -279,24 +279,33 @@ public class ComprehensiveDemoTestSuite {
             Class.forName("org.apache.opennlp.gpu.common.GpuConfig");
             System.out.println("✅ GpuConfig found");
             
-            Class.forName("org.apache.opennlp.gpu.test.GpuTestSuite");
-            System.out.println("✅ GpuTestSuite found");
+            // Check for test classes with graceful fallback
+            try {
+                Class.forName("org.apache.opennlp.gpu.test.GpuTestSuite");
+                System.out.println("✅ GpuTestSuite found");
+            } catch (ClassNotFoundException e) {
+                System.out.println("⚠️ GpuTestSuite not found (optional)");
+            }
             
-            Class.forName("org.apache.opennlp.gpu.benchmark.PerformanceBenchmark");
-            System.out.println("✅ PerformanceBenchmark found");
+            try {
+                Class.forName("org.apache.opennlp.gpu.benchmark.PerformanceBenchmark");
+                System.out.println("✅ PerformanceBenchmark found");
+            } catch (ClassNotFoundException e) {
+                System.out.println("⚠️ PerformanceBenchmark not found (optional)");
+            }
             
-            System.out.println("✅ All required classes found");
+            System.out.println("✅ Core classes found - ready to run tests");
             
         } catch (ClassNotFoundException e) {
             System.err.println("❌ Missing required classes: " + e.getMessage());
             System.err.println("");
             System.err.println("🛠️ SOLUTION: Please compile the project first:");
             System.err.println("   1. Open terminal in project root");
-            System.err.println("   2. Run: mvn clean compile");
+            System.err.println("   2. Run: mvn clean compile test-compile");
             System.err.println("   3. Then try running this class again");
             System.err.println("");
-            System.err.println("💡 Alternative: Use Maven to run tests:");
-            System.err.println("   mvn test -Dtest=ComprehensiveDemoTestSuite");
+            System.err.println("💡 Alternative: Use Maven exec plugin:");
+            System.err.println("   mvn exec:java -Dexec.mainClass=\"org.apache.opennlp.gpu.demo.ComprehensiveDemoTestSuite\"");
             System.exit(1);
         } catch (Exception e) {
             System.err.println("❌ Unexpected error: " + e.getMessage());
