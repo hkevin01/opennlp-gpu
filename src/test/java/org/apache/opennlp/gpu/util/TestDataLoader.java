@@ -1,344 +1,348 @@
 package org.apache.opennlp.gpu.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * Utility class for loading OpenNLP test data and models
- * Provides easy access to real NLP datasets for testing GPU acceleration
+ * Utility class for loading and generating test data for GPU acceleration tests
+ * Provides both real OpenNLP test data and synthetic data generation
  */
 public class TestDataLoader {
     
     private static final GpuLogger logger = GpuLogger.getLogger(TestDataLoader.class);
     
-    // OpenNLP test data URLs
-    private static final String OPENNLP_BASE = "https://raw.githubusercontent.com/apache/opennlp/main/opennlp-tools/src/test/resources/opennlp/tools/";
+    private static final Path TEST_DATA_DIR = Paths.get("target/test-data");
+    private static final String CACHE_FILE = "test-data-cache.txt";
     
-    private static final String[] TEST_DATA_URLS = {
-        OPENNLP_BASE + "sentdetect/Sentences.txt",
-        OPENNLP_BASE + "tokenize/token.train",
-        OPENNLP_BASE + "postag/AnnotatedSentences.txt",
-        OPENNLP_BASE + "namefind/AnnotatedSentencesWithNames.txt"
-    };
-    
-    private static final Path CACHE_DIR = Paths.get("target/test-data-cache");
-    
-    /**
-     * Load sentences for sentence detection testing
-     */
-    public static List<String> loadSentences() {
-        return loadDataFromUrl(OPENNLP_BASE + "sentdetect/Sentences.txt", "sentences");
-    }
-    
-    /**
-     * Load tokenization test data
-     */
-    public static List<String> loadTokenizationData() {
-        return loadDataFromUrl(OPENNLP_BASE + "tokenize/token.train", "tokenization");
-    }
-    
-    /**
-     * Load POS tagging test data
-     */
-    public static List<String> loadPosTaggingData() {
-        return loadDataFromUrl(OPENNLP_BASE + "postag/AnnotatedSentences.txt", "pos-tagging");
-    }
-    
-    /**
-     * Load named entity recognition test data
-     */
-    public static List<String> loadNerData() {
-        return loadDataFromUrl(OPENNLP_BASE + "namefind/AnnotatedSentencesWithNames.txt", "ner");
-    }
-    
-    /**
-     * Load any dataset by name
-     */
-    public static List<String> loadDataset(String datasetName) {
-        switch (datasetName.toLowerCase()) {
-            case "sentences":
-                return loadSentences();
-            case "tokenization":
-                return loadTokenizationData();
-            case "pos-tagging":
-            case "pos":
-                return loadPosTaggingData();
-            case "ner":
-            case "namefind":
-                return loadNerData();
-            default:
-                logger.warn("Unknown dataset: " + datasetName);
-                return generateFallbackData(datasetName);
+    // Ensure test data directory exists
+    static {
+        try {
+            Files.createDirectories(TEST_DATA_DIR);
+        } catch (IOException e) {
+            logger.warn("Could not create test data directory: " + e.getMessage());
         }
     }
     
     /**
-     * Load large dataset for performance testing
+     * Load a large dataset for stress testing
      */
     public static List<String> loadLargeDataset(int size) {
-        logger.info("Loading large dataset with " + size + " documents");
+        logger.info("Loading large dataset with {} documents", size);
         
-        List<String> data = new ArrayList<String>();
+        List<String> dataset = new ArrayList<>();
         
-        // Try to load from multiple sources
-        data.addAll(loadSentences());
-        data.addAll(loadTokenizationData());
-        data.addAll(loadPosTaggingData());
-        
-        // If we need more data, generate synthetic data
-        while (data.size() < size) {
-            data.addAll(generateSyntheticNLPData(Math.min(100, size - data.size())));
+        // Try to load cached data first
+        List<String> cachedData = loadCachedData(size);
+        if (cachedData != null && cachedData.size() >= size) {
+            return cachedData.subList(0, size);
         }
         
-        // Return requested size
-        return data.subList(0, Math.min(size, data.size()));
+        // Generate new data
+        dataset.addAll(generateRealisticNLPText(size));
+        
+        // Cache the generated data
+        cacheData(dataset, size);
+        
+        return dataset;
     }
     
     /**
-     * Create performance test datasets of varying sizes
+     * Create performance test sets with graduated dataset sizes
      */
     public static List<List<String>> createPerformanceTestSets() {
-        List<List<String>> testSets = new ArrayList<List<String>>();
-        
         int[] sizes = {10, 50, 100, 500, 1000, 2000};
+        List<List<String>> testSets = new ArrayList<>();
         
         for (int size : sizes) {
-            List<String> testSet = loadLargeDataset(size);
-            testSets.add(testSet);
-            logger.info("Created test set with " + testSet.size() + " documents");
+            testSets.add(loadLargeDataset(size));
         }
         
         return testSets;
     }
     
-    private static List<String> loadDataFromUrl(String url, String datasetType) {
-        List<String> data = new ArrayList<String>();
+    /**
+     * Generate realistic NLP text with controlled characteristics
+     */
+    public static List<String> generateRealisticNLPText(int count) {
+        List<String> texts = new ArrayList<>();
         
-        try {
-            // Try to load from cache first
-            Path cacheFile = CACHE_DIR.resolve(datasetType + ".txt");
-            if (Files.exists(cacheFile)) {
-                logger.info("Loading " + datasetType + " from cache");
-                return Files.readAllLines(cacheFile);
-            }
-            
-            // Download from URL
-            logger.info("Downloading " + datasetType + " test data from: " + url);
-            
-            URL dataUrl = new URL(url);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataUrl.openStream()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    if (!line.isEmpty() && !line.startsWith("#")) {
-                        // Clean the line for our purposes
-                        String cleanLine = cleanTextLine(line);
-                        if (!cleanLine.isEmpty()) {
-                            data.add(cleanLine);
-                        }
-                    }
-                }
-            }
-            
-            // Cache the data
-            Files.createDirectories(CACHE_DIR);
-            Files.write(cacheFile, data);
-            
-            logger.info("Downloaded and cached " + data.size() + " " + datasetType + " entries");
-            
-        } catch (IOException e) {
-            logger.warn("Failed to download " + datasetType + " data: " + e.getMessage());
-            logger.info("Generating fallback data for " + datasetType);
-            data = generateFallbackData(datasetType);
-        }
-        
-        return data;
-    }
-    
-    private static String cleanTextLine(String line) {
-        // Remove OpenNLP training annotations but keep the text
-        // Handle different annotation formats
-        
-        // For POS tagging data: "word_POS word_POS" -> "word word"
-        line = line.replaceAll("_[A-Z$]+", "");
-        
-        // For NER data: "<START:PERSON> John <END> Smith" -> "John Smith"
-        line = line.replaceAll("<START:[^>]+>", "");
-        line = line.replaceAll("<END>", "");
-        
-        // For tokenization data, might have special markers
-        line = line.replaceAll("<SPLIT>", " ");
-        
-        // Clean up extra whitespace
-        line = line.replaceAll("\\s+", " ").trim();
-        
-        return line;
-    }
-    
-    private static List<String> generateFallbackData(String datasetType) {
-        logger.info("Generating fallback " + datasetType + " data");
-        
-        List<String> data = new ArrayList<String>();
-        
-        switch (datasetType) {
-            case "sentences":
-                data.addAll(generateSampleSentences());
-                break;
-            case "tokenization":
-                data.addAll(generateTokenizationExamples());
-                break;
-            case "pos-tagging":
-                data.addAll(generatePosTaggingExamples());
-                break;
-            case "ner":
-                data.addAll(generateNerExamples());
-                break;
-            default:
-                data.addAll(generateGenericNLPData());
-        }
-        
-        return data;
-    }
-    
-    private static List<String> generateSampleSentences() {
-        List<String> sentences = new ArrayList<String>();
-        
-        String[] templates = {
-            "The quick brown fox jumps over the lazy dog.",
-            "Natural language processing enables computers to understand human language.",
-            "Machine learning algorithms can be accelerated using GPU computing.",
-            "OpenNLP provides a robust toolkit for processing natural language text.",
-            "Feature extraction is a crucial step in text classification tasks."
+        // Text templates for different domains
+        String[] newsTemplates = {
+            "Breaking news: %s %s in %s today, affecting thousands of %s.",
+            "Scientists at %s University discovered that %s can %s %s significantly.",
+            "The %s government announced new %s policies to %s %s issues.",
+            "Economic experts predict %s %s will %s by %s percent this year.",
+            "Technology companies are investing heavily in %s %s development."
         };
         
-        for (String template : templates) {
-            sentences.add(template);
-        }
-        
-        // Generate variations
-        String[] subjects = {"Scientists", "Researchers", "Engineers", "Developers"};
-        String[] verbs = {"discovered", "developed", "implemented", "optimized"};
-        String[] objects = {"algorithms", "systems", "models", "frameworks"};
-        
-        for (int i = 0; i < 20; i++) {
-            String sentence = String.format("%s %s new %s for natural language processing.",
-                subjects[i % subjects.length],
-                verbs[i % verbs.length], 
-                objects[i % objects.length]);
-            sentences.add(sentence);
-        }
-        
-        return sentences;
-    }
-    
-    private static List<String> generateTokenizationExamples() {
-        List<String> examples = new ArrayList<String>();
-        
-        examples.add("Hello, world! How are you today?");
-        examples.add("Dr. Smith went to the U.S.A. yesterday.");
-        examples.add("The temperature was 32.5°C at 3:30 p.m.");
-        examples.add("Visit our website at http://example.com for more info.");
-        examples.add("Email us at support@company.com or call 555-123-4567.");
-        
-        return examples;
-    }
-    
-    private static List<String> generatePosTaggingExamples() {
-        List<String> examples = new ArrayList<String>();
-        
-        examples.add("The cat sat on the mat");
-        examples.add("John quickly ran to the store");
-        examples.add("She is reading a very interesting book");
-        examples.add("They will arrive tomorrow morning");
-        examples.add("The algorithm efficiently processes large datasets");
-        
-        return examples;
-    }
-    
-    private static List<String> generateNerExamples() {
-        List<String> examples = new ArrayList<String>();
-        
-        examples.add("John Smith works at Microsoft in Seattle");
-        examples.add("The meeting is scheduled for Monday in New York");
-        examples.add("Apple Inc. was founded by Steve Jobs in California");
-        examples.add("Google announced new features at the conference in San Francisco");
-        examples.add("Amazon Web Services provides cloud computing from Virginia");
-        
-        return examples;
-    }
-    
-    private static List<String> generateGenericNLPData() {
-        List<String> data = new ArrayList<String>();
-        
-        data.addAll(generateSampleSentences());
-        data.addAll(generateTokenizationExamples());
-        data.addAll(generatePosTaggingExamples());
-        data.addAll(generateNerExamples());
-        
-        return data;
-    }
-    
-    private static List<String> generateSyntheticNLPData(int count) {
-        List<String> data = new ArrayList<String>();
-        
-        String[] templates = {
-            "The %s %s %s the %s %s in the %s.",
-            "Machine learning %s can %s %s patterns in %s data.",
-            "Natural language processing %s %s to understand %s text.",
-            "GPU acceleration %s %s performance for %s computations.",
-            "Deep learning %s %s %s representations from %s data."
+        String[] academicTemplates = {
+            "Recent studies in %s %s demonstrate that %s %s can improve %s.",
+            "The %s methodology shows %s results in %s %s applications.",
+            "Researchers analyzed %s %s data to understand %s %s patterns.",
+            "This %s %s framework enables %s %s optimization techniques.",
+            "Experimental %s %s validation confirms %s %s effectiveness."
         };
         
-        String[] adjectives = {"advanced", "efficient", "powerful", "intelligent", "sophisticated"};
-        String[] nouns = {"algorithm", "system", "model", "framework", "technology"};
-        String[] verbs = {"processes", "analyzes", "transforms", "optimizes", "accelerates"};
-        String[] contexts = {"large", "complex", "structured", "unstructured", "multilingual"};
+        String[] technicalTemplates = {
+            "The %s %s algorithm processes %s %s data efficiently.",
+            "GPU acceleration enables %s %s computation with %s performance.",
+            "Machine learning models require %s %s feature extraction.",
+            "Neural networks with %s %s architecture achieve %s accuracy.",
+            "Parallel processing improves %s %s throughput significantly."
+        };
+        
+        // Vocabulary sets
+        String[] nouns = {
+            "system", "algorithm", "network", "model", "data", "process", "method", "approach",
+            "framework", "architecture", "implementation", "optimization", "analysis", "research",
+            "technology", "application", "solution", "platform", "infrastructure", "computation"
+        };
+        
+        String[] adjectives = {
+            "advanced", "efficient", "robust", "scalable", "innovative", "comprehensive",
+            "sophisticated", "optimized", "intelligent", "adaptive", "dynamic", "flexible",
+            "powerful", "reliable", "effective", "modern", "cutting-edge", "state-of-the-art"
+        };
+        
+        String[] verbs = {
+            "improve", "optimize", "enhance", "accelerate", "process", "analyze", "implement",
+            "develop", "create", "design", "execute", "perform", "compute", "calculate",
+            "generate", "transform", "extract", "classify", "predict", "evaluate"
+        };
+        
+        String[] technical = {
+            "machine learning", "artificial intelligence", "deep learning", "neural network",
+            "natural language", "computer vision", "data science", "big data", "cloud computing",
+            "GPU acceleration", "parallel processing", "distributed computing", "high performance"
+        };
+        
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         
         for (int i = 0; i < count; i++) {
-            String template = templates[i % templates.length];
-            String sentence = String.format(template,
-                adjectives[i % adjectives.length],
-                nouns[i % nouns.length],
-                verbs[i % verbs.length],
-                contexts[i % contexts.length],
-                nouns[(i + 1) % nouns.length],
-                contexts[(i + 1) % contexts.length]
+            String template;
+            
+            // Select template based on document type distribution
+            int templateType = i % 3;
+            switch (templateType) {
+                case 0:
+                    template = newsTemplates[i % newsTemplates.length];
+                    break;
+                case 1:
+                    template = academicTemplates[i % academicTemplates.length];
+                    break;
+                default:
+                    template = technicalTemplates[i % technicalTemplates.length];
+                    break;
+            }
+            
+            // Fill template with random vocabulary
+            String text = String.format(template,
+                adjectives[random.nextInt(adjectives.length)],
+                nouns[random.nextInt(nouns.length)],
+                adjectives[random.nextInt(adjectives.length)],
+                nouns[random.nextInt(nouns.length)],
+                verbs[random.nextInt(verbs.length)]
             );
-            data.add(sentence);
+            
+            // Add some technical terms for variety
+            if (random.nextInt(3) == 0) {
+                text += " This involves " + technical[random.nextInt(technical.length)] + 
+                       " techniques for " + adjectives[random.nextInt(adjectives.length)] + 
+                       " " + nouns[random.nextInt(nouns.length)] + " processing.";
+            }
+            
+            texts.add(text);
         }
         
-        return data;
+        return texts;
     }
     
     /**
-     * Cleanup cached test data
+     * Generate test documents for specific NLP tasks
      */
-    public static void clearCache() {
+    public static List<String> generateTaskSpecificText(String task, int count) {
+        switch (task.toLowerCase()) {
+            case "sentiment":
+                return generateSentimentText(count);
+            case "classification":
+                return generateClassificationText(count);
+            case "ner":
+                return generateNERText(count);
+            default:
+                return generateRealisticNLPText(count);
+        }
+    }
+    
+    private static List<String> generateSentimentText(int count) {
+        List<String> texts = new ArrayList<>();
+        String[] positive = {"excellent", "amazing", "wonderful", "fantastic", "great"};
+        String[] negative = {"terrible", "awful", "horrible", "disappointing", "poor"};
+        String[] neutral = {"average", "standard", "typical", "normal", "regular"};
+        
+        for (int i = 0; i < count; i++) {
+            String sentiment = i % 3 == 0 ? positive[i % positive.length] :
+                              i % 3 == 1 ? negative[i % negative.length] :
+                              neutral[i % neutral.length];
+            
+            texts.add("This product is " + sentiment + " and I would " + 
+                     (i % 2 == 0 ? "recommend" : "not recommend") + " it to others.");
+        }
+        
+        return texts;
+    }
+    
+    private static List<String> generateClassificationText(int count) {
+        List<String> texts = new ArrayList<>();
+        String[] categories = {"technology", "sports", "politics", "entertainment", "science"};
+        
+        for (int i = 0; i < count; i++) {
+            String category = categories[i % categories.length];
+            texts.add("This is a " + category + " article about recent developments in " +
+                     category + " that will interest " + category + " enthusiasts.");
+        }
+        
+        return texts;
+    }
+    
+    private static List<String> generateNERText(int count) {
+        List<String> texts = new ArrayList<>();
+        String[] names = {"John Smith", "Sarah Johnson", "Michael Brown", "Emily Davis"};
+        String[] locations = {"New York", "London", "Tokyo", "Sydney", "Berlin"};
+        String[] organizations = {"Google", "Microsoft", "Amazon", "Apple", "Tesla"};
+        
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        
+        for (int i = 0; i < count; i++) {
+            String name = names[random.nextInt(names.length)];
+            String location = locations[random.nextInt(locations.length)];
+            String org = organizations[random.nextInt(organizations.length)];
+            
+            texts.add(name + " works at " + org + " in " + location + 
+                     " and specializes in machine learning research.");
+        }
+        
+        return texts;
+    }
+    
+    /**
+     * Load cached test data if available
+     */
+    private static List<String> loadCachedData(int size) {
         try {
-            if (Files.exists(CACHE_DIR)) {
-                Files.walk(CACHE_DIR)
-                     .filter(Files::isRegularFile)
-                     .forEach(file -> {
-                         try {
-                             Files.delete(file);
-                         } catch (IOException e) {
-                             logger.warn("Failed to delete cache file: " + file);
-                         }
-                     });
-                Files.deleteIfExists(CACHE_DIR);
-                logger.info("Cleared test data cache");
+            Path cacheFile = TEST_DATA_DIR.resolve(CACHE_FILE + "." + size);
+            if (Files.exists(cacheFile)) {
+                List<String> lines = Files.readAllLines(cacheFile);
+                logger.debug("Loaded {} cached documents from {}", lines.size(), cacheFile);
+                return lines;
             }
         } catch (IOException e) {
-            logger.warn("Failed to clear cache: " + e.getMessage());
+            logger.debug("Could not load cached data: " + e.getMessage());
         }
+        
+        return null;
+    }
+    
+    /**
+     * Cache generated test data for future use
+     */
+    private static void cacheData(List<String> data, int size) {
+        try {
+            Path cacheFile = TEST_DATA_DIR.resolve(CACHE_FILE + "." + size);
+            Files.write(cacheFile, data);
+            logger.debug("Cached {} documents to {}", data.size(), cacheFile);
+        } catch (IOException e) {
+            logger.debug("Could not cache data: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Generate checksum for test data validation
+     */
+    public static String generateChecksum(List<String> data) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            for (String text : data) {
+                md.update(text.getBytes());
+            }
+            byte[] hash = md.digest();
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString().substring(0, 16); // First 16 chars
+        } catch (NoSuchAlgorithmException e) {
+            return "checksum-unavailable";
+        }
+    }
+    
+    /**
+     * Validate test data quality
+     */
+    public static boolean validateDataQuality(List<String> data) {
+        if (data == null || data.isEmpty()) {
+            return false;
+        }
+        
+        // Check for minimum text length
+        int minLength = 10;
+        int shortTexts = 0;
+        int totalLength = 0;
+        
+        for (String text : data) {
+            if (text == null || text.trim().length() < minLength) {
+                shortTexts++;
+            }
+            totalLength += text != null ? text.length() : 0;
+        }
+        
+        double avgLength = (double) totalLength / data.size();
+        double shortTextRatio = (double) shortTexts / data.size();
+        
+        logger.debug("Data quality - Avg length: {}, Short texts: {}%", 
+                    avgLength, shortTextRatio * 100);
+        
+        // Quality criteria
+        return avgLength >= 20 && shortTextRatio < 0.1; // < 10% short texts
+    }
+    
+    /**
+     * Create test data with specific characteristics for performance testing
+     */
+    public static List<String> createPerformanceTestData(int count, int avgLength) {
+        List<String> data = new ArrayList<>();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        
+        String[] words = {
+            "the", "quick", "brown", "fox", "jumps", "over", "lazy", "dog", "and", "runs",
+            "through", "forest", "with", "great", "speed", "while", "avoiding", "obstacles",
+            "machine", "learning", "algorithm", "processes", "data", "efficiently", "using",
+            "parallel", "computation", "gpu", "acceleration", "optimization", "performance"
+        };
+        
+        for (int i = 0; i < count; i++) {
+            StringBuilder text = new StringBuilder();
+            int targetLength = avgLength + random.nextInt(avgLength / 2) - avgLength / 4;
+            
+            while (text.length() < targetLength) {
+                text.append(words[random.nextInt(words.length)]).append(" ");
+            }
+            
+            data.add(text.toString().trim());
+        }
+        
+        return data;
     }
 }

@@ -1,5 +1,11 @@
 # OpenNLP Test Data Integration
 
+This directory contains test datasets and cached data for OpenNLP GPU acceleration testing.
+
+## 📁 Directory Structure
+````markdown
+# OpenNLP Test Data Integration
+
 This directory contains test data and resources for validating GPU acceleration with real OpenNLP models and datasets.
 
 ## Available Test Resources
@@ -75,3 +81,4 @@ benchmark.benchmarkWithRealData(documents);
 - **Text files**: One sentence/document per line
 - **Training data**: Tab-separated values (word\tpos\tlabel)
 - **Models**: OpenNLP binary format (.bin files)
+````

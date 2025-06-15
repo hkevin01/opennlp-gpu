@@ -1,26 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+    <!-- Console appender for test output -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Test-specific file appender -->
-    <appender name="TEST-FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/test.log</file>
-        <append>false</append>
+    <!-- File appender for test logs -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>target/test-logs/gpu-tests.log</file>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- Enable DEBUG level for tests -->
+    <!-- GPU-specific logger configuration -->
     <logger name="org.apache.opennlp.gpu" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE" />
-        <appender-ref ref="TEST-FILE" />
+        <appender-ref ref="FILE" />
     </logger>
 
-    <root level="INFO">
+    <!-- Performance logging -->
+    <logger name="org.apache.opennlp.gpu.benchmark" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Stress test logging -->
+    <logger name="org.apache.opennlp.gpu.stress" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Demo logging -->
+    <logger name="org.apache.opennlp.gpu.demo" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <!-- Root logger -->
+    <root level="WARN">
         <appender-ref ref="CONSOLE" />
     </root>
+
 </configuration>
