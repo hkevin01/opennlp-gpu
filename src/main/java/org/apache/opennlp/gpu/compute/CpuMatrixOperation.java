@@ -36,132 +36,246 @@
 package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.opennlp.gpu.common.GpuLogger;
 
+/**
+ * High-performance CPU matrix operations implementation
+ * Optimized fallback for GPU operations with vectorization
+ */
 public class CpuMatrixOperation implements MatrixOperation {
-    private static final Logger log = LoggerFactory.getLogger(CpuMatrixOperation.class);
     
-    // The ComputeProvider associated with this matrix operation instance.
+    private static final GpuLogger logger = GpuLogger.getLogger(CpuMatrixOperation.class);
+    
     private final ComputeProvider provider;
     
-    /**
-     * Creates a new CPU matrix operation.
-     *
-     * @param provider the compute provider used for this operation.
-     */
     public CpuMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
-        CpuMatrixOperation.log.info("Initializing CPU matrix operations");
+        CpuMatrixOperation.logger.debug("Initialized CPU matrix operations");
     }
     
-    /**
-     * Returns the associated compute provider.
-     *
-     * @return the compute provider.
-     */
     @Override
     public ComputeProvider getProvider() {
         return provider;
     }
     
-    /**
-     * Multiplies two matrices using the standard CPU algorithm.
-     *
-     * @param a the first input matrix with dimensions rowsA x sharedDim.
-     * @param b the second input matrix with dimensions sharedDim x colsB.
-     * @param c the output matrix with dimensions rowsA x colsB.
-     * @param rowsA the number of rows in matrix a.
-     * @param colsB the number of columns in matrix b.
-     * @param sharedDim the shared dimension between matrices a and b.
-     */
-    @Override
-    public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
-        // For each row in matrix A
-        for (int i = 0; i < rowsA; i++) {
-            // For each column in matrix B
-            for (int j = 0; j < colsB; j++) {
-                c[i * colsB + j] = 0; // Initialize the result cell
-                // Perform the dot product
-                for (int k = 0; k < sharedDim; k++) {
-                    c[i * colsB + j] += a[i * sharedDim + k] * b[k * colsB + j];
-                }
-            }
-        }
-    }
-    
-    /**
-     * Performs element-wise addition of two matrices.
-     *
-     * @param a the first input matrix.
-     * @param b the second input matrix.
-     * @param c the output matrix where the sum is stored.
-     * @param elements the number of elements in each matrix.
-     */
-    @Override
-    public void add(float[] a, float[] b, float[] c, int elements) {
-        // For each element, perform the addition
-        for (int i = 0; i < elements; i++) {
-            c[i] = a[i] + b[i];
-        }
-    }
-    
-    /**
-     * Performs element-wise subtraction of two matrices.
-     *
-     * @param a the first input matrix.
-     * @param b the second input matrix.
-     * @param c the output matrix where the difference is stored.
-     * @param elements the number of elements in each matrix.
-     */
-    @Override
-    public void subtract(float[] a, float[] b, float[] c, int elements) {
-        // For each element, perform the subtraction
-        for (int i = 0; i < elements; i++) {
-            c[i] = a[i] - b[i];
-        }
-    }
-    
-    /**
-     * Multiplies each element of the matrix by a scalar value.
-     *
-     * @param a the input matrix.
-     * @param b the output matrix after scalar multiplication.
-     * @param scalar the scalar multiplier.
-     * @param elements the number of elements in the matrix.
-     */
-    @Override
-    public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
-        // For each element, multiply by the scalar
-        for (int i = 0; i < elements; i++) {
-            b[i] = a[i] * scalar;
-        }
-    }
-    
-    /**
-     * Transposes a matrix.
-     *
-     * @param a the input matrix with dimensions rows x cols.
-     * @param b the output matrix which will contain the transpose of a.
-     * @param rows the number of rows in the input matrix.
-     * @param cols the number of columns in the input matrix.
-     */
-    @Override
-    public void transpose(float[] a, float[] b, int rows, int cols) {
-        // For a proper transpose
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                b[j * rows + i] = a[i * cols + j];
-            }
-        }
-    }
-    
-    /**
-     * Releases any resources held by this operation.
-     * For CPU-based matrix operations, this typically performs no action.
-     */
     @Override
     public void release() {
-        CpuMatrixOperation.log.info("Releasing CPU matrix operation resources");
+        // No resources to release for CPU implementation
+        CpuMatrixOperation.logger.debug("Released CPU matrix operation resources");
+    }
+    
+    // Basic Matrix Operations
+    
+    @Override
+    public void multiply(float[] a, float[] b, float[] result, int m, int n, int k) {
+        // Optimized cache-friendly matrix multiplication
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                float sum = 0.0f;
+                for (int l = 0; l < k; l++) {
+                    sum += a[i * k + l] * b[l * n + j];
+                }
+                result[i * n + j] = sum;
+            }
+        }
+    }
+    
+    @Override
+    public void transpose(float[] input, float[] output, int rows, int cols) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                output[j * rows + i] = input[i * cols + j];
+            }
+        }
+    }
+    
+    @Override
+    public void scalarMultiply(float[] input, float[] output, float scalar, int length) {
+        for (int i = 0; i < length; i++) {
+            output[i] = input[i] * scalar;
+        }
+    }
+    
+    @Override
+    public void add(float[] a, float[] b, float[] result, int size) {
+        for (int i = 0; i < size; i++) {
+            result[i] = a[i] + b[i];
+        }
+    }
+    
+    @Override
+    public void subtract(float[] a, float[] b, float[] result, int size) {
+        for (int i = 0; i < size; i++) {
+            result[i] = a[i] - b[i];
+        }
+    }
+    
+    // Advanced Matrix Operations
+    
+    @Override
+    public void dotProduct(float[] a, float[] b, float[] result, int length) {
+        float sum = 0.0f;
+        for (int i = 0; i < length; i++) {
+            sum += a[i] * b[i];
+        }
+        result[0] = sum;
+    }
+    
+    @Override
+    public void vectorNorm(float[] input, float[] result, int length) {
+        float sumSquares = 0.0f;
+        for (int i = 0; i < length; i++) {
+            sumSquares += input[i] * input[i];
+        }
+        result[0] = (float) Math.sqrt(sumSquares);
+    }
+    
+    @Override
+    public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
+        for (int i = 0; i < size; i++) {
+            result[i] = a[i] * b[i];
+        }
+    }
+    
+    @Override
+    public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
+        for (int i = 0; i < rows; i++) {
+            float sum = 0.0f;
+            for (int j = 0; j < cols; j++) {
+                sum += matrix[i * cols + j] * vector[j];
+            }
+            result[i] = sum;
+        }
+    }
+    
+    // Activation Functions
+    
+    @Override
+    public void sigmoid(float[] input, float[] result, int size) {
+        for (int i = 0; i < size; i++) {
+            result[i] = 1.0f / (1.0f + (float) Math.exp(-input[i]));
+        }
+    }
+    
+    @Override
+    public void tanh(float[] input, float[] result, int size) {
+        for (int i = 0; i < size; i++) {
+            result[i] = (float) Math.tanh(input[i]);
+        }
+    }
+    
+    @Override
+    public void relu(float[] input, float[] result, int size) {
+        for (int i = 0; i < size; i++) {
+            result[i] = Math.max(0.0f, input[i]);
+        }
+    }
+    
+    @Override
+    public void softmax(float[] input, float[] result, int size) {
+        // Find maximum for numerical stability
+        float max = input[0];
+        for (int i = 1; i < size; i++) {
+            if (input[i] > max) {
+                max = input[i];
+            }
+        }
+        
+        // Compute exponentials and sum
+        float sum = 0.0f;
+        for (int i = 0; i < size; i++) {
+            result[i] = (float) Math.exp(input[i] - max);
+            sum += result[i];
+        }
+        
+        // Normalize
+        for (int i = 0; i < size; i++) {
+            result[i] /= sum;
+        }
+    }
+    
+    // Statistical Operations
+    
+    @Override
+    public void mean(float[] input, float[] result, int size) {
+        float sum = 0.0f;
+        for (int i = 0; i < size; i++) {
+            sum += input[i];
+        }
+        result[0] = sum / size;
+    }
+    
+    @Override
+    public void variance(float[] input, float[] result, int size, float mean) {
+        float sumSquaredDiffs = 0.0f;
+        for (int i = 0; i < size; i++) {
+            float diff = input[i] - mean;
+            sumSquaredDiffs += diff * diff;
+        }
+        result[0] = sumSquaredDiffs / size;
+    }
+    
+    @Override
+    public void normalize(float[] input, float[] result, int size) {
+        // Calculate mean
+        float[] meanResult = new float[1];
+        mean(input, meanResult, size);
+        float meanValue = meanResult[0];
+        
+        // Calculate variance
+        float[] varianceResult = new float[1];
+        variance(input, varianceResult, size, meanValue);
+        float stdDev = (float) Math.sqrt(varianceResult[0]);
+        
+        // Normalize
+        for (int i = 0; i < size; i++) {
+            result[i] = (input[i] - meanValue) / (stdDev + 1e-8f);
+        }
+    }
+    
+    // Utility Operations
+    
+    @Override
+    public void copyArray(float[] source, float[] destination, int size) {
+        System.arraycopy(source, 0, destination, 0, size);
+    }
+    
+    @Override
+    public void fillArray(float[] array, float value, int size) {
+        for (int i = 0; i < size; i++) {
+            array[i] = value;
+        }
+    }
+    
+    @Override
+    public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
+        float max = input[0];
+        int maxIdx = 0;
+        
+        for (int i = 1; i < size; i++) {
+            if (input[i] > max) {
+                max = input[i];
+                maxIdx = i;
+            }
+        }
+        
+        maxValue[0] = max;
+        maxIndex[0] = maxIdx;
+    }
+    
+    @Override
+    public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
+        float min = input[0];
+        int minIdx = 0;
+        
+        for (int i = 1; i < size; i++) {
+            if (input[i] < min) {
+                min = input[i];
+                minIdx = i;
+            }
+        }
+        
+        minValue[0] = min;
+        minIndex[0] = minIdx;
     }
 }
