@@ -1,3 +1,34 @@
+# OpenNLP GPU Scripts
+
+This directory contains utility scripts for the OpenNLP GPU acceleration project.
+
+## Available Scripts
+
+### 🔧 `check_ide_setup.sh`
+**Purpose**: Comprehensive IDE setup checker and fixer
+
+**What it does**:
+- ✅ Verifies Maven and Java installation
+- ✅ Checks project compilation status
+- ✅ Validates Maven dependencies
+- ✅ Detects IDE configuration files
+- ✅ Creates missing VS Code configurations
+- ✅ Tests demo class availability
+- ✅ Provides IDE-specific fix instructions
+- ✅ Generates quick fix scripts
+
+**Usage**:
+```bash
+# Make executable and run
+chmod +x scripts/check_ide_setup.sh
+./scripts/check_ide_setup.sh
+
+# Or run directly
+bash scripts/check_ide_setup.sh
+```
+
+**Expected Output**:
+````
 # OpenNLP GPU Build Scripts
 
 This directory contains scripts to help fix common build issues with the OpenNLP GPU project.

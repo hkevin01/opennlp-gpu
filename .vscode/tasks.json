@@ -2,45 +2,71 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "mvn: compile",
+            "label": "🔨 Maven Clean Compile",
             "type": "shell",
-            "command": "mvn compile",
-            "group": {
-                "kind": "build",
-                "isDefault": true
+            "command": "mvn",
+            "args": ["clean", "compile"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
             },
-            "problemMatcher": "$maven"
-        },
-        {
-            "label": "mvn: clean",
-            "type": "shell",
-            "command": "mvn clean",
-            "group": "build",
-            "problemMatcher": "$maven"
-        },
-        {
-            "label": "mvn: test",
-            "type": "shell",
-            "command": "mvn test",
-            "group": {
-                "kind": "test",
-                "isDefault": true
+            "options": {
+                "env": {
+                    "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
+                }
             },
-            "problemMatcher": "$maven"
+            "problemMatcher": ["$java"]
         },
         {
-            "label": "mvn: package",
+            "label": "🧪 Run Demo Tests",
             "type": "shell",
-            "command": "mvn package",
-            "group": "build",
-            "problemMatcher": "$maven"
+            "command": "mvn",
+            "args": ["test", "-Dtest=GpuDemoApplication"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "env": {
+                    "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
+                }
+            },
+            "dependsOn": "🔨 Maven Clean Compile"
         },
         {
-            "label": "mvn: clean install",
+            "label": "📋 Run All Demos",
             "type": "shell",
-            "command": "mvn clean install",
+            "command": "./scripts/run_all_demos.sh",
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "options": {
+                "env": {
+                    "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
+                }
+            }
+        },
+        {
+            "label": "🔧 Check IDE Setup",
+            "type": "shell",
+            "command": "./scripts/check_ide_setup.sh",
             "group": "build",
-            "problemMatcher": "$maven"
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         }
     ]
 }

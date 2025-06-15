@@ -1,49 +1,41 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.format.enabled": true,
-    "editor.formatOnSave": true,
     "java.maven.downloadSources": true,
-    "java.completion.enabled": true,
-    "java.codeGeneration.generateComments": true,
-    "java.autobuild.enabled": true,
+    "java.maven.downloadJavadoc": true,
     "java.server.launchMode": "Standard",
-    "java.import.gradle.enabled": false,
-    "java.import.maven.enabled": true,
-    "java.codeGeneration.useBlocks": true,
-    "java.saveActions.organizeImports": true,
-    "java.cleanup.actions": [
-        "addOverride",
-        "addDeprecated",
-        "qualifyStaticMembers",
-        "stringConcatToTextBlock"
-    ],
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
-    // Logging-specific settings
-    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable -Dorg.slf4j.simpleLogger.defaultLogLevel=info",
-    "maven.terminal.customEnv": [
-        {
-            "environmentVariable": "SLF4J_PROVIDER",
-            "value": "slf4j-simple"
-        }
-    ],
-    // Recommended problem exclusions
+    "maven.executable.path": "mvn",
     "java.debug.settings.enableRunDebugCodeLens": true,
-    "java.debug.settings.showLogicalStructure": true,
+    "java.eclipse.downloadSources": true,
+    "java.maven.updateSnapshots": true,
+    "java.sources.organizeImports.starThreshold": 5,
+    "java.sources.organizeImports.staticStarThreshold": 3,
+    "java.format.settings.url": "",
+    "java.import.maven.enabled": true,
+    "java.import.gradle.enabled": false,
+    "java.saveActions.organizeImports": true,
     "java.configuration.runtimes": [
         {
-            "name": "JavaSE-1.8",
-            "path": "/usr/lib/jvm/java-8-openjdk-amd64",
+            "name": "JavaSE-11",
+            "path": "/usr/lib/jvm/java-17-openjdk-amd64",
             "default": true
         }
     ],
-    "java.errors.incompleteClasspath.severity": "warning",
-    "java.requirements.JDK11Warning": false,
-    "problems.decorations.enabled": true,
-    // YAML schema configuration - disable custom schema to avoid conflicts
-    "yaml.schemas": {
-        "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*.yml"
+    "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
+    "maven.terminal.useJavaHome": true,
+    "maven.terminal.customEnv": [
+        {
+            "environmentVariable": "JAVA_HOME",
+            "value": "/usr/lib/jvm/java-17-openjdk-amd64"
+        }
+    ],
+    // VS Code XML extension: set xml.java.home to match Java runtime
+    "xml.server.preferBinary": true,
+    "xml.java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
+    "files.exclude": {
+        "**/target": true,
+        "**/.settings": true,
+        "**/.project": true,
+        "**/.classpath": true
     }
 }

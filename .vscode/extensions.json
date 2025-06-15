@@ -1,6 +1,11 @@
 {
     "recommendations": [
+        "redhat.java",
         "vscjava.vscode-java-pack",
-        "vscjava.vscode-maven"
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-java-debug",
+        "redhat.vscode-xml",
+        "ms-vscode.test-adapter-converter"
     ]
 }

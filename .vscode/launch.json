@@ -3,76 +3,54 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch Current File",
+            "name": "🚀 Run GpuDemoApplication",
             "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "Launch Main",
-            "request": "launch",
-            "mainClass": "com.example.Main",
-            "projectName": "${workspaceFolderBasename}"
-        },
-        {
-            "type": "java",
-            "name": "Launch GPU Demo",
-            "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
-            "projectName": "opennlp-gpu"
-        },
-        {
-            "type": "java",
-            "name": "List GPU Devices",
-            "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "mainClass": "org.apache.opennlp.gpu.demo.GpuDemoApplication",
             "projectName": "opennlp-gpu",
-            "args": [
-                "--list-devices"
-            ]
+            "args": [],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "JAVA_HOME": "${config:java.home}"
+            }
         },
         {
             "type": "java",
-            "name": "Run Benchmark (Auto)",
+            "name": "🧪 Run SimpleGpuDemo",
             "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "mainClass": "org.apache.opennlp.gpu.demo.SimpleGpuDemo",
             "projectName": "opennlp-gpu",
-            "args": [
-                "--benchmark"
-            ]
+            "args": [],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "JAVA_HOME": "${config:java.home}"
+            }
         },
         {
             "type": "java",
-            "name": "Run Benchmark (CUDA)",
+            "name": "📋 Run ComprehensiveDemoTestSuite",
             "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "mainClass": "org.apache.opennlp.gpu.demo.ComprehensiveDemoTestSuite",
             "projectName": "opennlp-gpu",
-            "args": [
-                "--benchmark",
-                "--cuda"
-            ]
+            "args": [],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "JAVA_HOME": "${config:java.home}"
+            }
         },
         {
             "type": "java",
-            "name": "Run Benchmark (ROCm)",
+            "name": "🏃 Run Current File",
             "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
+            "mainClass": "${file}",
             "projectName": "opennlp-gpu",
-            "args": [
-                "--benchmark",
-                "--rocm"
-            ]
-        },
-        {
-            "type": "java",
-            "name": "Run Benchmark (OpenCL)",
-            "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.GpuDemoMain",
-            "projectName": "opennlp-gpu",
-            "args": [
-                "--benchmark",
-                "--opencl"
-            ]
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "JAVA_HOME": "${config:java.home}"
+            }
         }
     ]
 }
