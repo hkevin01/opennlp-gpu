@@ -1,6 +1,7 @@
 package org.apache.opennlp.gpu.stress;
 
 import java.util.Random;
+import java.util.concurrent.*;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuConfig;
@@ -18,6 +19,7 @@ public class PerformanceBenchmark {
 
     @BeforeAll
     static void setup() {
+        GpuConfig config = new GpuConfig();
         ComputeProvider provider = new ComputeProvider() {
             @Override
             public String getName() {
@@ -25,8 +27,8 @@ public class PerformanceBenchmark {
             }
 
             @Override
-            public ComputeProvider.Type getType() {
-                return ComputeProvider.Type.CPU;
+            public Type getType() {
+                return Type.CPU;
             }
 
             @Override
@@ -89,7 +91,7 @@ public class PerformanceBenchmark {
                 // Not used directly in test
             }
         };
-        GpuConfig config = new GpuConfig();
+
         gpuOps = new GpuMatrixOperation(provider, config);
         cpuOps = new CpuMatrixOperation(provider);
     }
@@ -131,12 +133,23 @@ public class PerformanceBenchmark {
 
         System.out.println("GPU Time (Transpose): " + gpuTime + "ms");
         System.out.println("CPU Time (Transpose): " + cpuTime + "ms");
-        //Assertions.assertTrue(gpuTime < cpuTime, "GPU should be faster than CPU for matrix transpose"); // Removed assertion
+        // Removed assertion for transpose benchmark
     }
 
-    private long timeExecution(Runnable operation) {
+    private static long timeExecution(Runnable operation) {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
         long startTime = System.currentTimeMillis();
-        operation.run();
+        Future<?> future = exec.submit(operation);
+        try {
+            future.get(5, TimeUnit.SECONDS); // wait up to 5 seconds
+        } catch (TimeoutException te) {
+            future.cancel(true);
+            throw new RuntimeException("Operation timed out", te);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            exec.shutdown();
+        }
         return System.currentTimeMillis() - startTime;
     }
 
