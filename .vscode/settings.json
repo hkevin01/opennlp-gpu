@@ -1,41 +1,21 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.maven.downloadSources": true,
-    "java.maven.downloadJavadoc": true,
-    "java.server.launchMode": "Standard",
-    "maven.executable.path": "mvn",
-    "java.debug.settings.enableRunDebugCodeLens": true,
-    "java.eclipse.downloadSources": true,
-    "java.maven.updateSnapshots": true,
-    "java.sources.organizeImports.starThreshold": 5,
-    "java.sources.organizeImports.staticStarThreshold": 3,
-    "java.format.settings.url": "",
-    "java.import.maven.enabled": true,
-    "java.import.gradle.enabled": false,
-    "java.saveActions.organizeImports": true,
+    "java.home": "/home/kevin/Projects/opennlp-gpu/.jdk/jdk8u392-b08",
     "java.configuration.runtimes": [
         {
-            "name": "JavaSE-11",
-            "path": "/usr/lib/jvm/java-17-openjdk-amd64",
+            "name": "JavaSE-1.8",
+            "path": "/home/kevin/Projects/opennlp-gpu/.jdk/jdk8u392-b08",
             "default": true
         }
     ],
-    "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
-    "maven.terminal.useJavaHome": true,
-    "maven.terminal.customEnv": [
-        {
-            "environmentVariable": "JAVA_HOME",
-            "value": "/usr/lib/jvm/java-17-openjdk-amd64"
-        }
-    ],
-    // VS Code XML extension: set xml.java.home to match Java runtime
-    "xml.server.preferBinary": true,
-    "xml.java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
-    "files.exclude": {
-        "**/target": true,
-        "**/.settings": true,
-        "**/.project": true,
-        "**/.classpath": true
-    }
+    "github.copilot.enable": true,
+    "github.copilot.inlineSuggest.enable": true,
+    "github.copilot.editor.enable": true,
+    "github.copilot.editor.showEditorCompletions": true,
+    "github.copilot.advanced": {
+        "inlineSuggestEnable": true,
+        "inlineSuggestCount": 3
+    },
+    "github.copilot.experimental.panel.enabled": false,
+    "github.copilot.experimental.ask": false,
+    "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
 }

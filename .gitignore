@@ -10,23 +10,15 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# IDE
-.idea/
-*.iml
-*.ipr
-*.iws
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.classpath
-.project
-.settings/
-
-# OS
-.DS_Store
-Thumbs.db
+# Gradle
+.gradle/
+build/
+gradle/
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+gradle.properties
 
 # Java
 *.class
@@ -37,20 +29,8 @@ Thumbs.db
 *.tar.gz
 *.rar
 
-# Logs
+# Logs and heap dumps
 *.log
-
-# Gradle (old)
-.gradle/
-build/
-gradle/
-gradlew
-gradlew.bat
-build.gradle
-settings.gradle
-gradle.properties
-
-# Java heap dumps and large files
 *.hprof
 java_pid*.hprof
 java_pid*.log
@@ -60,144 +40,32 @@ java_pid*.log
 *.temp
 *.swp
 *~
-.DS_Store
-./java_pid1266980.hprof
-java_pid1266980.hprof
-*.hprof
 *.a
 
-# Large files and heap dumps
-*.hprof
-*.log
-java_pid*.hprof
-
-# Temporary files
-*.tmp
-*.temp
-
 # IDE files
 .idea/
 *.iml
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-
-# Large files and heap dumps
-*.hprof
-*.log
-java_pid*.hprof
-
-# Temporary files
-*.tmp
-*.temp
-
-# IDE files
-.idea/
-*.iml
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-java_pid*.hprof
-
-# Large files and heap dumps
-*.hprof
-*.log
-java_pid*.hprof
-
-# Temporary files
-*.tmp
-*.temp
-
-# Build artifacts that shouldn't be in git
-target/
-build/
-*.jar
-*.war
-*.ear
-
-java_pid*.hprof
-
-# Large files and heap dumps
-*.hprof
-*.log
-java_pid*.hprof
-
-# Temporary files
-*.tmp
-*.temp
-
-# Build artifacts that shouldn't be in git
-target/
-build/
-*.jar
-*.war
-*.ear
-
-
-# Java heap dumps and profiling files
-*.hprof
-java_pid*.hprof
-*.log
-
-# Temporary files
-*.tmp
-*.temp
-*~
-
-# Build artifacts
-target/
-build/
-*.jar
-*.war
-*.ear
-*.class
-
-# IDE files
-.idea/
-*.iml
-.vscode/
-.settings/
-.project
+*.ipr
+*.iws
 .classpath
-
-# OS files
-.DS_Store
-Thumbs.db
-
-
-# Java heap dumps and profiling files
-*.hprof
-java_pid*.hprof
-*.log
-
-# Temporary files
-*.tmp
-*.temp
-*~
-
-# Build artifacts
-target/
-build/
-*.jar
-*.war
-*.ear
-*.class
-
-# IDE files
-.idea/
-*.iml
-.vscode/
-.settings/
 .project
-.classpath
+.settings/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # OS files
 .DS_Store
 Thumbs.db
+
+# Remove specific heap dump if present
+java_pid1266980.hprof
+./java_pid1266980.hprof
+
+# JDK (local Java installations)
+.jdk/
 
