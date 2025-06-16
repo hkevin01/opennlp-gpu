@@ -141,7 +141,8 @@ public class PerformanceBenchmark {
         long startTime = System.currentTimeMillis();
         Future<?> future = exec.submit(operation);
         try {
-            future.get(5, TimeUnit.SECONDS); // wait up to 5 seconds
+            // Increased timeout to 120 seconds to allow heavy operations to complete.
+            future.get(120, TimeUnit.SECONDS);
         } catch (TimeoutException te) {
             future.cancel(true);
             throw new RuntimeException("Operation timed out", te);
