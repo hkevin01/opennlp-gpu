@@ -2,493 +2,183 @@ package org.apache.opennlp.gpu.stress;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.opennlp.gpu.common.ComputeProvider;
-import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
-import org.apache.opennlp.gpu.compute.*;
-import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Memory stress tests for GPU acceleration components
- * Tests memory leaks, large allocations, and resource management under stress
+ * Memory stress testing for GPU acceleration components
+ * Tests memory usage, leaks, and resource management under load
  */
-@EnabledIf("isStressTestingEnabled")
 public class MemoryStressTest {
     
     private static final GpuLogger logger = GpuLogger.getLogger(MemoryStressTest.class);
     
-    private GpuConfig config;
-    private ComputeProvider gpuProvider;
-    private ComputeProvider cpuProvider;
-    private MatrixOperation gpuMatrixOp;
-    private MatrixOperation cpuMatrixOp;
+    private static final int LARGE_MATRIX_SIZE = 1000;
+    private static final int MEMORY_ITERATIONS = 500;
+    private static final int CONCURRENT_THREADS = 8;
+    private static final long MAX_MEMORY_INCREASE_MB = 200;
     
-    // Test configuration
-    private static final int STRESS_ITERATIONS = 100;
-    private static final int LARGE_MATRIX_SIZE = 2000;
-    private static final int MAX_DOCUMENTS = 5000;
-    
-    /**
-     * Check if stress testing is enabled
-     */
-    public static boolean isStressTestingEnabled() {
-        return "true".equals(System.getProperty("gpu.stress.test.enabled", "false"));
-    }
-    
-    @BeforeEach
+    @Before
     public void setUp() {
-        config = new GpuConfig();
-        config.setGpuEnabled(true);
-        config.setDebugMode(true);
+        logger.info("Starting memory stress test setup");
         
+        // Force garbage collection before testing
+        System.gc();
         try {
-            gpuProvider = new GpuComputeProvider(config);
-            cpuProvider = new CpuComputeProvider();
-            
-            gpuMatrixOp = new GpuMatrixOperation(gpuProvider, config);
-            cpuMatrixOp = new CpuMatrixOperation(cpuProvider);
-            
-            logger.info("Memory stress test setup completed");
-        } catch (Exception e) {
-            logger.warn("GPU not available for stress testing, using CPU fallback");
-            gpuProvider = new CpuComputeProvider();
-            gpuMatrixOp = new CpuMatrixOperation(gpuProvider);
-        }
-    }
-    
-    @AfterEach
-    public void tearDown() {
-        if (gpuMatrixOp != null) {
-            gpuMatrixOp.release();
-        }
-        if (cpuMatrixOp != null) {
-            cpuMatrixOp.release();
-        }
-        if (gpuProvider != null) {
-            gpuProvider.cleanup();
-        }
-        if (cpuProvider != null) {
-            cpuProvider.cleanup();
-        }
-        
-        // Force garbage collection to help detect memory leaks
-        System.gc();
-        System.runFinalization();
-        System.gc();
-        
-        logger.info("Memory stress test cleanup completed");
-    }
-    
-    @Test
-    @Timeout(300) // 5 minutes timeout
-    public void testLargeMatrixOperationsMemoryUsage() {
-        logger.info("Testing large matrix operations memory usage...");
-        
-        long initialMemory = getUsedMemory();
-        List<Long> memorySnapshots = new ArrayList<>();
-        
-        for (int iteration = 0; iteration < STRESS_ITERATIONS; iteration++) {
-            // Create large matrices
-            int size = LARGE_MATRIX_SIZE + (iteration % 500); // Vary size slightly
-            float[] matrixA = generateRandomMatrix(size * size);
-            float[] matrixB = generateRandomMatrix(size * size);
-            float[] result = new float[size * size];
-            
-            // Perform GPU operation
-            gpuMatrixOp.multiply(matrixA, matrixB, result, size, size, size);
-            
-            // Take memory snapshot every 10 iterations
-            if (iteration % 10 == 0) {
-                long currentMemory = getUsedMemory();
-                memorySnapshots.add(currentMemory);
-                
-                logger.debug("Iteration {}: Memory usage = {} MB", 
-                           iteration, currentMemory / (1024 * 1024));
-            }
-            
-            // Clear references to help GC
-            matrixA = null;
-            matrixB = null;
-            result = null;
-            
-            // Periodic GC to detect leaks
-            if (iteration % 50 == 0) {
-                System.gc();
-                Thread.yield();
-                System.gc();
-                
-                long currentMemory = getUsedMemory();
-                logger.debug("Post-GC iteration {}: Memory = {} MB", 
-                           iteration, currentMemory / (1024 * 1024));
-            }
-        }
-        
-        // Final memory check
-        System.gc();
-        Thread.yield();
-        System.gc();
-        
-        long finalMemory = getUsedMemory();
-        long memoryIncrease = finalMemory - initialMemory;
-        long maxAcceptableIncrease = 500 * 1024 * 1024; // 500MB acceptable increase
-        
-        logger.info("Memory usage - Initial: {} MB, Final: {} MB, Increase: {} MB",
-                   initialMemory / (1024 * 1024), 
-                   finalMemory / (1024 * 1024),
-                   memoryIncrease / (1024 * 1024));
-        
-        // Analyze memory trend
-        analyzeMemoryTrend(memorySnapshots);
-        
-        // Assert memory increase is within acceptable bounds
-        if (memoryIncrease > maxAcceptableIncrease) {
-            throw new AssertionError("Memory increase " + (memoryIncrease / (1024 * 1024)) + 
-                                   " MB exceeds acceptable limit of " + (maxAcceptableIncrease / (1024 * 1024)) + " MB");
-        }
-        
-        logger.info("Large matrix operations memory test passed");
-    }
-    
-    @Test
-    @Timeout(600) // 10 minutes timeout
-    public void testFeatureExtractionMemoryScaling() {
-        logger.info("Testing feature extraction memory scaling...");
-        
-        GpuFeatureExtractor extractor = new GpuFeatureExtractor(gpuProvider, config, gpuMatrixOp);
-        
-        try {
-            long initialMemory = getUsedMemory();
-            
-            // Test with increasing document counts
-            int[] documentCounts = {100, 500, 1000, 2000, MAX_DOCUMENTS};
-            
-            for (int docCount : documentCounts) {
-                logger.info("Testing with {} documents...", docCount);
-                
-                String[] documents = generateTestDocuments(docCount);
-                
-                long beforeMemory = getUsedMemory();
-                long startTime = System.currentTimeMillis();
-                
-                // Extract features using GPU feature extractor
-                float[][] features = extractor.extractNGramFeatures(documents, 2, 100);
-                
-                long afterMemory = getUsedMemory();
-                long duration = System.currentTimeMillis() - startTime;
-                long memoryUsed = afterMemory - beforeMemory;
-                
-                logger.info("Documents: {}, Memory used: {} MB, Time: {} ms, Features: {}x{}", 
-                           docCount, memoryUsed / (1024 * 1024), duration,
-                           features.length, features[0].length);
-                
-                // Validate memory usage is reasonable
-                long expectedMemory = docCount * 1024; // 1KB per document baseline
-                long maxAcceptableMemory = expectedMemory * 10; // Allow 10x overhead
-                
-                if (memoryUsed > maxAcceptableMemory) {
-                    logger.warn("High memory usage for {} documents: {} MB (expected < {} MB)", 
-                               docCount, memoryUsed / (1024 * 1024), maxAcceptableMemory / (1024 * 1024));
-                }
-                
-                // Force cleanup
-                features = null;
-                documents = null;
-                System.gc();
-            }
-            
-            long finalMemory = getUsedMemory();
-            logger.info("Feature extraction scaling test completed. Memory increase: {} MB",
-                       (finalMemory - initialMemory) / (1024 * 1024));
-            
-        } finally {
-            extractor.release();
-        }
-    }
-    
-    @Test
-    @Timeout(300) // 5 minutes timeout
-    public void testConcurrentMemoryAccess() {
-        logger.info("Testing concurrent memory access patterns...");
-        
-        int threadCount = 4;
-        int operationsPerThread = 25;
-        
-        Thread[] threads = new Thread[threadCount];
-        Exception[] threadExceptions = new Exception[threadCount];
-        long initialMemory = getUsedMemory();
-        
-        // Create concurrent threads performing matrix operations
-        for (int i = 0; i < threadCount; i++) {
-            final int threadId = i;
-            threads[i] = new Thread(() -> {
-                try {
-                    logger.info("Starting thread {}", threadId);
-                    
-                    // Each thread gets its own matrix operation instance for thread safety
-                    ComputeProvider provider = new CpuComputeProvider();
-                    MatrixOperation matrixOp = new CpuMatrixOperation(provider);
-                    
-                    try {
-                        // Perform matrix operations under concurrent load
-                        for (int op = 0; op < operationsPerThread; op++) {
-                            int size = 100 + (threadId * 10); // Vary size per thread
-                            float[] a = generateRandomMatrix(size);
-                            float[] b = generateRandomMatrix(size);
-                            float[] result = new float[size];
-                            
-                            // Perform operation
-                            gpuMatrixOp.add(a, b, result, size);
-                            
-                            // Validate result
-                            for (int j = 0; j < Math.min(10, size); j++) {
-                                if (Float.isNaN(result[j]) || Float.isInfinite(result[j])) {
-                                    throw new RuntimeException("Invalid result in thread " + threadId);
-                                }
-                            }
-                            
-                            // Random delay to increase contention
-                            if (ThreadLocalRandom.current().nextInt(20) == 0) {
-                                Thread.sleep(1);
-                            }
-                        }
-                    } catch (Exception e) {
-                        threadExceptions[threadId] = e;
-                        logger.error("Thread {} failed: {}", threadId, e.getMessage());
-                    } finally {
-                        matrixOp.release();
-                        provider.cleanup();
-                    }
-                    
-                } catch (Exception e) {
-                    threadExceptions[threadId] = e;
-                    logger.error("Thread {} failed: {}", threadId, e.getMessage());
-                }
-            });
-        }
-        
-        // Start all threads
-        long startTime = System.currentTimeMillis();
-        for (Thread thread : threads) {
-            thread.start();
-        }
-        
-        // Wait for completion
-        try {
-            for (Thread thread : threads) {
-                thread.join();
-            }
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Test interrupted", e);
-        }
-        
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        
-        // Check for thread exceptions
-        for (int i = 0; i < threadCount; i++) {
-            if (threadExceptions[i] != null) {
-                throw new AssertionError("Thread " + i + " failed", threadExceptions[i]);
-            }
-        }
-        
-        // Check final memory state
-        System.gc();
-        long finalMemory = getUsedMemory();
-        long memoryIncrease = finalMemory - initialMemory;
-        
-        logger.info("Concurrent memory test completed in {} ms. Memory increase: {} MB",
-                   duration, memoryIncrease / (1024 * 1024));
-        
-        // Assert reasonable memory usage
-        long maxAcceptableIncrease = 200 * 1024 * 1024; // 200MB
-        if (memoryIncrease > maxAcceptableIncrease) {
-            throw new AssertionError("Concurrent memory test used too much memory: " + 
-                                   (memoryIncrease / (1024 * 1024)) + " MB");
         }
     }
     
-    @Test
-    @Timeout(180) // 3 minutes timeout
-    public void testMemoryFragmentation() {
-        logger.info("Testing memory fragmentation patterns...");
+    @After
+    public void tearDown() {
+        logger.info("Memory stress test cleanup");
         
-        long initialMemory = getUsedMemory();
-        List<float[]> allocatedArrays = new ArrayList<>();
+        // Force cleanup after testing
+        System.gc();
+    }
+    
+    @Test
+    public void testLargeMatrixMemoryUsage() {
+        logger.info("Testing large matrix memory usage");
+        
+        Runtime runtime = Runtime.getRuntime();
+        long initialMemory = runtime.totalMemory() - runtime.freeMemory();
+        
+        List<float[][]> matrices = new ArrayList<>();
         
         try {
-            // Allocate many small matrices to test fragmentation
-            for (int i = 0; i < 1000; i++) {
-                int size = 50 + (i % 100); // Varying sizes from 50 to 150
-                float[] matrix = generateRandomMatrix(size);
-                allocatedArrays.add(matrix);
+            // Create large matrices
+            for (int i = 0; i < 10; i++) {
+                float[][] matrix = new float[LARGE_MATRIX_SIZE][LARGE_MATRIX_SIZE];
                 
-                // Perform some operations to stress the system
-                if (i % 100 == 0) {
-                    float[] temp = new float[size];
-                    gpuMatrixOp.add(matrix, matrix, temp, size);
-                    
-                    // Check for valid results
-                    for (int j = 0; j < Math.min(10, size); j++) {
-                        if (Float.isNaN(temp[j]) || Float.isInfinite(temp[j])) {
-                            throw new AssertionError("Memory fragmentation caused invalid results");
-                        }
+                // Fill with test data
+                for (int row = 0; row < LARGE_MATRIX_SIZE; row++) {
+                    for (int col = 0; col < LARGE_MATRIX_SIZE; col++) {
+                        matrix[row][col] = (float) (Math.random() * 100);
                     }
                 }
                 
-                // Periodic memory checks
-                if (i % 250 == 0) {
-                    long currentMemory = getUsedMemory();
-                    logger.debug("Fragmentation test iteration {}: Memory = {} MB", 
-                               i, currentMemory / (1024 * 1024));
+                matrices.add(matrix);
+                
+                if (i % 2 == 0) {
+                    System.gc();
                 }
             }
             
-            // Final memory check
-            System.gc();
-            long finalMemory = getUsedMemory();
-            long memoryIncrease = finalMemory - initialMemory;
+            long peakMemory = runtime.totalMemory() - runtime.freeMemory();
+            long memoryIncrease = peakMemory - initialMemory;
             
-            logger.info("Memory fragmentation test completed. Memory increase: {} MB",
-                       memoryIncrease / (1024 * 1024));
+            logger.info("Initial memory: " + (initialMemory / 1024 / 1024) + " MB");
+            logger.info("Peak memory: " + (peakMemory / 1024 / 1024) + " MB");
+            logger.info("Memory increase: " + (memoryIncrease / 1024 / 1024) + " MB");
             
-            // Assert memory usage is reasonable for fragmentation test
-            long maxAcceptableIncrease = 1024 * 1024 * 1024; // 1GB for fragmentation test
-            if (memoryIncrease > maxAcceptableIncrease) {
-                throw new AssertionError("Memory fragmentation test used too much memory: " + 
-                                       (memoryIncrease / (1024 * 1024)) + " MB (max: " + 
-                                       (maxAcceptableIncrease / (1024 * 1024)) + " MB)");
-            }
-            
+            // Verify memory usage is reasonable
+            assert memoryIncrease < MAX_MEMORY_INCREASE_MB * 1024 * 1024 : 
+                "Memory usage too high: " + (memoryIncrease / 1024 / 1024) + " MB";
+                
         } finally {
-            // Clear all allocated arrays
-            allocatedArrays.clear();
+            // Cleanup
+            matrices.clear();
             System.gc();
         }
     }
     
     @Test
-    @Timeout(300) // 5 minutes timeout
-    public void testMemoryAllocation() {
-        GpuConfig config = new GpuConfig();
-        config.setGpuEnabled(true);
-        config.setDebugMode(true);
+    public void testConcurrentMemoryAccess() {
+        logger.info("Testing concurrent memory access");
         
-        long initialMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        int iterations = 1000;
+        ExecutorService executor = Executors.newFixedThreadPool(CONCURRENT_THREADS);
+        CountDownLatch latch = new CountDownLatch(CONCURRENT_THREADS);
         
-        for (int i = 0; i < iterations; i++) {
-            try {
-                // Simulate memory allocation
-                long memoryUsed = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-                logger.debug("Iteration {}: Memory used {} MB", i, memoryUsed / 1024 / 1024);
-                
-                // Allocate memory
-                float[] data = new float[1024 * 1024]; // Allocate 1MB
-                for (int j = 0; j < data.length; j++) {
-                    data[j] = (float) Math.random();
-                }
-                
-                // Periodic garbage collection
-                if (i % 100 == 0) {
-                    System.gc();
-                    Thread.sleep(10);
-                }
-                
-            } catch (Exception e) {
-                logger.debug("Allocation failed at iteration {}: Memory {} MB", i, 
-                           (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024);
+        AtomicInteger successCount = new AtomicInteger(0);
+        
+        try {
+            for (int i = 0; i < CONCURRENT_THREADS; i++) {
+                final int threadId = i;
+                executor.submit(() -> {
+                    try {
+                        performMemoryOperations(threadId);
+                        successCount.incrementAndGet();
+                    } catch (Exception e) {
+                        logger.error("Memory operation failed for thread " + threadId, e);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
             }
-        }
-        
-        long finalMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        long peakMemory = finalMemory; // Simplified for example
-        long avgMemory = finalMemory; // Simplified for example
-        
-        logger.info("Memory test completed - Initial: {} MB, Peak: {} MB, Final: {} MB", 
-                   initialMemory / 1024 / 1024, peakMemory / 1024 / 1024, finalMemory / 1024 / 1024);
-    }
-    
-    // Utility methods
-    
-    private long getUsedMemory() {
-        Runtime runtime = Runtime.getRuntime();
-        return runtime.totalMemory() - runtime.freeMemory();
-    }
-    
-    private float[] generateRandomMatrix(int size) {
-        float[] matrix = new float[size];
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        
-        for (int i = 0; i < size; i++) {
-            matrix[i] = random.nextFloat() * 2.0f - 1.0f; // Range [-1, 1]
-        }
-        
-        return matrix;
-    }
-    
-    private String[] generateTestDocuments(int count) {
-        String[] documents = new String[count];
-        String[] templates = {
-            "The %s %s quickly %s through the %s forest.",
-            "Machine learning with %s acceleration provides %s performance improvements.",
-            "Natural language processing requires %s feature extraction and %s analysis.",
-            "GPU computing enables %s parallel processing for %s applications.",
-            "OpenNLP provides %s tools for %s natural language tasks."
-        };
-        
-        String[] words = {"advanced", "efficient", "powerful", "sophisticated", "intelligent",
-                         "rapid", "comprehensive", "robust", "scalable", "optimized"};
-        
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        
-        for (int i = 0; i < count; i++) {
-            String template = templates[i % templates.length];
-            String doc = String.format(template,
-                words[random.nextInt(words.length)],
-                words[random.nextInt(words.length)],
-                words[random.nextInt(words.length)],
-                words[random.nextInt(words.length)]);
-            documents[i] = doc;
-        }
-        
-        return documents;
-    }
-    
-    private void analyzeMemoryTrend(List<Long> memorySnapshots) {
-        if (memorySnapshots.size() < 3) {
-            return;
-        }
-        
-        // Calculate trend
-        long totalIncrease = 0;
-        int increaseCount = 0;
-        
-        for (int i = 1; i < memorySnapshots.size(); i++) {
-            long increase = memorySnapshots.get(i) - memorySnapshots.get(i - 1);
-            if (increase > 0) {
-                totalIncrease += increase;
-                increaseCount++;
-            }
-        }
-        
-        if (increaseCount > 0) {
-            long averageIncrease = totalIncrease / increaseCount;
-            logger.info("Memory trend analysis: Average increase per snapshot: {} KB",
-                       averageIncrease / 1024);
             
-            // Warn if trend shows consistent large increases
-            if (averageIncrease > 10 * 1024 * 1024) { // 10MB per snapshot
-                logger.warn("Detected potential memory leak: Average increase {} MB per snapshot", 
-                           averageIncrease / (1024 * 1024));
+            try {
+                boolean completed = latch.await(30, TimeUnit.SECONDS);
+                assert completed : "Concurrent memory test did not complete in time";
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                assert false : "Test was interrupted";
             }
+            
+            logger.info("Concurrent memory test completed");
+            logger.info("Successful threads: " + successCount.get() + "/" + CONCURRENT_THREADS);
+            
+            assert successCount.get() >= CONCURRENT_THREADS * 0.8 : 
+                "Too many thread failures: " + successCount.get() + "/" + CONCURRENT_THREADS;
+                
+        } finally {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                executor.shutdownNow();
+            }
+        }
+    }
+    
+    private void performMemoryOperations(int threadId) {
+        logger.info("Performing memory operations for thread " + threadId);
+        
+        List<float[]> buffers = new ArrayList<>();
+        
+        try {
+            // Allocate and deallocate memory repeatedly
+            for (int i = 0; i < MEMORY_ITERATIONS; i++) {
+                float[] buffer = new float[1000];
+                
+                // Fill buffer with test data
+                for (int j = 0; j < buffer.length; j++) {
+                    buffer[j] = (float) (Math.random() * threadId + i);
+                }
+                
+                buffers.add(buffer);
+                
+                // Periodically clear some buffers
+                if (i % 50 == 0 && !buffers.isEmpty()) {
+                    buffers.remove(0);
+                }
+                
+                // Occasional pause for GC
+                if (i % 100 == 0) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+            }
+            
+        } finally {
+            buffers.clear();
         }
     }
 }

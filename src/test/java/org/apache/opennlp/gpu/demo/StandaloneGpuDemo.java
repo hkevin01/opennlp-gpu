@@ -1,3 +1,5 @@
+package org.apache.opennlp.gpu.demo;
+
 /**
  * Standalone demo that can be compiled and run with javac directly
  * No package declaration - can be run from any directory
