@@ -12,9 +12,20 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Define output directory and log file
-OUTPUT_DIR="./test-output"
-LOG_FILE="${OUTPUT_DIR}/comprehensive_test_results.log"
+# Set project root directory
+PROJECT_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+
+# Set test output directory
+OUTPUT_DIR="$PROJECT_ROOT/test-output"
+mkdir -p "$OUTPUT_DIR"
+
+# Log file
+LOG_FILE="$OUTPUT_DIR/comprehensive_test_results.log"
+echo "🧪 OpenNLP GPU - Comprehensive Test Runner" > "$LOG_FILE"
+echo "===========================================" >> "$LOG_FILE"
+echo "📂 Test results will be saved to: $LOG_FILE" >> "$LOG_FILE"
+echo "📅 Test run started at: $(date)" >> "$LOG_FILE"
+echo "📁 Project Root: $PROJECT_ROOT" >> "$LOG_FILE"
 
 # Ensure the output directory exists
 mkdir -p "$OUTPUT_DIR"
