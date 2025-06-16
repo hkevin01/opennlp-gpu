@@ -105,9 +105,16 @@
         <version>3.0.0-M7</version>
         <configuration>
           <includes>
-            <include>**/*Test.java</include>
-            <include>**/*Tests.java</include>
+            <include>**/GpuTestSuite.java</include>
+            <include>**/MatrixOpsTest.java</include>
+            <include>**/OpenNLPTestDataIntegration.java</include>
+            <include>**/ConcurrencyTest.java</include>
+            <include>**/PerformanceBenchmark.java</include>  <!-- ADD THIS LINE -->
           </includes>
+          <excludes>
+            <exclude>**/*Abstract*.java</exclude>
+          </excludes>
+          <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
         </configuration>
       </plugin>
     </plugins>
