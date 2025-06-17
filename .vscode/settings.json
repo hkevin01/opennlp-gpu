@@ -17,5 +17,16 @@
     },
     "github.copilot.experimental.panel.enabled": false,
     "github.copilot.experimental.ask": false,
-    "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
+    "cmake.sourceDirectory": null,
+    "cmake.cmakePath": "/usr/bin/cmake",
+    "cmake.configureOnOpen": false,
+    "cmake.configureOnEdit": false,
+    "cmake.autoSelectActiveFolder": false,
+    "cmake.showConfigureWithDebuggerNotification": false,
+    "files.associations": {
+        "CMakeLists.txt": "cmake"
+    },
+    "java.configuration.detectJdksAtStart": true,
+    "java.import.gradle.enabled": false,
+    "java.import.maven.enabled": true
 }
