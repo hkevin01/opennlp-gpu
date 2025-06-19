@@ -69,3 +69,51 @@ java_pid1266980.hprof
 # JDK (local Java installations)
 .jdk/
 
+# Development and Internal Files (exclude from public release)
+# Session progress and development notes
+docs/session_progress_summary.md
+docs/project_progress.md
+docs/test_plan_progress.md
+
+# Project completion and internal reports
+PROJECT_COMPLETION_REPORT.md
+
+# Development scripts that are project-specific
+scripts/nuclear_cleanup.sh
+scripts/cleanup_*.sh
+scripts/fix-*.sh
+scripts/repair_*.sh
+scripts/commit_bypass.sh
+scripts/update_copilot.sh
+
+# Test output and temporary results
+test-output/
+*.test_results.log
+comprehensive_test_results.log
+
+# Build artifacts and CMake files
+build/
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+
+# IDE and development specific
+.vscode/settings.json.backup
+*.backup
+*.orig
+
+# Large files and datasets (if any)
+*.model
+*.bin
+datasets/
+large_files/
+
+# Development configuration files
+codebase.json
+*.development.properties
+
+# Legacy and experimental code
+scripts/legacy/
+docs/overview/archive/
+experimental/
+

@@ -6,9 +6,39 @@ This guide shows how to use OpenNLP GPU acceleration in your projects with simpl
 
 ### Prerequisites
 
-- Java 8 or higher
+- Java 8 or higher (Java 17+ recommended)
 - Maven 3.6+
 - GPU drivers installed (optional - falls back to CPU)
+
+### 0. Check GPU Prerequisites (Important!)
+
+**Before starting**, verify your system is ready for GPU acceleration:
+
+#### Option A: Quick Check (No Build Required)
+```bash
+# Instant check without downloading the full project
+curl -fsSL https://raw.githubusercontent.com/yourusername/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh | bash
+```
+
+#### Option B: Comprehensive Check (Recommended)
+```bash
+# Full diagnostics with detailed analysis
+git clone https://github.com/yourusername/opennlp-gpu.git
+cd opennlp-gpu
+mvn clean compile
+
+# Run comprehensive GPU diagnostics
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+```
+
+Both will check:
+- ✅ GPU hardware detection (NVIDIA, AMD, Intel, Apple)
+- ✅ Driver installation and compatibility
+- ✅ Runtime environments (CUDA, ROCm, OpenCL)
+- ✅ Java environment setup
+- ✅ Performance validation (comprehensive only)
+
+**If GPU is not ready:** Don't worry! All examples will automatically fall back to CPU implementations.
 
 ### 1. Build the Project
 
@@ -21,7 +51,10 @@ mvn clean compile
 ### 2. Run the Demo Application
 
 ```bash
-# Run comprehensive demo with tests and benchmarks
+# FIRST: Check your GPU setup
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+
+# THEN: Run comprehensive demo with tests and benchmarks
 mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.demo.GpuDemoApplication"
 
 # Or run individual components
@@ -410,22 +443,102 @@ testGpuAcceleration(sentences.toArray(new String[sentences.size()]));
 
 ## Troubleshooting
 
-### Common Issues
+### Step 1: Run GPU Diagnostics
 
-1. **GPU not detected**: Ensure GPU drivers are installed
-2. **Out of memory**: Reduce batch sizes or matrix dimensions
-3. **Slow performance**: Check if GPU thresholds are set appropriately
+If you encounter any issues, start with our comprehensive diagnostics:
+
+```bash
+# Get detailed GPU environment report
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+```
+
+This will detect and report:
+- GPU hardware (NVIDIA, AMD, Intel, Apple Silicon)
+- Driver versions and compatibility
+- Runtime environments (CUDA, ROCm, OpenCL)
+- Java environment issues
+- Performance baseline tests
+
+### Common Issues & Solutions
+
+**🔧 Issue**: "No GPU detected"
+```bash
+# Check GPU hardware
+lspci | grep -i gpu           # Linux
+system_profiler SPDisplaysDataType  # macOS
+
+# Install appropriate drivers
+sudo apt install nvidia-driver-535  # NVIDIA
+sudo apt install rocm-dkms         # AMD
+sudo apt install intel-opencl-icd  # Intel
+```
+
+**🔧 Issue**: "CUDA/OpenCL not found" 
+```bash
+# Install CUDA toolkit (NVIDIA)
+sudo apt install nvidia-cuda-toolkit
+
+# Install ROCm (AMD)
+curl -fsSL https://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
+sudo apt install rocm-dev
+
+# Install OpenCL
+sudo apt install ocl-icd-opencl-dev
+```
+
+**🔧 Issue**: "Permission denied accessing GPU"
+```bash
+# Add user to GPU groups
+sudo usermod -a -G video $USER
+sudo usermod -a -G render $USER
+
+# Logout and login to apply changes
+```
+
+**🔧 Issue**: "Out of memory errors"
+```java
+// Reduce memory usage
+GpuConfig config = new GpuConfig();
+config.setMemoryPoolSizeMB(256);    // Reduce from default 512MB
+config.setBatchSize(32);            // Reduce from default 64
+config.setMatrixSize(512);          // Reduce from default 1024
+```
+
+**🔧 Issue**: "Slow performance"
+```java
+// Check GPU utilization
+GpuMonitor monitor = new GpuMonitor(config);
+monitor.startMonitoring();
+
+// Your operations here...
+
+PerformanceReport report = monitor.getReport();
+if (report.getGpuUtilization() < 50) {
+    // Increase batch size for better GPU utilization
+    config.setBatchSize(128);
+}
+```
 
 ### Debug Mode
 
 ```java
-// Enable debug logging
+// Enable comprehensive debug logging
 GpuConfig config = new GpuConfig();
 config.setDebugMode(true);
 config.setLogLevel("DEBUG");
+config.setPerformanceMonitoring(true);
 
 // This will print detailed GPU operation logs
+ComputeProvider provider = new GpuComputeProvider(config);
 ```
+
+### Getting Help
+
+1. **Run diagnostics** first: `GpuDiagnostics` tool
+2. **Check logs** with debug mode enabled
+3. **Review GPU utilization** with performance monitoring
+4. **Verify drivers** are up to date
+5. **Test CPU fallback** to isolate GPU issues
 
 ### Performance Tips
 

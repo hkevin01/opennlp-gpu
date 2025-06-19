@@ -6,6 +6,82 @@
 
 This project provides **drop-in GPU acceleration** for existing OpenNLP applications. You can integrate GPU acceleration into your current OpenNLP project with **minimal code changes** while achieving **3-10x performance improvements**.
 
+## ⚡ GPU Prerequisites Check
+
+**IMPORTANT:** Before using GPU acceleration, verify your system is ready:
+
+### Quick GPU Readiness Check (No Build Required)
+
+Run our lightweight prerequisites check:
+
+```bash
+# Quick check without building the project
+curl -fsSL https://raw.githubusercontent.com/yourusername/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh | bash
+
+# Or download and run locally
+wget https://raw.githubusercontent.com/yourusername/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh
+chmod +x check_gpu_prerequisites.sh
+./check_gpu_prerequisites.sh
+```
+
+### Comprehensive GPU Diagnostics
+
+For detailed analysis, build the project and run our comprehensive diagnostics tool:
+
+```bash
+# Clone and build the project
+git clone https://github.com/yourusername/opennlp-gpu.git
+cd opennlp-gpu
+mvn clean compile
+
+# Run comprehensive GPU diagnostics
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+```
+
+Both tools check for:
+- ✅ **GPU Hardware** (NVIDIA, AMD, Intel, Apple Silicon)
+- ✅ **GPU Drivers** (NVIDIA, ROCm, Intel drivers)
+- ✅ **GPU Runtimes** (CUDA, ROCm, OpenCL)
+- ✅ **Java Environment** compatibility
+- ✅ **Performance** baseline test (comprehensive tool only)
+
+### Manual Prerequisites
+
+If you prefer to check manually:
+
+**For NVIDIA GPUs:**
+```bash
+# Check NVIDIA driver
+nvidia-smi
+
+# Install CUDA Toolkit (if needed)
+sudo apt install nvidia-cuda-toolkit
+```
+
+**For AMD GPUs:**
+```bash
+# Check ROCm installation
+rocm-smi
+
+# Install ROCm (if needed)
+sudo apt install rocm-dkms
+```
+
+**For Intel GPUs:**
+```bash
+# Check Intel GPU tools
+intel_gpu_top
+
+# Install Intel compute runtime
+sudo apt install intel-opencl-icd
+```
+
+### CPU Fallback
+
+✅ **No GPU? No problem!** All features automatically fall back to optimized CPU implementations if GPU is unavailable.
+
+📖 **Detailed Setup Guide**: See [`docs/gpu_prerequisites_guide.md`](docs/gpu_prerequisites_guide.md) for comprehensive GPU setup instructions.
+
 ### 📦 What You Get
 
 - ✅ **Complete GPU acceleration** for all major OpenNLP operations
@@ -17,6 +93,16 @@ This project provides **drop-in GPU acceleration** for existing OpenNLP applicat
 - ✅ **95%+ test coverage** with enterprise-grade quality
 
 ## 🚀 Quick Integration (5 Minutes)
+
+### Step 0: Verify GPU Support (Recommended)
+
+Run the GPU diagnostics to ensure your system is ready:
+
+```bash
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+```
+
+If GPU is not available, the library will automatically use CPU fallback.
 
 ### Step 1: Add Dependencies
 
@@ -202,6 +288,84 @@ List<String[][]> results = processor.processBatch(
     doc -> sentenceDetector.sentDetect(doc),
     sentences -> Arrays.stream(sentences).map(tokenizer::tokenize).toArray(String[][]::new)
 );
+```
+
+## 🔍 GPU Diagnostics & Troubleshooting
+
+### Comprehensive GPU Health Check
+
+Our diagnostics tool provides detailed analysis of your GPU setup:
+
+```bash
+# Run comprehensive diagnostics
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+
+# Sample output:
+# 🔍 OpenNLP GPU Acceleration - Hardware Diagnostics
+# ==================================================
+# ✅ System Information
+#   OS: Linux 5.15.0
+#   Java Version: 17.0.7 ✅ Compatible
+#   Available Processors: 16
+# 
+# ✅ GPU Hardware
+#   NVIDIA RTX 4090: ✅ Detected
+#   GPU Memory: 24GB
+# 
+# ✅ NVIDIA Drivers
+#   Driver Version: 535.104.05 ✅ Compatible
+#   CUDA Version: 12.2 ✅ Ready
+# 
+# 🎉 GPU acceleration is ready to use!
+```
+
+### Common Issues & Solutions
+
+**Issue**: "No GPU detected"
+```bash
+# Check GPU hardware
+lspci | grep -i gpu
+
+# Install drivers
+sudo apt install nvidia-driver-535  # NVIDIA
+sudo apt install rocm-dkms         # AMD
+```
+
+**Issue**: "CUDA/OpenCL not found"
+```bash
+# Install CUDA toolkit
+sudo apt install nvidia-cuda-toolkit
+
+# Install OpenCL
+sudo apt install ocl-icd-opencl-dev
+```
+
+**Issue**: "Permission denied" accessing GPU
+```bash
+# Add user to GPU group
+sudo usermod -a -G video $USER
+sudo usermod -a -G render $USER
+
+# Logout/login to apply changes
+```
+
+### Performance Troubleshooting
+
+```java
+// Enable detailed performance logging
+GpuConfig config = new GpuConfig();
+config.setLoggingLevel(LogLevel.DEBUG);
+config.setPerformanceMonitoring(true);
+
+// Check GPU utilization
+GpuMonitor monitor = new GpuMonitor(config);
+monitor.startMonitoring();
+
+// Your GPU operations here...
+
+PerformanceReport report = monitor.getReport();
+System.out.println("GPU Utilization: " + report.getGpuUtilization() + "%");
+System.out.println("Memory Usage: " + report.getMemoryUsage() + "MB");
 ```
 
 ## 🏗️ System Requirements

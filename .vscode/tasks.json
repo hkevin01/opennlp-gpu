@@ -5,7 +5,10 @@
       "label": "🔨 Maven Clean Compile",
       "type": "shell",
       "command": "mvn",
-      "args": ["clean", "compile"],
+      "args": [
+        "clean",
+        "compile"
+      ],
       "group": "build",
       "options": {
         "env": {
@@ -13,13 +16,18 @@
           "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
         }
       },
-      "problemMatcher": ["$tsc"]
+      "problemMatcher": [
+        "$tsc"
+      ]
     },
     {
-      "label": "🧪 Run Demo Tests", 
+      "label": "🧪 Run Demo Tests",
       "type": "shell",
       "command": "mvn",
-      "args": ["test", "-Dtest=GpuDemoApplication"],
+      "args": [
+        "test",
+        "-Dtest=GpuDemoApplication"
+      ],
       "group": "test",
       "options": {
         "env": {
@@ -31,7 +39,7 @@
     },
     {
       "label": "📋 Run All Demos",
-      "type": "shell", 
+      "type": "shell",
       "command": "./scripts/run_all_demos.sh",
       "group": "test",
       "options": {
@@ -44,7 +52,7 @@
     {
       "label": "🔧 Check IDE Setup",
       "type": "shell",
-      "command": "./scripts/check_ide_setup.sh", 
+      "command": "./scripts/check_ide_setup.sh",
       "group": "build"
     },
     {
@@ -58,6 +66,24 @@
       "type": "shell",
       "command": "./scripts/fix_java_environment.sh",
       "group": "build"
+    },
+    {
+      "label": "🔍 GPU Diagnostics Check",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "exec:java",
+        "-Dexec.mainClass=org.apache.opennlp.gpu.tools.GpuDiagnostics"
+      ],
+      "group": "test",
+      "options": {
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
+        }
+      },
+      "dependsOn": "🔨 Maven Clean Compile",
+      "problemMatcher": []
     }
   ]
 }

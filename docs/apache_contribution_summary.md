@@ -42,7 +42,25 @@ git checkout -b OPENNLP-XXXX-gpu-acceleration
 - **Maintain backward compatibility**
 - **Create comprehensive tests**
 
-### Step 3: Submit Pull Request
+### Step 3: Prepare User Experience
+- **GPU Prerequisites Validation**: Include our `GpuDiagnostics` tool
+- **Automatic CPU Fallback**: Ensure seamless operation without GPU
+- **Clear Setup Instructions**: Document driver and SDK requirements
+- **Comprehensive Error Handling**: Guide users through setup issues
+
+#### GPU Environment Requirements
+```bash
+# Users must have one of:
+# NVIDIA: nvidia-smi, CUDA toolkit
+# AMD: rocm-smi, ROCm platform  
+# Intel: intel_gpu_top, OpenCL runtime
+# Apple: Metal Performance Shaders (built-in)
+
+# Our diagnostics tool checks all requirements:
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.tools.GpuDiagnostics"
+```
+
+### Step 4: Submit Pull Request
 - **Complete documentation**
 - **All tests passing**
 - **Performance benchmarks included**
