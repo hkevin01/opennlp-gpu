@@ -12,16 +12,23 @@ This project provides **drop-in GPU acceleration** for existing OpenNLP applicat
 
 ### Quick GPU Readiness Check (No Build Required)
 
+> **Note**: GitHub URLs in this section are placeholders for future Apache OpenNLP integration. 
+> For now, use the local scripts in your cloned project directory.
+
 Run our lightweight prerequisites check:
 
 ```bash
-# Quick check without building the project
+# Quick check without building the project (once in Apache OpenNLP)
 curl -fsSL https://raw.githubusercontent.com/apache/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh | bash
 
-# Or download and run locally
+# Or download and run locally (once in Apache OpenNLP)
 wget https://raw.githubusercontent.com/apache/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh
 chmod +x check_gpu_prerequisites.sh
 ./check_gpu_prerequisites.sh
+
+# For now, run from your local project directory:
+cd /path/to/your/opennlp-gpu
+./scripts/check_gpu_prerequisites.sh
 ```
 
 ### Comprehensive GPU Diagnostics
@@ -29,9 +36,13 @@ chmod +x check_gpu_prerequisites.sh
 For detailed analysis, build the project and run our comprehensive diagnostics tool:
 
 ```bash
-# Clone and build the project
+# Clone and build the project (once in Apache OpenNLP)
 git clone https://github.com/apache/opennlp-gpu.git
 cd opennlp-gpu
+mvn clean compile
+
+# For now, use your current project directory:
+cd /path/to/your/opennlp-gpu
 mvn clean compile
 
 # Run comprehensive GPU diagnostics
@@ -397,16 +408,19 @@ System.out.println("Memory Usage: " + report.getMemoryUsage() + "MB");
 ### Step 1: Clone or Download
 
 ```bash
-# Clone repository (update URL once contributed to Apache OpenNLP)
+# Clone repository (once contributed to Apache OpenNLP)
 git clone https://github.com/apache/opennlp-gpu.git
 cd opennlp-gpu
+
+# For now, use your current project directory:
+cd /path/to/your/opennlp-gpu
 
 # Build the project
 mvn clean compile
 ```
 
 > **Note**: Repository URL will be updated once this project is contributed to Apache OpenNLP.
-> For now, build from source using the steps above.
+> For now, build from source using your local project directory.
 
 ### Step 2: Build from Source
 
@@ -615,9 +629,12 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for deta
 ### Development Setup
 
 ```bash
-# Fork and clone
+# Fork and clone (once in Apache OpenNLP)
 git clone https://github.com/apache/opennlp-gpu.git
 cd opennlp-gpu
+
+# For now, work in your current project directory:
+cd /path/to/your/opennlp-gpu
 
 # Create feature branch
 git checkout -b feature/your-feature
@@ -625,7 +642,7 @@ git checkout -b feature/your-feature
 # Make changes and test
 mvn test
 
-# Submit pull request
+# Submit pull request (to Apache OpenNLP once integrated)
 ```
 
 ## 📄 License
