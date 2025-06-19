@@ -16,10 +16,10 @@ Run our lightweight prerequisites check:
 
 ```bash
 # Quick check without building the project
-curl -fsSL https://raw.githubusercontent.com/yourusername/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh | bash
+curl -fsSL https://raw.githubusercontent.com/apache/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh | bash
 
 # Or download and run locally
-wget https://raw.githubusercontent.com/yourusername/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh
+wget https://raw.githubusercontent.com/apache/opennlp-gpu/main/scripts/check_gpu_prerequisites.sh
 chmod +x check_gpu_prerequisites.sh
 ./check_gpu_prerequisites.sh
 ```
@@ -30,7 +30,7 @@ For detailed analysis, build the project and run our comprehensive diagnostics t
 
 ```bash
 # Clone and build the project
-git clone https://github.com/yourusername/opennlp-gpu.git
+git clone https://github.com/apache/opennlp-gpu.git
 cd opennlp-gpu
 mvn clean compile
 
@@ -397,13 +397,16 @@ System.out.println("Memory Usage: " + report.getMemoryUsage() + "MB");
 ### Step 1: Clone or Download
 
 ```bash
-# Option 1: Clone repository
+# Clone repository (update URL once contributed to Apache OpenNLP)
 git clone https://github.com/apache/opennlp-gpu.git
 cd opennlp-gpu
 
-# Option 2: Download release
-wget https://github.com/apache/opennlp-gpu/releases/latest/opennlp-gpu.jar
+# Build the project
+mvn clean compile
 ```
+
+> **Note**: Repository URL will be updated once this project is contributed to Apache OpenNLP.
+> For now, build from source using the steps above.
 
 ### Step 2: Build from Source
 
@@ -549,20 +552,61 @@ config.setDebugMode(true);
 ## 📖 Documentation
 
 - **[Complete API Reference](docs/api/quick_reference.md)** - All classes and methods
-- **[Performance Tuning Guide](docs/performance_tuning.md)** - Optimize for your hardware
-- **[Neural Network Guide](docs/neural_networks.md)** - Advanced ML features
-- **[Production Deployment](docs/production_guide.md)** - Enterprise deployment
-- **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
+- **[Getting Started Guide](docs/getting_started.md)** - Complete user tutorial with examples
+- **[GPU Prerequisites Guide](docs/gpu_prerequisites_guide.md)** - Hardware setup and requirements
+- **[Technical Architecture](docs/technical_architecture.md)** - Deep-dive into design and implementation
+- **[Performance Benchmarks](docs/performance_benchmarks.md)** - Detailed performance analysis
+- **[Apache Contribution Guide](docs/apache_contribution_guide.md)** - How to contribute to Apache OpenNLP
 
-## 💡 Examples Repository
+## 💡 Real-World Integration Examples
 
-Check out real-world integration examples:
+Check out our comprehensive real-world examples:
 
-- **[Sentiment Analysis](examples/sentiment_analysis/)** - Twitter sentiment with GPU
-- **[Named Entity Recognition](examples/ner/)** - High-speed entity extraction
-- **[Document Classification](examples/classification/)** - Large-scale classification
-- **[Language Detection](examples/language_detection/)** - Multi-language processing
-- **[Question Answering](examples/qa/)** - Neural QA with attention
+- **[Sentiment Analysis](examples/sentiment_analysis/README.md)** - Twitter sentiment with GPU acceleration
+- **[Named Entity Recognition](examples/ner/README.md)** - High-speed entity extraction
+- **[Document Classification](examples/classification/README.md)** - Large-scale document categorization
+- **[Language Detection](examples/language_detection/README.md)** - Multi-language processing
+- **[Question Answering](examples/question_answering/README.md)** - Neural QA with attention mechanisms
+
+Each example includes:
+- Complete runnable Java code
+- Detailed documentation and usage instructions
+- Performance benchmarks and GPU optimization techniques
+- Sample input/output demonstrations
+
+### Running Examples
+
+```bash
+# Sentiment Analysis
+mvn compile exec:java -Dexec.mainClass="org.apache.opennlp.gpu.examples.sentiment_analysis.GpuSentimentAnalysis"
+
+# Named Entity Recognition
+mvn compile exec:java -Dexec.mainClass="org.apache.opennlp.gpu.examples.ner.GpuNamedEntityRecognition"
+
+# Document Classification
+mvn compile exec:java -Dexec.mainClass="org.apache.opennlp.gpu.examples.classification.GpuDocumentClassification"
+
+# Language Detection
+mvn compile exec:java -Dexec.mainClass="org.apache.opennlp.gpu.examples.language_detection.GpuLanguageDetection"
+
+# Question Answering
+mvn compile exec:java -Dexec.mainClass="org.apache.opennlp.gpu.examples.question_answering.GpuQuestionAnswering"
+```
+
+## 💡 Code Examples
+
+Find comprehensive examples in our documentation:
+
+- **[Getting Started Examples](docs/getting_started.md)** - Basic integration and usage
+- **[Advanced Integration Patterns](#-advanced-integration-patterns)** - Complex use cases (see above)
+- **[Basic GPU Matrix Operations](docs/getting_started.md#example-1-basic-gpu-matrix-operations)** - GPU compute fundamentals
+- **[GPU Feature Extraction](docs/getting_started.md#example-2-gpu-accelerated-feature-extraction)** - Parallel feature computation
+- **[Neural Network Integration](docs/getting_started.md#example-3-gpu-accelerated-neural-network)** - Advanced ML features
+
+Run the comprehensive demo:
+```bash
+mvn exec:java -Dexec.mainClass="org.apache.opennlp.gpu.demo.GpuDemoApplication"
+```
 
 ## 🤝 Contributing
 
@@ -572,7 +616,7 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for deta
 
 ```bash
 # Fork and clone
-git clone https://github.com/yourusername/opennlp-gpu.git
+git clone https://github.com/apache/opennlp-gpu.git
 cd opennlp-gpu
 
 # Create feature branch
@@ -590,10 +634,14 @@ Licensed under the Apache License 2.0 - see [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
-- **Issues**: [GitHub Issues](https://github.com/apache/opennlp-gpu/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/apache/opennlp-gpu/discussions)
-- **Documentation**: [Wiki](https://github.com/apache/opennlp-gpu/wiki)
-- **Email**: opennlp-dev@apache.org
+- **Documentation**: See `docs/` directory for comprehensive guides
+- **Getting Started**: [docs/getting_started.md](docs/getting_started.md)
+- **GPU Prerequisites**: [docs/gpu_prerequisites_guide.md](docs/gpu_prerequisites_guide.md)
+- **Apache OpenNLP**: [Official Project](https://opennlp.apache.org/)
+- **Apache Contribution**: [docs/apache_contribution_guide.md](docs/apache_contribution_guide.md)
+
+> **Note**: This project is preparing for contribution to Apache OpenNLP. 
+> GitHub repository links will be available after Apache integration is complete.
 
 ---
 
