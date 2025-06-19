@@ -35,22 +35,22 @@ This document provides a comprehensive technical architecture overview of the Op
 │              OpenNLP Tools (Existing Core)                  │
 ├─────────────────────────────────────────────────────────────┤
 │                GPU Acceleration Layer (NEW)                 │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   GPU SPI   │  │   Config    │  │ Integration │         │
-│  │ Interface   │  │  Manager    │  │   Layer     │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   GPU SPI   │  │   Config    │  │ Integration │          │
+│  │ Interface   │  │  Manager    │  │   Layer     │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
 ├─────────────────────────────────────────────────────────────┤
 │              GPU Compute Engine (NEW)                       │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   Matrix    │  │  Feature    │  │   Neural    │         │
-│  │ Operations  │  │ Extraction  │  │  Networks   │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   Matrix    │  │  Feature    │  │   Neural    │          │
+│  │ Operations  │  │ Extraction  │  │  Networks   │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
 ├─────────────────────────────────────────────────────────────┤
 │              Hardware Abstraction Layer                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   OpenCL    │  │    CUDA     │  │   Metal     │         │
-│  │  Provider   │  │  Provider   │  │  Provider   │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
+│  │   OpenCL    │  │    CUDA     │  │   Metal     │          │
+│  │  Provider   │  │  Provider   │  │  Provider   │          │
+│  └─────────────┘  └─────────────┘  └─────────────┘          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
