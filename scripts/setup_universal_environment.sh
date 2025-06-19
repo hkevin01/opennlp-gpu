@@ -8,34 +8,9 @@ set -e
 echo "🌐 OpenNLP GPU - Universal Environment Setup"
 echo "============================================"
 
-# Function to detect operating system
-detect_os() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "linux"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "macos"
-    elif [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
-        echo "windows"
-    else
-        echo "unknown"
-    fi
-}
-
-# Function to detect architecture
-detect_arch() {
-    local arch=$(uname -m)
-    case $arch in
-        x86_64|amd64)
-            echo "x86_64"
-            ;;
-        arm64|aarch64)
-            echo "arm64"
-            ;;
-        *)
-            echo "unknown"
-            ;;
-    esac
-}
+# Source cross-platform compatibility library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cross_platform_lib.sh"
 
 # Function to check Java installation
 check_java() {
@@ -63,37 +38,38 @@ check_java() {
 # Function to install Java if needed
 install_java() {
     local os=$(detect_os)
+    local pm=$(detect_package_manager)
     echo "📦 Installing Java 17..."
     
-    case $os in
-        linux)
-            if command -v apt-get &> /dev/null; then
-                sudo apt-get update
-                sudo apt-get install -y openjdk-17-jdk
-            elif command -v yum &> /dev/null; then
-                sudo yum install -y java-17-openjdk-devel
-            elif command -v dnf &> /dev/null; then
-                sudo dnf install -y java-17-openjdk-devel
-            else
-                echo "❌ Unsupported Linux distribution for automatic Java installation"
-                return 1
-            fi
+    case $pm in
+        apt)
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
             ;;
-        macos)
-            if command -v brew &> /dev/null; then
-                brew install openjdk@17
-            else
-                echo "❌ Homebrew not found. Please install Java 17 manually."
-                return 1
-            fi
+        dnf)
+            sudo dnf install -y java-17-openjdk-devel
             ;;
-        windows)
-            echo "❌ Automatic Java installation not supported on Windows"
-            echo "Please download and install Java 17 from: https://adoptium.net/"
-            return 1
+        yum)
+            sudo yum install -y java-17-openjdk-devel
+            ;;
+        zypper)
+            sudo zypper install -y java-17-openjdk-devel
+            ;;
+        pacman)
+            sudo pacman -S --noconfirm jdk17-openjdk
+            ;;
+        brew)
+            brew install openjdk@17
+            ;;
+        choco)
+            choco install -y openjdk17
+            ;;
+        winget)
+            winget install Microsoft.OpenJDK.17
             ;;
         *)
-            echo "❌ Unsupported operating system for automatic Java installation"
+            echo "❌ Unsupported package manager: $pm"
+            echo "Please install Java 17 manually from: https://adoptium.net/"
             return 1
             ;;
     esac
@@ -121,31 +97,36 @@ setup_maven() {
         return 0
     else
         echo "❌ Maven not found - installing..."
-        local os=$(detect_os)
+        local pm=$(detect_package_manager)
         
-        case $os in
-            linux)
-                if command -v apt-get &> /dev/null; then
-                    sudo apt-get install -y maven
-                elif command -v yum &> /dev/null; then
-                    sudo yum install -y maven
-                elif command -v dnf &> /dev/null; then
-                    sudo dnf install -y maven
-                else
-                    echo "❌ Unsupported Linux distribution for automatic Maven installation"
-                    return 1
-                fi
+        case $pm in
+            apt)
+                sudo apt-get install -y maven
                 ;;
-            macos)
-                if command -v brew &> /dev/null; then
-                    brew install maven
-                else
-                    echo "❌ Homebrew not found. Please install Maven manually."
-                    return 1
-                fi
+            dnf)
+                sudo dnf install -y maven
+                ;;
+            yum)
+                sudo yum install -y maven
+                ;;
+            zypper)
+                sudo zypper install -y maven
+                ;;
+            pacman)
+                sudo pacman -S --noconfirm maven
+                ;;
+            brew)
+                brew install maven
+                ;;
+            choco)
+                choco install -y maven
+                ;;
+            winget)
+                winget install Apache.Maven
                 ;;
             *)
-                echo "❌ Automatic Maven installation not supported on this OS"
+                echo "❌ Unsupported package manager: $pm"
+                echo "Please install Maven manually from: https://maven.apache.org/"
                 return 1
                 ;;
         esac
@@ -180,9 +161,17 @@ run_diagnostics() {
 main() {
     local os=$(detect_os)
     local arch=$(detect_arch)
+    local distro=$(detect_distro)
+    local pm=$(detect_package_manager)
+    local cpu_count=$(xp_get_cpu_count)
+    local memory_gb=$(xp_get_memory_gb)
     
-    echo "🖥️ Detected OS: $os"
-    echo "🏗️ Detected Architecture: $arch"
+    echo "🖥️ System Information:"
+    echo "   OS: $os ($arch)"
+    echo "   Distribution: $distro"
+    echo "   Package Manager: $pm"
+    echo "   CPU Cores: $cpu_count"
+    echo "   Memory: ${memory_gb}GB"
     echo ""
     
     # Check and install Java if needed

@@ -8,11 +8,42 @@ set -e
 echo "🚀 OpenNLP GPU - Running All Demonstrations"
 echo "==========================================="
 
+# Source cross-platform compatibility library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cross_platform_lib.sh"
+
 # Function to check if Maven is available
 check_maven() {
     if ! command -v mvn &> /dev/null; then
         echo "❌ Maven not found. Please install Maven first."
         exit 1
+    fi
+}
+
+# Cross-platform timing function
+get_timestamp() {
+    if command -v date &> /dev/null; then
+        # Try nanosecond precision first
+        if date +%s.%N &> /dev/null; then
+            date +%s.%N
+        else
+            # Fallback to second precision
+            date +%s
+        fi
+    else
+        echo "0"
+    fi
+}
+
+# Cross-platform duration calculation
+calculate_duration() {
+    local start_time="$1"
+    local end_time="$2"
+    
+    if command -v bc &> /dev/null && [[ "$start_time" != "0" ]] && [[ "$end_time" != "0" ]]; then
+        echo "$end_time - $start_time" | bc -l
+    else
+        echo "unknown"
     fi
 }
 
@@ -35,12 +66,17 @@ run_demo() {
     echo "Class: $main_class"
     echo "----------------------------------------"
     
-    local start_time=$(date +%s.%N)
+    local start_time=$(get_timestamp)
     
     if mvn exec:java -Dexec.mainClass="$main_class" -q; then
-        local end_time=$(date +%s.%N)
-        local duration=$(echo "$end_time - $start_time" | bc -l)
-        printf "✅ Completed in %.2f seconds\n" "$duration"
+        local end_time=$(get_timestamp)
+        local duration=$(calculate_duration "$start_time" "$end_time")
+        
+        if [[ "$duration" != "unknown" ]] && command -v printf &> /dev/null; then
+            printf "✅ Completed in %.2f seconds\n" "$duration"
+        else
+            echo "✅ Completed successfully"
+        fi
         return 0
     else
         echo "❌ Demo failed"
@@ -130,12 +166,22 @@ display_summary() {
 
 # Main execution function
 main() {
-    local total_start_time=$(date +%s.%N)
+    local total_start_time=$(get_timestamp)
+    
+    # Display system information using cross-platform functions
+    local os=$(detect_os)
+    local arch=$(detect_arch)
+    local distro=$(detect_distro)
+    local cpu_count=$(xp_get_cpu_count)
+    local memory_gb=$(xp_get_memory_gb)
     
     echo "🖥️ System Information:"
-    echo "OS: $(uname -s) $(uname -r)"
-    echo "Architecture: $(uname -m)"
-    echo "Java Version: $(java -version 2>&1 | head -n 1)"
+    echo "   OS: $os ($arch) - $distro"
+    echo "   CPU Cores: $cpu_count"
+    echo "   Memory: ${memory_gb}GB"
+    if command -v java &> /dev/null; then
+        echo "   Java: $(java -version 2>&1 | head -n 1 | cut -d'"' -f2)"
+    fi
     echo ""
     
     # Check prerequisites
@@ -177,14 +223,18 @@ main() {
     done
     
     # Calculate total time
-    local total_end_time=$(date +%s.%N)
-    local total_duration=$(echo "$total_end_time - $total_start_time" | bc -l)
+    local total_end_time=$(get_timestamp)
+    local total_duration=$(calculate_duration "$total_start_time" "$total_end_time")
     
     # Display results
     echo ""
     echo "🏁 Final Results"
     echo "================"
-    printf "Total execution time: %.2f seconds\n" "$total_duration"
+    if [[ "$total_duration" != "unknown" ]] && command -v printf &> /dev/null; then
+        printf "Total execution time: %.2f seconds\n" "$total_duration"
+    else
+        echo "Total execution time: completed"
+    fi
     echo "Demos passed: $demos_passed"
     echo "Demos failed: $demos_failed"
     echo ""

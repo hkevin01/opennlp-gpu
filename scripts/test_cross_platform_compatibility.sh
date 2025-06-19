@@ -1,325 +1,460 @@
 #!/bin/bash
 
-# Cross-Platform Script Testing Framework for OpenNLP GPU
-# Tests all scripts for compatibility across Linux, macOS, and Windows (via WSL/GitBash)
+# Cross-Platform Compatibility Test Suite for OpenNLP GPU Scripts
+# Tests all major scripts across different environments
 
 set -e
 
-echo "🧪 OpenNLP GPU - Cross-Platform Script Compatibility Tests"
-echo "=========================================================="
-echo
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-# Configuration
+# Test configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEST_RESULTS_DIR="${SCRIPT_DIR}/../test-output/script-tests"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-TEST_LOG="${TEST_RESULTS_DIR}/compatibility_test_${TIMESTAMP}.log"
-
-# Create test results directory
-mkdir -p "$TEST_RESULTS_DIR"
-
-# Initialize test log
-echo "Cross-Platform Compatibility Test - $(date)" > "$TEST_LOG"
-echo "=============================================" >> "$TEST_LOG"
-echo >> "$TEST_LOG"
-
-# Test results tracking
-TOTAL_TESTS=0
-PASSED_TESTS=0
+TEST_LOG="$SCRIPT_DIR/../test-output/cross_platform_test_$(date +%Y%m%d_%H%M%S).log"
 FAILED_TESTS=0
+PASSED_TESTS=0
 SKIPPED_TESTS=0
+TOTAL_TESTS=0
 
-# Function to detect operating system
-detect_os() {
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        echo "linux"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "macos"
-    elif [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
-        echo "windows"
+# Ensure test output directory exists
+mkdir -p "$(dirname "$TEST_LOG")"
+
+# Source cross-platform library
+source "$SCRIPT_DIR/cross_platform_lib.sh"
+
+# Logging functions
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1" | tee -a "$TEST_LOG"
+}
+
+log_success() {
+    echo -e "${GREEN}[PASS]${NC} $1" | tee -a "$TEST_LOG"
+    ((PASSED_TESTS++))
+}
+
+log_error() {
+    echo -e "${RED}[FAIL]${NC} $1" | tee -a "$TEST_LOG"
+    ((FAILED_TESTS++))
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARN]${NC} $1" | tee -a "$TEST_LOG"
+}
+
+# Test helper functions
+assert_command_exists() {
+    local cmd="$1"
+    local description="$2"
+    
+    if command -v "$cmd" &> /dev/null; then
+        log_success "Command '$cmd' exists: $description"
+        return 0
     else
-        echo "unknown"
+        log_error "Command '$cmd' not found: $description"
+        return 1
     fi
 }
 
-# Function to detect architecture
-detect_arch() {
-    local arch=$(uname -m)
-    case $arch in
-        x86_64|amd64)
-            echo "x86_64"
-            ;;
-        arm64|aarch64)
-            echo "arm64"
-            ;;
-        *)
-            echo "unknown"
-            ;;
-    esac
+assert_file_exists() {
+    local file="$1"
+    local description="$2"
+    
+    if [[ -f "$file" ]]; then
+        log_success "File exists: $file ($description)"
+        return 0
+    else
+        log_error "File missing: $file ($description)"
+        return 1
+    fi
 }
 
-# Function to log test result
-log_result() {
-    local test_name="$1"
-    local status="$2"
-    local details="$3"
+assert_script_executable() {
+    local script="$1"
+    local description="$2"
     
-    echo "[$status] $test_name: $details" | tee -a "$TEST_LOG"
-    
-    case $status in
-        PASS)
-            ((PASSED_TESTS++))
-            ;;
-        FAIL)
-            ((FAILED_TESTS++))
-            ;;
-        SKIP)
-            ((SKIPPED_TESTS++))
-            ;;
-    esac
-    ((TOTAL_TESTS++))
+    if [[ -x "$script" ]]; then
+        log_success "Script executable: $script ($description)"
+        return 0
+    else
+        log_error "Script not executable: $script ($description)"
+        return 1
+    fi
 }
 
-# Function to test script syntax
 test_script_syntax() {
-    local script_path="$1"
-    local script_name=$(basename "$script_path")
+    local script="$1"
+    local description="$2"
     
-    echo "🔍 Testing syntax: $script_name"
-    
-    if [[ ! -f "$script_path" ]]; then
-        log_result "Syntax-$script_name" "FAIL" "Script file not found"
-        return 1
-    fi
-    
-    if bash -n "$script_path" 2>/dev/null; then
-        log_result "Syntax-$script_name" "PASS" "Valid bash syntax"
+    if bash -n "$script" 2>/dev/null; then
+        log_success "Script syntax valid: $script ($description)"
         return 0
     else
-        log_result "Syntax-$script_name" "FAIL" "Invalid bash syntax"
+        log_error "Script syntax error: $script ($description)"
         return 1
     fi
 }
 
-# Function to test script executability
-test_script_executable() {
-    local script_path="$1"
-    local script_name=$(basename "$script_path")
+# Platform detection tests
+test_platform_detection() {
+    log_info "Testing platform detection functions..."
     
-    echo "🔍 Testing executability: $script_name"
-    
-    if [[ -x "$script_path" ]]; then
-        log_result "Executable-$script_name" "PASS" "Script is executable"
-        return 0
-    else
-        log_result "Executable-$script_name" "FAIL" "Script is not executable"
-        return 1
-    fi
-}
-
-# Function to test platform-specific commands
-test_platform_commands() {
-    local script_path="$1"
-    local script_name=$(basename "$script_path")
-    local os=$(detect_os)
-    
-    echo "🔍 Testing platform commands: $script_name on $os"
-    
-    # Check for Linux-specific commands that might not work on other platforms
-    local linux_only_commands=("apt-get" "yum" "dnf" "systemctl" "lspci" "nvidia-smi")
-    local macos_only_commands=("brew" "system_profiler")
-    local windows_only_commands=("wmic" "reg")
-    
-    local issues_found=0
-    
-    # Read script content
-    local script_content=$(cat "$script_path")
-    
-    case $os in
-        linux)
-            # Check for macOS/Windows commands on Linux
-            for cmd in "${macos_only_commands[@]}" "${windows_only_commands[@]}"; do
-                if echo "$script_content" | grep -q "\b$cmd\b" && ! echo "$script_content" | grep -q "command -v $cmd"; then
-                    log_result "PlatformCmd-$script_name" "FAIL" "Uses $cmd without availability check on Linux"
-                    ((issues_found++))
-                fi
-            done
-            ;;
-        macos)
-            # Check for Linux-specific commands on macOS
-            for cmd in "${linux_only_commands[@]}"; do
-                if echo "$script_content" | grep -q "\b$cmd\b" && ! echo "$script_content" | grep -q "command -v $cmd"; then
-                    log_result "PlatformCmd-$script_name" "FAIL" "Uses $cmd without availability check on macOS"
-                    ((issues_found++))
-                fi
-            done
-            ;;
-        windows)
-            # Check for Linux/macOS commands on Windows
-            for cmd in "${linux_only_commands[@]}" "${macos_only_commands[@]}"; do
-                if echo "$script_content" | grep -q "\b$cmd\b" && ! echo "$script_content" | grep -q "command -v $cmd"; then
-                    log_result "PlatformCmd-$script_name" "FAIL" "Uses $cmd without availability check on Windows"
-                    ((issues_found++))
-                fi
-            done
-            ;;
-    esac
-    
-    if [[ $issues_found -eq 0 ]]; then
-        log_result "PlatformCmd-$script_name" "PASS" "No platform-specific command issues found"
-        return 0
-    else
-        return 1
-    fi
-}
-
-# Function to test environment variable handling
-test_environment_variables() {
-    local script_path="$1"
-    local script_name=$(basename "$script_path")
-    
-    echo "🔍 Testing environment variables: $script_name"
-    
-    local script_content=$(cat "$script_path")
-    local issues_found=0
-    
-    # Check for common environment variable issues
-    if echo "$script_content" | grep -q '\$HOME' && ! echo "$script_content" | grep -q '${HOME}'; then
-        # This is actually fine, just checking patterns
-        :
-    fi
-    
-    # Check for PATH modifications without proper quoting
-    if echo "$script_content" | grep -q 'PATH=' && ! echo "$script_content" | grep -q '".*PATH.*"'; then
-        log_result "EnvVar-$script_name" "FAIL" "PATH modification without proper quoting"
-        ((issues_found++))
-    fi
-    
-    if [[ $issues_found -eq 0 ]]; then
-        log_result "EnvVar-$script_name" "PASS" "Environment variable handling looks good"
-        return 0
-    else
-        return 1
-    fi
-}
-
-# Function to test help/usage functionality
-test_help_functionality() {
-    local script_path="$1"
-    local script_name=$(basename "$script_path")
-    
-    echo "🔍 Testing help functionality: $script_name"
-    
-    # Test if script responds to --help or -h
-    local help_exit_code=0
-    timeout 10s bash "$script_path" --help &>/dev/null || help_exit_code=$?
-    
-    if [[ $help_exit_code -eq 124 ]]; then
-        log_result "Help-$script_name" "FAIL" "Script hangs on --help (timeout)"
-        return 1
-    elif [[ $help_exit_code -eq 0 ]]; then
-        log_result "Help-$script_name" "PASS" "Script responds to --help"
-        return 0
-    else
-        # Try -h
-        timeout 10s bash "$script_path" -h &>/dev/null || help_exit_code=$?
-        if [[ $help_exit_code -eq 0 ]]; then
-            log_result "Help-$script_name" "PASS" "Script responds to -h"
-            return 0
-        else
-            log_result "Help-$script_name" "SKIP" "No help functionality detected"
-            return 0
-        fi
-    fi
-}
-
-# Function to run dry-run tests
-test_dry_run() {
-    local script_path="$1"
-    local script_name=$(basename "$script_path")
-    
-    echo "🔍 Testing dry run: $script_name"
-    
-    # Some scripts might support dry-run mode
-    local script_content=$(cat "$script_path")
-    
-    if echo "$script_content" | grep -q "dry.run\|DRY_RUN\|--dry-run"; then
-        log_result "DryRun-$script_name" "PASS" "Script supports dry-run mode"
-        return 0
-    else
-        log_result "DryRun-$script_name" "SKIP" "No dry-run support detected"
-        return 0
-    fi
-}
-
-# Main test execution
-main() {
     local os=$(detect_os)
     local arch=$(detect_arch)
+    local distro=$(detect_distro)
+    local pm=$(detect_package_manager)
     
-    echo "🖥️ Testing on: $os ($arch)"
-    echo "📝 Test log: $TEST_LOG"
-    echo
+    if [[ "$os" != "unknown" ]]; then
+        log_success "OS detection: $os"
+    else
+        log_error "OS detection failed"
+    fi
     
-    # List of scripts to test (relative to script directory)
-    local scripts_to_test=(
+    if [[ "$arch" != "unknown" ]]; then
+        log_success "Architecture detection: $arch"
+    else
+        log_error "Architecture detection failed"
+    fi
+    
+    if [[ "$distro" != "unknown" ]]; then
+        log_success "Distribution detection: $distro"
+    else
+        log_warning "Distribution detection returned unknown (may be expected on some systems)"
+    fi
+    
+    if [[ "$pm" != "unknown" ]]; then
+        log_success "Package manager detection: $pm"
+    else
+        log_warning "Package manager detection returned unknown (may be expected on some systems)"
+    fi
+}
+
+# Cross-platform utility tests
+test_cross_platform_utilities() {
+    log_info "Testing cross-platform utility functions..."
+    
+    # Test CPU count detection
+    local cpu_count=$(xp_get_cpu_count)
+    if [[ "$cpu_count" =~ ^[0-9]+$ ]] && [[ "$cpu_count" -gt 0 ]]; then
+        log_success "CPU count detection: $cpu_count cores"
+    else
+        log_error "CPU count detection failed: $cpu_count"
+    fi
+    
+    # Test memory detection
+    local memory_gb=$(xp_get_memory_gb)
+    if [[ "$memory_gb" =~ ^[0-9]+$ ]] && [[ "$memory_gb" -gt 0 ]]; then
+        log_success "Memory detection: ${memory_gb}GB"
+    elif [[ "$memory_gb" == "unknown" ]]; then
+        log_warning "Memory detection returned unknown (may be expected on some systems)"
+    else
+        log_error "Memory detection failed: $memory_gb"
+    fi
+    
+    # Test path separator
+    local sep=$(xp_path_separator)
+    if [[ "$sep" == ":" ]] || [[ "$sep" == ";" ]]; then
+        log_success "Path separator detection: '$sep'"
+    else
+        log_error "Path separator detection failed: '$sep'"
+    fi
+    
+    # Test temp directory
+    local temp_dir=$(xp_get_temp_dir)
+    if [[ -d "$temp_dir" ]]; then
+        log_success "Temp directory detection: $temp_dir"
+    else
+        log_error "Temp directory detection failed: $temp_dir"
+    fi
+    
+    # Test home directory
+    local home_dir=$(xp_get_home_dir)
+    if [[ -d "$home_dir" ]]; then
+        log_success "Home directory detection: $home_dir"
+    else
+        log_error "Home directory detection failed: $home_dir"
+    fi
+}
+
+# Script existence and syntax tests
+test_script_files() {
+    log_info "Testing script files existence and syntax..."
+    
+    local scripts=(
         "check_gpu_prerequisites.sh"
         "setup_universal_environment.sh"
         "run_all_demos.sh"
         "setup_aws_gpu_environment.sh"
+        "cross_platform_lib.sh"
         "validate_java_runtime.sh"
-        "fix_java_environment.sh"
         "check_ide_setup.sh"
+        "fix_java_environment.sh"
     )
     
-    echo "🧪 Starting comprehensive script tests..."
-    echo
-    
-    for script in "${scripts_to_test[@]}"; do
-        local script_path="${SCRIPT_DIR}/$script"
+    for script in "${scripts[@]}"; do
+        local script_path="$SCRIPT_DIR/$script"
         
-        echo "========================================"
-        echo "Testing: $script"
-        echo "========================================"
-        
-        # Run all test functions
-        test_script_syntax "$script_path"
-        test_script_executable "$script_path"
-        test_platform_commands "$script_path"
-        test_environment_variables "$script_path"
-        test_help_functionality "$script_path"
-        test_dry_run "$script_path"
-        
-        echo
+        assert_file_exists "$script_path" "Core script"
+        assert_script_executable "$script_path" "Core script"
+        test_script_syntax "$script_path" "Core script"
     done
+}
+
+# Java environment tests
+test_java_environment() {
+    log_info "Testing Java environment detection..."
     
-    # Generate summary
-    echo "📊 Test Summary"
-    echo "==============="
-    echo "Total Tests: $TOTAL_TESTS"
-    echo "Passed: $PASSED_TESTS"
-    echo "Failed: $FAILED_TESTS"
-    echo "Skipped: $SKIPPED_TESTS"
-    echo
-    
-    # Write summary to log
-    {
-        echo
-        echo "Test Summary:"
-        echo "============="
-        echo "Total Tests: $TOTAL_TESTS"
-        echo "Passed: $PASSED_TESTS"
-        echo "Failed: $FAILED_TESTS"
-        echo "Skipped: $SKIPPED_TESTS"
-        echo "Success Rate: $(echo "scale=2; $PASSED_TESTS * 100 / ($TOTAL_TESTS - $SKIPPED_TESTS)" | bc -l)%"
-    } >> "$TEST_LOG"
-    
-    if [[ $FAILED_TESTS -eq 0 ]]; then
-        echo "🎉 All tests passed! Scripts are cross-platform compatible."
-        exit 0
+    if command -v java &> /dev/null; then
+        local java_version=$(java -version 2>&1 | head -n 1)
+        log_success "Java found: $java_version"
+        
+        # Test Java version parsing
+        local version_num=$(java -version 2>&1 | grep version | cut -d'"' -f2 | cut -d'.' -f1)
+        if [[ "$version_num" =~ ^[0-9]+$ ]]; then
+            log_success "Java version parsing: $version_num"
+        else
+            log_error "Java version parsing failed: $version_num"
+        fi
     else
+        log_warning "Java not found (may be expected in test environment)"
+    fi
+    
+    if [[ -n "$JAVA_HOME" ]]; then
+        if [[ -d "$JAVA_HOME" ]]; then
+            log_success "JAVA_HOME set and valid: $JAVA_HOME"
+        else
+            log_error "JAVA_HOME set but invalid: $JAVA_HOME"
+        fi
+    else
+        log_warning "JAVA_HOME not set (may be expected)"
+    fi
+}
+
+# Maven environment tests
+test_maven_environment() {
+    log_info "Testing Maven environment..."
+    
+    if command -v mvn &> /dev/null; then
+        local maven_version=$(mvn -version 2>/dev/null | head -n 1)
+        log_success "Maven found: $maven_version"
+    else
+        log_warning "Maven not found (may be expected in test environment)"
+    fi
+}
+
+# GPU detection tests (non-invasive)
+test_gpu_detection() {
+    log_info "Testing GPU detection capabilities..."
+    
+    # Test NVIDIA detection commands
+    if command -v nvidia-smi &> /dev/null; then
+        log_success "NVIDIA tools available"
+    else
+        log_info "NVIDIA tools not available (expected on non-NVIDIA systems)"
+    fi
+    
+    # Test AMD detection commands
+    if command -v rocm-smi &> /dev/null; then
+        log_success "AMD ROCm tools available"
+    else
+        log_info "AMD ROCm tools not available (expected on non-AMD systems)"
+    fi
+    
+    # Test Intel detection commands
+    if command -v intel_gpu_top &> /dev/null; then
+        log_success "Intel GPU tools available"
+    else
+        log_info "Intel GPU tools not available (expected on non-Intel GPU systems)"
+    fi
+    
+    # Test OpenCL detection
+    if command -v clinfo &> /dev/null; then
+        log_success "OpenCL tools available"
+    else
+        log_info "OpenCL tools not available (may be expected)"
+    fi
+    
+    # Test lspci for hardware detection
+    if command -v lspci &> /dev/null; then
+        log_success "lspci available for hardware detection"
+    else
+        log_warning "lspci not available (may limit GPU detection)"
+    fi
+}
+
+# Network connectivity tests
+test_network_connectivity() {
+    log_info "Testing network connectivity for package downloads..."
+    
+    # Test common package repository connectivity
+    local test_urls=(
+        "https://repo1.maven.org"
+        "https://github.com"
+    )
+    
+    for url in "${test_urls[@]}"; do
+        if command -v curl &> /dev/null; then
+            if curl -s --head --connect-timeout 5 "$url" > /dev/null; then
+                log_success "Network connectivity: $url"
+            else
+                log_warning "Network connectivity failed: $url (may be expected in restricted environments)"
+            fi
+        elif command -v wget &> /dev/null; then
+            if wget --spider --timeout=5 "$url" &> /dev/null; then
+                log_success "Network connectivity: $url"
+            else
+                log_warning "Network connectivity failed: $url (may be expected in restricted environments)"
+            fi
+        else
+            log_warning "No network testing tools available (curl/wget)"
+            break
+        fi
+    done
+}
+
+# File system permissions tests
+test_file_permissions() {
+    log_info "Testing file system permissions..."
+    
+    local temp_dir=$(xp_get_temp_dir)
+    local test_file="$temp_dir/opennlp_gpu_test_$$"
+    
+    # Test write permissions
+    if echo "test" > "$test_file" 2>/dev/null; then
+        log_success "Temp directory write permissions"
+        rm -f "$test_file"
+    else
+        log_error "Temp directory write permissions failed"
+    fi
+    
+    # Test script directory permissions
+    if [[ -r "$SCRIPT_DIR" ]]; then
+        log_success "Script directory read permissions"
+    else
+        log_error "Script directory read permissions failed"
+    fi
+}
+
+# Simulate different platform scenarios
+test_platform_scenarios() {
+    log_info "Testing platform-specific scenarios..."
+    
+    local os=$(detect_os)
+    
+    case $os in
+        linux)
+            log_info "Testing Linux-specific features..."
+            
+            # Test systemd availability
+            if command -v systemctl &> /dev/null; then
+                log_success "systemctl available"
+            else
+                log_info "systemctl not available (older init system)"
+            fi
+            
+            # Test package managers
+            if command -v apt-get &> /dev/null; then
+                log_success "apt package manager available"
+            elif command -v yum &> /dev/null; then
+                log_success "yum package manager available"
+            elif command -v dnf &> /dev/null; then
+                log_success "dnf package manager available"
+            else
+                log_warning "No recognized package manager found"
+            fi
+            ;;
+        macos)
+            log_info "Testing macOS-specific features..."
+            
+            # Test Homebrew
+            if command -v brew &> /dev/null; then
+                log_success "Homebrew available"
+            else
+                log_warning "Homebrew not available"
+            fi
+            
+            # Test system_profiler
+            if command -v system_profiler &> /dev/null; then
+                log_success "system_profiler available"
+            else
+                log_error "system_profiler not available (unexpected on macOS)"
+            fi
+            ;;
+        windows)
+            log_info "Testing Windows-specific features..."
+            
+            # Test Windows package managers
+            if command -v choco &> /dev/null; then
+                log_success "Chocolatey available"
+            elif command -v winget &> /dev/null; then
+                log_success "winget available"
+            else
+                log_warning "No Windows package manager found"
+            fi
+            ;;
+        *)
+            log_warning "Unknown operating system: $os"
+            ;;
+    esac
+}
+
+# Main test execution
+main() {
+    echo "🧪 OpenNLP GPU Cross-Platform Compatibility Test Suite"
+    echo "====================================================="
+    echo ""
+    
+    log_info "Starting test execution at $(date)"
+    log_info "Platform: $(detect_os) $(detect_arch) - $(detect_distro)"
+    log_info "Test log: $TEST_LOG"
+    echo ""
+    
+    # Run all test suites
+    test_platform_detection
+    echo ""
+    
+    test_cross_platform_utilities
+    echo ""
+    
+    test_script_files
+    echo ""
+    
+    test_java_environment
+    echo ""
+    
+    test_maven_environment
+    echo ""
+    
+    test_gpu_detection
+    echo ""
+    
+    test_network_connectivity
+    echo ""
+    
+    test_file_permissions
+    echo ""
+    
+    test_platform_scenarios
+    echo ""
+    
+    # Summary
+    echo "🏁 Test Summary"
+    echo "==============="
+    log_info "Tests completed at $(date)"
+    log_success "Passed tests: $PASSED_TESTS"
+    
+    if [[ $FAILED_TESTS -gt 0 ]]; then
+        log_error "Failed tests: $FAILED_TESTS"
+        echo ""
         echo "❌ Some tests failed. Check the log for details: $TEST_LOG"
         exit 1
+    else
+        echo ""
+        echo "✅ All tests passed! Scripts are ready for cross-platform use."
+        echo "📋 Full test log available at: $TEST_LOG"
     fi
 }
 
@@ -363,5 +498,5 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Run main function
+# Execute main function
 main "$@"

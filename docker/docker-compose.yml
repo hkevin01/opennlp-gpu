@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  test-ubuntu22:
+    build:
+      context: ..
+      dockerfile: docker/test-ubuntu22.04.Dockerfile
+    container_name: opennlp-gpu-test-ubuntu22
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=ubuntu22.04
+    networks:
+      - opennlp-test-network
+
+  test-ubuntu20:
+    build:
+      context: ..
+      dockerfile: docker/test-ubuntu20.04.Dockerfile
+    container_name: opennlp-gpu-test-ubuntu20
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=ubuntu20.04
+    networks:
+      - opennlp-test-network
+
+  test-centos8:
+    build:
+      context: ..
+      dockerfile: docker/test-centos8.Dockerfile
+    container_name: opennlp-gpu-test-centos8
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=centos8
+    networks:
+      - opennlp-test-network
+
+  test-fedora38:
+    build:
+      context: ..
+      dockerfile: docker/test-fedora38.Dockerfile
+    container_name: opennlp-gpu-test-fedora38
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=fedora38
+    networks:
+      - opennlp-test-network
+
+  test-alpine:
+    build:
+      context: ..
+      dockerfile: docker/test-alpine.Dockerfile
+    container_name: opennlp-gpu-test-alpine
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=alpine3.18
+    networks:
+      - opennlp-test-network
+
+  test-amazonlinux2:
+    build:
+      context: ..
+      dockerfile: docker/test-amazonlinux2.Dockerfile
+    container_name: opennlp-gpu-test-amazonlinux2
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=amazonlinux2
+    networks:
+      - opennlp-test-network
+
+  test-debian11:
+    build:
+      context: ..
+      dockerfile: docker/test-debian11.Dockerfile
+    container_name: opennlp-gpu-test-debian11
+    volumes:
+      - ../test-output:/app/test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=debian11
+    networks:
+      - opennlp-test-network
+
+  # Windows containers (requires Windows host with Windows containers enabled)
+  test-windows-servercore:
+    build:
+      context: ..
+      dockerfile: docker/test-windows.Dockerfile
+    container_name: opennlp-gpu-test-windows
+    volumes:
+      - type: bind
+        source: ../test-output
+        target: C:\opennlp-gpu\test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=windows-servercore
+    networks:
+      - opennlp-test-network
+    # Only run on Windows hosts
+    platform: windows/amd64
+    # Mark as optional since it requires Windows host
+    profiles:
+      - windows
+
+  test-windows-nano:
+    build:
+      context: ..
+      dockerfile: docker/test-windows-nano.Dockerfile
+    container_name: opennlp-gpu-test-windows-nano
+    volumes:
+      - type: bind
+        source: ../test-output
+        target: C:\opennlp-gpu\test-output
+    environment:
+      - CI=true
+      - DOCKER_ENV=windows-nano
+    networks:
+      - opennlp-test-network
+    # Only run on Windows hosts
+    platform: windows/amd64
+    # Mark as optional since it requires Windows host
+    profiles:
+      - windows
+
+networks:
+  opennlp-test-network:
+    driver: bridge
+
+volumes:
+  test-results:
+    driver: local

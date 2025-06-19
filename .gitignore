@@ -117,3 +117,90 @@ scripts/legacy/
 docs/overview/archive/
 experimental/
 
+# Docker and container testing files
+docker/test-results/
+docker/volumes/
+docker/.env
+docker/*.override.yml
+docker/docker-compose.override.yml
+
+# Docker build artifacts
+.dockerignore
+docker-compose.override.yml
+*.dockerfile.tmp
+
+# Container logs and data
+docker/logs/
+docker/data/
+container-logs/
+
+# Multi-platform test artifacts
+test-output/docker-tests/
+docker-test-results/
+multi-platform-test-*.log
+
+# Docker image cache and build context
+.docker/
+docker/build-cache/
+docker/context/
+
+# Container runtime files
+.container-*
+docker/runtime/
+
+# Docker Compose generated files
+docker/generated/
+docker/.generated/
+docker-compose.*.generated.yml
+
+# Docker secrets and sensitive data
+docker/secrets/
+docker/*.secret
+docker/*.key
+docker/*.cert
+
+# Docker volumes and persistent data
+docker/postgres-data/
+docker/mysql-data/
+docker/volumes-data/
+
+# Platform-specific Docker files (if any)
+docker/platform-specific/
+docker/dev-only/
+
+# Docker and container artifacts
+**/.dockerignore
+**/Dockerfile.build
+**/docker-compose.override.yml
+**/docker-compose.*.yml
+**/.docker/
+**/containers/
+**/.container-*
+**/*-container/
+
+# Windows Docker specific
+**/windowsservercore/
+**/nanoserver/
+**/*.wim
+**/*.iso
+
+# Container runtime files
+**/.containerd/
+**/.docker-compose/
+**/docker-volumes/
+**/container-logs/
+
+# Registry and image artifacts  
+**/registry-cache/
+**/image-cache/
+**/*.tar.gz.docker
+**/*.docker.tar
+
+# CI/CD and deployment
+**/k8s-generated/
+**/helm-charts/values-*.yaml
+**/terraform.tfstate*
+**/ansible-vault
+**/.vagrant/
+**/Vagrantfile.local
+
