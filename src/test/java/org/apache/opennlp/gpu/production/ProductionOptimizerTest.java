@@ -1,17 +1,24 @@
 package org.apache.opennlp.gpu.production;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
-import org.apache.opennlp.gpu.production.ProductionOptimizer.*;
+import org.apache.opennlp.gpu.production.ProductionOptimizer.OptimizationResult;
+import org.apache.opennlp.gpu.production.ProductionOptimizer.OptimizationState;
+import org.apache.opennlp.gpu.production.ProductionOptimizer.OptimizationStrategy;
+import org.apache.opennlp.gpu.production.ProductionOptimizer.PerformanceSnapshot;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Map;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Comprehensive tests for the ProductionOptimizer system.

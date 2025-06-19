@@ -1,32 +1,42 @@
 {
-    "java.home": "/home/kevin/Projects/opennlp-gpu/.jdk/jdk8u392-b08",
-    "java.configuration.runtimes": [
-        {
-            "name": "JavaSE-1.8",
-            "path": "/home/kevin/Projects/opennlp-gpu/.jdk/jdk8u392-b08",
-            "default": true
-        }
-    ],
-    "github.copilot.enable": true,
-    "github.copilot.inlineSuggest.enable": true,
-    "github.copilot.editor.enable": true,
-    "github.copilot.editor.showEditorCompletions": true,
-    "github.copilot.advanced": {
-        "inlineSuggestEnable": true,
-        "inlineSuggestCount": 3
+  "java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "/usr/lib/jvm/java-21-openjdk-amd64",
+      "default": true
     },
-    "github.copilot.experimental.panel.enabled": false,
-    "github.copilot.experimental.ask": false,
-    "cmake.sourceDirectory": null,
-    "cmake.cmakePath": "/usr/bin/cmake",
-    "cmake.configureOnOpen": false,
-    "cmake.configureOnEdit": false,
-    "cmake.autoSelectActiveFolder": false,
-    "cmake.showConfigureWithDebuggerNotification": false,
-    "files.associations": {
-        "CMakeLists.txt": "cmake"
-    },
-    "java.configuration.detectJdksAtStart": true,
-    "java.import.gradle.enabled": false,
-    "java.import.maven.enabled": true
+    {
+      "name": "JavaSE-17", 
+      "path": "/usr/lib/jvm/java-17-openjdk-amd64"
+    }
+  ],
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.eclipse.downloadSources": true,
+  "java.maven.downloadSources": true,
+  "java.debug.settings.onBuildFailureProceed": true,
+  "java.debug.settings.console": "integratedTerminal",
+  "xml.java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
+  "xml.server.binary.path": null,
+  "xml.server.preferBinary": false,
+  "xml.server.vmargs": "-Xmx512m",
+  "maven.executable.path": "mvn",
+  "maven.terminal.useJavaHome": true,
+  "maven.terminal.customEnv": [
+    {
+      "environmentVariable": "JAVA_HOME",
+      "value": "/usr/lib/jvm/java-21-openjdk-amd64"
+    }
+  ],
+  "java.requirements.JDK11Warning": false,
+  "redhat.telemetry.enabled": false,
+  "java.server.launchMode": "Standard",
+  "java.import.gradle.enabled": false,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.clean.workspace": false,
+  "java.import.maven.enabled": true,
+  "terminal.integrated.env.linux": {
+    "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+    "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
+  }
 }

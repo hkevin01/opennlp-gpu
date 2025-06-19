@@ -1,15 +1,25 @@
 package org.apache.opennlp.gpu.production;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
+
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
-import org.apache.opennlp.gpu.monitoring.OperationMetrics;
-import org.apache.opennlp.gpu.monitoring.ResourceMetrics;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-import java.time.LocalDateTime;
-import java.time.Duration;
-import java.util.logging.Logger;
 
 /**
  * Production optimization manager for GPU operations.

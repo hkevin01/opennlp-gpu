@@ -1,72 +1,63 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "🔨 Maven Clean Compile",
-            "type": "shell",
-            "command": "mvn",
-            "args": ["clean", "compile"],
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "options": {
-                "env": {
-                    "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
-                }
-            },
-            "problemMatcher": ["$java"]
-        },
-        {
-            "label": "🧪 Run Demo Tests",
-            "type": "shell",
-            "command": "mvn",
-            "args": ["test", "-Dtest=GpuDemoApplication"],
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "options": {
-                "env": {
-                    "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
-                }
-            },
-            "dependsOn": "🔨 Maven Clean Compile"
-        },
-        {
-            "label": "📋 Run All Demos",
-            "type": "shell",
-            "command": "./scripts/run_all_demos.sh",
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            },
-            "options": {
-                "env": {
-                    "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64"
-                }
-            }
-        },
-        {
-            "label": "🔧 Check IDE Setup",
-            "type": "shell",
-            "command": "./scripts/check_ide_setup.sh",
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared"
-            }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🔨 Maven Clean Compile",
+      "type": "shell",
+      "command": "mvn",
+      "args": ["clean", "compile"],
+      "group": "build",
+      "options": {
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
         }
-    ]
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "🧪 Run Demo Tests", 
+      "type": "shell",
+      "command": "mvn",
+      "args": ["test", "-Dtest=GpuDemoApplication"],
+      "group": "test",
+      "options": {
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
+        }
+      },
+      "dependsOn": "🔨 Maven Clean Compile"
+    },
+    {
+      "label": "📋 Run All Demos",
+      "type": "shell", 
+      "command": "./scripts/run_all_demos.sh",
+      "group": "test",
+      "options": {
+        "env": {
+          "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+          "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
+        }
+      }
+    },
+    {
+      "label": "🔧 Check IDE Setup",
+      "type": "shell",
+      "command": "./scripts/check_ide_setup.sh", 
+      "group": "build"
+    },
+    {
+      "label": "☕ Validate Java Runtime",
+      "type": "shell",
+      "command": "./scripts/validate_java_runtime.sh",
+      "group": "build"
+    },
+    {
+      "label": "🛡️ Fix Java Environment",
+      "type": "shell",
+      "command": "./scripts/fix_java_environment.sh",
+      "group": "build"
+    }
+  ]
 }

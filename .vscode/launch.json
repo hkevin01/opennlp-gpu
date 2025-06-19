@@ -1,56 +1,25 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "java",
-            "name": "🚀 Run GpuDemoApplication",
-            "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.demo.GpuDemoApplication",
-            "projectName": "opennlp-gpu",
-            "args": [],
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "JAVA_HOME": "${config:java.home}"
-            }
-        },
-        {
-            "type": "java",
-            "name": "🧪 Run SimpleGpuDemo",
-            "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.demo.SimpleGpuDemo",
-            "projectName": "opennlp-gpu",
-            "args": [],
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "JAVA_HOME": "${config:java.home}"
-            }
-        },
-        {
-            "type": "java",
-            "name": "📋 Run ComprehensiveDemoTestSuite",
-            "request": "launch",
-            "mainClass": "org.apache.opennlp.gpu.demo.ComprehensiveDemoTestSuite",
-            "projectName": "opennlp-gpu",
-            "args": [],
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "JAVA_HOME": "${config:java.home}"
-            }
-        },
-        {
-            "type": "java",
-            "name": "🏃 Run Current File",
-            "request": "launch",
-            "mainClass": "${file}",
-            "projectName": "opennlp-gpu",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}",
-            "env": {
-                "JAVA_HOME": "${config:java.home}"
-            }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch GpuDemoApplication",
+      "request": "launch",
+      "mainClass": "org.apache.opennlp.gpu.demo.GpuDemoApplication",
+      "projectName": "opennlp-gpu",
+      "env": {
+        "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64"
+      }
+    },
+    {
+      "type": "java",
+      "name": "Debug Tests",
+      "request": "launch",
+      "mainClass": "",
+      "projectName": "opennlp-gpu",
+      "env": {
+        "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64"
+      }
+    }
+  ]
 }
