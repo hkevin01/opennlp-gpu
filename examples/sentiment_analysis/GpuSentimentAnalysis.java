@@ -231,14 +231,32 @@ public class GpuSentimentAnalysis {
      * Demo application
      */
     public static void main(String[] args) {
+        // Check for test mode
+        boolean testMode = false;
+        int batchSize = 10;
+        boolean quickTest = false;
+        
+        for (String arg : args) {
+            if ("--test-mode".equals(arg)) {
+                testMode = true;
+            } else if (arg.startsWith("--batch-size=")) {
+                batchSize = Integer.parseInt(arg.substring("--batch-size=".length()));
+            } else if ("--quick-test".equals(arg)) {
+                quickTest = true;
+            }
+        }
+        
         System.out.println("🚀 GPU-Accelerated Sentiment Analysis Demo");
         System.out.println("==========================================");
+        if (testMode) {
+            System.out.println("⚡ Running in TEST MODE for faster execution");
+        }
         
         GpuSentimentAnalysis analyzer = new GpuSentimentAnalysis();
         
         try {
             // Sample social media posts
-            String[] samplePosts = {
+            String[] allSamplePosts = {
                 "I love this new GPU acceleration! It's absolutely amazing and so fast! 🚀",
                 "This is terrible. Worst experience ever. Completely disappointed and frustrated.",
                 "The weather is okay today. Nothing special happening.",
@@ -250,6 +268,18 @@ public class GpuSentimentAnalysis {
                 "LOVE IT! This GPU sentiment analysis is brilliant! Outstanding work! 💯",
                 "Not sure about this. Mixed feelings. Some good parts, some not so good."
             };
+            
+            // Use subset for test mode
+            String[] samplePosts;
+            if (testMode && quickTest) {
+                samplePosts = new String[Math.min(3, batchSize)];
+                System.arraycopy(allSamplePosts, 0, samplePosts, 0, samplePosts.length);
+            } else if (testMode) {
+                samplePosts = new String[Math.min(batchSize, allSamplePosts.length)];
+                System.arraycopy(allSamplePosts, 0, samplePosts, 0, samplePosts.length);
+            } else {
+                samplePosts = allSamplePosts;
+            }
             
             // Analyze batch
             SentimentResult[] results = analyzer.analyzeBatch(samplePosts);
@@ -275,6 +305,11 @@ public class GpuSentimentAnalysis {
             System.out.println("✅ Neural attention-based sentiment analysis");
             System.out.println("✅ Batch processing for optimal GPU utilization");
             System.out.println("✅ High-speed social media text processing");
+            
+            if (testMode) {
+                System.out.println("\n✅ Test completed successfully");
+                System.out.println("SUCCESS: Sentiment analysis example executed successfully");
+            }
             
         } finally {
             analyzer.cleanup();

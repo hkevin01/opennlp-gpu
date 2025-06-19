@@ -288,14 +288,32 @@ public class GpuQuestionAnswering {
      * Main demonstration method
      */
     public static void main(String[] args) {
+        // Check for test mode
+        boolean testMode = false;
+        int batchSize = 10;
+        boolean quickTest = false;
+        
+        for (String arg : args) {
+            if ("--test-mode".equals(arg)) {
+                testMode = true;
+            } else if (arg.startsWith("--batch-size=")) {
+                batchSize = Integer.parseInt(arg.substring("--batch-size=".length()));
+            } else if ("--quick-test".equals(arg)) {
+                quickTest = true;
+            }
+        }
+        
         System.out.println("🧠 OpenNLP GPU-Accelerated Question Answering Demo");
         System.out.println("==================================================");
+        if (testMode) {
+            System.out.println("⚡ Running in TEST MODE for faster execution");
+        }
         
         GpuQuestionAnswering qaSystem = new GpuQuestionAnswering();
         
         try {
             // Sample question-context pairs
-            QuestionAnswerPair[] testPairs = {
+            QuestionAnswerPair[] allTestPairs = {
                 new QuestionAnswerPair(
                     "What is the capital of France?",
                     "France is a country in Western Europe. The capital and largest city of France is Paris, " +
@@ -338,6 +356,18 @@ public class GpuQuestionAnswering {
                     "and remains one of his most popular works."
                 )
             };
+            
+            // Use subset for test mode
+            QuestionAnswerPair[] testPairs;
+            if (testMode && quickTest) {
+                testPairs = new QuestionAnswerPair[Math.min(3, batchSize)];
+                System.arraycopy(allTestPairs, 0, testPairs, 0, testPairs.length);
+            } else if (testMode) {
+                testPairs = new QuestionAnswerPair[Math.min(batchSize, allTestPairs.length)];
+                System.arraycopy(allTestPairs, 0, testPairs, 0, testPairs.length);
+            } else {
+                testPairs = allTestPairs;
+            }
             
             // Single question answering
             System.out.println("\n🔍 Single Question Answering:");
@@ -408,6 +438,11 @@ public class GpuQuestionAnswering {
             System.out.println("✅ High-speed batch processing");
             System.out.println("✅ Context-aware answer selection");
             System.out.println("✅ Multi-question parallel processing");
+            
+            if (testMode) {
+                System.out.println("\n✅ Test completed successfully");
+                System.out.println("SUCCESS: Question answering example executed successfully");
+            }
             
         } finally {
             qaSystem.cleanup();

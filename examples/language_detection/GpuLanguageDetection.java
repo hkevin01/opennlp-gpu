@@ -300,14 +300,32 @@ public class GpuLanguageDetection {
      * Main demonstration method
      */
     public static void main(String[] args) {
+        // Check for test mode
+        boolean testMode = false;
+        int batchSize = 10;
+        boolean quickTest = false;
+        
+        for (String arg : args) {
+            if ("--test-mode".equals(arg)) {
+                testMode = true;
+            } else if (arg.startsWith("--batch-size=")) {
+                batchSize = Integer.parseInt(arg.substring("--batch-size=".length()));
+            } else if ("--quick-test".equals(arg)) {
+                quickTest = true;
+            }
+        }
+        
         System.out.println("🌍 OpenNLP GPU-Accelerated Language Detection Demo");
         System.out.println("==================================================");
+        if (testMode) {
+            System.out.println("⚡ Running in TEST MODE for faster execution");
+        }
         
         GpuLanguageDetection detector = new GpuLanguageDetection();
         
         try {
             // Sample texts in different languages
-            String[] testTexts = {
+            String[] allTestTexts = {
                 "Hello, this is a sample text in English. The quick brown fox jumps over the lazy dog.",
                 "Hola, este es un texto de muestra en español. El zorro marrón rápido salta sobre el perro perezoso.",
                 "Bonjour, ceci est un texte d'exemple en français. Le renard brun rapide saute par-dessus le chien paresseux.",
@@ -320,6 +338,18 @@ public class GpuLanguageDetection {
                 "مرحبا، هذا نص عينة باللغة العربية. الثعلب البني السريع يقفز فوق الكلب الكسول।",
                 "नमस्ते, यह हिंदी में एक नमूना पाठ है। तेज भूरी लोमड़ी आलसी कुत्ते के ऊपर कूदती है।"
             };
+            
+            // Use subset for test mode
+            String[] testTexts;
+            if (testMode && quickTest) {
+                testTexts = new String[Math.min(3, batchSize)];
+                System.arraycopy(allTestTexts, 0, testTexts, 0, testTexts.length);
+            } else if (testMode) {
+                testTexts = new String[Math.min(batchSize, allTestTexts.length)];
+                System.arraycopy(allTestTexts, 0, testTexts, 0, testTexts.length);
+            } else {
+                testTexts = allTestTexts;
+            }
             
             // Single text detection
             System.out.println("\n🔍 Single Text Language Detection:");
@@ -383,6 +413,11 @@ public class GpuLanguageDetection {
             System.out.println("✅ High-speed batch processing");
             System.out.println("✅ Confidence scoring and probability distribution");
             System.out.println("✅ Parallel processing capabilities");
+            
+            if (testMode) {
+                System.out.println("\n✅ Test completed successfully");
+                System.out.println("SUCCESS: Language detection example executed successfully");
+            }
             
         } finally {
             detector.cleanup();

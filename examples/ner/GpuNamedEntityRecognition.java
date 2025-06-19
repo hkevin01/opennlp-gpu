@@ -452,14 +452,32 @@ public class GpuNamedEntityRecognition {
      * Demo application
      */
     public static void main(String[] args) {
+        // Check for test mode
+        boolean testMode = false;
+        int batchSize = 10;
+        boolean quickTest = false;
+        
+        for (String arg : args) {
+            if ("--test-mode".equals(arg)) {
+                testMode = true;
+            } else if (arg.startsWith("--batch-size=")) {
+                batchSize = Integer.parseInt(arg.substring("--batch-size=".length()));
+            } else if ("--quick-test".equals(arg)) {
+                quickTest = true;
+            }
+        }
+        
         System.out.println("🚀 GPU-Accelerated Named Entity Recognition Demo");
         System.out.println("===============================================");
+        if (testMode) {
+            System.out.println("⚡ Running in TEST MODE for faster execution");
+        }
         
         GpuNamedEntityRecognition ner = new GpuNamedEntityRecognition();
         
         try {
             // Sample documents
-            String[] sampleDocuments = {
+            String[] allSampleDocuments = {
                 "John Smith works at Microsoft in Seattle, Washington. You can reach him at john.smith@microsoft.com or call (206) 555-0123.",
                 "Apple Inc. was founded by Steve Jobs, Steve Wozniak, and Ronald Wayne on April 1, 1976, in Los Altos, California.",
                 "The meeting between President Biden and Prime Minister Trudeau will take place in Ottawa, Canada on March 15, 2024.",
@@ -471,6 +489,18 @@ public class GpuNamedEntityRecognition {
                 "The University of California, Berkeley announced a new research partnership with IBM to develop quantum computing technologies.",
                 "Facebook's Meta division is working on virtual reality applications. Mark Zuckerberg demonstrated the new VR headset yesterday."
             };
+            
+            // Use subset for test mode
+            String[] sampleDocuments;
+            if (testMode && quickTest) {
+                sampleDocuments = new String[Math.min(3, batchSize)];
+                System.arraycopy(allSampleDocuments, 0, sampleDocuments, 0, sampleDocuments.length);
+            } else if (testMode) {
+                sampleDocuments = new String[Math.min(batchSize, allSampleDocuments.length)];
+                System.arraycopy(allSampleDocuments, 0, sampleDocuments, 0, sampleDocuments.length);
+            } else {
+                sampleDocuments = allSampleDocuments;
+            }
             
             // Extract entities
             EntityResult[] results = ner.extractEntitiesBatch(sampleDocuments);
@@ -522,6 +552,11 @@ public class GpuNamedEntityRecognition {
             System.out.println("✅ Pattern-based entity extraction");
             System.out.println("✅ Context-aware entity classification");
             System.out.println("✅ High-speed batch processing");
+            
+            if (testMode) {
+                System.out.println("\n✅ Test completed successfully");
+                System.out.println("SUCCESS: Named Entity Recognition example executed successfully");
+            }
             
         } finally {
             ner.cleanup();

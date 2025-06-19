@@ -289,14 +289,32 @@ public class GpuDocumentClassification {
      * Demo application
      */
     public static void main(String[] args) {
+        // Check for test mode
+        boolean testMode = false;
+        int batchSize = 10;
+        boolean quickTest = false;
+        
+        for (String arg : args) {
+            if ("--test-mode".equals(arg)) {
+                testMode = true;
+            } else if (arg.startsWith("--batch-size=")) {
+                batchSize = Integer.parseInt(arg.substring("--batch-size=".length()));
+            } else if ("--quick-test".equals(arg)) {
+                quickTest = true;
+            }
+        }
+        
         System.out.println("🚀 GPU-Accelerated Document Classification Demo");
         System.out.println("==============================================");
+        if (testMode) {
+            System.out.println("⚡ Running in TEST MODE for faster execution");
+        }
         
         GpuDocumentClassification classifier = new GpuDocumentClassification();
         
         try {
             // Sample documents from different categories
-            String[] sampleDocuments = {
+            String[] allSampleDocuments = {
                 // Technology
                 "Artificial intelligence and machine learning are revolutionizing software development. " +
                 "GPU computing enables faster training of neural networks and deep learning algorithms.",
@@ -332,6 +350,18 @@ public class GpuDocumentClassification {
                 "The wellness program focuses on fitness and nutrition for better health outcomes. " +
                 "Hospital staff will provide guidance on maintaining a healthy lifestyle."
             };
+            
+            // Use subset for test mode
+            String[] sampleDocuments;
+            if (testMode && quickTest) {
+                sampleDocuments = new String[Math.min(3, batchSize)];
+                System.arraycopy(allSampleDocuments, 0, sampleDocuments, 0, sampleDocuments.length);
+            } else if (testMode) {
+                sampleDocuments = new String[Math.min(batchSize, allSampleDocuments.length)];
+                System.arraycopy(allSampleDocuments, 0, sampleDocuments, 0, sampleDocuments.length);
+            } else {
+                sampleDocuments = allSampleDocuments;
+            }
             
             // Classify documents
             ClassificationResult[] results = classifier.classifyBatch(sampleDocuments);
@@ -383,6 +413,11 @@ public class GpuDocumentClassification {
             System.out.println("✅ Keyword-based enhancement");
             System.out.println("✅ High-speed batch processing");
             System.out.println("✅ Confidence scoring and probability distribution");
+            
+            if (testMode) {
+                System.out.println("\n✅ Test completed successfully");
+                System.out.println("SUCCESS: Document classification example executed successfully");
+            }
             
         } finally {
             classifier.cleanup();
