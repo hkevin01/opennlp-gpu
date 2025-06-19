@@ -35,7 +35,33 @@ check_example "examples/question_answering/GpuQuestionAnswering.java" "Question 
 echo "   Examples found: $examples_found/$examples_expected"
 echo
 
-# Check 2: Verify GPU diagnostics tool exists and works
+# Check 2: Verify example README links exist
+echo "🔍 Checking example README links mentioned in main README..."
+example_readmes_found=0
+example_readmes_expected=6
+
+check_example_readme() {
+    local readme_path=$1
+    local readme_name=$2
+    if [ -f "$readme_path" ]; then
+        echo "✅ $readme_name exists: $readme_path"
+        ((example_readmes_found++))
+    else
+        echo "❌ $readme_name missing: $readme_path"
+    fi
+}
+
+check_example_readme "examples/README.md" "Main Examples README"
+check_example_readme "examples/sentiment_analysis/README.md" "Sentiment Analysis README"
+check_example_readme "examples/ner/README.md" "NER README"
+check_example_readme "examples/classification/README.md" "Classification README"
+check_example_readme "examples/language_detection/README.md" "Language Detection README"
+check_example_readme "examples/question_answering/README.md" "Question Answering README"
+
+echo "   Example READMEs found: $example_readmes_found/$example_readmes_expected"
+echo
+
+# Check 3: Verify GPU diagnostics tool exists and works
 echo "🔍 Checking GPU diagnostics tool..."
 if [ -f "src/main/java/org/apache/opennlp/gpu/tools/GpuDiagnostics.java" ]; then
     echo "✅ GpuDiagnostics.java exists"
@@ -51,7 +77,7 @@ else
 fi
 echo
 
-# Check 3: Verify scripts mentioned in README exist
+# Check 4: Verify scripts mentioned in README exist
 echo "🔍 Checking scripts mentioned in README..."
 scripts_found=0
 scripts_expected=3
@@ -125,12 +151,14 @@ echo "======================================================"
 echo "📋 Verification Summary"
 echo "======================================================"
 echo "Examples: $examples_found/$examples_expected found"
+echo "Example READMEs: $example_readmes_found/$example_readmes_expected found"
 echo "Scripts: $scripts_found/$scripts_expected found"
 echo "Misleading APIs: $misleading_found found (should be 0)"
 
-if [ $examples_found -eq $examples_expected ] && [ $scripts_found -eq $scripts_expected ] && [ $misleading_found -eq 0 ]; then
+if [ $examples_found -eq $examples_expected ] && [ $example_readmes_found -eq $example_readmes_expected ] && [ $scripts_found -eq $scripts_expected ] && [ $misleading_found -eq 0 ]; then
     echo "🎉 README accuracy verification PASSED"
     echo "✅ All claims in README.md appear to be accurate"
+    echo "✅ All example links are working"
 else
     echo "⚠️  README accuracy verification found issues"
     echo "ℹ️  Please review the items above"

@@ -105,6 +105,8 @@ sudo apt install intel-opencl-icd
 - ✅ **CPU fallback** implementations for compatibility
 - ✅ **Comprehensive test suite** with automated validation
 
+📖 **Examples Overview**: See [`examples/README.md`](examples/README.md) for complete example documentation and usage instructions.
+
 **Note**: This is experimental research code, not a production-ready library.
 
 ## 🚀 Quick Start (Working Examples)
@@ -168,18 +170,33 @@ Run the working GPU-accelerated examples:
 
 ```java
 // Current working examples
-// 1. Sentiment Analysis
+// 1. Sentiment Analysis - Twitter sentiment with GPU acceleration
 GpuSentimentAnalysis analyzer = new GpuSentimentAnalysis();
 SentimentResult[] results = analyzer.analyzeBatch(socialMediaPosts);
 
-// 2. Named Entity Recognition
+// 2. Named Entity Recognition - High-speed entity extraction
 GpuNamedEntityRecognition ner = new GpuNamedEntityRecognition();
 EntityResult[] entities = ner.extractEntitiesBatch(documents);
 
-// 3. Document Classification
+// 3. Document Classification - Large-scale document categorization
 GpuDocumentClassification classifier = new GpuDocumentClassification();
 ClassificationResult[] categories = classifier.classifyBatch(documents);
+
+// 4. Language Detection - Multi-language processing
+GpuLanguageDetection detector = new GpuLanguageDetection();
+LanguageResult[] languages = detector.detectLanguageBatch(texts);
+
+// 5. Question Answering - Neural QA with attention mechanisms
+GpuQuestionAnswering qa = new GpuQuestionAnswering();
+QAResult[] answers = qa.answerQuestionsBatch(questionPairs);
 ```
+
+📖 **Example Documentation:**
+- [Sentiment Analysis](examples/sentiment_analysis/README.md) - Twitter sentiment with GPU acceleration
+- [Named Entity Recognition](examples/ner/README.md) - High-speed entity extraction  
+- [Document Classification](examples/classification/README.md) - Large-scale document categorization
+- [Language Detection](examples/language_detection/README.md) - Multi-language processing
+- [Question Answering](examples/question_answering/README.md) - Neural QA with attention mechanisms
 
 ### Step 3: Configuration (Available)
 
@@ -261,26 +278,33 @@ GpuNeuralPipeline pipeline = new GpuNeuralPipeline(config); // Basic implementat
 **Available Now - Research Examples:**
 ```java
 // Working GPU examples (available now)
-// 1. Sentiment Analysis
+// 1. Sentiment Analysis - Twitter sentiment with GPU acceleration
 GpuSentimentAnalysis analyzer = new GpuSentimentAnalysis();
 SentimentResult[] results = analyzer.analyzeBatch(texts);
 
-// 2. Named Entity Recognition  
+// 2. Named Entity Recognition - High-speed entity extraction
 GpuNamedEntityRecognition ner = new GpuNamedEntityRecognition();
 EntityResult[] entities = ner.extractEntitiesBatch(documents);
 
-// 3. Document Classification
+// 3. Document Classification - Large-scale document categorization
 GpuDocumentClassification classifier = new GpuDocumentClassification();
 ClassificationResult[] categories = classifier.classifyBatch(documents);
 
-// 4. Language Detection
+// 4. Language Detection - Multi-language processing
 GpuLanguageDetection detector = new GpuLanguageDetection();
 LanguageResult[] languages = detector.detectLanguageBatch(texts);
 
-// 5. Question Answering
+// 5. Question Answering - Neural QA with attention mechanisms
 GpuQuestionAnswering qa = new GpuQuestionAnswering();
 QAResult[] answers = qa.answerQuestionsBatch(questionPairs);
 ```
+
+📖 **Complete Example Documentation:**
+- [Sentiment Analysis](examples/sentiment_analysis/README.md) - Twitter sentiment with GPU acceleration
+- [Named Entity Recognition](examples/ner/README.md) - High-speed entity extraction
+- [Document Classification](examples/classification/README.md) - Large-scale document categorization
+- [Language Detection](examples/language_detection/README.md) - Multi-language processing
+- [Question Answering](examples/question_answering/README.md) - Neural QA with attention mechanisms
 
 ### 🔮 Planned Future Integration
 
