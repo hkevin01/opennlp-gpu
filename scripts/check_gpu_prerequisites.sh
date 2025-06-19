@@ -3,8 +3,20 @@
 # GPU Prerequisites Check Script for OpenNLP GPU Acceleration
 # This script checks if your system has the necessary GPU drivers and SDKs
 
+# Source cross-platform compatibility library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/cross_platform_lib.sh"
+
 echo "🔍 OpenNLP GPU Prerequisites Check"
 echo "=================================="
+echo
+
+# Show system info first
+OS=$(detect_os)
+ARCH=$(detect_arch)
+DISTRO=$(detect_distro)
+
+echo "🖥️ System: $OS ($ARCH) - $DISTRO"
 echo
 
 GPU_FOUND=false
