@@ -65,6 +65,7 @@ Thumbs.db
 # Remove specific heap dump if present
 java_pid1266980.hprof
 ./java_pid1266980.hprof
+*.hprof
 
 # JDK (local Java installations)
 .jdk/

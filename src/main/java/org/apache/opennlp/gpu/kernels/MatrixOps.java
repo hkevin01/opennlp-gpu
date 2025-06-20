@@ -1,7 +1,27 @@
 package org.apache.opennlp.gpu.kernels;
 
-import org.jocl.*;
-import static org.jocl.CL.*;
+import static org.jocl.CL.CL_MEM_COPY_HOST_PTR;
+import static org.jocl.CL.CL_MEM_READ_ONLY;
+import static org.jocl.CL.CL_MEM_WRITE_ONLY;
+import static org.jocl.CL.CL_SUCCESS;
+import static org.jocl.CL.CL_TRUE;
+import static org.jocl.CL.clBuildProgram;
+import static org.jocl.CL.clCreateBuffer;
+import static org.jocl.CL.clCreateKernel;
+import static org.jocl.CL.clCreateProgramWithSource;
+import static org.jocl.CL.clEnqueueNDRangeKernel;
+import static org.jocl.CL.clEnqueueReadBuffer;
+import static org.jocl.CL.clReleaseMemObject;
+import static org.jocl.CL.clSetKernelArg;
+
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
+import org.jocl.cl_command_queue;
+import org.jocl.cl_context;
+import org.jocl.cl_device_id;
+import org.jocl.cl_kernel;
+import org.jocl.cl_mem;
+import org.jocl.cl_program;
 
 /**
  * GPU-accelerated matrix operations using OpenCL kernels
