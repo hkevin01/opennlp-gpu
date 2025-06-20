@@ -186,7 +186,7 @@ EOF
 chmod +x scripts/vscode_java_guard.sh
 
 # Add to project README section about environment setup
-cat >> docs/java_environment_guide.md << 'EOF'
+cat >> docs/setup/java_environment_guide.md << 'EOF'
 # Java Environment Setup Guide
 
 ## Automatic Setup

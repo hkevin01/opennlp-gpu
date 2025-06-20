@@ -234,40 +234,45 @@ public class MatrixOps {
         
         try {
             // Enhanced OpenCL kernel with local memory optimization
-            String kernelSource = """
-                __kernel void matrix_multiply_optimized(
-                    __global const float* A,
-                    __global const float* B,
-                    __global float* C,
-                    int rowsA, int colsA, int colsB) {
-                    
-                    int row = get_global_id(0);
-                    int col = get_global_id(1);
-                    
-                    if (row < rowsA && col < colsB) {
-                        float sum = 0.0f;
-                        
-                        // Unrolled loop for better performance
-                        int k = 0;
-                        for (; k < colsA - 3; k += 4) {
-                            sum += A[row * colsA + k] * B[k * colsB + col];
-                            sum += A[row * colsA + k + 1] * B[(k + 1) * colsB + col];
-                            sum += A[row * colsA + k + 2] * B[(k + 2) * colsB + col];
-                            sum += A[row * colsA + k + 3] * B[(k + 3) * colsB + col];
-                        }
-                        
-                        // Handle remaining elements
-                        for (; k < colsA; k++) {
-                            sum += A[row * colsA + k] * B[k * colsB + col];
-                        }
-                        
-                        C[row * colsB + col] = sum;
-                    }
-                }
-                """;
+            String kernelSource = 
+                "__kernel void matrix_multiply_optimized(" +
+                "    __global const float* A," +
+                "    __global const float* B," +
+                "    __global float* C," +
+                "    int rowsA, int colsA, int colsB) {" +
+                "    " +
+                "    int row = get_global_id(0);" +
+                "    int col = get_global_id(1);" +
+                "    " +
+                "    if (row < rowsA && col < colsB) {" +
+                "        float sum = 0.0f;" +
+                "        " +
+                "        // Unrolled loop for better performance" +
+                "        int k = 0;" +
+                "        for (; k < colsA - 3; k += 4) {" +
+                "            sum += A[row * colsA + k] * B[k * colsB + col];" +
+                "            sum += A[row * colsA + k + 1] * B[(k + 1) * colsB + col];" +
+                "            sum += A[row * colsA + k + 2] * B[(k + 2) * colsB + col];" +
+                "            sum += A[row * colsA + k + 3] * B[(k + 3) * colsB + col];" +
+                "        }" +
+                "        " +
+                "        // Handle remaining elements" +
+                "        for (; k < colsA; k++) {" +
+                "            sum += A[row * colsA + k] * B[k * colsB + col];" +
+                "        }" +
+                "        " +
+                "        C[row * colsB + col] = sum;" +
+                "    }" +
+                "}";
             
             System.out.println("Executing optimized GPU matrix multiplication: " + 
                              rowsA + "x" + colsA + " * " + colsA + "x" + colsB);
+            
+            // In a real implementation, we would compile and execute kernelSource
+            // For now, we log the kernel and simulate GPU execution
+            if (System.getProperty("gpu.debug") != null) {
+                System.out.println("Using optimized kernel: " + kernelSource.substring(0, Math.min(100, kernelSource.length())) + "...");
+            }
             
             // Simulate GPU execution with enhanced CPU implementation
             multiplyFallbackOptimized(a, b, result, rowsA, colsA, colsB);
@@ -353,6 +358,37 @@ public class MatrixOps {
                     sum += a[i * colsA + k] * b[k * colsB + j];
                 }
                 result[i * colsB + j] = sum;
+            }
+        }
+    }
+    
+    /**
+     * Get the GPU device information for diagnostics
+     * @return the OpenCL device ID
+     */
+    public cl_device_id getDevice() {
+        return device;
+    }
+    
+    /**
+     * Normalize a vector using GPU acceleration (placeholder for future implementation)
+     * @param vector the vector to normalize
+     * @param size the size of the vector
+     */
+    public void normalizeVector(float[] vector, int size) {
+        if (vectorNormalizeKernel != null) {
+            // GPU implementation would go here
+            System.out.println("GPU vector normalization not yet implemented, using CPU fallback");
+        }
+        // CPU fallback normalization
+        float norm = 0.0f;
+        for (int i = 0; i < size; i++) {
+            norm += vector[i] * vector[i];
+        }
+        norm = (float) Math.sqrt(norm);
+        if (norm > 0.0f) {
+            for (int i = 0; i < size; i++) {
+                vector[i] /= norm;
             }
         }
     }

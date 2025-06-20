@@ -8,11 +8,11 @@ I have thoroughly checked all links in the main `README.md` file and confirmed t
 
 ### ✅ **Documentation Links - ALL WORKING**
 - `docs/api/quick_reference.md` ✅ EXISTS (86 lines)
-- `docs/getting_started.md` ✅ EXISTS (570 lines)
-- `docs/gpu_prerequisites_guide.md` ✅ EXISTS (131 lines)
-- `docs/technical_architecture.md` ✅ EXISTS (639 lines)  
-- `docs/performance_benchmarks.md` ✅ EXISTS (270 lines)
-- `docs/apache_contribution_guide.md` ✅ EXISTS (178 lines)
+- `docs/setup/getting_started.md` ✅ EXISTS (570 lines)
+- `docs/setup/gpu_prerequisites_guide.md` ✅ EXISTS (131 lines)
+- `docs/development/technical_architecture.md` ✅ EXISTS (639 lines)  
+- `docs/performance/performance_benchmarks.md` ✅ EXISTS (270 lines)
+- `docs/apache/apache_contribution_guide.md` ✅ EXISTS (178 lines)
 
 ### ✅ **Example Links - ALL WORKING**
 - `examples/sentiment_analysis/README.md` ✅ EXISTS (246 lines)
@@ -26,9 +26,9 @@ I have thoroughly checked all links in the main `README.md` file and confirmed t
 - `#-quick-integration-5-minutes` ✅ Links to "🚀 Quick Integration (5 Minutes)" section
 
 ### ✅ **Getting Started Subsection Links - ALL WORKING**
-- `docs/getting_started.md#example-1-basic-gpu-matrix-operations` ✅ Section exists
-- `docs/getting_started.md#example-2-gpu-accelerated-feature-extraction` ✅ Section exists
-- `docs/getting_started.md#example-3-gpu-accelerated-neural-network` ✅ Section exists
+- `docs/setup/getting_started.md#example-1-basic-gpu-matrix-operations` ✅ Section exists
+- `docs/setup/getting_started.md#example-2-gpu-accelerated-feature-extraction` ✅ Section exists
+- `docs/setup/getting_started.md#example-3-gpu-accelerated-neural-network` ✅ Section exists
 
 ### ✅ **Project Files - ALL WORKING**
 - `CONTRIBUTING.md` ✅ EXISTS (134 lines)

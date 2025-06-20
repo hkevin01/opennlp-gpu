@@ -9,8 +9,10 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 import org.apache.opennlp.gpu.ml.GpuModelFactory;
 import org.apache.opennlp.gpu.ml.neural.GpuNeuralNetwork;
-import org.apache.opennlp.maxent.GisModel;
-import org.apache.opennlp.maxent.MaxentModel;
+
+import opennlp.tools.ml.maxent.GISModel;
+import opennlp.tools.ml.model.Context;
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Quick start demonstration of OpenNLP GPU acceleration
@@ -272,113 +274,64 @@ public class GpuQuickStartDemo {
     }
     
     /**
-     * Demonstrate OpenNLP integration with GPU acceleration
+     * Demonstrate integration with standard OpenNLP models
      */
     public static void demonstrateOpenNLPIntegration() {
         System.out.println("\n=== Demo 4: OpenNLP Integration ===");
         
+        GpuConfig config = new GpuConfig();
+        GpuModelFactory factory = new GpuModelFactory(config);
+        
         try {
-            // Create GPU configuration
-            GpuConfig config = new GpuConfig();
-            config.setGpuEnabled(true);
-            
-            // Create GPU model factory
-            GpuModelFactory factory = new GpuModelFactory(config);
-            
-            // Create a basic MaxEnt model (in real usage, load from file)
-            MaxentModel baseModel = new GisModel();
-            
-            // Wrap with GPU acceleration
-            MaxentModel gpuModel = factory.createGpuMaxentModel(baseModel);
-            
-            System.out.println("Created GPU-accelerated MaxEnt model");
-            System.out.printf("Model outcomes: %d\n", gpuModel.getNumOutcomes());
-            
-            // Example context for NLP prediction
-            String[] context = {
-                "word=hello", 
-                "pos=NN", 
-                "prev=the", 
-                "next=world",
-                "shape=lowercase"
-            };
-            
-            System.out.println("\n--- Single Context Evaluation ---");
-            System.out.println("Context: " + String.join(", ", context));
-            
-            long startTime = System.currentTimeMillis();
-            double[] probabilities = gpuModel.eval(context);
-            long evalTime = System.currentTimeMillis() - startTime;
-            
-            System.out.println("Prediction probabilities:");
-            for (int i = 0; i < probabilities.length; i++) {
-                String outcome = gpuModel.getOutcome(i);
-                System.out.printf("  %s: %.6f\n", outcome, probabilities[i]);
+            // Create a sample MaxEnt model
+            String[] outcomes = {"positive", "negative", "neutral"};
+            String[] predLabels = {"good", "great", "bad", "terrible"};
+            double[] params = new double[outcomes.length * predLabels.length];
+            for (int i = 0; i < params.length; i++) {
+                params[i] = Math.random() * 2.0 - 1.0;
             }
-            System.out.printf("Evaluation time: %d ms\n", evalTime);
-            
-            // Batch processing demonstration
-            System.out.println("\n--- Batch Processing ---");
-            String[][] batchContexts = {
-                {"word=machine", "pos=NN", "prev=the"},
-                {"word=learning", "pos=VBG", "prev=machine"},
-                {"word=gpu", "pos=NN", "prev=with"},
-                {"word=acceleration", "pos=NN", "prev=gpu"},
-                {"word=fast", "pos=JJ", "prev=is"}
-            };
-            
-            System.out.println("Processing batch of " + batchContexts.length + " contexts:");
-            
-            startTime = System.currentTimeMillis();
-            for (int i = 0; i < batchContexts.length; i++) {
-                double[] batchProbs = gpuModel.eval(batchContexts[i]);
-                System.out.printf("  Context %d (%s): %.4f\n", 
-                                 i, batchContexts[i][0], batchProbs[0]);
+
+            Context[] contexts = new Context[predLabels.length];
+            int[] outcomePattern = new int[outcomes.length];
+            for (int i = 0; i < outcomes.length; i++) {
+                outcomePattern[i] = i;
             }
-            long batchTime = System.currentTimeMillis() - startTime;
-            
-            System.out.printf("Batch processing time: %d ms (%.2f ms per context)\n", 
-                             batchTime, (double)batchTime / batchContexts.length);
-            
-            // Performance comparison
-            System.out.println("\n--- Performance Comparison ---");
-            
-            // GPU model timing
-            startTime = System.currentTimeMillis();
-            for (int i = 0; i < 100; i++) {
-                gpuModel.eval(context);
-            }
-            long gpuTime = System.currentTimeMillis() - startTime;
-            
-            // Base model timing
-            startTime = System.currentTimeMillis();
-            for (int i = 0; i < 100; i++) {
-                baseModel.eval(context);
-            }
-            long cpuTime = System.currentTimeMillis() - startTime;
-            
-            System.out.printf("CPU model (100 evals): %d ms\n", cpuTime);
-            System.out.printf("GPU model (100 evals): %d ms\n", gpuTime);
-            
-            if (cpuTime > 0) {
-                double speedup = (double)cpuTime / gpuTime;
-                System.out.printf("Speedup: %.2fx\n", speedup);
+
+            for (int i = 0; i < predLabels.length; i++) {
+                double[] paramsForPred = new double[outcomes.length];
+                for (int j = 0; j < outcomes.length; j++) {
+                    paramsForPred[j] = params[i * outcomes.length + j];
+                }
+                contexts[i] = new Context(outcomePattern, paramsForPred);
             }
             
-            // Model adapter demonstration
-            System.out.println("\n--- Model Adapter Pattern ---");
-            MaxentModel adaptedModel = factory.createGpuModelAdapter(baseModel);
+            MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
             
-            System.out.println("Created GPU model adapter");
-            System.out.println("Adapter provides same interface as original model");
+            // Wrap with GPU adapter
+            MaxentModel gpuAdaptedModel = factory.createGpuMaxentModel(cpuModel);
             
-            double[] adaptedResult = adaptedModel.eval(context);
-            System.out.printf("Adapter evaluation result: %.6f\n", adaptedResult[0]);
+            System.out.println("Created GPU-adapted MaxEnt model: " + gpuAdaptedModel.getClass().getSimpleName());
+            
+            // Use the adapted model like a standard OpenNLP model
+            String[] context = {"good", "great"};
+            double[] probs = gpuAdaptedModel.eval(context);
+            
+            System.out.println("\n--- Evaluation with GPU-Adapted Model ---");
+            System.out.println("Context: [good, great]");
+            System.out.println("Probabilities:");
+            for (int i = 0; i < outcomes.length; i++) {
+                System.out.printf("  %s: %.4f\n", outcomes[i], probs[i]);
+            }
+            
+            // Show dynamic GPU fallback
+            System.out.println("\n--- Dynamic GPU Fallback ---");
+            System.out.println("Using a small context (should trigger CPU fallback):");
+            String[] smallContext = {"bad"};
+            gpuAdaptedModel.eval(smallContext); // Should log a CPU fallback message
             
         } catch (Exception e) {
-            System.out.println("Note: This demo uses stub implementations");
-            System.out.println("In production, load actual trained models");
-            logger.info("OpenNLP integration demo completed (with stubs)");
+            logger.error("OpenNLP integration demo failed: " + e.getMessage());
+            e.printStackTrace();
         }
         
         System.out.println("✅ OpenNLP integration demo completed");

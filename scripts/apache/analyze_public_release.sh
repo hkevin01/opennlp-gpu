@@ -12,9 +12,9 @@ echo "📋 FILES TO EXCLUDE FROM PUBLIC RELEASE:"
 echo "========================================"
 
 echo "🔒 Development/Internal Documentation:"
-echo "  - docs/session_progress_summary.md (internal session tracking)"
-echo "  - docs/project_progress.md (internal progress tracking)"
-echo "  - docs/test_plan_progress.md (internal test progress)"
+echo "  - docs/project/session_progress_summary.md (internal session tracking)"
+echo "  - docs/project/project_progress_main.md (internal progress tracking)"
+echo "  - docs/testing/test_plan_progress_main.md (internal test progress)"
 echo "  - docs/overview/project_progress.md (duplicate internal docs)"
 echo "  - docs/overview/project_plan.md (duplicate internal docs)"
 echo "  - PROJECT_COMPLETION_REPORT.md (internal completion report)"
@@ -35,9 +35,9 @@ echo "  - scripts/development/ (development utilities)"
 echo
 
 echo "📝 Outdated/Redundant Documentation:"
-echo "  - docs/lombok-*.md (all lombok-related docs - project no longer uses lombok)"
-echo "  - docs/gradle-*.md (gradle-related docs - project uses Maven)"
-echo "  - docs/apache_proposal_email.md (old version, use apache_proposal_email_final.md)"
+echo "  - docs/development/lombok-*.md (all lombok-related docs - project no longer uses lombok)"
+echo "  - docs/development/gradle-*.md (gradle-related docs - project uses Maven)"
+echo "  - docs/apache/apache_proposal_email.md (old version, use apache_proposal_email_final.md)"
 echo
 
 echo "⚙️  IDE/Environment Specific:"
@@ -59,20 +59,20 @@ echo "=========================="
 
 echo "✅ Keep (Core User Documentation):"
 echo "  - README.md"
-echo "  - docs/getting_started.md"
-echo "  - docs/user_guide.md"
-echo "  - docs/gpu_prerequisites_guide.md"
-echo "  - docs/technical_architecture.md"
-echo "  - docs/performance_benchmarks.md"
+echo "  - docs/setup/getting_started.md"
+echo "  - docs/guides/user_guide.md"
+echo "  - docs/setup/gpu_prerequisites_guide.md"
+echo "  - docs/development/technical_architecture.md"
+echo "  - docs/performance/performance_benchmarks.md"
 echo "  - CONTRIBUTING.md"
 echo "  - LICENSE"
 echo
 
 echo "✅ Keep (Apache Contribution):"
-echo "  - docs/apache_contribution_guide.md"
-echo "  - docs/apache_contribution_summary.md"
-echo "  - docs/apache_fork_instructions.md"
-echo "  - docs/apache_proposal_email_final.md"
+echo "  - docs/apache/apache_contribution_guide.md"
+echo "  - docs/apache/apache_contribution_summary.md"
+echo "  - docs/apache/apache_fork_instructions.md"
+echo "  - docs/apache/apache_proposal_email_final.md"
 echo "  - scripts/apache_contribution_assistant.sh"
 echo "  - scripts/generate_proposal.sh"
 echo "  - scripts/project_status_summary.sh"
@@ -157,20 +157,20 @@ set -e
 echo "🧹 Cleaning up for public release..."
 
 # Remove internal documentation
-rm -f docs/session_progress_summary.md
-rm -f docs/project_progress.md  
-rm -f docs/test_plan_progress.md
+rm -f docs/project/session_progress_summary.md
+rm -f docs/project/project_progress_main.md  
+rm -f docs/testing/test_plan_progress_main.md
 rm -f PROJECT_COMPLETION_REPORT.md
 rm -rf docs/overview/
 
 # Remove lombok-related docs (no longer used)
-rm -f docs/lombok-*.md
+rm -f docs/development/lombok-*.md
 
 # Remove gradle-related docs (using Maven)
-rm -f docs/gradle-*.md
+rm -f docs/development/gradle-*.md
 
 # Remove old proposal email (keep final version)
-rm -f docs/apache_proposal_email.md
+rm -f docs/apache/apache_proposal_email.md
 
 # Remove development scripts
 rm -f scripts/session_progress_summary.sh

@@ -1,4 +1,4 @@
-package org.apache.opennlp.gpu.test;
+package org.apache.opennlp.gpu.performance;
 
 import java.util.Random;
 
@@ -11,7 +11,7 @@ public class KernelPerformanceTest {
     
     public static void main(String[] args) {
         System.out.println("🔥 GPU Kernel Optimization Performance Test");
-        System.out.println("=".repeat(50));
+        System.out.println("==================================================");
         
         runMatrixMultiplicationTests();
         runScalabilityTests();

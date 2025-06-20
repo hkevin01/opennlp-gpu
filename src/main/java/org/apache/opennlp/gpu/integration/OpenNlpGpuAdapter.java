@@ -3,7 +3,11 @@ package org.apache.opennlp.gpu.integration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuConfig;
+import org.apache.opennlp.gpu.compute.CpuComputeProvider;
+import org.apache.opennlp.gpu.compute.CpuMatrixOperation;
+import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 
 import opennlp.tools.postag.POSModel;
@@ -25,7 +29,9 @@ public class OpenNlpGpuAdapter {
     
     public OpenNlpGpuAdapter() {
         this.gpuConfig = new GpuConfig();
-        this.featureExtractor = new GpuFeatureExtractor(gpuConfig);
+        ComputeProvider provider = new CpuComputeProvider();
+        MatrixOperation matrixOp = new CpuMatrixOperation(provider);
+        this.featureExtractor = new GpuFeatureExtractor(provider, gpuConfig, matrixOp);
         this.gpuEnabled = gpuConfig.isGpuAvailable();
         
         System.out.println("OpenNLP GPU Adapter initialized: " + 
@@ -86,7 +92,7 @@ public class OpenNlpGpuAdapter {
                 // Add GPU-based feature extraction for enhanced tokenization
                 if (gpuFeatures != null) {
                     // Extract features for token boundary detection enhancement
-                    float[][] features = gpuFeatures.extractNgramFeatures(tokens, 2, 3);
+                    float[][] features = gpuFeatures.extractNGramFeatures(tokens, 2, 3);
                     System.out.printf("   GPU features extracted: %dx%d matrix%n", 
                                     features.length, features[0].length);
                 }
@@ -150,7 +156,8 @@ public class OpenNlpGpuAdapter {
         }
         
         @Override
-        public String[] sentDetect(String text) {
+        public String[] sentDetect(CharSequence s) {
+            String text = s.toString();
             if (useGpu && text.length() > 500) {
                 return sentDetectGpu(text);
             } else {
@@ -167,7 +174,7 @@ public class OpenNlpGpuAdapter {
                 
                 // GPU-enhanced boundary detection verification
                 if (gpuFeatures != null && sentences.length > 1) {
-                    float[][] features = gpuFeatures.extractNgramFeatures(sentences, 1, 2);
+                    float[][] features = gpuFeatures.extractNGramFeatures(sentences, 1, 2);
                     System.out.printf("   GPU boundary features: %dx%d matrix%n", 
                                     features.length, features[0].length);
                 }

@@ -20,14 +20,16 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
-import org.apache.opennlp.maxent.GisModel;
-import org.apache.opennlp.maxent.MaxentModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+
+import opennlp.tools.ml.maxent.GISModel;
+import opennlp.tools.ml.model.Context;
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Cross-platform compatibility testing for GPU acceleration
@@ -442,16 +444,32 @@ public class CrossPlatformCompatibilityTest {
     }
     
     private void testMaxEntModel(TestResult result) {
-        // Create sample MaxEnt model
-        String[] outcomes = {"yes", "no"};
-        String[] predLabels = {"feature1", "feature2"};
-        double[] parameters = {0.5, -0.5, 0.3, -0.3};
+        // Create a dummy MaxEnt model
+        String[] outcomes = {"outcome1", "outcome2"};
+        String[] predLabels = {"pred1", "pred2"};
+        double[] params = {0.1, 0.2, 0.3, 0.4};
         
-        MaxentModel cpuModel = new GisModel(outcomes, predLabels, parameters, 1, 0.0);
+        Context[] contexts = new Context[predLabels.length];
+        int[] outcomePattern = new int[outcomes.length];
+        for (int i = 0; i < outcomes.length; i++) {
+            outcomePattern[i] = i;
+        }
+
+        for (int i = 0; i < predLabels.length; i++) {
+            double[] paramsForPred = new double[outcomes.length];
+            for (int j = 0; j < outcomes.length; j++) {
+                paramsForPred[j] = params[i * outcomes.length + j];
+            }
+            contexts[i] = new Context(outcomePattern, paramsForPred);
+        }
+
+        MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
+        
+        // Create a GPU-accelerated wrapper
         GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, config);
         
         try {
-            String[] context = {"feature1"};
+            String[] context = {"pred1"};
             double[] probs = gpuModel.eval(context);
             
             assertNotNull(probs);

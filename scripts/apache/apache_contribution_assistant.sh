@@ -104,9 +104,9 @@ case $OPTION in
             -e "s/\[Your GitHub Profile\]/https:\/\/github.com\/$GITHUB_USERNAME/g" \
             -e "s/\[Your Organization\/Affiliation\]/${USER_ORG:-Individual Contributor}/g" \
             -e "s/\[Add your repo URL\]/$REPO_URL/g" \
-            docs/apache_proposal_email_final.md > docs/apache_proposal_email_customized.md
+            docs/apache/apache_proposal_email_final.md > docs/apache/apache_proposal_email_customized.md
         
-        print_success "Customized proposal email created: docs/apache_proposal_email_customized.md"
+        print_success "Customized proposal email created: docs/apache/apache_proposal_email_customized.md"
         print_info "Next steps:"
         echo "  1. Review the proposal email"
         echo "  2. Subscribe to dev@opennlp.apache.org"
@@ -117,7 +117,7 @@ case $OPTION in
     2)
         print_step "Creating JIRA issue template..."
         
-        cat > docs/jira_issue_template.md << EOF
+        cat > docs/apache/jira_issue_template.md << EOF
 # JIRA Issue Template for OpenNLP GPU Acceleration
 
 **Visit**: https://issues.apache.org/jira/projects/OPENNLP
@@ -170,7 +170,7 @@ See attached technical architecture document for complete implementation details
 **GitHub**: https://github.com/$GITHUB_USERNAME
 EOF
 
-        print_success "JIRA issue template created: docs/jira_issue_template.md"
+        print_success "JIRA issue template created: docs/apache/jira_issue_template.md"
         print_info "Create JIRA issue ONLY after community approves your proposal"
         ;;
         
@@ -246,8 +246,8 @@ EOF
         
         # Generate reports
         print_info "Performance reports available:"
-        echo "  📊 docs/performance_benchmarks.md - Comprehensive benchmark results"
-        echo "  🏗️ docs/technical_architecture.md - Technical deep-dive"
+        echo "  📊 docs/performance/performance_benchmarks.md - Comprehensive benchmark results"
+        echo "  🏗️ docs/development/technical_architecture.md - Technical deep-dive"
         echo "  📋 test-output/ - Detailed test results"
         
         print_success "Performance reports ready for community review"
@@ -262,11 +262,11 @@ EOF
         mkdir -p apache-submission-package/benchmarks
         
         # Copy documentation
-        cp docs/apache_proposal_email_customized.md apache-submission-package/docs/ 2>/dev/null || \
-        cp docs/apache_proposal_email_final.md apache-submission-package/docs/
-        cp docs/technical_architecture.md apache-submission-package/docs/
-        cp docs/performance_benchmarks.md apache-submission-package/docs/
-        cp docs/apache_fork_instructions.md apache-submission-package/docs/
+        cp docs/apache/apache_proposal_email_customized.md apache-submission-package/docs/ 2>/dev/null || \
+        cp docs/apache/apache_proposal_email_final.md apache-submission-package/docs/
+        cp docs/development/technical_architecture.md apache-submission-package/docs/
+        cp docs/performance/performance_benchmarks.md apache-submission-package/docs/
+        cp docs/apache/apache_fork_instructions.md apache-submission-package/docs/
         
         # Copy examples
         cp -r src/test/java/org/apache/opennlp/gpu/examples/ apache-submission-package/examples/ 2>/dev/null || true
@@ -280,10 +280,10 @@ This package contains all documentation and materials for contributing GPU accel
 ## Contents
 
 ### 📚 Documentation
-- \`docs/apache_proposal_email_*.md\` - Community proposal email
-- \`docs/technical_architecture.md\` - Complete technical architecture
-- \`docs/performance_benchmarks.md\` - Performance analysis and results
-- \`docs/apache_fork_instructions.md\` - Step-by-step contribution guide
+- \`docs/apache/apache_proposal_email_*.md\` - Community proposal email
+- \`docs/development/technical_architecture.md\` - Complete technical architecture
+- \`docs/performance/performance_benchmarks.md\` - Performance analysis and results
+- \`docs/apache/apache_fork_instructions.md\` - Step-by-step contribution guide
 
 ### 🎮 Examples
 - \`examples/\` - Working code examples and demonstrations
@@ -355,13 +355,13 @@ EOF
         # Check what's been done
         echo "📋 Contribution Checklist:"
         
-        if [ -f "docs/apache_proposal_email_customized.md" ]; then
+        if [ -f "docs/apache/apache_proposal_email_customized.md" ]; then
             print_success "Community proposal email prepared"
         else
             print_warning "Community proposal email not prepared (run option 1)"
         fi
         
-        if [ -f "docs/jira_issue_template.md" ]; then
+        if [ -f "docs/apache/jira_issue_template.md" ]; then
             print_success "JIRA issue template ready"
         else
             print_warning "JIRA issue template not created (run option 2)"
@@ -403,8 +403,8 @@ esac
 
 echo ""
 print_info "For detailed instructions, see:"
-echo "  📖 docs/apache_contribution_guide.md"
-echo "  🍴 docs/apache_fork_instructions.md"
-echo "  📧 docs/apache_proposal_email_final.md"
+echo "  📖 docs/apache/apache_contribution_guide.md"
+echo "  🍴 docs/apache/apache_fork_instructions.md"
+echo "  📧 docs/apache/apache_proposal_email_final.md"
 echo ""
 print_success "Apache OpenNLP contribution assistant completed!"

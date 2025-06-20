@@ -72,9 +72,9 @@ java_pid1266980.hprof
 
 # Development and Internal Files (exclude from public release)
 # Session progress and development notes
-docs/session_progress_summary.md
-docs/project_progress.md
-docs/test_plan_progress.md
+docs/project/session_progress_summary.md
+docs/project/project_progress_main.md
+docs/testing/test_plan_progress_main.md
 
 # Project completion and internal reports
 PROJECT_COMPLETION_REPORT.md

@@ -3,10 +3,8 @@ package org.apache.opennlp.gpu.ml;
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
-import org.apache.opennlp.maxent.MaxentModel;
-import org.apache.opennlp.model.Context;
 
-
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Factory for creating GPU-accelerated ML models

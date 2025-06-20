@@ -1,5 +1,8 @@
 package org.apache.opennlp.gpu.ml.maxent;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
@@ -7,8 +10,10 @@ import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
-import org.apache.opennlp.maxent.MaxentModel;
-import org.apache.opennlp.model.Context;
+
+import opennlp.tools.ml.model.AbstractModel;
+import opennlp.tools.ml.model.Context;
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * GPU-accelerated implementation of MaxEnt model
@@ -72,25 +77,40 @@ public class GpuMaxentModel implements MaxentModel {
     
     private void initializeModelParameters() {
         this.numOutcomes = cpuModel.getNumOutcomes();
-        this.outcomes = cpuModel.getAllOutcomes();
-        
-        // Extract model parameters if available
-        Object[] dataStructures = cpuModel.getDataStructures();
-        if (dataStructures.length >= 3 && dataStructures[1] instanceof String[] && dataStructures[2] instanceof double[]) {
-            this.predLabels = (String[]) dataStructures[1];
+
+        if (cpuModel instanceof AbstractModel) {
+            AbstractModel abstractModel = (AbstractModel) cpuModel;
+            Object[] data = abstractModel.getDataStructures();
+            @SuppressWarnings("unchecked")
+            Map<String, Context> pmap = (Map<String, Context>) data[1];
+            this.predLabels = pmap.keySet().toArray(new String[0]);
             this.numPreds = predLabels.length;
-            
-            // Convert double parameters to float for GPU operations
-            double[] doubleParams = (double[]) dataStructures[2];
-            this.weights = new float[doubleParams.length];
-            for (int i = 0; i < doubleParams.length; i++) {
-                this.weights[i] = (float) doubleParams[i];
+            this.outcomes = new String[numOutcomes];
+            for (int i=0; i<numOutcomes; i++) {
+                this.outcomes[i] = abstractModel.getOutcome(i);
+            }
+
+            this.weights = new float[numPreds * numOutcomes];
+            Arrays.fill(weights, 0.0f);
+
+            int predIndex = 0;
+            for (String predLabel : predLabels) {
+                Context p = pmap.get(predLabel);
+                if (p != null) {
+                    double[] contextParams = p.getParameters();
+                    int[] outcomeIndices = p.getOutcomes();
+
+                    for (int j = 0; j < outcomeIndices.length; j++) {
+                        int outcomeIndex = outcomeIndices[j];
+                        if (outcomeIndex < numOutcomes) {
+                            weights[predIndex * numOutcomes + outcomeIndex] = (float) contextParams[j];
+                        }
+                    }
+                }
+                predIndex++;
             }
         } else {
-            // Create dummy parameters for stub implementation
-            this.predLabels = new String[0];
-            this.numPreds = 0;
-            this.weights = new float[0];
+            throw new IllegalArgumentException("The provided cpuModel must be an instance of AbstractModel");
         }
     }
     
@@ -109,12 +129,18 @@ public class GpuMaxentModel implements MaxentModel {
     }
     
     @Override
-    public double[] eval(String[] context, float[] probs) {
-        double[] doubleProbs = new double[probs.length];
-        for (int i = 0; i < probs.length; i++) {
-            doubleProbs[i] = probs[i];
-        }
-        return eval(context, doubleProbs);
+    public double[] eval(String[] context, float[] values) {
+        return cpuModel.eval(context, values);
+    }
+    
+    @Override
+    public String getBestOutcome(double[] ocs) {
+        return cpuModel.getBestOutcome(ocs);
+    }
+
+    @Override
+    public String getAllOutcomes(double[] ocs) {
+        return cpuModel.getAllOutcomes(ocs);
     }
     
     @Override
@@ -132,14 +158,8 @@ public class GpuMaxentModel implements MaxentModel {
         return cpuModel.getIndex(outcome);
     }
     
-    @Override
     public String[] getAllOutcomes() {
         return outcomes.clone();
-    }
-    
-    @Override
-    public Object[] getDataStructures() {
-        return cpuModel.getDataStructures();
     }
     
     /**
@@ -248,164 +268,88 @@ public class GpuMaxentModel implements MaxentModel {
     
     private void calculateScoresGpu(int[] featureIndices, float[] scores) {
         // Initialize scores to zero
-        matrixOp.fillArray(scores, 0.0f, numOutcomes);
+        Arrays.fill(scores, 0.0f);
         
-        // For each outcome, sum the weights of active features
-        for (int oid = 0; oid < numOutcomes; oid++) {
-            float score = 0.0f;
-            for (int fidx : featureIndices) {
-                int paramIndex = oid * numPreds + fidx;
-                if (paramIndex < weights.length) {
-                    score += weights[paramIndex];
-                }
+        // Simplified matrix multiplication: sum contributions of active features for each outcome
+        for (int featureIndex : featureIndices) {
+            for (int outcomeIndex = 0; outcomeIndex < numOutcomes; outcomeIndex++) {
+                scores[outcomeIndex] += weights[featureIndex * numOutcomes + outcomeIndex];
             }
-            scores[oid] = score;
         }
     }
     
     private float[][] calculateBatchScoresGpu(int[][] allFeatureIndices) {
         float[][] allScores = new float[allFeatureIndices.length][numOutcomes];
-        
-        // Process each context
         for (int i = 0; i < allFeatureIndices.length; i++) {
             calculateScoresGpu(allFeatureIndices[i], allScores[i]);
         }
-        
         return allScores;
     }
     
     private void applySoftmaxGpu(float[] scores, double[] probs) {
-        // Use GPU softmax implementation
-        float[] floatProbs = new float[scores.length];
-        matrixOp.softmax(scores, floatProbs, scores.length);
-        
-        // Convert to double
-        for (int i = 0; i < floatProbs.length; i++) {
-            probs[i] = floatProbs[i];
+        // Simple softmax implementation
+        double sum = 0;
+        for (int i = 0; i < scores.length; i++) {
+            probs[i] = Math.exp(scores[i]);
+            sum += probs[i];
+        }
+
+        for (int i = 0; i < scores.length; i++) {
+            probs[i] /= sum;
         }
     }
     
     private void fillUniformDistribution(double[] probs) {
-        double uniformProb = 1.0 / numOutcomes;
-        for (int i = 0; i < numOutcomes; i++) {
-            probs[i] = uniformProb;
+        double prob = 1.0 / numOutcomes;
+        for (int i = 0; i < probs.length; i++) {
+            probs[i] = prob;
         }
     }
-    
-    /**
-     * GPU-accelerated context evaluation for Context objects
-     */
-    public double[] evaluateContext(Context context) {
-        try {
-            // Extract features and values from context
-            String[] features = context.getFeatures();
-            float[] values = context.getValues();
-            
-            if (features == null || values == null) {
-                logger.warn("Invalid context, falling back to CPU");
-                return new double[numOutcomes];
-            }
-            
-            // Use weighted feature evaluation if values are provided
-            if (shouldUseGpu(features)) {
-                return evaluateWeightedFeaturesGpu(features, values);
-            } else {
-                // Fall back to CPU implementation
-                return eval(features);
-            }
-            
-        } catch (Exception e) {
-            logger.error("Context evaluation failed: " + e.getMessage());
-            return new double[numOutcomes];
-        }
-    }
-    
-    private double[] evaluateWeightedFeaturesGpu(String[] features, float[] values) {
-        try {
-            // Extract feature indices
-            int[] featureIndices = extractFeatureIndices(features);
-            
-            // Calculate weighted scores
-            float[] scores = new float[numOutcomes];
-            matrixOp.fillArray(scores, 0.0f, numOutcomes);
-            
-            for (int oid = 0; oid < numOutcomes; oid++) {
-                float score = 0.0f;
-                for (int i = 0; i < featureIndices.length && i < values.length; i++) {
-                    int fidx = featureIndices[i];
-                    int paramIndex = oid * numPreds + fidx;
-                    if (paramIndex < weights.length) {
-                        score += weights[paramIndex] * values[i];
-                    }
-                }
-                scores[oid] = score;
-            }
-            
-            // Apply softmax
-            double[] probs = new double[numOutcomes];
-            applySoftmaxGpu(scores, probs);
-            
-            return probs;
-            
-        } catch (Exception e) {
-            logger.warn("Weighted GPU evaluation failed: " + e.getMessage());
-            return eval(features);
-        }
-    }
-    
-    /**
-     * Get performance statistics for this model
-     */
+
     public ModelPerformanceStats getPerformanceStats() {
         return new ModelPerformanceStats(
-            computeProvider.getName(),
-            numOutcomes,
-            numPreds,
-            weights.length
+                computeProvider.getClass().getSimpleName(),
+                numOutcomes,
+                numPreds,
+                weights.length
         );
     }
-    
-    /**
-     * Cleanup GPU resources
-     */
+
     public void cleanup() {
-        if (matrixOp != null) {
-            matrixOp.release();
+        if (computeProvider.isGpuProvider()) {
+            ((GpuComputeProvider) computeProvider).cleanup();
         }
-        if (featureExtractor != null) {
-            featureExtractor.release();
-        }
-        if (computeProvider != null) {
-            computeProvider.cleanup();
-        }
-        logger.debug("Cleaned up GPU MaxEnt model resources");
     }
     
     /**
-     * Performance statistics for the model
+     * Provides performance statistics for the GPU model
      */
     public static class ModelPerformanceStats {
         private final String providerName;
         private final int numOutcomes;
         private final int numPreds;
         private final int numWeights;
-        
+
         public ModelPerformanceStats(String providerName, int numOutcomes, int numPreds, int numWeights) {
             this.providerName = providerName;
             this.numOutcomes = numOutcomes;
             this.numPreds = numPreds;
             this.numWeights = numWeights;
         }
-        
+
         public String getProviderName() { return providerName; }
         public int getNumOutcomes() { return numOutcomes; }
         public int getNumPreds() { return numPreds; }
         public int getNumWeights() { return numWeights; }
-        
+
         @Override
         public String toString() {
-            return String.format("ModelStats{provider=%s, outcomes=%d, preds=%d, weights=%d}", 
-                               providerName, numOutcomes, numPreds, numWeights);
+            return "ModelPerformanceStats{" +
+                    "providerName='" + providerName + '\'' +
+                    ", numOutcomes=" + numOutcomes +
+                    ", numPreds=" + numPreds +
+                    ", numWeights=" + numWeights +
+                    '}';
         }
     }
 }

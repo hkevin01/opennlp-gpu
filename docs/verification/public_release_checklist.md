@@ -5,9 +5,9 @@
 The following development/internal files have been added to `.gitignore` and will NOT appear in the public GitHub repository:
 
 ### 📁 Development Documentation
-- `docs/session_progress_summary.md` - Internal session tracking
-- `docs/project_progress.md` - Internal progress tracking  
-- `docs/test_plan_progress.md` - Internal test progress
+- `docs/project/session_progress_summary.md` - Internal session tracking
+- `docs/project/project_progress_main.md` - Internal progress tracking  
+- `docs/testing/test_plan_progress_main.md` - Internal test progress
 - `PROJECT_COMPLETION_REPORT.md` - Internal completion report
 
 ### 🔧 Development Scripts
@@ -31,17 +31,17 @@ The following development/internal files have been added to `.gitignore` and wil
 
 ### 📖 User Documentation
 - `README.md` - Main project documentation with GPU prerequisites
-- `docs/getting_started.md` - Complete user guide with examples
-- `docs/gpu_prerequisites_guide.md` - Comprehensive GPU setup guide
-- `docs/technical_architecture.md` - Technical deep-dive
-- `docs/performance_benchmarks.md` - Performance results
-- `docs/user_guide.md` - User reference guide
+- `docs/setup/getting_started.md` - Complete user guide with examples
+- `docs/setup/gpu_prerequisites_guide.md` - Comprehensive GPU setup guide
+- `docs/development/technical_architecture.md` - Technical deep-dive
+- `docs/performance/performance_benchmarks.md` - Performance results
+- `docs/guides/user_guide.md` - User reference guide
 
 ### 🏛️ Apache Contribution Materials
-- `docs/apache_contribution_guide.md` - Complete Apache process guide
-- `docs/apache_contribution_summary.md` - Summary and next steps
-- `docs/apache_fork_instructions.md` - Step-by-step fork instructions
-- `docs/apache_proposal_email_final.md` - Email template for proposal
+- `docs/apache/apache_contribution_guide.md` - Complete Apache process guide
+- `docs/apache/apache_contribution_summary.md` - Summary and next steps
+- `docs/apache/apache_fork_instructions.md` - Step-by-step fork instructions
+- `docs/apache/apache_proposal_email_final.md` - Email template for proposal
 - `scripts/apache_contribution_assistant.sh` - Interactive helper
 - `scripts/generate_proposal.sh` - Proposal generator
 
@@ -62,7 +62,7 @@ The following development/internal files have been added to `.gitignore` and wil
 
 ## 🎯 PowerPoint Presentation Created
 
-A comprehensive technical presentation has been created in `docs/project_presentation.md` with 16 slides covering:
+A comprehensive technical presentation has been created in `docs/project/project_presentation.md` with 16 slides covering:
 
 ### Technical Content
 1. **Problem Statement** - NLP performance challenges

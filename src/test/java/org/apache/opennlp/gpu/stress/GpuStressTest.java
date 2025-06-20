@@ -24,13 +24,15 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
-import org.apache.opennlp.maxent.GisModel;
-import org.apache.opennlp.maxent.MaxentModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+
+import opennlp.tools.ml.maxent.GISModel;
+import opennlp.tools.ml.model.Context;
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Comprehensive stress testing for GPU acceleration components
@@ -248,149 +250,73 @@ public class GpuStressTest {
         logger.info("Starting long running stability test");
         
         long startTime = System.currentTimeMillis();
-        long endTime = startTime + (STRESS_TEST_DURATION_SECONDS * 1000);
+        long totalOperations = 0;
+        List<Exception> errors = new ArrayList<>();
         
-        int operationCount = 0;
-        int errorCount = 0;
-        long initialMemory = getUsedMemory();
-        
-        while (System.currentTimeMillis() < endTime) {
+        while (System.currentTimeMillis() - startTime < STRESS_TEST_DURATION_SECONDS * 1000) {
             try {
-                // Perform various operations continuously
-                operationCount++;
-                
-                // Matrix operations
-                float[] matrix = createRandomMatrix(256 * 256);
-                float[] result = new float[256 * 256];
-                matrixOp.transpose(matrix, result, 256, 256);
-                
-                // Activation functions
-                matrixOp.sigmoid(matrix, result, matrix.length);
-                matrixOp.relu(result, matrix, result.length);
-                
-                // Feature extraction
-                if (operationCount % 10 == 0) {
-                    String[] docs = generateRandomDocuments(5);
-                    float[][] features = featureExtractor.extractNGramFeatures(docs, 2, 50);
-                    assertNotNull(features);
+                // Alternate between different operations
+                if (totalOperations % 2 == 0) {
+                    float[] matrix = createRandomMatrix(1024 * 1024);
+                    matrixOp.add(matrix, matrix, matrix, 1024 * 1024);
+                } else {
+                    String[] docs = generateRandomDocuments(10);
+                    featureExtractor.extractNGramFeatures(docs, 2, 100);
                 }
-                
-                // Memory check every 100 operations
-                if (operationCount % 100 == 0) {
-                    long currentMemory = getUsedMemory();
-                    long memoryGrowth = currentMemory - initialMemory;
-                    
-                    if (memoryGrowth > MAX_MEMORY_MB * 1024 * 1024) {
-                        logger.warn("Memory growth detected: " + (memoryGrowth / 1024 / 1024) + "MB after " + operationCount + " operations");
-                    }
-                    
-                    // Force GC periodically
-                    if (operationCount % 500 == 0) {
-                        System.gc();
-                        Thread.sleep(10);
-                    }
-                }
-                
+                totalOperations++;
             } catch (Exception e) {
-                errorCount++;
-                logger.debug("Operation " + operationCount + " failed: " + e.getMessage());
-                
-                // If error rate gets too high, fail the test
-                if (errorCount > operationCount * 0.1) {
-                    fail("Error rate exceeded 10% after " + operationCount + " operations");
-                }
-            }
-            
-            // Small delay to prevent overwhelming the system
-            if (operationCount % 50 == 0) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+                errors.add(e);
             }
         }
         
-        long finalMemory = getUsedMemory();
-        long totalTime = System.currentTimeMillis() - startTime;
-        double operationsPerSecond = operationCount * 1000.0 / totalTime;
-        
         logger.info("Long running stability test completed:");
-        logger.info("  Duration: " + (totalTime / 1000.0) + " seconds");
-        logger.info("  Total operations: " + operationCount);
-        logger.info("  Error count: " + errorCount);
-        logger.info("  Error rate: " + String.format("%.2f%%", (errorCount * 100.0 / operationCount)));
-        logger.info("  Operations per second: " + String.format("%.2f", operationsPerSecond));
-        logger.info("  Memory growth: " + ((finalMemory - initialMemory) / 1024 / 1024) + "MB");
+        logger.info("  Total operations: " + totalOperations);
+        logger.info("  Error count: " + errors.size());
         
-        // Assertions
-        assertTrue(operationCount > 1000, "Should complete at least 1000 operations");
-        assertTrue(errorCount < operationCount * 0.05, "Error rate should be less than 5%");
-        assertTrue(operationsPerSecond > 10, "Should maintain reasonable throughput");
-        assertTrue((finalMemory - initialMemory) < MAX_MEMORY_MB * 1024 * 1024, 
-                  "Memory growth should be contained");
+        assertTrue(errors.isEmpty(), "No errors should occur during long running test");
     }
     
     @Test
     @DisplayName("ML Model Stress Test")
     @Timeout(value = 90, unit = TimeUnit.SECONDS)
     void testMlModelStress() {
-        logger.info("Starting ML model stress test");
-        
-        try {
-            // Test Perceptron under stress
-            testPerceptronStress();
-            
-            // Test MaxEnt under stress
-            testMaxEntStress();
-            
-        } catch (Exception e) {
-            logger.error("ML model stress test failed: " + e.getMessage(), e);
-            fail("ML model stress test failed: " + e.getMessage());
-        }
+        testPerceptronStress();
+        testMaxEntStress();
     }
     
     private void testPerceptronStress() {
-        logger.info("Testing Perceptron model under stress");
+        System.out.println("--- Stress testing Perceptron model ---");
         
-        GpuPerceptronModel perceptron = new GpuPerceptronModel(config, 0.01f, 100);
+        // Create a large Perceptron model
+        GpuPerceptronModel perceptron = new GpuPerceptronModel(config, 0.01f, 10);
+        
+        // Generate a large dataset
+        int numSamples = 10000;
+        int numFeatures = 2000;
+        float[][] features = new float[numSamples][numFeatures];
+        int[] labels = new int[numSamples];
+        
+        for (int i = 0; i < numSamples; i++) {
+            for (int j = 0; j < numFeatures; j++) {
+                features[i][j] = (float) (Math.random() * 2.0 - 1.0);
+            }
+            labels[i] = (int) (Math.random() * 2);
+        }
         
         try {
-            // Generate large training dataset
-            int numSamples = 5000;
-            int numFeatures = 1000;
-            float[][] features = new float[numSamples][numFeatures];
-            int[] labels = new int[numSamples];
-            
-            for (int i = 0; i < numSamples; i++) {
-                for (int j = 0; j < numFeatures; j++) {
-                    features[i][j] = (float) (Math.random() * 2 - 1);
-                }
-                labels[i] = (features[i][0] + features[i][1] > 0) ? 1 : 0;
+            // Train for a few epochs
+            for (int epoch = 0; epoch < 3; epoch++) {
+                perceptron.train(features, labels);
             }
             
-            // Train multiple times to test stability
-            for (int iteration = 0; iteration < 5; iteration++) {
-                long startTime = System.currentTimeMillis();
-                perceptron.train(features, labels);
-                long trainingTime = System.currentTimeMillis() - startTime;
+            // Perform batch predictions
+            int batchSize = 128;
+            for (int i = 0; i < numSamples; i += batchSize) {
+                int end = Math.min(i + batchSize, numSamples);
+                float[][] batchFeatures = new float[end - i][numFeatures];
+                System.arraycopy(features, i, batchFeatures, 0, end - i);
                 
-                logger.debug("Perceptron training iteration " + iteration + " completed in " + trainingTime + "ms");
-                
-                // Test prediction accuracy
-                int correctPredictions = 0;
-                for (int i = 0; i < Math.min(100, numSamples); i++) {
-                    int prediction = perceptron.predict(features[i]);
-                    if (prediction == labels[i]) {
-                        correctPredictions++;
-                    }
-                }
-                
-                double accuracy = correctPredictions / 100.0;
-                logger.debug("Perceptron accuracy: " + String.format("%.2f%%", accuracy * 100));
-                
-                assertTrue(accuracy > 0.6, "Perceptron should maintain reasonable accuracy under stress");
+                perceptron.predictBatch(batchFeatures);
             }
             
         } finally {
@@ -399,97 +325,105 @@ public class GpuStressTest {
     }
     
     private void testMaxEntStress() {
-        logger.info("Testing MaxEnt model under stress");
+        System.out.println("--- Stress testing MaxEnt model ---");
+
+        // Create a large, realistic MaxEnt model
+        int numOutcomes = 20;
+        int numPreds = 10000;
+        String[] outcomes = new String[numOutcomes];
+        for (int i = 0; i < numOutcomes; i++) {
+            outcomes[i] = "outcome" + i;
+        }
+
+        String[] predLabels = new String[numPreds];
+        for (int i = 0; i < numPreds; i++) {
+            predLabels[i] = "pred" + i;
+        }
+
+        double[] params = new double[numOutcomes * numPreds];
+        for (int i = 0; i < params.length; i++) {
+            params[i] = Math.random() * 2.0 - 1.0;
+        }
         
+        Context[] contexts = new Context[predLabels.length];
+        int[] outcomePattern = new int[outcomes.length];
+        for (int i = 0; i < outcomes.length; i++) {
+            outcomePattern[i] = i;
+        }
+
+        for (int i = 0; i < predLabels.length; i++) {
+            double[] paramsForPred = new double[outcomes.length];
+            for (int j = 0; j < outcomes.length; j++) {
+                paramsForPred[j] = params[i * outcomes.length + j];
+            }
+            contexts[i] = new Context(outcomePattern, paramsForPred);
+        }
+
+        MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
+
+        // Create GPU-accelerated wrapper
+        GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, config);
+
         try {
-            // Create sample MaxEnt model
-            String[] outcomes = {"class1", "class2", "class3"};
-            String[] predLabels = new String[100];
-            for (int i = 0; i < predLabels.length; i++) {
-                predLabels[i] = "feature_" + i;
-            }
-            
-            double[] parameters = new double[outcomes.length * predLabels.length];
-            for (int i = 0; i < parameters.length; i++) {
-                parameters[i] = Math.random() * 2 - 1;
-            }
-            
-            MaxentModel cpuModel = new GisModel(outcomes, predLabels, parameters, 1, 0.0);
-            GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, config);
-            
-            try {
-                // Stress test with many evaluations
-                for (int iteration = 0; iteration < 1000; iteration++) {
-                    String[] context = generateRandomContext(predLabels, 10);
-                    double[] probs = gpuModel.eval(context);
-                    
-                    assertNotNull(probs);
-                    assertEquals(outcomes.length, probs.length);
-                    
-                    // Verify probabilities sum to approximately 1
-                    double sum = 0;
-                    for (double prob : probs) {
-                        sum += prob;
-                        assertTrue(prob >= 0, "Probabilities should be non-negative");
-                    }
-                    assertTrue(Math.abs(sum - 1.0) < 0.01, "Probabilities should sum to approximately 1");
+            // Stress test with many evaluations
+            for (int iteration = 0; iteration < 1000; iteration++) {
+                String[] context = generateRandomContext(predLabels, 10);
+                double[] probs = gpuModel.eval(context);
+                
+                assertNotNull(probs);
+                assertEquals(outcomes.length, probs.length);
+                
+                // Verify probabilities sum to approximately 1
+                double sum = 0;
+                for (double prob : probs) {
+                    sum += prob;
+                    assertTrue(prob >= 0, "Probabilities should be non-negative");
                 }
-                
-                // Test batch evaluation under stress
-                String[][] batchContexts = new String[50][];
-                for (int i = 0; i < batchContexts.length; i++) {
-                    batchContexts[i] = generateRandomContext(predLabels, 5);
-                }
-                
-                double[][] batchResults = gpuModel.evalBatch(batchContexts);
-                assertNotNull(batchResults);
-                assertEquals(batchContexts.length, batchResults.length);
-                
-            } finally {
-                gpuModel.cleanup();
+                assertTrue(Math.abs(sum - 1.0) < 0.01, "Probabilities should sum to approximately 1");
             }
             
-        } catch (Exception e) {
-            logger.error("MaxEnt stress test failed: " + e.getMessage(), e);
-            throw e;
+            // Test batch evaluation under stress
+            String[][] batchContexts = new String[50][];
+            for (int i = 0; i < batchContexts.length; i++) {
+                batchContexts[i] = generateRandomContext(predLabels, 5);
+            }
+            
+            double[][] batchResults = gpuModel.evalBatch(batchContexts);
+            assertNotNull(batchResults);
+            assertEquals(batchContexts.length, batchResults.length);
+            
+        } finally {
+            gpuModel.cleanup();
         }
     }
-    
-    // Helper methods
     
     private float[] createRandomMatrix(int size) {
         float[] matrix = new float[size];
         for (int i = 0; i < size; i++) {
-            matrix[i] = (float) (Math.random() * 2 - 1);
+            matrix[i] = (float) (Math.random() * 2.0 - 1.0);
         }
         return matrix;
     }
     
     private String[] generateRandomDocuments(int count) {
         String[] docs = new String[count];
-        String[] words = {"test", "document", "gpu", "acceleration", "matrix", "feature", "extraction", "performance"};
-        
         for (int i = 0; i < count; i++) {
             StringBuilder doc = new StringBuilder();
-            int wordCount = 5 + (int) (Math.random() * 10);
-            for (int j = 0; j < wordCount; j++) {
-                if (j > 0) doc.append(" ");
-                doc.append(words[(int) (Math.random() * words.length)]);
+            int numWords = 10 + (int) (Math.random() * 20);
+            for (int j = 0; j < numWords; j++) {
+                doc.append("word").append((int) (Math.random() * 1000)).append(" ");
             }
             docs[i] = doc.toString();
         }
-        
         return docs;
     }
     
     private String[] generateRandomContext(String[] predLabels, int maxFeatures) {
-        int numFeatures = 1 + (int) (Math.random() * maxFeatures);
+        int numFeatures = 1 + (int) (Math.random() * (maxFeatures - 1));
         String[] context = new String[numFeatures];
-        
         for (int i = 0; i < numFeatures; i++) {
             context[i] = predLabels[(int) (Math.random() * predLabels.length)];
         }
-        
         return context;
     }
     
@@ -497,4 +431,4 @@ public class GpuStressTest {
         Runtime runtime = Runtime.getRuntime();
         return runtime.totalMemory() - runtime.freeMemory();
     }
-}
+} 

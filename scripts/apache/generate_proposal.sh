@@ -22,7 +22,7 @@ else
 fi
 
 # Generate proposal template
-cat > docs/apache_proposal_email.md << EOF
+cat > docs/apache/apache_proposal_email.md << EOF
 # OpenNLP GPU Acceleration Contribution Proposal
 
 **Subject**: [PROPOSAL] GPU Acceleration Support for Apache OpenNLP
@@ -234,7 +234,7 @@ Best regards,
 
 EOF
 
-echo "✅ Proposal email template created: docs/apache_proposal_email.md"
+echo "✅ Proposal email template created: docs/apache/apache_proposal_email.md"
 echo ""
 echo "📝 Next steps:"
 echo "1. Review and customize the proposal template"

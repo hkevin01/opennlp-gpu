@@ -26,6 +26,7 @@ public class MatrixOpsTest {
     
     private cl_context context;
     private cl_command_queue commandQueue;
+    private cl_device_id deviceId;
     private MatrixOps matrixOps;
     
     /**
@@ -63,7 +64,7 @@ public class MatrixOpsTest {
             setupOpenClContext();
             
             // Create matrix operations
-            matrixOps = new MatrixOps(context, commandQueue);
+            matrixOps = new MatrixOps(context, commandQueue, deviceId);
         } catch (Exception e) {
             throw new RuntimeException("Error setting up test", e);
         }
@@ -104,7 +105,7 @@ public class MatrixOpsTest {
         
         cl_device_id[] devices = new cl_device_id[numDevices];
         CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, numDevices, devices, null);
-        cl_device_id deviceId = devices[0];
+        this.deviceId = devices[0];
         
         // Create context and command queue
         cl_context_properties contextProperties = new cl_context_properties();

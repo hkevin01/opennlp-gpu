@@ -6,10 +6,8 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 import org.apache.opennlp.gpu.compute.GpuMemoryManager;
-import org.apache.opennlp.maxent.MaxentModel;
-import org.apache.opennlp.model.Context;
 
-
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Adapter that wraps any MaxEnt model to provide GPU acceleration
@@ -65,6 +63,7 @@ public class GpuModelAdapter implements MaxentModel {
                cpuModel.getNumOutcomes() >= GPU_THRESHOLD_OUTCOMES;
     }
     
+    @Override
     public double[] eval(String[] context) {
         if (shouldUseGpu(context)) {
             return evaluateOnGpu(context, null);
@@ -73,6 +72,7 @@ public class GpuModelAdapter implements MaxentModel {
         }
     }
     
+    @Override
     public double[] eval(String[] context, double[] probs) {
         if (shouldUseGpu(context)) {
             return evaluateOnGpu(context, probs);
@@ -81,36 +81,44 @@ public class GpuModelAdapter implements MaxentModel {
         }
     }
     
-    public double[] eval(String[] context, float[] probs) {
-        // Convert float array to double array for compatibility
-        double[] doubleProbs = null;
-        if (probs != null) {
-            doubleProbs = new double[probs.length];
-            for (int i = 0; i < probs.length; i++) {
-                doubleProbs[i] = probs[i];
-            }
-        }
-        return eval(context, doubleProbs);
+    @Override
+    public double[] eval(String[] context, float[] values) {
+        // For now, delegate to CPU implementation
+        return cpuModel.eval(context, values);
+    }
+
+    @Override
+    public String getBestOutcome(double[] ocs) {
+        return cpuModel.getBestOutcome(ocs);
+    }
+
+    @Override
+    public String getAllOutcomes(double[] ocs) {
+        return cpuModel.getAllOutcomes(ocs);
     }
     
+    @Override
     public String getOutcome(int index) {
         return cpuModel.getOutcome(index);
     }
     
+    @Override
     public int getNumOutcomes() {
         return cpuModel.getNumOutcomes();
     }
     
+    @Override
     public int getIndex(String outcome) {
         return cpuModel.getIndex(outcome);
     }
     
     public String[] getAllOutcomes() {
-        return cpuModel.getAllOutcomes();
-    }
-    
-    public Object[] getDataStructures() {
-        return cpuModel.getDataStructures();
+        int numOutcomes = cpuModel.getNumOutcomes();
+        String[] outcomes = new String[numOutcomes];
+        for (int i = 0; i < numOutcomes; i++) {
+            outcomes[i] = cpuModel.getOutcome(i);
+        }
+        return outcomes;
     }
     
     /**

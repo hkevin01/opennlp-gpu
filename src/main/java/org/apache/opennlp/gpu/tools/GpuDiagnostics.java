@@ -578,13 +578,13 @@ public class GpuDiagnostics {
         }
         
         public void printReport() {
-            System.out.println("\n" + "=".repeat(80));
+            System.out.println("\n=================================================================================");
             System.out.println("🔍 GPU DIAGNOSTICS REPORT");
-            System.out.println("=".repeat(80));
+            System.out.println("=================================================================================");
             
             for (Map.Entry<String, List<String>> entry : sections.entrySet()) {
                 System.out.println("\n📋 " + entry.getKey());
-                System.out.println("-".repeat(50));
+                System.out.println("--------------------------------------------------");
                 for (String line : entry.getValue()) {
                     System.out.println("  " + line);
                 }
@@ -592,19 +592,19 @@ public class GpuDiagnostics {
             
             if (!recommendations.isEmpty()) {
                 System.out.println("\n💡 RECOMMENDATIONS");
-                System.out.println("-".repeat(50));
+                System.out.println("--------------------------------------------------");
                 for (String rec : recommendations) {
                     System.out.println("  • " + rec);
                 }
             }
             
-            System.out.println("\n" + "=".repeat(80));
+            System.out.println("\n=================================================================================");
             if (isGpuReady()) {
                 System.out.println("🎉 STATUS: GPU acceleration is ready!");
             } else {
                 System.out.println("⚠️ STATUS: GPU acceleration setup incomplete");
             }
-            System.out.println("=".repeat(80));
+            System.out.println("=================================================================================");
         }
     }
 }

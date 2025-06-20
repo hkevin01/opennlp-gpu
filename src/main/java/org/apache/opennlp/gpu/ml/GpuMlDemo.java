@@ -5,7 +5,6 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
 import org.apache.opennlp.maxent.GisModel;
-import org.apache.opennlp.maxent.MaxentModel;
 
 /**
  * Demonstration of GPU-accelerated ML models

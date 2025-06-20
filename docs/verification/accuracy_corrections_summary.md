@@ -87,8 +87,8 @@ The project documentation contained numerous misleading claims that presented th
 ### Primary Documentation
 - `README.md` - **Major rewrite** removing misleading claims
 - `PROJECT_COMPLETION_REPORT.md` - Corrected to research status
-- `docs/public_release_checklist.md` - Updated for research publication
-- `docs/test_plan_progress.md` - Removed enterprise/production claims
+- `docs/verification/public_release_checklist.md` - Updated for research publication
+- `docs/testing/test_plan_progress_main.md` - Removed enterprise/production claims
 
 ### Impact Analysis
 - **Removed**: All false claims about production readiness

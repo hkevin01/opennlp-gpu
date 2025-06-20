@@ -93,7 +93,7 @@ sudo apt install intel-opencl-icd
 
 ✅ **No GPU? No problem!** Examples include CPU fallback implementations when GPU is unavailable.
 
-📖 **Detailed Setup Guide**: See [`docs/gpu_prerequisites_guide.md`](docs/gpu_prerequisites_guide.md) for comprehensive GPU setup instructions.
+📖 **Detailed Setup Guide**: See [`docs/setup/gpu_prerequisites_guide.md`](docs/setup/gpu_prerequisites_guide.md) for comprehensive GPU setup instructions.
 
 ### 📦 What This Project Provides
 

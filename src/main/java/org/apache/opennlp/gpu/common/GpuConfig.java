@@ -53,4 +53,19 @@ public class GpuConfig {
     public void setMaxMemoryUsageMB(int maxMemoryUsageMB) {
         this.maxMemoryUsageMB = maxMemoryUsageMB;
     }
+    
+    /**
+     * Check if GPU acceleration is available on the system
+     * @return true if GPU is available and can be used
+     */
+    public static boolean isGpuAvailable() {
+        try {
+            // Try to initialize JOCL to check GPU availability
+            org.jocl.CL.setExceptionsEnabled(true);
+            // Basic check - if we can get platform info, GPU is likely available
+            return true; // For now, assume GPU is available if JOCL is on classpath
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

@@ -19,13 +19,15 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
-import org.apache.opennlp.maxent.GisModel;
-import org.apache.opennlp.maxent.MaxentModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
+import opennlp.tools.ml.maxent.GISModel;
+import opennlp.tools.ml.model.Context;
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Comprehensive performance benchmarking for GPU acceleration
@@ -368,60 +370,84 @@ public class GpuPerformanceBenchmark {
     }
     
     private BenchmarkResults benchmarkMaxEntEvaluation() {
-        // Create sample MaxEnt model
-        String[] outcomes = {"positive", "negative", "neutral"};
-        String[] predLabels = new String[100];
+        // Create a large, realistic MaxEnt model for benchmarking
+        int numOutcomes = 50;
+        int numPreds = 5000;
+        String[] outcomes = new String[numOutcomes];
+        for (int i = 0; i < numOutcomes; i++) {
+            outcomes[i] = "outcome" + i;
+        }
+
+        String[] predLabels = new String[numPreds];
+        for (int i = 0; i < numPreds; i++) {
+            predLabels[i] = "pred" + i;
+        }
+
+        double[] params = new double[numOutcomes * numPreds];
+        for (int i = 0; i < params.length; i++) {
+            params[i] = Math.random() * 2.0 - 1.0;
+        }
+        
+        Context[] contexts = new Context[predLabels.length];
+        int[] outcomePattern = new int[outcomes.length];
+        for (int i = 0; i < outcomes.length; i++) {
+            outcomePattern[i] = i;
+        }
+
         for (int i = 0; i < predLabels.length; i++) {
-            predLabels[i] = "feature_" + i;
+            double[] paramsForPred = new double[outcomes.length];
+            for (int j = 0; j < outcomes.length; j++) {
+                paramsForPred[j] = params[i * outcomes.length + j];
+            }
+            contexts[i] = new Context(outcomePattern, paramsForPred);
         }
-        
-        double[] parameters = new double[outcomes.length * predLabels.length];
-        for (int i = 0; i < parameters.length; i++) {
-            parameters[i] = Math.random() * 2 - 1;
-        }
-        
-        MaxentModel cpuModel = new GisModel(outcomes, predLabels, parameters, 1, 0.0);
+
+        MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
+
+        // Create GPU and CPU models
         GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, gpuConfig);
-        
-        // Generate test contexts
-        String[][] contexts = new String[1000][];
-        for (int i = 0; i < contexts.length; i++) {
-            int numFeatures = 5 + (int) (Math.random() * 10);
-            contexts[i] = new String[numFeatures];
-            for (int j = 0; j < numFeatures; j++) {
-                contexts[i][j] = predLabels[(int) (Math.random() * predLabels.length)];
+        GpuMaxentModel cpuGpuModel = new GpuMaxentModel(cpuModel, cpuConfig);
+
+        // Generate sample context data
+        String[][] sampleContexts = new String[1000][];
+        for (int i = 0; i < sampleContexts.length; i++) {
+            int numFeaturesInContext = 5 + (int) (Math.random() * 10);
+            sampleContexts[i] = new String[numFeaturesInContext];
+            for (int j = 0; j < numFeaturesInContext; j++) {
+                sampleContexts[i][j] = predLabels[(int) (Math.random() * predLabels.length)];
             }
         }
-        
+
         // Warmup
         for (int i = 0; i < WARMUP_ITERATIONS; i++) {
-            gpuModel.eval(contexts[i % contexts.length]);
-            cpuModel.eval(contexts[i % contexts.length]);
+            gpuModel.eval(sampleContexts[i % sampleContexts.length]);
+            cpuGpuModel.eval(sampleContexts[i % sampleContexts.length]);
         }
-        
+
         // GPU benchmark
         long gpuTotalTime = 0;
         for (int i = 0; i < BENCHMARK_ITERATIONS; i++) {
             long startTime = System.nanoTime();
-            for (String[] context : contexts) {
+            for (String[] context : sampleContexts) {
                 gpuModel.eval(context);
             }
             gpuTotalTime += System.nanoTime() - startTime;
         }
-        
+
         // CPU benchmark
         long cpuTotalTime = 0;
         for (int i = 0; i < BENCHMARK_ITERATIONS; i++) {
             long startTime = System.nanoTime();
-            for (String[] context : contexts) {
-                cpuModel.eval(context);
+            for (String[] context : sampleContexts) {
+                cpuGpuModel.eval(context);
             }
             cpuTotalTime += System.nanoTime() - startTime;
         }
-        
+
         gpuModel.cleanup();
-        
-        return new BenchmarkResults("MaxEnt Evaluation " + contexts.length + " contexts",
+        cpuGpuModel.cleanup();
+
+        return new BenchmarkResults("MaxEnt Evaluation " + sampleContexts.length + " contexts",
                                    gpuTotalTime, cpuTotalTime, BENCHMARK_ITERATIONS);
     }
     
