@@ -121,5 +121,6 @@
   "workbench.editor.focusRecentEditorAfterClose": true,
   "workbench.editor.highlightModifiedTabs": true,
   "workbench.startupEditor": "none",
-  "window.restoreWindows": "preserve"
+  "window.restoreWindows": "preserve",
+  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
 }
