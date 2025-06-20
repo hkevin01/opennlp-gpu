@@ -513,5 +513,62 @@ public class PerformanceBenchmark {
             
             return report.toString();
         }
+        
+        public String getDetailedReport() {
+            StringBuilder report = new StringBuilder();
+            report.append("=== OpenNLP GPU Benchmark Detailed Report ===\n\n");
+            
+            for (Map.Entry<String, Map<String, BenchmarkMetrics>> category : categoryResults.entrySet()) {
+                report.append("Category: ").append(category.getKey()).append("\n");
+                
+                for (BenchmarkMetrics metrics : category.getValue().values()) {
+                    report.append("  ").append(metrics.getOperationName()).append(":\n");
+                    
+                    for (Integer size : metrics.getCpuTimes().keySet()) {
+                        if (metrics.getGpuTimes().containsKey(size)) {
+                            report.append("    Size ").append(size)
+                                  .append(": CPU ").append(String.format("%.2f", metrics.getCpuTimes().get(size)))
+                                  .append(" ms, GPU ").append(String.format("%.2f", metrics.getGpuTimes().get(size)))
+                                  .append(" ms\n");
+                        }
+                    }
+                }
+                report.append("\n");
+            }
+            
+            return report.toString();
+        }
+    }
+    
+    /**
+     * Main method to run comprehensive performance benchmarks
+     */
+    public static void main(String[] args) {
+        System.out.println("==========================================================");
+        System.out.println("OpenNLP GPU Performance Benchmarking Suite");
+        System.out.println("==========================================================");
+        System.out.println();
+        
+        try {
+            PerformanceBenchmark benchmark = new PerformanceBenchmark();
+            
+            System.out.println("Starting comprehensive performance benchmark...");
+            BenchmarkResults results = benchmark.runFullBenchmark();
+            
+            System.out.println();
+            System.out.println("==========================================================");
+            System.out.println("BENCHMARK RESULTS");
+            System.out.println("==========================================================");
+            System.out.println(results.getDetailedReport());
+            
+            System.out.println("==========================================================");
+            System.out.printf("Overall GPU Speedup: %.2fx%n", results.getOverallSpeedup());
+            System.out.println("==========================================================");
+            
+        } catch (Exception e) {
+            System.err.println("Benchmark failed with error: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }
