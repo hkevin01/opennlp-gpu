@@ -84,6 +84,40 @@
       },
       "dependsOn": "🔨 Maven Clean Compile",
       "problemMatcher": []
+    },
+    {
+      "label": "🤖 Start GitHub Copilot Agent Mode",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "--command",
+        "github.copilot.chat.openNewChat"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "🔄 Quick Agent Continue",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "continue"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": false,
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
     }
   ]
 }

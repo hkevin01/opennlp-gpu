@@ -7,7 +7,7 @@
       "default": true
     },
     {
-      "name": "JavaSE-17", 
+      "name": "JavaSE-17",
       "path": "/usr/lib/jvm/java-17-openjdk-amd64"
     }
   ],
@@ -38,5 +38,88 @@
   "terminal.integrated.env.linux": {
     "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
     "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
-  }
+  },
+  // GitHub Copilot Agent Mode Auto-Continue Settings
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": true,
+    "markdown": true
+  },
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "",
+    "debug.testOverrideProxyUrl": "",
+    "debug.overrideProxyUrl": "",
+    "length": 500,
+    "temperature": "",
+    "top_p": "",
+    "stops": {
+      "*": [],
+      "python": [
+        "\ndef ",
+        "\nclass ",
+        "\nif ",
+        "\n#"
+      ],
+      "javascript": [
+        "\nfunction ",
+        "\nvar ",
+        "\nconst ",
+        "\nlet "
+      ],
+      "typescript": [
+        "\nfunction ",
+        "\nvar ",
+        "\nconst ",
+        "\nlet ",
+        "\nclass ",
+        "\ninterface "
+      ],
+      "java": [
+        "\npublic ",
+        "\nprivate ",
+        "\nprotected ",
+        "\nclass ",
+        "\ninterface "
+      ]
+    },
+    "indentationMode": {
+      "*": "spaces",
+      "python": "spaces",
+      "javascript": "spaces",
+      "typescript": "spaces",
+      "java": "spaces"
+    }
+  },
+  "github.copilot.chat.followUps": "always",
+  "github.copilot.chat.localeOverride": "auto",
+  "github.copilot.chat.transparency.enableChatTransparency": true,
+  "github.copilot.chat.welcomeMessage": "always",
+  // Auto-continue settings for agent mode
+  "workbench.commandPalette.experimental.suggestCommands": true,
+  "workbench.experimental.cloudChanges": true,
+  "extensions.experimental.affinity": {
+    "github.copilot": 1,
+    "github.copilot-chat": 1
+  },
+  // Additional settings for smoother agent experience
+  "github.copilot.chat.experimental.agentMode": true,
+  "github.copilot.chat.experimental.codeGeneration": true,
+  "github.copilot.chat.experimental.iterativeMode": true,
+  "github.copilot.chat.experimental.autoSuggestions": true,
+  "github.copilot.chat.experimental.autoAccept": true,
+  "github.copilot.chat.experimental.contextAwareness": true,
+  "github.copilot.chat.experimental.multiStep": true,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "editor.tabCompletion": "on",
+  "editor.suggest.insertMode": "replace",
+  "editor.acceptSuggestionOnCommitCharacter": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  // Additional workflow settings
+  "workbench.editor.closeOnFileDelete": true,
+  "workbench.editor.focusRecentEditorAfterClose": true,
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.startupEditor": "none",
+  "window.restoreWindows": "preserve"
 }

@@ -3,6 +3,8 @@
     "redhat.java",
     "vscjava.vscode-java-pack",
     "redhat.vscode-xml",
-    "vscjava.vscode-maven"
+    "vscjava.vscode-maven",
+    "github.copilot",
+    "github.copilot-chat"
   ]
 }
