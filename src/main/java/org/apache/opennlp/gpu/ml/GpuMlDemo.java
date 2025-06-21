@@ -5,6 +5,8 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
 
+import opennlp.tools.ml.maxent.GISModel;
+import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
@@ -42,10 +44,26 @@ public class GpuMlDemo {
         // Create sample training data for MaxEnt model
         String[] outcomes = {"positive", "negative", "neutral"};
         String[] predLabels = {"word_good", "word_bad", "word_okay", "word_great", "word_terrible"};
-        double[] parameters = GpuMlDemo.createSampleParameters(outcomes.length, predLabels.length);
         
-        // Create CPU MaxEnt model using a dummy implementation
-        MaxentModel cpuModel = new DummyMaxentModel(outcomes, predLabels, parameters, 1, 0.0);
+        // Create Context objects for OpenNLP 2.x API
+        Context[] contexts = new Context[predLabels.length];
+        int[] outcomePattern = new int[outcomes.length];
+        for (int i = 0; i < outcomes.length; i++) {
+            outcomePattern[i] = i;
+        }
+        
+        // Create sample parameters and contexts
+        for (int i = 0; i < predLabels.length; i++) {
+            double[] paramsForPred = new double[outcomes.length];
+            // Generate sample parameters for this predicate
+            for (int j = 0; j < outcomes.length; j++) {
+                paramsForPred[j] = Math.random() * 2.0 - 1.0; // Random weight between -1 and 1
+            }
+            contexts[i] = new Context(outcomePattern, paramsForPred);
+        }
+        
+        // Create CPU MaxEnt model using OpenNLP 2.x API
+        MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
         
         // Create GPU-accelerated MaxEnt model
         GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, config);
@@ -60,15 +78,15 @@ public class GpuMlDemo {
         }
         
         // Test batch evaluation
-        String[][] contexts = {
+        String[][] testContexts = {
             {"word_good", "word_great"},
             {"word_bad", "word_terrible"},
             {"word_okay"}
         };
         
-        double[][] batchProbs = gpuModel.evalBatch(contexts);
+        double[][] batchProbs = gpuModel.evalBatch(testContexts);
         GpuMlDemo.logger.info("Batch evaluation results:");
-        for (int i = 0; i < contexts.length; i++) {
+        for (int i = 0; i < testContexts.length; i++) {
             GpuMlDemo.logger.info("  Context " + i + ": " + java.util.Arrays.toString(batchProbs[i]));
         }
         
@@ -125,14 +143,6 @@ public class GpuMlDemo {
     
     // Helper methods for generating sample data
     
-    private static double[] createSampleParameters(int numOutcomes, int numPreds) {
-        double[] params = new double[numOutcomes * numPreds];
-        for (int i = 0; i < params.length; i++) {
-            params[i] = Math.random() * 2.0 - 1.0; // Random values between -1 and 1
-        }
-        return params;
-    }
-    
     private static float[][] generateSampleFeatures(int numSamples, int numFeatures) {
         float[][] features = new float[numSamples][numFeatures];
         
@@ -164,98 +174,5 @@ public class GpuMlDemo {
         }
         
         return labels;
-    }
-    
-    // Dummy implementation of MaxentModel for demo purposes
-    private static class DummyMaxentModel implements MaxentModel {
-    
-        private String[] outcomes;
-        private String[] predLabels;
-        private double[] parameters;
-        private int iterations;
-        private double smoothing;
-    
-        public DummyMaxentModel(String[] outcomes, String[] predLabels, double[] parameters, int iterations, double smoothing) {
-            this.outcomes = outcomes;
-            this.predLabels = predLabels;
-            this.parameters = parameters;
-            this.iterations = iterations;
-            this.smoothing = smoothing;
-        }
-    
-        @Override
-        public double[] eval(String[] context) {
-            double[] probs = new double[outcomes.length];
-            // Return uniform probability distribution for demonstration
-            for (int i = 0; i < probs.length; i++) {
-                probs[i] = 1.0 / outcomes.length;
-            }
-            return probs;
-        }
-        
-        @Override
-        public double[] eval(String[] context, double[] probs) {
-            // Fill the provided array with uniform probabilities
-            for (int i = 0; i < probs.length; i++) {
-                probs[i] = 1.0 / outcomes.length;
-            }
-            return probs;
-        }
-        
-        @Override
-        public double[] eval(String[] context, float[] probs) {
-            // Convert float array to double array and fill with uniform probabilities
-            double[] doubleProbs = new double[probs.length];
-            for (int i = 0; i < probs.length; i++) {
-                doubleProbs[i] = 1.0 / outcomes.length;
-            }
-            return doubleProbs;
-        }
-    
-        @Override
-        public String getBestOutcome(double[] outcomes) {
-            if (outcomes.length == 0) return null;
-            int bestIndex = 0;
-            for (int i = 1; i < outcomes.length; i++) {
-                if (outcomes[i] > outcomes[bestIndex]) {
-                    bestIndex = i;
-                }
-            }
-            return this.outcomes[bestIndex];
-        }
-        
-        @Override
-        public String getAllOutcomes(double[] outcomes) {
-            // Return all outcomes as a space-separated string
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < this.outcomes.length; i++) {
-                if (i > 0) sb.append(" ");
-                sb.append(this.outcomes[i]);
-            }
-            return sb.toString();
-        }
-        
-        @Override
-        public String getOutcome(int index) {
-            if (index >= 0 && index < outcomes.length) {
-                return outcomes[index];
-            }
-            return null;
-        }
-        
-        @Override
-        public int getIndex(String outcome) {
-            for (int i = 0; i < outcomes.length; i++) {
-                if (outcomes[i].equals(outcome)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-    
-        @Override
-        public int getNumOutcomes() {
-            return outcomes.length;
-        }
     }
 }

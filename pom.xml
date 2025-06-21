@@ -8,7 +8,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>opennlp-gpu</name>
-  <description>Migrated from Gradle to Maven</description>
+  <description>GPU acceleration extensions for Apache OpenNLP providing OpenCL-based matrix operations and performance optimizations for natural language processing tasks.</description>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -24,18 +24,18 @@
     <!-- Note: opennlp-maxent is deprecated in newer versions, 
          functionality moved to opennlp-tools -->
 
-    <!-- SLF4J API - Updated to latest -->
+    <!-- SLF4J API - Updated to latest stable -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.9</version>
+      <version>2.0.17</version>
     </dependency>
 
     <!-- SLF4J Simple implementation for testing - Updated -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.9</version>
+      <version>2.0.17</version>
     </dependency>
 
     <!-- JOCL for OpenCL integration - Updated -->
@@ -57,53 +57,53 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.10.1</version>
+      <version>5.13.1</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.10.1</version>
+      <version>5.13.1</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <version>5.10.1</version>
+      <version>5.13.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Maven Compiler Plugin - Updated -->
+      <!-- Maven Compiler Plugin - Updated to latest -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <version>3.14.0</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
       </plugin>
 
-      <!-- Exec Maven Plugin - Updated -->
+      <!-- Exec Maven Plugin - Updated to latest -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.5.1</version>
         <configuration>
           <mainClass>org.apache.opennlp.gpu.GpuDemoMain</mainClass>
         </configuration>
       </plugin>
 
-      <!-- Maven Surefire Plugin for running tests - Updated -->
+      <!-- Maven Surefire Plugin for running tests - Updated to latest -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.2</version>
+        <version>3.5.3</version>
         <configuration>
           <includes>
             <include>**/GpuTestSuite.java</include>
