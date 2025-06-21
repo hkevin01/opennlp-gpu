@@ -242,7 +242,7 @@ public class ComprehensiveTestRunner {
             System.out.println("Testing OpenNLP Integration...");
             
             // Test that OpenNLP MaxentModel class is available
-            Class<?> maxentClass = org.apache.opennlp.maxent.MaxentModel.class;
+            Class<?> maxentClass = opennlp.tools.ml.model.MaxentModel.class;
             boolean passed = (maxentClass != null);
             
             if (passed) {

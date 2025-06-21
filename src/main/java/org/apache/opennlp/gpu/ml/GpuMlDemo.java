@@ -4,7 +4,8 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
-import org.apache.opennlp.maxent.GisModel;
+
+import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Demonstration of GPU-accelerated ML models
@@ -43,8 +44,8 @@ public class GpuMlDemo {
         String[] predLabels = {"word_good", "word_bad", "word_okay", "word_great", "word_terrible"};
         double[] parameters = GpuMlDemo.createSampleParameters(outcomes.length, predLabels.length);
         
-        // Create CPU MaxEnt model
-        MaxentModel cpuModel = new GisModel(outcomes, predLabels, parameters, 1, 0.0);
+        // Create CPU MaxEnt model using a dummy implementation
+        MaxentModel cpuModel = new DummyMaxentModel(outcomes, predLabels, parameters, 1, 0.0);
         
         // Create GPU-accelerated MaxEnt model
         GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, config);
@@ -163,5 +164,98 @@ public class GpuMlDemo {
         }
         
         return labels;
+    }
+    
+    // Dummy implementation of MaxentModel for demo purposes
+    private static class DummyMaxentModel implements MaxentModel {
+    
+        private String[] outcomes;
+        private String[] predLabels;
+        private double[] parameters;
+        private int iterations;
+        private double smoothing;
+    
+        public DummyMaxentModel(String[] outcomes, String[] predLabels, double[] parameters, int iterations, double smoothing) {
+            this.outcomes = outcomes;
+            this.predLabels = predLabels;
+            this.parameters = parameters;
+            this.iterations = iterations;
+            this.smoothing = smoothing;
+        }
+    
+        @Override
+        public double[] eval(String[] context) {
+            double[] probs = new double[outcomes.length];
+            // Return uniform probability distribution for demonstration
+            for (int i = 0; i < probs.length; i++) {
+                probs[i] = 1.0 / outcomes.length;
+            }
+            return probs;
+        }
+        
+        @Override
+        public double[] eval(String[] context, double[] probs) {
+            // Fill the provided array with uniform probabilities
+            for (int i = 0; i < probs.length; i++) {
+                probs[i] = 1.0 / outcomes.length;
+            }
+            return probs;
+        }
+        
+        @Override
+        public double[] eval(String[] context, float[] probs) {
+            // Convert float array to double array and fill with uniform probabilities
+            double[] doubleProbs = new double[probs.length];
+            for (int i = 0; i < probs.length; i++) {
+                doubleProbs[i] = 1.0 / outcomes.length;
+            }
+            return doubleProbs;
+        }
+    
+        @Override
+        public String getBestOutcome(double[] outcomes) {
+            if (outcomes.length == 0) return null;
+            int bestIndex = 0;
+            for (int i = 1; i < outcomes.length; i++) {
+                if (outcomes[i] > outcomes[bestIndex]) {
+                    bestIndex = i;
+                }
+            }
+            return this.outcomes[bestIndex];
+        }
+        
+        @Override
+        public String getAllOutcomes(double[] outcomes) {
+            // Return all outcomes as a space-separated string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < this.outcomes.length; i++) {
+                if (i > 0) sb.append(" ");
+                sb.append(this.outcomes[i]);
+            }
+            return sb.toString();
+        }
+        
+        @Override
+        public String getOutcome(int index) {
+            if (index >= 0 && index < outcomes.length) {
+                return outcomes[index];
+            }
+            return null;
+        }
+        
+        @Override
+        public int getIndex(String outcome) {
+            for (int i = 0; i < outcomes.length; i++) {
+                if (outcomes[i].equals(outcome)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    
+        @Override
+        public int getNumOutcomes() {
+            return outcomes.length;
+        }
     }
 }
