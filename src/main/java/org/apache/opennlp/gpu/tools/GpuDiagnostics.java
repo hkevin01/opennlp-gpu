@@ -123,7 +123,7 @@ public class GpuDiagnostics {
     
     private void detectLinuxGpuHardware(DiagnosticReport report) {
         try {
-            Process process = Runtime.getRuntime().exec("lspci | grep -i vga");
+            Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/bash", "-c", "lspci | grep -i vga"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             
             List<String> gpus = new ArrayList<>();
@@ -134,7 +134,7 @@ public class GpuDiagnostics {
             
             if (gpus.isEmpty()) {
                 // Try alternative method
-                process = Runtime.getRuntime().exec("lspci | grep -i display");
+                process = Runtime.getRuntime().exec(new String[]{"/usr/bin/bash", "-c", "lspci | grep -i display"});
                 reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 while ((line = reader.readLine()) != null) {
                     gpus.add(line);
@@ -565,16 +565,20 @@ public class GpuDiagnostics {
         public void setHasAppleGpu(boolean hasAppleGpu) { this.hasAppleGpu = hasAppleGpu; }
         
         public boolean isGpuReady() {
-            // Check if we have GPU hardware and at least one working runtime
+            // Check if we have GPU hardware and OpenCL runtime is working
             boolean hasGpu = hasNvidiaGpu || hasAmdGpu || hasIntelGpu || hasAppleGpu;
             
-            // Count errors (very basic check - in real implementation, analyze specific errors)
-            long errorCount = sections.values().stream()
-                .flatMap(List::stream)
-                .filter(line -> line.startsWith("❌"))
-                .count();
+            // Check if OpenCL runtime is available (this is the most important check)
+            boolean openclAvailable = sections.getOrDefault("OpenCL Runtime", new ArrayList<>()).stream()
+                .anyMatch(line -> line.contains("✅ Available"));
             
-            return hasGpu && errorCount == 0;
+            // Check for critical errors (GPU detection and OpenCL runtime)
+            boolean hasCriticalErrors = sections.getOrDefault("GPU Hardware Detection", new ArrayList<>()).stream()
+                .anyMatch(line -> line.startsWith("❌")) ||
+                sections.getOrDefault("OpenCL Runtime", new ArrayList<>()).stream()
+                .anyMatch(line -> line.startsWith("❌"));
+            
+            return hasGpu && openclAvailable && !hasCriticalErrors;
         }
         
         public void printReport() {

@@ -42,33 +42,33 @@ public class MatrixOps {
     // OpenCL kernel source code
     private static final String MATRIX_KERNELS = 
         "__kernel void matrix_multiply(__global float* A, __global float* B, __global float* C, " +
-        "                              int M, int N, int K) {" +
-        "    int row = get_global_id(0);" +
-        "    int col = get_global_id(1);" +
-        "    if (row < M && col < N) {" +
-        "        float sum = 0.0f;" +
-        "        for (int k = 0; k < K; k++) {" +
-        "            sum += A[row * K + k] * B[k * N + col];" +
-        "        }" +
-        "        C[row * N + col] = sum;" +
-        "    }" +
-        "}" +
+        "                              int M, int N, int K) {\n" +
+        "    int row = get_global_id(0);\n" +
+        "    int col = get_global_id(1);\n" +
+        "    if (row < M && col < N) {\n" +
+        "        float sum = 0.0f;\n" +
+        "        for (int k = 0; k < K; k++) {\n" +
+        "            sum += A[row * K + k] * B[k * N + col];\n" +
+        "        }\n" +
+        "        C[row * N + col] = sum;\n" +
+        "    }\n" +
+        "}\n" +
         
-        "__kernel void matrix_add(__global float* A, __global float* B, __global float* C, int size) {" +
-        "    int idx = get_global_id(0);" +
-        "    if (idx < size) {" +
-        "        C[idx] = A[idx] + B[idx];" +
-        "    }" +
-        "}" +
+        "__kernel void matrix_add(__global float* A, __global float* B, __global float* C, int size) {\n" +
+        "    int idx = get_global_id(0);\n" +
+        "    if (idx < size) {\n" +
+        "        C[idx] = A[idx] + B[idx];\n" +
+        "    }\n" +
+        "}\n" +
         
-        "__kernel void vector_normalize(__global float* vector, int size) {" +
-        "    int idx = get_global_id(0);" +
-        "    if (idx < size) {" +
-        "        // Simple L2 normalization (simplified version)" +
-        "        float norm = sqrt(vector[idx] * vector[idx]);" +
-        "        if (norm > 0.0f) vector[idx] /= norm;" +
-        "    }" +
-        "}";
+        "__kernel void vector_normalize(__global float* vector, int size) {\n" +
+        "    int idx = get_global_id(0);\n" +
+        "    if (idx < size) {\n" +
+        "        // Simple L2 normalization (simplified version)\n" +
+        "        float norm = sqrt(vector[idx] * vector[idx]);\n" +
+        "        if (norm > 0.0f) vector[idx] /= norm;\n" +
+        "    }\n" +
+        "}\n";
     
     public MatrixOps(cl_context context, cl_command_queue commandQueue, cl_device_id device) {
         this.context = context;
