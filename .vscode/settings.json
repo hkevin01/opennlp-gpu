@@ -44,7 +44,9 @@
     "*": true,
     "yaml": true,
     "plaintext": true,
-    "markdown": true
+    "markdown": true,
+    "scminput": true,
+    "commit": true
   },
   "github.copilot.advanced": {
     "debug.overrideEngine": "",
@@ -122,5 +124,24 @@
   "workbench.editor.highlightModifiedTabs": true,
   "workbench.startupEditor": "none",
   "window.restoreWindows": "preserve",
-  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
+  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp",
+  // Git and SCM settings for better Copilot integration
+  "git.enableCommitSigning": false,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "scm.defaultViewMode": "tree",
+  "scm.inputFontSize": 13,
+  "scm.showIncomingChanges": "always",
+  "scm.showOutgoingChanges": "always",
+  "scm.repositories.visible": 10,
+  // Enhanced Copilot commit message settings
+  "github.copilot.chat.experimental.commitMessage": true,
+  "github.copilot.chat.experimental.generateCommitMessage": true,
+  "github.copilot.editor.enableCodeActions": true,
+  // Source Control specific settings for Copilot
+  "scm.alwaysShowRepositories": true,
+  "scm.autoReveal": true,
+  "scm.diffDecorations": "all",
+  "scm.countBadge": "all"
 }
