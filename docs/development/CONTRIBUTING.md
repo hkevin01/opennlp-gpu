@@ -142,4 +142,16 @@ If you need help or have questions, please:
 2. Look for existing [issues](https://github.com/original-repo/opennlp-gpu/issues)
 3. Reach out to the maintainers
 
+## Development Acknowledgments
+
+This project and its development processes were created with significant assistance from **Claude Sonnet (Anthropic AI)**, which provided:
+
+- **Development Workflow Design**: Best practices for GPU acceleration development
+- **Code Standards Definition**: Quality guidelines and testing strategies
+- **Documentation Templates**: Comprehensive contributing guidelines and code examples
+- **GPU Development Patterns**: Specialized guidance for CUDA/ROCm development workflows
+- **Build System Configuration**: Complex native library integration patterns
+
+The AI-assisted approach helped establish professional development standards while accelerating the creation of comprehensive documentation and development workflows.
+
 Thank you for contributing to OpenNLP GPU!
