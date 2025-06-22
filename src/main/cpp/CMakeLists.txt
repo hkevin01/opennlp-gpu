@@ -1,5 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
-project(opennlp_gpu_native LANGUAGES CXX)
+
+# Check for HIP availability early to set languages
+find_program(HIP_HIPCC_EXECUTABLE
+    NAMES hipcc
+    PATHS /opt/rocm/bin /usr/bin /usr/local/bin
+    NO_DEFAULT_PATH
+)
+
+if(HIP_HIPCC_EXECUTABLE)
+    project(opennlp_gpu_native LANGUAGES CXX HIP)
+else()
+    project(opennlp_gpu_native LANGUAGES CXX)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -55,21 +67,18 @@ if(USE_ROCM AND NOT GPU_FOUND)
         set(GPU_LIBRARIES hip::host)
         set(GPU_COMPILE_DEFINITIONS "USE_ROCM")
         
-        # ROCm/HIP source files (will use .hip extension or .cpp with HIP headers)
+        # Enable HIP language for .hip files (commented out - using C++ with HIP headers instead)
+        # enable_language(HIP)
+        
+        # Set HIP architectures (adjust for your specific GPUs)
+        # set(CMAKE_HIP_ARCHITECTURES "gfx803;gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100")
+        
+        # ROCm/HIP source files - use .cpp files with HIP headers for better compatibility
         set(GPU_SOURCES
-            rocm/kernels.hip
+            rocm/kernels.cpp
             rocm/HipKernelLaunchers.cpp
             rocm/HipOperations.cpp
         )
-        
-        # Alternative: if using .cpp files with HIP headers
-        if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/rocm/kernels.hip")
-            set(GPU_SOURCES
-                rocm/kernels.cpp
-                rocm/HipKernelLaunchers.cpp
-                rocm/HipOperations.cpp
-            )
-        endif()
     endif()
 endif()
 
@@ -92,14 +101,11 @@ if(GPU_FOUND)
         cuda_add_library(opennlp_gpu_kernels STATIC ${GPU_SOURCES})
         target_include_directories(opennlp_gpu_kernels PRIVATE ${GPU_INCLUDE_DIRS})
     elseif(GPU_PLATFORM STREQUAL "ROCM")
-        # ROCm/HIP library
+        # ROCm/HIP library - mark kernel files as HIP source files
+        set_source_files_properties(${GPU_SOURCES} PROPERTIES LANGUAGE HIP)
         add_library(opennlp_gpu_kernels STATIC ${GPU_SOURCES})
         target_link_libraries(opennlp_gpu_kernels ${GPU_LIBRARIES})
-        
-        # Set HIP compiler flags if using .hip files
-        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/rocm/kernels.hip")
-            set_source_files_properties(${GPU_SOURCES} PROPERTIES LANGUAGE HIP)
-        endif()
+        target_compile_definitions(opennlp_gpu_kernels PRIVATE ${GPU_COMPILE_DEFINITIONS})
     endif()
 else()
     # CPU-only library

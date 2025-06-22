@@ -1,147 +1,15 @@
 {
-  "java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
-  "java.configuration.runtimes": [
-    {
-      "name": "JavaSE-21",
-      "path": "/usr/lib/jvm/java-21-openjdk-amd64",
-      "default": true
-    },
-    {
-      "name": "JavaSE-17",
-      "path": "/usr/lib/jvm/java-17-openjdk-amd64"
-    }
-  ],
-  "java.compile.nullAnalysis.mode": "automatic",
-  "java.eclipse.downloadSources": true,
-  "java.maven.downloadSources": true,
-  "java.debug.settings.onBuildFailureProceed": true,
-  "java.debug.settings.console": "integratedTerminal",
-  "xml.java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
-  "xml.server.binary.path": null,
-  "xml.server.preferBinary": false,
-  "xml.server.vmargs": "-Xmx512m",
-  "maven.executable.path": "mvn",
-  "maven.terminal.useJavaHome": true,
-  "maven.terminal.customEnv": [
-    {
-      "environmentVariable": "JAVA_HOME",
-      "value": "/usr/lib/jvm/java-21-openjdk-amd64"
-    }
-  ],
-  "java.requirements.JDK11Warning": false,
-  "redhat.telemetry.enabled": false,
-  "java.server.launchMode": "Standard",
-  "java.import.gradle.enabled": false,
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "java.clean.workspace": false,
-  "java.import.maven.enabled": true,
   "terminal.integrated.env.linux": {
-    "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
-    "PATH": "/usr/lib/jvm/java-21-openjdk-amd64/bin:${env:PATH}"
+    "ROCM_PATH": "/opt/rocm",
+    "HIP_PATH": "/opt/rocm",
+    "PATH": "/opt/rocm/bin:${env:PATH}",
+    "LD_LIBRARY_PATH": "/opt/rocm/lib:${env:LD_LIBRARY_PATH}"
   },
-  // GitHub Copilot Agent Mode Auto-Continue Settings
-  "github.copilot.enable": {
-    "*": true,
-    "yaml": true,
-    "plaintext": true,
-    "markdown": true,
-    "scminput": true,
-    "commit": true
+  "cmake.configureEnvironment": {
+    "ROCM_PATH": "/opt/rocm",
+    "HIP_PATH": "/opt/rocm"
   },
-  "github.copilot.advanced": {
-    "debug.overrideEngine": "",
-    "debug.testOverrideProxyUrl": "",
-    "debug.overrideProxyUrl": "",
-    "length": 500,
-    "temperature": "",
-    "top_p": "",
-    "stops": {
-      "*": [],
-      "python": [
-        "\ndef ",
-        "\nclass ",
-        "\nif ",
-        "\n#"
-      ],
-      "javascript": [
-        "\nfunction ",
-        "\nvar ",
-        "\nconst ",
-        "\nlet "
-      ],
-      "typescript": [
-        "\nfunction ",
-        "\nvar ",
-        "\nconst ",
-        "\nlet ",
-        "\nclass ",
-        "\ninterface "
-      ],
-      "java": [
-        "\npublic ",
-        "\nprivate ",
-        "\nprotected ",
-        "\nclass ",
-        "\ninterface "
-      ]
-    },
-    "indentationMode": {
-      "*": "spaces",
-      "python": "spaces",
-      "javascript": "spaces",
-      "typescript": "spaces",
-      "java": "spaces"
-    }
-  },
-  "github.copilot.chat.followUps": "always",
-  "github.copilot.chat.localeOverride": "auto",
-  "github.copilot.chat.transparency.enableChatTransparency": true,
-  "github.copilot.chat.welcomeMessage": "always",
-  // Auto-continue settings for agent mode
-  "workbench.commandPalette.experimental.suggestCommands": true,
-  "workbench.experimental.cloudChanges": true,
-  "extensions.experimental.affinity": {
-    "github.copilot": 1,
-    "github.copilot-chat": 1
-  },
-  // Additional settings for smoother agent experience
-  "github.copilot.chat.experimental.agentMode": true,
-  "github.copilot.chat.experimental.codeGeneration": true,
-  "github.copilot.chat.experimental.iterativeMode": true,
-  "github.copilot.chat.experimental.autoSuggestions": true,
-  "github.copilot.chat.experimental.autoAccept": true,
-  "github.copilot.chat.experimental.contextAwareness": true,
-  "github.copilot.chat.experimental.multiStep": true,
-  "workbench.editor.enablePreview": false,
-  "workbench.editor.enablePreviewFromQuickOpen": false,
-  "editor.tabCompletion": "on",
-  "editor.suggest.insertMode": "replace",
-  "editor.acceptSuggestionOnCommitCharacter": true,
-  "editor.acceptSuggestionOnEnter": "on",
-  // Additional workflow settings
-  "workbench.editor.closeOnFileDelete": true,
-  "workbench.editor.focusRecentEditorAfterClose": true,
-  "workbench.editor.highlightModifiedTabs": true,
-  "workbench.startupEditor": "none",
-  "window.restoreWindows": "preserve",
-  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp",
-  // Git and SCM settings for better Copilot integration
-  "git.enableCommitSigning": false,
-  "git.enableSmartCommit": true,
-  "git.confirmSync": false,
-  "git.autofetch": true,
-  "scm.defaultViewMode": "tree",
-  "scm.inputFontSize": 13,
-  "scm.showIncomingChanges": "always",
-  "scm.showOutgoingChanges": "always",
-  "scm.repositories.visible": 10,
-  // Enhanced Copilot commit message settings
-  "github.copilot.chat.experimental.commitMessage": true,
-  "github.copilot.chat.experimental.generateCommitMessage": true,
-  "github.copilot.editor.enableCodeActions": true,
-  // Source Control specific settings for Copilot
-  "scm.alwaysShowRepositories": true,
-  "scm.autoReveal": true,
-  "scm.diffDecorations": "all",
-  "scm.countBadge": "all"
+  "cmake.configureArgs": [
+    "-DUSE_ROCM=ON"
+  ]
 }
