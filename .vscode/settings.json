@@ -11,5 +11,6 @@
   },
   "cmake.configureArgs": [
     "-DUSE_ROCM=ON"
-  ]
+  ],
+  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
 }

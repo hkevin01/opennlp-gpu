@@ -467,20 +467,24 @@ build_native_library() {
         CMAKE_ARGS="-DUSE_CUDA=ON"
     fi
     
-    cmake . $CMAKE_ARGS || {
+    print_status "Running: cmake . $CMAKE_ARGS"
+    cmake . $CMAKE_ARGS 2>&1 | tee -a "${LOG_FILE}" || {
         print_warning "CMake configuration failed, trying CPU-only build..."
-        cmake . -DUSE_CPU_ONLY=ON || {
+        print_status "Running: cmake . -DUSE_CPU_ONLY=ON"
+        cmake . -DUSE_CPU_ONLY=ON 2>&1 | tee -a "${LOG_FILE}" || {
             print_error "CMake configuration failed completely"
+            print_error "Check ${LOG_FILE} for detailed error information"
             return 1
         }
     }
     
     # Build
     print_status "Building native library..."
-    make -j$(nproc 2>/dev/null || echo 4) || {
+    make -j$(nproc 2>/dev/null || echo 4) VERBOSE=1 2>&1 | tee -a "${LOG_FILE}" || {
         print_warning "Parallel build failed, trying single-threaded build..."
-        make || {
+        make VERBOSE=1 2>&1 | tee -a "${LOG_FILE}" || {
             print_error "Native library build failed"
+            print_error "Check ${LOG_FILE} for detailed error information"
             return 1
         }
     }

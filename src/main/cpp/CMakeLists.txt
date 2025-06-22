@@ -14,7 +14,16 @@ else()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# Add compile flags for better math library support
+if(UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC")
+    if(NOT APPLE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE")
+    endif()
+endif()
 
 # Find JNI
 find_package(JNI REQUIRED)
@@ -121,6 +130,7 @@ add_library(opennlp_gpu SHARED
 target_link_libraries(opennlp_gpu
     opennlp_gpu_kernels
     ${GPU_LIBRARIES}
+    m  # Math library for expf, logf, etc.
 )
 
 target_compile_definitions(opennlp_gpu PRIVATE ${GPU_COMPILE_DEFINITIONS})
