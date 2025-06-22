@@ -15,14 +15,18 @@
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #define GPU_DEVICE_COUNT() ({ int count = 0; cudaGetDeviceCount(&count); count; })
-#define GPU_DEVICE_NAME(id, name, size) cudaGetDeviceProperties(&prop, id); strncpy(name, prop.name, size);
+#define GPU_DEVICE_NAME(id, name, size) \
+    cudaGetDeviceProperties(&prop, id); \
+    strncpy(name, prop.name, size);
 #endif
 
 #ifdef USE_ROCM
 #include <hip/hip_runtime.h>
 #include <hipblas.h>
 #define GPU_DEVICE_COUNT() ({ int count = 0; hipGetDeviceCount(&count); count; })
-#define GPU_DEVICE_NAME(id, name, size) hipGetDeviceProperties(&prop, id); strncpy(name, prop.name, size);
+#define GPU_DEVICE_NAME(id, name, size) \
+    hipGetDeviceProperties(&prop, id);  \
+    strncpy(name, prop.name, size);
 #endif
 
 #ifdef USE_CPU_ONLY
@@ -31,42 +35,48 @@
 #endif
 
 // Common GPU operation abstractions
-namespace opennlp {
-namespace gpu {
+namespace opennlp
+{
+    namespace gpu
+    {
 
-enum class Platform {
+        enum class Platform
+        {
 #ifdef USE_CUDA
-    CUDA,
+            CUDA,
 #endif
 #ifdef USE_ROCM
-    ROCM,
+            ROCM,
 #endif
-    CPU_ONLY
-};
+            CPU_ONLY
+        };
 
-inline Platform getCurrentPlatform() {
+        inline Platform getCurrentPlatform()
+        {
 #ifdef USE_CUDA
-    return Platform::CUDA;
+            return Platform::CUDA;
 #elif defined(USE_ROCM)
-    return Platform::ROCM;
+            return Platform::ROCM;
 #else
-    return Platform::CPU_ONLY;
+            return Platform::CPU_ONLY;
 #endif
-}
+        }
 
-inline const char* getPlatformName() {
-    return GPU_PLATFORM;
-}
+        inline const char *getPlatformName()
+        {
+            return GPU_PLATFORM;
+        }
 
-inline bool isGpuAvailable() {
+        inline bool isGpuAvailable()
+        {
 #if defined(USE_CUDA) || defined(USE_ROCM)
-    return GPU_DEVICE_COUNT() > 0;
+            return GPU_DEVICE_COUNT() > 0;
 #else
-    return false;
+            return false;
 #endif
-}
+        }
 
-} // namespace gpu
+    } // namespace gpu
 } // namespace opennlp
 
 #endif // GPU_CONFIG_H
