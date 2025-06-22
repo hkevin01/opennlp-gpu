@@ -5,6 +5,16 @@
 #include <cmath>
 #include <algorithm>
 
+// Platform-specific includes
+#ifdef _WIN32
+#define _USE_MATH_DEFINES
+#include <windows.h>
+// Windows-specific math functions are in <cmath>
+#elif defined(__unix__) || defined(__APPLE__)
+#include <unistd.h>
+#include <dlfcn.h>
+#endif
+
 #ifdef USE_CUDA
 extern "C"
 {

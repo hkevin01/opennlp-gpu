@@ -18,7 +18,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Add compile flags for better math library support
-if(UNIX)
+if(WIN32)
+    # Windows-specific flags
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /D_USE_MATH_DEFINES")
+    if(MSVC)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+    endif()
+elseif(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC")
     if(NOT APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GNU_SOURCE")
@@ -130,14 +136,49 @@ add_library(opennlp_gpu SHARED
 target_link_libraries(opennlp_gpu
     opennlp_gpu_kernels
     ${GPU_LIBRARIES}
-    m  # Math library for expf, logf, etc.
 )
+
+# Platform-specific math library linking
+if(WIN32)
+    # Windows: math functions are in the standard library
+    # No additional linking needed for basic math functions
+    if(MSVC)
+        target_link_libraries(opennlp_gpu msvcrt)
+    endif()
+else()
+    # Unix/Linux: link math library explicitly
+    target_link_libraries(opennlp_gpu m)
+endif()
 
 target_compile_definitions(opennlp_gpu PRIVATE ${GPU_COMPILE_DEFINITIONS})
 target_include_directories(opennlp_gpu PRIVATE 
     ${JNI_INCLUDE_DIRS}
     ${GPU_INCLUDE_DIRS}
 )
+
+# Platform-specific output configuration
+if(WIN32)
+    # Windows: Set DLL properties
+    set_target_properties(opennlp_gpu PROPERTIES
+        OUTPUT_NAME "opennlp_gpu"
+        SUFFIX ".dll"
+        PREFIX ""
+    )
+    
+    # Enable DLL exports
+    target_compile_definitions(opennlp_gpu PRIVATE 
+        -DBUILDING_DLL
+        -D_WINDOWS
+        -D_USRDLL
+    )
+else()
+    # Unix/Linux: Set shared library properties
+    set_target_properties(opennlp_gpu PROPERTIES
+        OUTPUT_NAME "opennlp_gpu"
+        VERSION 1.0.0
+        SOVERSION 1
+    )
+endif()
 
 # Print configuration summary
 message(STATUS "=== OpenNLP GPU Build Configuration ===")

@@ -18,7 +18,8 @@ cd opennlp-gpu
 
 | Platform | Command | Best For |
 |----------|---------|----------|
-| 🖥️ **Local Dev** | `./setup.sh` | Development machines |
+| 🖥️ **Local Dev** | `./setup.sh` | Linux/macOS development |
+| 🪟 **Windows** | `setup_windows.ps1` | Native Windows |
 | ☁️ **AWS EC2** | `./aws_setup.sh` | Cloud GPU instances |
 | 🐳 **Docker** | `./docker_setup.sh` | Isolated environments |
 | 🔍 **Check Status** | `./verify.sh` | Quick verification |
@@ -44,7 +45,8 @@ Our setup scripts automatically:
 - ✅ **CentOS 8/9, RHEL 8/9**
 - ✅ **Amazon Linux 2**
 - ✅ **macOS** (via Homebrew)
-- ✅ **Windows WSL2**
+- ✅ **Windows 10/11** (Native + WSL2)
+- ✅ **Windows Server 2019/2022**
 
 ### GPU Platforms
 - ✅ **NVIDIA CUDA** (Automatic detection & setup)
@@ -112,6 +114,40 @@ cd opennlp-gpu
 ./run_docker.sh       # Run in container
 ```
 
+### **Windows Setup**
+For native Windows development:
+
+#### **PowerShell (Recommended)**
+```powershell
+# Run as Administrator
+git clone <repository-url>
+cd opennlp-gpu
+.\setup_windows.ps1    # Full automated setup
+
+# Or with automatic dependency installation
+.\setup_windows.ps1 -ForceInstall
+```
+
+#### **Command Prompt**
+```cmd
+git clone <repository-url>
+cd opennlp-gpu
+setup_windows.bat      # Batch script alternative
+```
+
+#### **Windows Prerequisites (Auto-Installed)**
+- **Java 21+** (OpenJDK via Chocolatey)
+- **Maven 3.6+** (via Chocolatey)
+- **CMake 3.16+** (via Chocolatey)
+- **Visual Studio 2019/2022** (Build Tools)
+- **Git for Windows**
+
+#### **Windows GPU Support**
+- ✅ **NVIDIA CUDA**: Full support with CUDA Toolkit
+- ✅ **AMD ROCm**: Windows ROCm (where available)
+- ✅ **CPU Fallback**: Always available
+- ✅ **WSL2 GPU**: Enhanced GPU support via WSL2
+
 ### **Manual Verification**
 Check if everything is working:
 
@@ -139,8 +175,21 @@ The scripts include robust error handling, but if you encounter issues:
 |-------|----------|
 | "Java not found" | Setup installs Java 21 automatically |
 | "GPU not detected" | Setup installs drivers automatically |
-| "Permission denied" | `chmod +x *.sh` and re-run |
+| "Permission denied" (Linux) | `chmod +x *.sh` and re-run |
+| "Execution Policy" (Windows) | `Set-ExecutionPolicy RemoteSigned` |
 | "Build failed" | Check `setup-errors.log` for details |
+| "expf not declared" (Windows) | Fixed in latest version |
+| "Visual Studio not found" | Install VS Build Tools or full VS |
+
+### **Windows-Specific Troubleshooting**
+
+| Issue | Solution |
+|-------|----------|
+| **PowerShell execution policy** | Run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` |
+| **Visual Studio not detected** | Install Visual Studio 2019/2022 or Build Tools |
+| **CUDA not found** | Install CUDA Toolkit from NVIDIA website |
+| **DLL not found** | Ensure Visual C++ Redistributable is installed |
+| **Path issues** | Use full paths or run from project directory |
 
 ## � **Prerequisites (Auto-Installed)**
 
