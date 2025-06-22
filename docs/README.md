@@ -6,6 +6,9 @@ This directory contains comprehensive documentation for the OpenNLP GPU accelera
 
 ### 🚀 [Setup](./setup/)
 Installation, prerequisites, and environment configuration
+- [One-Click Setup Complete](./setup/ONE_CLICK_SETUP_COMPLETE.md) - Setup completion guide
+- [Setup Guide](./setup/SETUP_GUIDE.md) - Comprehensive setup instructions
+- [README Update Summary](./setup/README_UPDATE_SUMMARY.md) - Documentation update history
 - [Getting Started Guide](./setup/getting_started.md) - Quick start guide for new users
 - [GPU Prerequisites Guide](./setup/gpu_prerequisites_guide.md) - GPU requirements and setup
 - [Java Environment Guide](./setup/java_environment_guide.md) - Java setup and configuration
@@ -13,6 +16,7 @@ Installation, prerequisites, and environment configuration
 
 ### 🛠️ [Development](./development/)
 Development guides, build systems, and technical architecture
+- [Contributing Guide](./development/CONTRIBUTING.md) - How to contribute to the project
 - [Technical Architecture](./development/technical_architecture.md) - System architecture overview
 - [Technologies Overview](./development/technologies_overview.md) - Technology stack details
 - [Gradle Commands](./development/gradle-commands.md) - Build system commands
@@ -33,9 +37,13 @@ Performance analysis, benchmarks, and optimization
 
 ### 📋 [Project](./project/)
 Project management, progress tracking, and presentations
+- [Project Completion Report](./project/PROJECT_COMPLETION_REPORT.md) - Final project completion summary
+- [Completion Summary](./project/COMPLETION_SUMMARY.md) - Project completion report
+- [Dependency Verification Report](./project/DEPENDENCY_VERIFICATION_REPORT.md) - Dependency analysis
+- [Project Presentation](./project/presentation.pptx) - PowerPoint presentation
 - [Project Plan](./project/project_plan_main.md) - Main project planning document
 - [Project Progress](./project/project_progress_main.md) - Current progress and status
-- [Project Presentation](./project/project_presentation.md) - Project overview presentation
+- [Project Presentation Markdown](./project/project_presentation.md) - Project overview presentation
 - [Session Progress Summary](./project/session_progress_summary.md) - Development session summaries
 
 ### 🧪 [Testing](./testing/)

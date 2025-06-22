@@ -18,8 +18,9 @@ NC='\033[0m' # No Color
 
 # Script configuration
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-LOG_FILE="${SCRIPT_DIR}/setup.log"
-ERROR_LOG="${SCRIPT_DIR}/setup-errors.log"
+mkdir -p "${SCRIPT_DIR}/logs"
+LOG_FILE="${SCRIPT_DIR}/logs/setup.log"
+ERROR_LOG="${SCRIPT_DIR}/logs/setup-errors.log"
 JAVA_VERSION="21"
 CMAKE_MIN_VERSION="3.16"
 

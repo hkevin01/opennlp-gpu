@@ -31,7 +31,7 @@ I have thoroughly checked all links in the main `README.md` file and confirmed t
 - `docs/setup/getting_started.md#example-3-gpu-accelerated-neural-network` ✅ Section exists
 
 ### ✅ **Project Files - ALL WORKING**
-- `CONTRIBUTING.md` ✅ EXISTS (134 lines)
+- `docs/development/CONTRIBUTING.md` ✅ EXISTS (134 lines)
 - `LICENSE` ✅ EXISTS (202 lines)
 - `scripts/check_gpu_prerequisites.sh` ✅ EXISTS
 

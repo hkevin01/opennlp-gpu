@@ -58,7 +58,7 @@ The following development/internal files have been added to `.gitignore` and wil
 - `pom.xml` - Maven configuration
 - `.vscode/tasks.json` - VS Code tasks for building/testing
 - `LICENSE` - Apache 2.0 license
-- `CONTRIBUTING.md` - Contribution guidelines
+- `docs/development/CONTRIBUTING.md` - Contribution guidelines
 
 ## 🎯 PowerPoint Presentation Created
 

@@ -126,7 +126,7 @@ Check if everything is working:
 ### **If Setup Fails**
 The scripts include robust error handling, but if you encounter issues:
 
-1. **Check logs**: `cat setup.log` and `cat setup-errors.log`
+1. **Check logs**: `cat logs/setup.log` and `cat logs/setup-errors.log`
 2. **Re-run setup**: `./setup.sh` (safe to run multiple times)
 3. **Try alternatives**: 
    - AWS users: `./aws_setup.sh`
@@ -297,11 +297,20 @@ Our benchmarks show significant performance improvements:
 
 ## 📚 **Documentation**
 
-- 📖 **[Complete Setup Guide](SETUP_GUIDE.md)** - Detailed setup instructions
+- 📖 **[Complete Setup Guide](docs/setup/SETUP_GUIDE.md)** - Detailed setup instructions
 - 🛠️ **[Troubleshooting Guide](docs/setup/gpu_prerequisites_guide.md)** - Common issues and solutions  
 - 🧪 **[Examples](examples/README.md)** - Working code examples
 - 📊 **[Performance Benchmarks](docs/performance/performance_benchmarks.md)** - Detailed performance analysis
 - 🏗️ **[Architecture](docs/technical_architecture.md)** - Technical implementation details
+
+## 🤝 **Contributing**
+
+We welcome contributions! See our [Contributing Guide](docs/development/CONTRIBUTING.md) for:
+
+- 🔧 **Development Setup** - Setting up your development environment
+- 📝 **Code Standards** - Coding conventions and best practices
+- 🧪 **Testing Guidelines** - How to write and run tests
+- 📋 **Pull Request Process** - How to submit changes
 
 // 2. Named Entity Recognition - High-speed entity extraction
 GpuNamedEntityRecognition ner = new GpuNamedEntityRecognition();
@@ -675,7 +684,7 @@ The setup scripts include comprehensive error handling:
 - **Non-fatal errors**: Continue with warnings
 - **Alternative methods**: Multiple installation approaches
 - **Fallback options**: CPU-only mode if GPU setup fails
-- **Detailed logging**: setup.log and setup-errors.log
+- **Detailed logging**: logs/setup.log and logs/setup-errors.log
 - **Recovery suggestions**: Helpful error messages and next steps
 
 ### **Example Usage Scenarios**
@@ -720,8 +729,8 @@ If you encounter issues:
 
 After setup completion, you'll have:
 
-- **📄 `setup.log`** - Detailed setup log
-- **📄 `setup-errors.log`** - Error-specific log  
+- **📄 `logs/setup.log`** - Detailed setup log
+- **📄 `logs/setup-errors.log`** - Error-specific log  
 - **📄 `SETUP_SUMMARY.md`** - Generated setup summary
 - **📄 `classpath.txt`** - Java classpath file
 - **🎮 `gpu_demo.sh`** - Demo execution script
@@ -755,4 +764,4 @@ After setup completion, you'll have:
 
 ---
 
-*For detailed documentation, see [SETUP_GUIDE.md](SETUP_GUIDE.md) and [ONE_CLICK_SETUP_COMPLETE.md](ONE_CLICK_SETUP_COMPLETE.md)*
+*For detailed documentation, see [SETUP_GUIDE.md](docs/setup/SETUP_GUIDE.md) and [ONE_CLICK_SETUP_COMPLETE.md](docs/setup/ONE_CLICK_SETUP_COMPLETE.md)*

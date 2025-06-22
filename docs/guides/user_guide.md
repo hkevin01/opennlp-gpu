@@ -271,4 +271,4 @@ See the [example projects](/examples) directory for complete working examples of
 
 - [API Documentation](./api/index.html)
 - [Performance Benchmarks](./benchmarks.md)
-- [Contributing to OpenNLP GPU](./contributing.md)
+- [Contributing to OpenNLP GPU](../development/CONTRIBUTING.md)

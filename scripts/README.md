@@ -5,14 +5,23 @@ This directory contains comprehensive utility scripts for the OpenNLP GPU accele
 ## Directory Structure
 
 ```
-.
+scripts/
 ├── README.md                     # This file
-├── scripts                       # Directory containing all utility scripts
-│   ├── check_ide_setup.sh       # Script to check and fix IDE setup issues
-│   ├── fix_plugin_conflict.sh   # Script to fix plugin conflicts in the project
-│   ├── make_executable.sh       # Script to make other scripts executable
-│   └── upgrade_gradle.sh        # Script to upgrade the Gradle wrapper
-└── ...
+├── ORGANIZATION_SUMMARY.md       # Scripts organization overview
+├── build/                        # Build scripts and configuration
+│   ├── README.md                 # Build tools documentation
+│   ├── build.sh                  # Main build script
+│   ├── checkstyle.xml            # Code style configuration
+│   ├── classpath.txt             # Java classpath information
+│   └── codebase.json             # Codebase metadata
+├── debug/                        # Debug and diagnostic tools
+│   ├── README.md                 # Debug tools documentation
+│   ├── debug_lspci.java          # GPU detection debugging
+│   └── debug_lspci.class         # Compiled debug tool
+├── ide/                          # IDE setup and configuration
+├── testing/                      # Test scripts and utilities
+├── deployment/                   # Deployment and release scripts
+└── [various utility scripts]     # Individual utility scripts
 ```
 
 ## Available Scripts
