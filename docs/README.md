@@ -26,6 +26,10 @@ Development guides, build systems, and technical architecture
 
 ### 🏛️ [Apache](./apache/)
 Apache Software Foundation contribution documentation
+- [Technical Architecture](./apache/technical_architecture.md) - Comprehensive system architecture documentation
+- [Performance Benchmark Results](./apache/performance_benchmark_results.md) - Detailed performance analysis and results
+- [Integration Timeline](./apache/integration_timeline.md) - Project development and Apache integration timeline
+- [Code Quality Report](./apache/code_quality_report.md) - Comprehensive code quality metrics and analysis
 - [Apache Contribution Guide](./apache/apache_contribution_guide.md) - How to contribute to Apache OpenNLP
 - [Apache Fork Instructions](./apache/apache_fork_instructions.md) - Forking and contribution workflow
 - [Apache Proposal Emails](./apache/apache_proposal_email_final.md) - Project proposal communications
