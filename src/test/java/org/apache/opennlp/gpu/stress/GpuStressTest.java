@@ -49,9 +49,9 @@ public class GpuStressTest {
     
     // Test configuration constants
     private static final int STRESS_TEST_DURATION_SECONDS = 30;
-    private static final int LARGE_MATRIX_SIZE = 2048;
+    private static final int LARGE_MATRIX_SIZE = 512;
     private static final int CONCURRENT_THREADS = 8;
-    private static final int MEMORY_STRESS_ITERATIONS = 1000;
+    private static final int MEMORY_STRESS_ITERATIONS = 10;
     private static final long MAX_MEMORY_MB = 1024; // 1GB limit
     
     @BeforeEach

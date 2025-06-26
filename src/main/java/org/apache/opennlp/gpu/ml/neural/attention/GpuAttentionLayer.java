@@ -92,6 +92,9 @@ public class GpuAttentionLayer {
         this.usePositionalEncoding = usePositionalEncoding;
         
         // Validate configuration
+        if (numHeads == 0) {
+            throw new IllegalArgumentException("Number of heads must be greater than zero");
+        }
         if (hiddenSize % numHeads != 0) {
             throw new IllegalArgumentException("Hidden size must be divisible by number of heads");
         }
