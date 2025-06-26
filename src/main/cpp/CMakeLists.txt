@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
+# Set CMake policy to suppress FindCUDA deprecation warning
+cmake_policy(SET CMP0146 NEW)
+
 # Check for HIP availability early to set languages
 find_program(HIP_HIPCC_EXECUTABLE
     NAMES hipcc
@@ -45,15 +48,15 @@ set(GPU_INCLUDE_DIRS "")
 set(GPU_COMPILE_DEFINITIONS "")
 set(GPU_SOURCES "")
 
-# Try to find CUDA first
+# Try to find CUDA first using modern CMake
 if(USE_CUDA)
-    find_package(CUDA QUIET)
-    if(CUDA_FOUND)
-        message(STATUS "CUDA found: ${CUDA_VERSION}")
+    find_package(CUDAToolkit QUIET)
+    if(CUDAToolkit_FOUND)
+        message(STATUS "CUDA found: ${CUDAToolkit_VERSION}")
         set(GPU_FOUND TRUE)
         set(GPU_PLATFORM "CUDA")
-        set(GPU_LIBRARIES ${CUDA_LIBRARIES})
-        set(GPU_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
+        set(GPU_LIBRARIES CUDA::cudart)
+        set(GPU_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
         set(GPU_COMPILE_DEFINITIONS "USE_CUDA")
         
         # Enable CUDA language
@@ -61,7 +64,7 @@ if(USE_CUDA)
         set(CMAKE_CUDA_STANDARD 17)
         
         # CUDA-specific settings
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -O3 -arch=sm_50)
+        set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -arch=sm_50")
         
         # CUDA source files
         set(GPU_SOURCES
@@ -112,9 +115,11 @@ message(STATUS "Building with GPU platform: ${GPU_PLATFORM}")
 # Create GPU kernels library
 if(GPU_FOUND)
     if(GPU_PLATFORM STREQUAL "CUDA")
-        # CUDA library
-        cuda_add_library(opennlp_gpu_kernels STATIC ${GPU_SOURCES})
+        # CUDA library using modern CMake
+        add_library(opennlp_gpu_kernels STATIC ${GPU_SOURCES})
+        target_link_libraries(opennlp_gpu_kernels ${GPU_LIBRARIES})
         target_include_directories(opennlp_gpu_kernels PRIVATE ${GPU_INCLUDE_DIRS})
+        target_compile_definitions(opennlp_gpu_kernels PRIVATE ${GPU_COMPILE_DEFINITIONS})
     elseif(GPU_PLATFORM STREQUAL "ROCM")
         # ROCm/HIP library - mark kernel files as HIP source files
         set_source_files_properties(${GPU_SOURCES} PROPERTIES LANGUAGE HIP)

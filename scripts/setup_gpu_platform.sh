@@ -116,75 +116,49 @@ echo "⚙️  Configuring VS Code settings..."
 VSCODE_SETTINGS=".vscode/settings.json"
 mkdir -p .vscode
 
-# Create or update VS Code settings
-python3 << EOF
-import json
-import os
-
-settings_file = '$VSCODE_SETTINGS'
-cuda_found = '$CUDA_FOUND' == 'true'
-rocm_found = '$ROCM_FOUND' == 'true'
-cuda_path = '$CUDA_PATH' if cuda_found else ''
-rocm_path = '$ROCM_PATH' if rocm_found else ''
-
-try:
-    with open(settings_file, 'r') as f:
-        settings = json.load(f)
-except:
-    settings = {}
-
-# Initialize environment sections
-if 'terminal.integrated.env.linux' not in settings:
-    settings['terminal.integrated.env.linux'] = {}
-if 'cmake.configureEnvironment' not in settings:
-    settings['cmake.configureEnvironment'] = {}
-if 'cmake.configureArgs' not in settings:
-    settings['cmake.configureArgs'] = []
-
-env = settings['terminal.integrated.env.linux']
-cmake_env = settings['cmake.configureEnvironment']
-cmake_args = settings['cmake.configureArgs']
-
-# Add CUDA environment if found
-if cuda_found and cuda_path:
-    env['CUDA_PATH'] = cuda_path
-    cmake_env['CUDA_PATH'] = cuda_path
-    if '-DUSE_CUDA=ON' not in cmake_args:
-        cmake_args.append('-DUSE_CUDA=ON')
-
-# Add ROCm environment if found
-if rocm_found and rocm_path:
-    env['ROCM_PATH'] = rocm_path
-    env['HIP_PATH'] = rocm_path
-    cmake_env['ROCM_PATH'] = rocm_path
-    cmake_env['HIP_PATH'] = rocm_path
-    if '-DUSE_ROCM=ON' not in cmake_args:
-        cmake_args.append('-DUSE_ROCM=ON')
-
-# Update PATH and LD_LIBRARY_PATH
-path_additions = []
-lib_additions = []
-
-if cuda_found and cuda_path:
-    path_additions.append(f"{cuda_path}/bin")
-    lib_additions.append(f"{cuda_path}/lib64")
-
-if rocm_found and rocm_path:
-    path_additions.append(f"{rocm_path}/bin")
-    lib_additions.append(f"{rocm_path}/lib")
-
-if path_additions:
-    env['PATH'] = ':'.join(path_additions) + ':\${env:PATH}'
-if lib_additions:
-    env['LD_LIBRARY_PATH'] = ':'.join(lib_additions) + ':\${env:LD_LIBRARY_PATH}'
-
-# Save settings
-settings['cmake.configureArgs'] = cmake_args
-with open(settings_file, 'w') as f:
-    json.dump(settings, f, indent=2)
-
-print("✅ VS Code settings updated")
-EOF
+# Create or update VS Code settings using jq
+if command -v jq >/dev/null 2>&1; then
+    # Read existing settings or create empty object
+    if [ -s "$VSCODE_SETTINGS" ]; then
+        CURRENT_SETTINGS=$(cat "$VSCODE_SETTINGS")
+    else
+        CURRENT_SETTINGS="{}"
+    fi
+    
+    # Build the configuration based on available platforms
+    JQ_FILTER="."
+    
+    if [ "$CUDA_FOUND" = "true" ] && [ -n "$CUDA_PATH" ]; then
+        JQ_FILTER="$JQ_FILTER | .\"terminal.integrated.env.linux\" = (.\"terminal.integrated.env.linux\" // {} | . += {
+            \"CUDA_PATH\": \"$CUDA_PATH\",
+            \"PATH\": \"$CUDA_PATH/bin:\${env:PATH}\",
+            \"LD_LIBRARY_PATH\": \"$CUDA_PATH/lib64:\${env:LD_LIBRARY_PATH}\"
+        })"
+        JQ_FILTER="$JQ_FILTER | .\"cmake.configureEnvironment\" = (.\"cmake.configureEnvironment\" // {} | .\"CUDA_PATH\" = \"$CUDA_PATH\")"
+        JQ_FILTER="$JQ_FILTER | .\"cmake.configureArgs\" = ((.\"cmake.configureArgs\" // []) + [\"-DUSE_CUDA=ON\"] | unique)"
+    fi
+    
+    if [ "$ROCM_FOUND" = "true" ] && [ -n "$ROCM_PATH" ]; then
+        JQ_FILTER="$JQ_FILTER | .\"terminal.integrated.env.linux\" = (.\"terminal.integrated.env.linux\" // {} | . += {
+            \"ROCM_PATH\": \"$ROCM_PATH\",
+            \"HIP_PATH\": \"$ROCM_PATH\",
+            \"PATH\": \"$ROCM_PATH/bin:\${env:PATH}\",
+            \"LD_LIBRARY_PATH\": \"$ROCM_PATH/lib:\${env:LD_LIBRARY_PATH}\"
+        })"
+        JQ_FILTER="$JQ_FILTER | .\"cmake.configureEnvironment\" = (.\"cmake.configureEnvironment\" // {} | . += {
+            \"ROCM_PATH\": \"$ROCM_PATH\",
+            \"HIP_PATH\": \"$ROCM_PATH\"
+        })"
+        JQ_FILTER="$JQ_FILTER | .\"cmake.configureArgs\" = ((.\"cmake.configureArgs\" // []) + [\"-DUSE_ROCM=ON\"] | unique)"
+    fi
+    
+    # Apply the filter
+    echo "$CURRENT_SETTINGS" | jq "$JQ_FILTER" > "$VSCODE_SETTINGS.tmp" && mv "$VSCODE_SETTINGS.tmp" "$VSCODE_SETTINGS"
+    
+    echo "✅ VS Code settings updated"
+else
+    echo "⚠️  jq not available, skipping VS Code configuration"
+fi
 
 # Test CMake configuration
 echo ""

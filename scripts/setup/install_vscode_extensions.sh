@@ -53,8 +53,6 @@ REQUIRED_EXTENSIONS=(
 RECOMMENDED_EXTENSIONS=(
     "github.copilot:GitHub Copilot"
     "ms-vscode.vscode-json:JSON Language Features"
-    "ms-python.python:Python"
-    "ms-toolsai.jupyter:Jupyter"
     "ms-vscode.test-adapter-converter:Test Explorer UI"
     "streetsidesoftware.code-spell-checker:Code Spell Checker"
     "eamodio.gitlens:GitLens"
@@ -130,8 +128,6 @@ cat > .vscode/extensions.json << 'EOF'
         "redhat.vscode-xml",
         "github.copilot",
         "ms-vscode.vscode-json",
-        "ms-python.python",
-        "ms-toolsai.jupyter",
         "streetsidesoftware.code-spell-checker",
         "eamodio.gitlens"
     ],

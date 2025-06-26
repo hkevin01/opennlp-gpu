@@ -94,10 +94,10 @@ public class GpuMlDemo {
             {"word_okay"}
         };
         
-        double[][] batchProbs = gpuModel.evalBatch(testContexts);
         GpuMlDemo.logger.info("Batch evaluation results:");
         for (int i = 0; i < testContexts.length; i++) {
-            GpuMlDemo.logger.info("  Context " + i + ": " + java.util.Arrays.toString(batchProbs[i]));
+            double[] batchProbs = gpuModel.eval(testContexts[i]);
+            GpuMlDemo.logger.info("  Context " + i + ": " + java.util.Arrays.toString(batchProbs));
         }
         
         // Print performance stats

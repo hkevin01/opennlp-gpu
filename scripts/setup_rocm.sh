@@ -121,50 +121,35 @@ mkdir -p .vscode
 if [ -f "$VSCODE_SETTINGS" ]; then
     # Check if ROCm settings already exist
     if ! grep -q "ROCM_PATH" "$VSCODE_SETTINGS"; then
-        # Add ROCm environment variables
-        python3 << EOF
-import json
-import os
-
-settings_file = '$VSCODE_SETTINGS'
-rocm_path = '$ROCM_PATH'
-
-try:
-    with open(settings_file, 'r') as f:
-        settings = json.load(f)
-except:
-    settings = {}
-
-# Add ROCm environment
-if 'terminal.integrated.env.linux' not in settings:
-    settings['terminal.integrated.env.linux'] = {}
-
-settings['terminal.integrated.env.linux']['ROCM_PATH'] = rocm_path
-settings['terminal.integrated.env.linux']['HIP_PATH'] = rocm_path
-settings['terminal.integrated.env.linux']['PATH'] = f"{rocm_path}/bin:\${env:PATH}"
-settings['terminal.integrated.env.linux']['LD_LIBRARY_PATH'] = f"{rocm_path}/lib:\${env:LD_LIBRARY_PATH}"
-
-# Add CMake settings for ROCm
-if 'cmake.configureEnvironment' not in settings:
-    settings['cmake.configureEnvironment'] = {}
-
-settings['cmake.configureEnvironment']['ROCM_PATH'] = rocm_path
-settings['cmake.configureEnvironment']['HIP_PATH'] = rocm_path
-
-# Add CMake configure args
-if 'cmake.configureArgs' not in settings:
-    settings['cmake.configureArgs'] = []
-
-rocm_args = [f'-DROCM_PATH={rocm_path}', '-DUSE_ROCM=ON']
-for arg in rocm_args:
-    if arg not in settings['cmake.configureArgs']:
-        settings['cmake.configureArgs'].append(arg)
-
-with open(settings_file, 'w') as f:
-    json.dump(settings, f, indent=2)
-
-print("✅ VS Code settings updated with ROCm configuration")
-EOF
+        # Add ROCm environment variables using jq
+        if command -v jq >/dev/null 2>&1; then
+            # Read existing settings or create empty object
+            if [ -s "$VSCODE_SETTINGS" ]; then
+                CURRENT_SETTINGS=$(cat "$VSCODE_SETTINGS")
+            else
+                CURRENT_SETTINGS="{}"
+            fi
+            
+            # Merge new settings
+            echo "$CURRENT_SETTINGS" | jq ". += {
+                \"terminal.integrated.env.linux\": (.\"terminal.integrated.env.linux\" // {} | . += {
+                    \"ROCM_PATH\": \"$ROCM_PATH\",
+                    \"HIP_PATH\": \"$ROCM_PATH\",
+                    \"PATH\": \"$ROCM_PATH/bin:\${env:PATH}\",
+                    \"LD_LIBRARY_PATH\": \"$ROCM_PATH/lib:\${env:LD_LIBRARY_PATH}\"
+                }),
+                \"cmake.configureEnvironment\": (.\"cmake.configureEnvironment\" // {} | . += {
+                    \"ROCM_PATH\": \"$ROCM_PATH\",
+                    \"HIP_PATH\": \"$ROCM_PATH\"
+                }),
+                \"cmake.configureArgs\": ((.\"cmake.configureArgs\" // []) + [\"-DROCM_PATH=$ROCM_PATH\", \"-DUSE_ROCM=ON\"] | unique)
+            }" > "$VSCODE_SETTINGS.tmp" && mv "$VSCODE_SETTINGS.tmp" "$VSCODE_SETTINGS"
+            
+            echo "✅ VS Code settings updated with ROCm configuration"
+        else
+            # Fallback if jq is not available
+            echo "⚠️  jq not available, skipping VS Code ROCm configuration"
+        fi
     else
         echo "✅ ROCm settings already present in VS Code configuration"
     fi

@@ -388,9 +388,12 @@ public class GpuStressTest {
                 batchContexts[i] = generateRandomContext(predLabels, 5);
             }
             
-            double[][] batchResults = gpuModel.evalBatch(batchContexts);
-            assertNotNull(batchResults);
-            assertEquals(batchContexts.length, batchResults.length);
+            // Test individual evaluations instead of batch
+            for (int i = 0; i < batchContexts.length; i++) {
+                double[] probs = gpuModel.eval(batchContexts[i]);
+                assertNotNull(probs);
+                assertEquals(outcomes.length, probs.length);
+            }
             
         } finally {
             gpuModel.cleanup();

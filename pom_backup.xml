@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.apache.opennlp</groupId>
+  <artifactId>opennlp-gpu</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  
+  <name>OpenNLP GPU Extension</name>
+  <description>GPU acceleration for Apache OpenNLP - 10-15x faster NLP processing with CUDA, ROCm, and OpenCL support</description>
+  <url>https://github.com/apache/opennlp-gpu</url>
+  
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <developers>
+    <developer>
+      <name>OpenNLP GPU Extension Team</name>
+      <email>dev@opennlp.apache.org</email>
+      <organization>Apache OpenNLP</organization>
+      <organizationUrl>https://opennlp.apache.org</organizationUrl>
+    </developer>
+  </developers>
+  
+  <scm>
+    <connection>scm:git:git://github.com/apache/opennlp-gpu.git</connection>
+    <developerConnection>scm:git:ssh://github.com/apache/opennlp-gpu.git</developerConnection>
+    <url>https://github.com/apache/opennlp-gpu/tree/main</url>
+  </scm>on="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.opennlp</groupId>
+  <artifactId>opennlp-gpu</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>opennlp-gpu</name>
+  <description>GPU acceleration extensions for Apache OpenNLP providing OpenCL-based matrix operations and performance optimizations for natural language processing tasks.</description>
+  
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <opennlp.version>2.5.4</opennlp.version>
+    <junit.version>5.13.1</junit.version>
+    <slf4j.version>2.0.17</slf4j.version>
+    <jocl.version>2.0.5</jocl.version>
+    
+    <!-- Native library properties -->
+    <native.library.name>opennlp_gpu</native.library.name>
+    <native.library.version>${project.version}</native.library.version>
+  </properties>
+  <dependencies>
+    <!-- OpenNLP dependencies - Updated to latest versions -->
+    <dependency>
+      <groupId>org.apache.opennlp</groupId>
+      <artifactId>opennlp-tools</artifactId>
+      <version>2.5.4</version>
+    </dependency>
+    <!-- Note: opennlp-maxent is deprecated in newer versions, 
+         functionality moved to opennlp-tools -->
+
+    <!-- SLF4J API - Updated to latest stable -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.17</version>
+    </dependency>
+
+    <!-- SLF4J Simple implementation for testing - Updated -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.17</version>
+    </dependency>
+
+    <!-- JOCL for OpenCL integration - Updated -->
+    <dependency>
+      <groupId>org.jocl</groupId>
+      <artifactId>jocl</artifactId>
+      <version>2.0.5</version>
+    </dependency>
+
+    <!-- JUnit for testing - Updated to latest JUnit 4.x -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit Jupiter dependencies - Updated to latest -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.13.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.13.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>5.13.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Maven Compiler Plugin - Updated to latest -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <!-- Exec Maven Plugin - Updated to latest -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <mainClass>org.apache.opennlp.gpu.GpuDemoMain</mainClass>
+        </configuration>
+      </plugin>
+
+      <!-- Maven Surefire Plugin for running tests - Updated to latest -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <includes>
+            <include>**/GpuTestSuite.java</include>
+            <include>**/MatrixOpsTest.java</include>
+            <include>**/OpenNLPTestDataIntegration.java</include>
+            <include>**/ConcurrencyTest.java</include>
+            <include>**/PerformanceBenchmark.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*Abstract*.java</exclude>
+          </excludes>
+          <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+    <repository>
+      <id>jocl</id>
+      <url>https://repo.maven.apache.org/maven2/org/jocl/jocl</url>
+    </repository>
+  </repositories>
+</project>

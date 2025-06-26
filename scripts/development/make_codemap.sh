@@ -1,23 +1,64 @@
-#!/usr/bin/env python3
-# filepath: /home/kevin/Projects/opennlp-gpu/scripts/generate_code_map.py
+#!/bin/bash
+# Generate code map for OpenNLP GPU extension project
 
-import os
-import json
-import re
-from pathlib import Path
+set -euo pipefail
 
-def analyze_java_file(file_path):
-    """Extract information from a Java file."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+OUTPUT_FILE="$PROJECT_ROOT/docs/development/code_map.md"
+
+# Create output directory
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+
+echo "Generating code map..."
+
+# Start the markdown file
+cat > "$OUTPUT_FILE" << 'EOF'
+# OpenNLP GPU Extension - Code Map
+
+This document provides an overview of the project structure and key components.
+
+## Project Structure
+
+```
+EOF
+
+# Generate directory tree (excluding build artifacts and IDE files)
+(cd "$PROJECT_ROOT" && find . -type d \
+    -not -path './target' \
+    -not -path './target/*' \
+    -not -path './.vscode' \
+    -not -path './.vscode/*' \
+    -not -path './build' \
+    -not -path './build/*' \
+    -not -path './.git' \
+    -not -path './.git/*' \
+    | sort | sed 's|[^/]*/|  |g; s|^  ||' >> "$OUTPUT_FILE")
+
+echo '```' >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Add Java source files section
+echo "## Java Source Files" >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+find "$PROJECT_ROOT/src" -name "*.java" -type f | sort | while read -r java_file; do
+    rel_path="${java_file#$PROJECT_ROOT/}"
+    package=$(grep -E "^package\s+" "$java_file" 2>/dev/null | head -1 | sed 's/package\s*//;s/;//' || echo "unknown")
+    class_name=$(grep -E "(class|interface|enum)\s+\w+" "$java_file" 2>/dev/null | head -1 | sed -E 's/.*[^a-zA-Z](class|interface|enum)\s+([a-zA-Z_][a-zA-Z0-9_]*).*/\2/' || basename "$java_file" .java)
     
-    # Extract package
-    package_match = re.search(r'package\s+([\w.]+);', content)
-    package = package_match.group(1) if package_match else "unknown"
+    echo "### $rel_path" >> "$OUTPUT_FILE"
+    echo "- **Package**: $package" >> "$OUTPUT_FILE"
+    echo "- **Class**: $class_name" >> "$OUTPUT_FILE"
     
-    # Extract class/interface name
-    class_match = re.search(r'(public|private|protected)?\s+(class|interface|enum)\s+(\w+)', content)
-    class_name = class_match.group(3) if class_match else os.path.basename(file_path).replace('.java', '')
+    # Extract brief description from first comment or class javadoc
+    description=$(grep -E "^\s*\*|//.*" "$java_file" | head -3 | sed 's|^\s*\*\s*||;s|^\s*//\s*||' | grep -v "^$" | head -1 || echo "")
+    if [ -n "$description" ]; then
+        echo "- **Description**: $description" >> "$OUTPUT_FILE"
+    fi
+    echo "" >> "$OUTPUT_FILE"
+done
+
+echo "Code map generated: $OUTPUT_FILE"
     type_kind = class_match.group(2) if class_match else "unknown"
     
     # Determine if this is an implementation or interface

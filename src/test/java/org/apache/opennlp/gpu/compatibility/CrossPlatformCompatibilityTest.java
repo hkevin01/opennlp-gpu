@@ -18,7 +18,8 @@ import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 import org.apache.opennlp.gpu.compute.GpuMatrixOperation;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
-import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
+// import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
+import org.apache.opennlp.gpu.integration.GpuModelFactory;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -465,8 +466,8 @@ public class CrossPlatformCompatibilityTest {
 
         MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
         
-        // Create a GPU-accelerated wrapper
-        GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, config);
+        // Create a GPU-accelerated wrapper using factory
+        MaxentModel gpuModel = GpuModelFactory.createMaxentModel(cpuModel);
         
         try {
             String[] context = {"pred1"};
@@ -479,7 +480,7 @@ public class CrossPlatformCompatibilityTest {
             result.addDetail("MaxEnt Evaluation", "Working");
             
         } finally {
-            gpuModel.cleanup();
+            // No cleanup needed for MaxentModel
         }
     }
     

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 http://maven.apache.org/xsd/assembly-2.2.0.xsd">
+
+    <id>native-libs</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <!-- Include Java classes -->
+        <fileSet>
+            <directory>${project.build.outputDirectory}</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+
+        <!-- Include native libraries for Windows -->
+        <fileSet>
+            <directory>${project.build.directory}/native</directory>
+            <outputDirectory>/native/windows/x86_64</outputDirectory>
+            <includes>
+                <include>**/*.dll</include>
+            </includes>
+        </fileSet>
+
+        <!-- Include native libraries for Linux -->
+        <fileSet>
+            <directory>${project.build.directory}/native</directory>
+            <outputDirectory>/native/linux/x86_64</outputDirectory>
+            <includes>
+                <include>**/*.so</include>
+            </includes>
+        </fileSet>
+
+        <!-- Include native libraries for macOS -->
+        <fileSet>
+            <directory>${project.build.directory}/native</directory>
+            <outputDirectory>/native/macos/x86_64</outputDirectory>
+            <includes>
+                <include>**/*.dylib</include>
+            </includes>
+        </fileSet>
+
+        <!-- Include resources -->
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>

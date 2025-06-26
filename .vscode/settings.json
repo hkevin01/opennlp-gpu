@@ -9,8 +9,10 @@
     "ROCM_PATH": "/opt/rocm",
     "HIP_PATH": "/opt/rocm"
   },
-  "cmake.configureArgs": [
-    "-DUSE_ROCM=ON"
-  ],
-  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp"
+  "cmake.configureArgs": ["-DUSE_ROCM=ON"],
+  "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.debug.settings.onBuildFailureProceed": true,
+  "powershell.powerShellDefaultVersion": "PowerShell (x64)",
+  "terminal.integrated.defaultProfile.linux": "bash"
 }

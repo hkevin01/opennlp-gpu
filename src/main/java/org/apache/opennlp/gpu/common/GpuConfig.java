@@ -60,12 +60,29 @@ public class GpuConfig {
      */
     public static boolean isGpuAvailable() {
         try {
-            // Try to initialize JOCL to check GPU availability
-            org.jocl.CL.setExceptionsEnabled(true);
-            // Basic check - if we can get platform info, GPU is likely available
-            return true; // For now, assume GPU is available if JOCL is on classpath
+            // Simple check for development/testing
+            // In production, this would check for actual GPU hardware/drivers
+            String gpuProperty = System.getProperty("gpu.available", "false");
+            return "true".equals(gpuProperty);
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    /**
+     * Get GPU information for diagnostics
+     * @return Map containing GPU information
+     */
+    public static java.util.Map<String, Object> getGpuInfo() {
+        java.util.Map<String, Object> info = new java.util.HashMap<>();
+        
+        info.put("available", isGpuAvailable());
+        info.put("vendor", System.getProperty("gpu.vendor", "Unknown"));
+        info.put("device", System.getProperty("gpu.device", "Unknown"));
+        info.put("driver_version", System.getProperty("gpu.driver", "Unknown"));
+        info.put("memory_total", System.getProperty("gpu.memory.total", "0"));
+        info.put("memory_free", System.getProperty("gpu.memory.free", "0"));
+        
+        return info;
     }
 }

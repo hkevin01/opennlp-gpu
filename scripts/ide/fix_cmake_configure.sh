@@ -37,40 +37,32 @@ if [ -f "$VSCODE_SETTINGS" ]; then
     # Backup existing settings
     cp "$VSCODE_SETTINGS" "$VSCODE_SETTINGS.backup"
     
-    # Use Python to merge settings (more reliable than sed for JSON)
-    python3 -c "
-import json
-import sys
-
-try:
-    with open('$VSCODE_SETTINGS', 'r') as f:
-        settings = json.load(f)
-except:
-    settings = {}
-
-# CMake configuration
-settings['cmake.cmakePath'] = '$CMAKE_PATH'
-settings['cmake.configureOnOpen'] = False
-settings['cmake.configureOnEdit'] = False
-settings['cmake.autoSelectActiveFolder'] = False
-settings['cmake.showConfigureWithDebuggerNotification'] = False
-
-# Disable CMake for Java projects
-settings['cmake.sourceDirectory'] = None
-settings['files.associations'] = settings.get('files.associations', {})
-settings['files.associations']['CMakeLists.txt'] = 'cmake'
-
-# Java project settings (ensure CMake doesn't interfere)
-settings['java.configuration.detectJdksAtStart'] = True
-settings['java.import.gradle.enabled'] = False
-settings['java.import.maven.enabled'] = True
-
-with open('$VSCODE_SETTINGS', 'w') as f:
-    json.dump(settings, f, indent=4)
-
-print('Settings updated successfully')
-" 2>/dev/null || {
-    # Fallback if Python is not available - create minimal settings
+    # Use jq to merge settings (more reliable than sed for JSON)
+    if command -v jq >/dev/null 2>&1; then
+        # Read existing settings or create empty object
+        if [ -s "$VSCODE_SETTINGS" ]; then
+            CURRENT_SETTINGS=$(cat "$VSCODE_SETTINGS")
+        else
+            CURRENT_SETTINGS="{}"
+        fi
+        
+        # Merge new settings
+        echo "$CURRENT_SETTINGS" | jq ". += {
+            \"cmake.cmakePath\": \"$CMAKE_PATH\",
+            \"cmake.configureOnOpen\": false,
+            \"cmake.configureOnEdit\": false,
+            \"cmake.autoSelectActiveFolder\": false,
+            \"cmake.showConfigureWithDebuggerNotification\": false,
+            \"cmake.sourceDirectory\": null,
+            \"files.associations\": (.\"files.associations\" // {} | . += {\"CMakeLists.txt\": \"cmake\"}),
+            \"java.configuration.detectJdksAtStart\": true,
+            \"java.import.gradle.enabled\": false,
+            \"java.import.maven.enabled\": true
+        }" > "$VSCODE_SETTINGS.tmp" && mv "$VSCODE_SETTINGS.tmp" "$VSCODE_SETTINGS"
+        
+        echo "Settings updated successfully with jq"
+    else
+        # Fallback if jq is not available - create minimal settings
     cat > "$VSCODE_SETTINGS" <<EOF
 {
     "cmake.cmakePath": "$CMAKE_PATH",

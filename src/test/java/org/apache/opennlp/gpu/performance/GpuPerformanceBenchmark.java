@@ -17,7 +17,7 @@ import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 import org.apache.opennlp.gpu.compute.GpuMatrixOperation;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
-import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
+import org.apache.opennlp.gpu.integration.GpuModelFactory;
 import org.apache.opennlp.gpu.ml.perceptron.GpuPerceptronModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -404,9 +404,9 @@ public class GpuPerformanceBenchmark {
 
         MaxentModel cpuModel = new GISModel(contexts, predLabels, outcomes);
 
-        // Create GPU and CPU models
-        GpuMaxentModel gpuModel = new GpuMaxentModel(cpuModel, gpuConfig);
-        GpuMaxentModel cpuGpuModel = new GpuMaxentModel(cpuModel, cpuConfig);
+        // Create GPU and CPU models using factory
+        MaxentModel gpuModel = GpuModelFactory.createMaxentModel(cpuModel);
+        MaxentModel cpuGpuModel = cpuModel; // Direct CPU model for comparison
 
         // Generate sample context data
         String[][] sampleContexts = new String[1000][];
@@ -444,8 +444,7 @@ public class GpuPerformanceBenchmark {
             cpuTotalTime += System.nanoTime() - startTime;
         }
 
-        gpuModel.cleanup();
-        cpuGpuModel.cleanup();
+        // No cleanup needed for MaxentModel instances
 
         return new BenchmarkResults("MaxEnt Evaluation " + sampleContexts.length + " contexts",
                                    gpuTotalTime, cpuTotalTime, BENCHMARK_ITERATIONS);
@@ -509,10 +508,6 @@ public class GpuPerformanceBenchmark {
         double avgSpeedup = sortedResults.stream()
                 .mapToDouble(BenchmarkResults::getSpeedup)
                 .average().orElse(0.0);
-        
-        double maxSpeedup = sortedResults.stream()
-                .mapToDouble(BenchmarkResults::getSpeedup)
-                .max().orElse(0.0);
         
         logger.info("========== SUMMARY ==========");
         logger.info("Average speedup: " + String.format("%.2fx", avgSpeedup));

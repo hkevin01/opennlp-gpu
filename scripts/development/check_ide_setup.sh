@@ -61,8 +61,6 @@ REQUIRED_EXTENSIONS=(
 OPTIONAL_EXTENSIONS=(
     "github.copilot"
     "ms-vscode.vscode-json"
-    "ms-python.python"
-    "ms-toolsai.jupyter"
 )
 
 if command -v code >/dev/null 2>&1; then
