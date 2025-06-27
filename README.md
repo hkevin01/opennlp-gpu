@@ -252,36 +252,11 @@ See [Java Integration Guide](docs/java_integration_guide.md) for complete exampl
 - Performance benchmarking and comparison
 - Error handling and graceful fallback
 
-- What's Currently Working
-
-Available Now - Research Examples:
-
-// Working GPU examples (available now)
-// 1. Sentiment Analysis - Twitter sentiment with GPU acceleration
-GpuSentimentAnalysis analyzer = new GpuSentimentAnalysis();
-SentimentResult[] results = analyzer.analyzeBatch(texts);
-
-// 2. Named Entity Recognition - High-speed entity extraction
-GpuNamedEntityRecognition ner = new GpuNamedEntityRecognition();
-EntityResult[] entities = ner.extractEntitiesBatch(documents);
-
-// 3. Document Classification - Large-scale document categorization
-GpuDocumentClassification classifier = new GpuDocumentClassification();
-ClassificationResult[] categories = classifier.classifyBatch(documents);
-
-// 4. Language Detection - Multi-language processing
-GpuLanguageDetection detector = new GpuLanguageDetection();
-LanguageResult[] languages = detector.detectLanguageBatch(texts);
-
-// 5. Question Answering - Neural QA with attention mechanisms
-GpuQuestionAnswering qa = new GpuQuestionAnswering();
-QAResult[] answers = qa.answerQuestionsBatch(questionPairs);
 
 📖 Complete Example Documentation:
-
-    Sentiment Analysis - Twitter sentiment with GPU acceleration
-    Named Entity Recognition - High-speed entity extraction
-    Document Classification - Large-scale document categorization
-    Language Detection - Multi-language processing
-    Question Answering - Neural QA with attention mechanisms
+Sentiment Analysis - Twitter sentiment with GPU acceleration
+Named Entity Recognition - High-speed entity extraction
+Document Classification - Large-scale document categorization
+Language Detection - Multi-language processing
+Question Answering - Neural QA with attention mechanisms
 
