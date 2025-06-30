@@ -255,8 +255,12 @@ See [Java Integration Guide](docs/java_integration_guide.md) for complete exampl
 
 📖 Complete Example Documentation:
 Sentiment Analysis - Twitter sentiment with GPU acceleration
+
 Named Entity Recognition - High-speed entity extraction
+
 Document Classification - Large-scale document categorization
+
 Language Detection - Multi-language processing
+
 Question Answering - Neural QA with attention mechanisms
 
