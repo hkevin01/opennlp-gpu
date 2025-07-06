@@ -1,0 +1,27 @@
+OpenNLP GPU Extension
+Copyright 2025 OpenNLP GPU Extension Contributors
+
+This product includes software developed by OpenNLP GPU Extension Contributors.
+
+This software is a third-party extension for Apache OpenNLP and is not 
+officially endorsed or maintained by the Apache Software Foundation.
+
+This product includes software developed by The Apache Software Foundation (http://www.apache.org/).
+Specifically, it extends and builds upon Apache OpenNLP:
+
+   Apache OpenNLP
+   Copyright 2017 The Apache Software Foundation
+
+   This product includes software developed at
+   The Apache Software Foundation (http://www.apache.org/).
+
+This product may include a number of subcomponents with separate copyright 
+notices and license terms. Your use of these subcomponents is subject to 
+the terms and conditions of the following licenses:
+
+   Apache License 2.0
+   MIT License
+   Eclipse Public License 2.0
+   BSD License
+
+For full license texts, see the LICENSE file in the root directory.

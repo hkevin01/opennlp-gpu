@@ -1,3 +1,21 @@
+/*
+ * Copyright 2025 OpenNLP GPU Extension Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * This project is a third-party GPU acceleration extension for Apache OpenNLP.
+ * It is not officially endorsed or maintained by the Apache Software Foundation.
+ */
 package org.apache.opennlp.gpu.integration;
 
 import java.util.HashMap;
@@ -9,9 +27,11 @@ import opennlp.tools.ml.model.MaxentModel;
 
 /**
  * Factory class for creating GPU-accelerated OpenNLP models
- * Provides seamless integration with existing OpenNLP applications
+ * Provides seamless integration with existing Apache OpenNLP applications
  * 
- * @author OpenNLP GPU Extension Team
+ * This is a third-party extension for Apache OpenNLP and is not part of the official OpenNLP project.
+ * 
+ * @author OpenNLP GPU Extension Contributors
  * @since 1.0.0
  */
 public class GpuModelFactory {

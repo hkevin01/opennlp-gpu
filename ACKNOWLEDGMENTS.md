@@ -1,5 +1,21 @@
 # OpenNLP GPU Extension - Acknowledgments
 
+## Important Attribution Notice
+
+This project is a **third-party GPU acceleration extension** for [Apache OpenNLP](https://opennlp.apache.org/) and is **not officially endorsed or maintained by the Apache Software Foundation**.
+
+### Apache OpenNLP Attribution
+
+This project builds upon and extends the functionality of **Apache OpenNLP**:
+
+- **Project**: [Apache OpenNLP](https://opennlp.apache.org/)
+- **Copyright**: © Apache Software Foundation
+- **License**: Apache License 2.0
+- **Repository**: https://github.com/apache/opennlp
+- **Website**: https://opennlp.apache.org/
+
+We acknowledge and deeply appreciate the excellent work done by the Apache OpenNLP community in creating the foundation library that this GPU extension builds upon.
+
 ## Project Development
 
 This OpenNLP GPU Extension project was developed through a collaborative effort between human expertise and artificial intelligence assistance.
@@ -118,6 +134,27 @@ The project follows established open source best practices:
 - Transparent issue tracking and resolution
 - Community feedback integration
 - Documentation-first development approach
+
+## Third-Party Dependencies
+
+This project utilizes several open source libraries and frameworks:
+
+### Core Dependencies
+- **Apache OpenNLP** (Apache License 2.0) - The base NLP library being extended
+- **SLF4J** (MIT License) - Simple Logging Facade for Java
+- **JUnit 5** (Eclipse Public License 2.0) - Testing framework
+
+### GPU Computing Dependencies
+- **JOCL** (MIT License) - Java bindings for OpenCL
+- **CUDA Toolkit** (NVIDIA License) - NVIDIA GPU computing platform
+- **ROCm** (MIT License) - AMD GPU computing platform
+
+### Build and Development Tools
+- **Apache Maven** (Apache License 2.0) - Build automation
+- **CMake** (BSD License) - Cross-platform build system
+- **Docker** (Apache License 2.0) - Containerization platform
+
+All dependencies are properly declared in the project's `pom.xml` with appropriate version specifications and license compatibility.
 
 ## Future Development
 

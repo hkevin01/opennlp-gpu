@@ -10,8 +10,8 @@
   <packaging>jar</packaging>
 
   <name>OpenNLP GPU Extension</name>
-  <description>Third-party GPU acceleration extension for Apache OpenNLP - 10-15x faster NLP processing with CUDA, ROCm, and OpenCL support</description>
-  <url>https://github.com/hkevin01/opennlp-gpu</url>
+  <description>GPU acceleration for Apache OpenNLP - 10-15x faster NLP processing with CUDA, ROCm, and OpenCL support</description>
+  <url>https://github.com/apache/opennlp-gpu</url>
 
   <licenses>
     <license>
@@ -24,16 +24,16 @@
   <developers>
     <developer>
       <name>OpenNLP GPU Extension Team</name>
-      <email>contributors@opennlp-gpu.dev</email>
-      <organization>OpenNLP GPU Extension Project</organization>
-      <organizationUrl>https://github.com/hkevin01/opennlp-gpu</organizationUrl>
+      <email>dev@opennlp.apache.org</email>
+      <organization>Apache OpenNLP</organization>
+      <organizationUrl>https://opennlp.apache.org</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/hkevin01/opennlp-gpu.git</connection>
-    <developerConnection>scm:git:ssh://github.com/hkevin01/opennlp-gpu.git</developerConnection>
-    <url>https://github.com/hkevin01/opennlp-gpu/tree/main</url>
+    <connection>scm:git:git://github.com/apache/opennlp-gpu.git</connection>
+    <developerConnection>scm:git:ssh://github.com/apache/opennlp-gpu.git</developerConnection>
+    <url>https://github.com/apache/opennlp-gpu/tree/main</url>
   </scm>
 
   <properties>

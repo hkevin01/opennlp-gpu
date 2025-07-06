@@ -1,8 +1,19 @@
 [![](https://jitpack.io/v/hkevin01/opennlp-gpu.svg)](https://jitpack.io/#hkevin01/opennlp-gpu)
 
-# OpenNLP GPU Acceleration
+# OpenNLP GPU Extension
 
-**Production-ready GPU acceleration for Apache OpenNLP** - Supporting NVIDIA CUDA, AMD ROCm, and CPU fallback with automatic detection and drop-in replacement.
+**Third-party GPU acceleration extension for Apache OpenNLP** - Supporting NVIDIA CUDA, AMD ROCm, and CPU fallback with automatic detection and drop-in replacement.
+
+## ⚠️ Important Attribution Notice
+
+This project is an **independent GPU acceleration extension** for [Apache OpenNLP](https://opennlp.apache.org/) and is **not officially endorsed or maintained by the Apache Software Foundation**. 
+
+- **Base Library**: [Apache OpenNLP](https://opennlp.apache.org/) © Apache Software Foundation
+- **GPU Extension**: This project © 2025 OpenNLP GPU Extension Contributors
+- **License**: Apache License 2.0 (compatible with Apache OpenNLP)
+- **Status**: Third-party extension, not part of official Apache OpenNLP
+
+For official Apache OpenNLP documentation and support, please visit: https://opennlp.apache.org/
 
 ## 🚀 **Quick Start (2 minutes)**
 
@@ -11,7 +22,7 @@ Add to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>org.apache.opennlp</groupId>
+    <groupId>com.github.hkevin01</groupId>
     <artifactId>opennlp-gpu</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -20,6 +31,7 @@ Add to your `pom.xml`:
 **Usage:**
 ```java
 import org.apache.opennlp.gpu.integration.GpuModelFactory;
+import opennlp.tools.ml.model.MaxentModel;
 
 // Drop-in replacement for any OpenNLP MaxentModel
 MaxentModel gpuModel = GpuModelFactory.createMaxentModel(originalModel);
@@ -32,7 +44,7 @@ double[] probabilities = gpuModel.eval(context);
 Add to your `build.gradle`:
 
 ```gradle
-implementation 'org.apache.opennlp:opennlp-gpu:1.0.0'
+implementation 'com.github.hkevin01:opennlp-gpu:1.0.0'
 ```
 
 ### **Development/Source Build**
@@ -79,6 +91,18 @@ Our setup scripts automatically:
 - ✅ **Google Cloud Platform**
 - ✅ **Microsoft Azure**
 - ✅ **Local development**
+
+## ⚖️ **Legal Notice**
+
+**This is a third-party extension** and is not part of the official Apache OpenNLP project:
+
+- **Relationship**: Independent GPU acceleration extension for Apache OpenNLP
+- **Endorsement**: Not officially endorsed by the Apache Software Foundation
+- **Support**: Community-maintained, not supported by Apache OpenNLP team
+- **Compatibility**: Designed to work with Apache OpenNLP 2.5.4+
+- **License**: Apache License 2.0 (same as Apache OpenNLP for compatibility)
+
+For official Apache OpenNLP support, visit: https://opennlp.apache.org/
 
 ## 🔥 **Expected Results**
 
@@ -203,16 +227,16 @@ Add GPU acceleration to your existing OpenNLP Java project in **3 simple steps**
 #### 1. Add Maven Dependency
 ```xml
 <dependencies>
-    <!-- Your existing OpenNLP dependency -->
+    <!-- Official Apache OpenNLP dependency -->
     <dependency>
         <groupId>org.apache.opennlp</groupId>
         <artifactId>opennlp-tools</artifactId>
         <version>2.5.4</version>
     </dependency>
     
-    <!-- Add GPU acceleration -->
+    <!-- Third-party GPU acceleration extension -->
     <dependency>
-        <groupId>org.apache.opennlp</groupId>
+        <groupId>com.github.hkevin01</groupId>
         <artifactId>opennlp-gpu</artifactId>
         <version>1.0.0</version>
     </dependency>
@@ -221,14 +245,14 @@ Add GPU acceleration to your existing OpenNLP Java project in **3 simple steps**
 
 #### 2. Replace Your Training Code
 ```java
-// BEFORE: Standard OpenNLP
+// BEFORE: Standard Apache OpenNLP
 import opennlp.tools.ml.maxent.MaxentModel;
 MaxentModel model = /* standard training */;
 
-// AFTER: GPU-accelerated (same API!)
-import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
-GpuMaxentModel model = /* GPU training */;
-// 10-15x faster, same API!
+// AFTER: GPU-accelerated extension (compatible API)
+import org.apache.opennlp.gpu.integration.GpuModelFactory;
+MaxentModel model = GpuModelFactory.createMaxentModel(/* standard model */);
+// 10-15x faster, compatible API!
 ```
 
 #### 3. Verify GPU Acceleration
