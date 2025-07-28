@@ -40,7 +40,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <opennlp.version>2.5.4</opennlp.version>
+    <opennlp.version>2.5.5</opennlp.version>
     <junit.version>5.13.1</junit.version>
     <slf4j.version>2.0.17</slf4j.version>
     <jocl.version>2.0.5</jocl.version>
