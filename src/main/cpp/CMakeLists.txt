@@ -3,17 +3,22 @@ cmake_minimum_required(VERSION 3.16)
 # Set CMake policy to suppress FindCUDA deprecation warning
 cmake_policy(SET CMP0146 NEW)
 
-# Check for HIP availability early to set languages
-find_program(HIP_HIPCC_EXECUTABLE
-    NAMES hipcc
-    PATHS /opt/rocm/bin /usr/bin /usr/local/bin
-    NO_DEFAULT_PATH
-)
+# Project setup with default C++ language
+project(opennlp_gpu_native LANGUAGES CXX)
 
-if(HIP_HIPCC_EXECUTABLE)
-    project(opennlp_gpu_native LANGUAGES CXX HIP)
-else()
-    project(opennlp_gpu_native LANGUAGES CXX)
+# Check for HIP/ROCm support
+if(USE_ROCM)
+    # Find ROCm/HIP installation
+    find_package(HIP QUIET)
+    if(HIP_FOUND)
+        message(STATUS "ROCm/HIP found")
+        enable_language(HIP)
+        set(GPU_PLATFORM "ROCM")
+        set(GPU_FOUND TRUE)
+        add_definitions(-DUSE_ROCM)
+    else()
+        message(STATUS "ROCm/HIP not found, falling back to CPU")
+    endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -58,14 +63,14 @@ if(USE_CUDA)
         set(GPU_LIBRARIES CUDA::cudart)
         set(GPU_INCLUDE_DIRS ${CUDAToolkit_INCLUDE_DIRS})
         set(GPU_COMPILE_DEFINITIONS "USE_CUDA")
-        
+
         # Enable CUDA language
         enable_language(CUDA)
         set(CMAKE_CUDA_STANDARD 17)
-        
+
         # CUDA-specific settings
         set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -O3 -arch=sm_50")
-        
+
         # CUDA source files
         set(GPU_SOURCES
             cuda/kernels.cu
@@ -84,13 +89,13 @@ if(USE_ROCM AND NOT GPU_FOUND)
         set(GPU_PLATFORM "ROCM")
         set(GPU_LIBRARIES hip::host)
         set(GPU_COMPILE_DEFINITIONS "USE_ROCM")
-        
+
         # Enable HIP language for .hip files (commented out - using C++ with HIP headers instead)
         # enable_language(HIP)
-        
+
         # Set HIP architectures (adjust for your specific GPUs)
         # set(CMAKE_HIP_ARCHITECTURES "gfx803;gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100")
-        
+
         # ROCm/HIP source files - use .cpp files with HIP headers for better compatibility
         set(GPU_SOURCES
             rocm/kernels.cpp
@@ -156,7 +161,7 @@ else()
 endif()
 
 target_compile_definitions(opennlp_gpu PRIVATE ${GPU_COMPILE_DEFINITIONS})
-target_include_directories(opennlp_gpu PRIVATE 
+target_include_directories(opennlp_gpu PRIVATE
     ${JNI_INCLUDE_DIRS}
     ${GPU_INCLUDE_DIRS}
 )
@@ -169,9 +174,9 @@ if(WIN32)
         SUFFIX ".dll"
         PREFIX ""
     )
-    
+
     # Enable DLL exports
-    target_compile_definitions(opennlp_gpu PRIVATE 
+    target_compile_definitions(opennlp_gpu PRIVATE
         -DBUILDING_DLL
         -D_WINDOWS
         -D_USRDLL

@@ -1,7 +1,7 @@
 [![](https://jitpack.io/v/hkevin01/opennlp-gpu.svg)](https://jitpack.io/#hkevin01/opennlp-gpu)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-11%2B-orange.svg)](https://openjdk.java.net/)
-[![OpenNLP](https://img.shields.io/badge/OpenNLP-2.5.4%2B-green.svg)](https://opennlp.apache.org/)
+[![OpenNLP](https://img.shields.io/badge/OpenNLP-2.5.5%2B-green.svg)](https://opennlp.apache.org/)
 
 # OpenNLP GPU Extension
 
@@ -17,7 +17,7 @@ This project is an **independent GPU acceleration extension** for [Apache OpenNL
 | **GPU Extension** | This project © 2025 OpenNLP GPU Extension Contributors |
 | **License** | Apache License 2.0 (compatible with Apache OpenNLP) |
 | **Status** | Third-party extension, not part of official Apache OpenNLP |
-| **Official Support** | https://opennlp.apache.org/ |
+| **Official Support** | <https://opennlp.apache.org/> |
 
 ## 🎯 **Key Features**
 
@@ -34,13 +34,46 @@ This project is an **independent GPU acceleration extension** for [Apache OpenNL
 ### **Option 1: Maven Dependency (Recommended)**
 
 Add to your `pom.xml`:
+
+# OpenNLP GPU Extension
+
+**Third-party GPU acceleration extension for Apache OpenNLP** - Providing 10-15x performance improvements with NVIDIA CUDA, AMD ROCm, and intelligent CPU fallback.
+
+## ⚠️ Important Attribution Notice
+
+This project is an **independent GPU acceleration extension** for [Apache OpenNLP](https://opennlp.apache.org/) and is **not officially endorsed or maintained by the Apache Software Foundation**.
+
+| | |
+|---|---|
+| **Base Library** | [Apache OpenNLP](https://opennlp.apache.org/) © Apache Software Foundation |
+| **GPU Extension** | This project © 2025 OpenNLP GPU Extension Contributors |
+| **License** | Apache License 2.0 (compatible with Apache OpenNLP) |
+| **Status** | Third-party extension, not part of official Apache OpenNLP |
+| **Official Support** | <https://opennlp.apache.org/> |
+
+## 🎯 **Key Features**
+
+- 🚀 **10-15x Performance Boost** - GPU acceleration for MaxEnt, Perceptron, and Naive Bayes models
+- 🔄 **Drop-in Replacement** - Compatible with existing Apache OpenNLP code
+- 🎮 **Multi-GPU Support** - NVIDIA CUDA, AMD ROCm, Intel OpenCL
+- 🛡️ **Automatic Fallback** - Seamless CPU fallback when GPU unavailable
+- 🌍 **Cross-Platform** - Windows, Linux, macOS support
+- ☁️ **Cloud Ready** - AWS, GCP, Azure GPU instances
+- 📦 **Maven/Gradle Ready** - Simple dependency management
+
+## 🚀 **Quick Start (2 minutes)**
+
+### **Option 1: Maven Dependency (Recommended)**
+
+Add to your `pom.xml`:
+
 ```xml
 <dependencies>
     <!-- Official Apache OpenNLP -->
     <dependency>
         <groupId>org.apache.opennlp</groupId>
         <artifactId>opennlp-tools</artifactId>
-        <version>2.5.4</version>
+        <version>2.5.5</version>
     </dependency>
 
     <!-- GPU Extension -->
@@ -53,6 +86,7 @@ Add to your `pom.xml`:
 ```
 
 **Minimal Usage Example:**
+
 ```java
 import org.apache.opennlp.gpu.integration.GpuModelFactory;
 import opennlp.tools.ml.model.MaxentModel;
@@ -69,14 +103,16 @@ double[] probabilities = gpuModel.eval(context);
 ### **Option 2: Gradle Dependency**
 
 Add to your `build.gradle`:
+
 ```gradle
 dependencies {
-    implementation 'org.apache.opennlp:opennlp-tools:2.5.4'
+    implementation 'org.apache.opennlp:opennlp-tools:2.5.5'
     implementation 'com.github.hkevin01:opennlp-gpu:1.0.0'
 }
 ```
 
 ### **Option 3: Development/Source Build**
+
 ```bash
 git clone https://github.com/hkevin01/opennlp-gpu.git
 cd opennlp-gpu
@@ -98,9 +134,10 @@ cd opennlp-gpu
 ## 🎬 **Live Demo**
 
 Try the interactive demo to see GPU acceleration in action:
+
 ```bash
 # After installation
-./gpu_demo.sh
+./scripts/gpu_demo.sh
 
 # Output:
 # 🚀 OpenNLP GPU Extension Demo
@@ -128,26 +165,28 @@ Our setup scripts automatically:
 
 | Platform | GPU Support | Status | Installation |
 |----------|-------------|---------|--------------|
-| **Ubuntu 20.04/22.04** | CUDA, ROCm | ✅ Primary | `./setup.sh` |
-| **Debian 11+** | CUDA, ROCm | ✅ Tested | `./setup.sh` |
-| **CentOS/RHEL 8/9** | CUDA, ROCm | ✅ Tested | `./setup.sh` |
-| **Amazon Linux 2** | CUDA, ROCm | ✅ Tested | `./aws_setup.sh` |
-| **macOS Intel/M1** | CPU, OpenCL | ✅ Tested | `./setup.sh` |
-| **Windows 10/11** | CUDA, CPU | ✅ Tested | `.\setup_windows.ps1` |
-| **WSL2** | CUDA | ✅ Enhanced | `./setup.sh` |
+| **Ubuntu 20.04/22.04** | CUDA, ROCm | ✅ Primary | `./scripts/setup.sh` |
+| **Debian 11+** | CUDA, ROCm | ✅ Tested | `./scripts/setup.sh` |
+| **CentOS/RHEL 8/9** | CUDA, ROCm | ✅ Tested | `./scripts/setup.sh` |
+| **Amazon Linux 2** | CUDA, ROCm | ✅ Tested | `./scripts/aws_setup.sh` |
+| **macOS Intel/M1** | CPU, OpenCL | ✅ Tested | `./scripts/setup.sh` |
+| **Windows 10/11** | CUDA, CPU | ✅ Tested | `.\scripts\setup_windows.ps1` |
+| **WSL2** | CUDA | ✅ Enhanced | `./scripts/setup.sh` |
 
 ### **GPU Platform Support**
+
 - 🟢 **NVIDIA CUDA** - Full acceleration (Compute Capability 3.5+)
 - 🟢 **AMD ROCm** - Full acceleration (GCN 3.0+, Vega, RDNA)
 - 🟠 **Intel OpenCL** - Basic acceleration (experimental)
 - 🔵 **CPU Fallback** - Always available (no performance loss vs. standard OpenNLP)
 
 ### **Cloud Platform Support**
+
 | Provider | GPU Instances | Setup Command |
 |----------|---------------|---------------|
-| **AWS EC2** | p2, p3, p4, g3, g4, g5 | `./aws_setup.sh` |
-| **Google Cloud** | T4, V100, A100 | `./setup.sh` |
-| **Microsoft Azure** | NC, ND, NV series | `./setup.sh` |
+| **AWS EC2** | p2, p3, p4, g3, g4, g5 | `./scripts/aws_setup.sh` |
+| **Google Cloud** | T4, V100, A100 | `./scripts/setup.sh` |
+| **Microsoft Azure** | NC, ND, NV series | `./scripts/setup.sh` |
 
 ## ✅ **Installation Verification**
 
@@ -180,16 +219,17 @@ After installation, verify everything works:
 - **Relationship**: Independent GPU acceleration extension for Apache OpenNLP
 - **Endorsement**: Not officially endorsed by the Apache Software Foundation
 - **Support**: Community-maintained, not supported by Apache OpenNLP team
-- **Compatibility**: Designed to work with Apache OpenNLP 2.5.4+
+- **Compatibility**: Designed to work with Apache OpenNLP 2.5.5+
 - **License**: Apache License 2.0 (same as Apache OpenNLP for compatibility)
 
-For official Apache OpenNLP support, visit: https://opennlp.apache.org/
+For official Apache OpenNLP support, visit: <https://opennlp.apache.org/>
 
 ## 🔥 **Expected Results**
 
 After running the setup, you'll see:
 
 ### **GPU Diagnostics Output:**
+
 ```bash
 🔍 OpenNLP GPU Extension - System Verification
 ==============================================
@@ -202,6 +242,7 @@ Java Project: ✅ Built
 ```
 
 ### **Demo Performance:**
+
 ```bash
 🚀 Running OpenNLP GPU Extension Demo
 ======================================
@@ -220,6 +261,7 @@ Java Project: ✅ Built
 ## ⚡ **Advanced Setup Options**
 
 ### **AWS EC2 Quick Setup**
+
 For AWS EC2 instances (especially GPU instances):
 
 ```bash
@@ -231,6 +273,7 @@ cd opennlp-gpu
 ```
 
 ### **Docker Setup**
+
 For containerized environments:
 
 ```bash
@@ -241,27 +284,31 @@ cd opennlp-gpu
 ```
 
 ### **Windows Setup**
+
 For native Windows development:
 
 #### **PowerShell (Recommended)**
+
 ```powershell
 # Run as Administrator
 git clone <repository-url>
 cd opennlp-gpu
-.\setup_windows.ps1    # Full automated setup
+.\scripts\setup_windows.ps1    # Full automated setup
 
 # Or with automatic dependency installation
-.\setup_windows.ps1 -ForceInstall
+.\scripts\setup_windows.ps1 -ForceInstall
 ```
 
 #### **Command Prompt**
+
 ```cmd
 git clone <repository-url>
 cd opennlp-gpu
-setup_windows.bat      # Batch script alternative
+scripts\setup_windows.bat      # Batch script alternative
 ```
 
 #### **Windows Prerequisites (Auto-Installed)**
+
 - **Java 21+** (OpenJDK via Chocolatey)
 - **Maven 3.6+** (via Chocolatey)
 - **CMake 3.16+** (via Chocolatey)
@@ -269,12 +316,14 @@ setup_windows.bat      # Batch script alternative
 - **Git for Windows**
 
 #### **Windows GPU Support**
+
 - ✅ **NVIDIA CUDA**: Full support with CUDA Toolkit
 - ✅ **AMD ROCm**: Windows ROCm (where available)
 - ✅ **CPU Fallback**: Always available
 - ✅ **WSL2 GPU**: Enhanced GPU support via WSL2
 
 ### **Manual Verification**
+
 Check if everything is working:
 
 ```bash
@@ -447,7 +496,7 @@ public class PerformanceMonitoring {
     <dependency>
         <groupId>org.apache.opennlp</groupId>
         <artifactId>opennlp-tools</artifactId>
-        <version>2.5.4</version>
+        <version>2.5.5</version>
     </dependency>
 
     <!-- GPU Extension -->
@@ -483,6 +532,7 @@ public class PerformanceMonitoring {
 We welcome contributions from the community! Here's how you can help:
 
 ### **Ways to Contribute**
+
 - 🐛 **Bug Reports** - Report issues on [GitHub Issues](https://github.com/hkevin01/opennlp-gpu/issues)
 - 💡 **Feature Requests** - Suggest new features and improvements
 - 🔧 **Code Contributions** - Submit pull requests for bug fixes and features
@@ -490,6 +540,7 @@ We welcome contributions from the community! Here's how you can help:
 - 🧪 **Testing** - Test on different platforms and report results
 
 ### **Development Setup**
+
 ```bash
 git clone https://github.com/hkevin01/opennlp-gpu.git
 cd opennlp-gpu
@@ -499,6 +550,7 @@ mvn clean compile test                # Run tests
 ```
 
 ### **Code Quality Standards**
+
 - ✅ All tests must pass
 - ✅ Code coverage > 80%
 - ✅ Follow Java coding conventions
@@ -509,11 +561,11 @@ mvn clean compile test                # Run tests
 
 | Resource | URL | Description |
 |----------|-----|-------------|
-| **GitHub Repository** | https://github.com/hkevin01/opennlp-gpu | Source code and issues |
-| **JitPack Build Status** | https://jitpack.io/#hkevin01/opennlp-gpu | Maven dependency status |
-| **Apache OpenNLP** | https://opennlp.apache.org/ | Official base library |
-| **NVIDIA CUDA** | https://developer.nvidia.com/cuda-zone | NVIDIA GPU computing |
-| **AMD ROCm** | https://rocmdocs.amd.com/ | AMD GPU computing |
+| **GitHub Repository** | <https://github.com/hkevin01/opennlp-gpu> | Source code and issues |
+| **JitPack Build Status** | <https://jitpack.io/#hkevin01/opennlp-gpu> | Maven dependency status |
+| **Apache OpenNLP** | <https://opennlp.apache.org/> | Official base library |
+| **NVIDIA CUDA** | <https://developer.nvidia.com/cuda-zone> | NVIDIA GPU computing |
+| **AMD ROCm** | <https://rocmdocs.amd.com/> | AMD GPU computing |
 
 ## 📄 **License**
 
@@ -553,7 +605,7 @@ git clone https://github.com/hkevin01/opennlp-gpu.git
 cd opennlp-gpu
 
 # Setup (one-time)
-./setup.sh
+./scripts/setup.sh
 
 # Run specific example
 cd examples/sentiment_analysis
@@ -569,6 +621,7 @@ mvn clean compile exec:java
 ### **Example Features**
 
 Each example includes:
+
 - 📊 **Performance Benchmarks** - Before/after GPU acceleration metrics
 - 🔧 **Complete Source Code** - Production-ready implementations
 - 📖 **Step-by-step Guides** - Detailed setup and usage instructions
@@ -595,4 +648,3 @@ Test the complete suite:
 # 🎉 Average GPU speedup: 13.8x
 # 💾 Total processing time: 2.3s (vs 31.7s CPU-only)
 ```
-

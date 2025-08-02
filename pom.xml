@@ -142,10 +142,11 @@
               <workingDirectory>${project.basedir}/src/main/cpp</workingDirectory>
               <arguments>
                 <argument>-B</argument>
-                <argument>${project.build.directory}/native</argument>
+                <argument>${project.basedir}/src/main/cpp/build</argument>
+                <argument>-S</argument>
+                <argument>.</argument>
                 <argument>-DCMAKE_BUILD_TYPE=Release</argument>
                 <argument>-DJAVA_HOME=${java.home}</argument>
-                <argument>.</argument>
               </arguments>
             </configuration>
           </execution>
@@ -157,10 +158,10 @@
             </goals>
             <configuration>
               <executable>cmake</executable>
-              <workingDirectory>${project.build.directory}/native</workingDirectory>
+              <workingDirectory>${project.basedir}/src/main/cpp</workingDirectory>
               <arguments>
                 <argument>--build</argument>
-                <argument>.</argument>
+                <argument>build</argument>
                 <argument>--config</argument>
                 <argument>Release</argument>
               </arguments>

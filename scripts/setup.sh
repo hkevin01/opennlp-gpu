@@ -66,7 +66,7 @@ handle_error() {
     local line_number=$1
     print_error "Error occurred in setup script at line $line_number (exit code: $exit_code)"
     echo "$(date): Error at line $line_number - exit code $exit_code" >> "${ERROR_LOG}"
-    
+
     # Try to provide helpful suggestions
     case $exit_code in
         1) print_warning "General error - check the logs above for details" ;;
@@ -74,7 +74,7 @@ handle_error() {
         127) print_warning "Command not found - some dependencies might be missing" ;;
         *) print_warning "Unexpected error - check ${ERROR_LOG} for details" ;;
     esac
-    
+
     print_status "Attempting to continue with alternative approaches..."
     return 0  # Don't exit the script
 }
@@ -85,18 +85,18 @@ trap 'handle_error ${LINENO}' ERR
 # Function to detect system information
 detect_system() {
     print_step "Detecting System Configuration"
-    
+
     # Detect OS
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         OS_TYPE="linux"
-        
+
         # Detect distribution
         if [ -f /etc/os-release ]; then
             . /etc/os-release
             DISTRO=$ID
             print_status "Detected Linux distribution: $PRETTY_NAME"
         fi
-        
+
         # Detect package manager
         if command -v apt-get &> /dev/null; then
             PACKAGE_MANAGER="apt"
@@ -107,7 +107,7 @@ detect_system() {
         elif command -v pacman &> /dev/null; then
             PACKAGE_MANAGER="pacman"
         fi
-        
+
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         OS_TYPE="macos"
         PACKAGE_MANAGER="brew"
@@ -116,7 +116,7 @@ detect_system() {
         OS_TYPE="windows"
         print_status "Detected Windows (WSL/Cygwin)"
     fi
-    
+
     # Detect cloud provider
     if curl -s --connect-timeout 2 http://169.254.169.254/latest/meta-data/ &>/dev/null; then
         CLOUD_PROVIDER="aws"
@@ -128,7 +128,7 @@ detect_system() {
         CLOUD_PROVIDER="azure"
         print_status "Detected Azure instance"
     fi
-    
+
     # Detect GPU
     if command -v nvidia-smi &> /dev/null; then
         GPU_TYPE="nvidia"
@@ -146,14 +146,14 @@ detect_system() {
         GPU_TYPE="none"
         print_status "No GPU detected or CPU-only mode"
     fi
-    
+
     print_status "System detection complete: OS=$OS_TYPE, Distro=$DISTRO, Package Manager=$PACKAGE_MANAGER, GPU=$GPU_TYPE"
 }
 
 # Function to check and install Java
 install_java() {
     print_step "Checking Java Installation"
-    
+
     if command -v java &> /dev/null; then
         JAVA_VER=$(java -version 2>&1 | head -n 1 | cut -d'"' -f2 | cut -d'.' -f1)
         if [ "$JAVA_VER" -ge "$JAVA_VERSION" ]; then
@@ -163,9 +163,9 @@ install_java() {
             print_warning "Java $JAVA_VER found, but need Java $JAVA_VERSION or higher"
         fi
     fi
-    
+
     print_status "Installing Java $JAVA_VERSION..."
-    
+
     case $PACKAGE_MANAGER in
         apt)
             sudo apt-get update || print_warning "Failed to update package list"
@@ -189,7 +189,7 @@ install_java() {
             return 1
             ;;
     esac
-    
+
     # Set JAVA_HOME
     if [ -z "$JAVA_HOME" ]; then
         case $OS_TYPE in
@@ -204,7 +204,7 @@ install_java() {
         esac
         print_status "Set JAVA_HOME to $JAVA_HOME"
     fi
-    
+
     # Verify installation
     if command -v java &> /dev/null; then
         JAVA_VER=$(java -version 2>&1 | head -n 1)
@@ -218,15 +218,15 @@ install_java() {
 # Function to check and install Maven
 install_maven() {
     print_step "Checking Maven Installation"
-    
+
     if command -v mvn &> /dev/null; then
         MVN_VER=$(mvn --version | head -n 1)
         print_success "Maven is already installed: $MVN_VER"
         return 0
     fi
-    
+
     print_status "Installing Maven..."
-    
+
     case $PACKAGE_MANAGER in
         apt)
             sudo apt-get install -y maven || print_error "Failed to install Maven via apt"
@@ -244,14 +244,14 @@ install_maven() {
             cd /tmp
             wget -q "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" || \
             curl -sL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" -o "apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-            
+
             sudo tar xzf "apache-maven-${MAVEN_VERSION}-bin.tar.gz" -C /opt
             sudo ln -sf "/opt/apache-maven-${MAVEN_VERSION}/bin/mvn" /usr/local/bin/mvn
             echo "export PATH=/opt/apache-maven-${MAVEN_VERSION}/bin:\$PATH" >> ~/.bashrc
             export PATH="/opt/apache-maven-${MAVEN_VERSION}/bin:$PATH"
             ;;
     esac
-    
+
     # Verify installation
     if command -v mvn &> /dev/null; then
         MVN_VER=$(mvn --version | head -n 1)
@@ -265,12 +265,12 @@ install_maven() {
 # Function to check and install CMake
 install_cmake() {
     print_step "Checking CMake Installation"
-    
+
     if command -v cmake &> /dev/null; then
         CMAKE_VER=$(cmake --version | head -n 1 | cut -d' ' -f3)
         CMAKE_MAJOR=$(echo $CMAKE_VER | cut -d'.' -f1)
         CMAKE_MINOR=$(echo $CMAKE_VER | cut -d'.' -f2)
-        
+
         if [ "$CMAKE_MAJOR" -gt 3 ] || ([ "$CMAKE_MAJOR" -eq 3 ] && [ "$CMAKE_MINOR" -ge 16 ]); then
             print_success "CMake $CMAKE_VER is already installed"
             return 0
@@ -278,9 +278,9 @@ install_cmake() {
             print_warning "CMake $CMAKE_VER found, but need $CMAKE_MIN_VERSION or higher"
         fi
     fi
-    
+
     print_status "Installing CMake..."
-    
+
     case $PACKAGE_MANAGER in
         apt)
             # Try official repository first
@@ -313,14 +313,14 @@ install_cmake() {
             cd /tmp
             wget -q "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" || \
             curl -sL "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" -o "cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz"
-            
+
             sudo tar xzf "cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" -C /opt
             sudo ln -sf "/opt/cmake-${CMAKE_VERSION}-linux-x86_64/bin/cmake" /usr/local/bin/cmake
             echo "export PATH=/opt/cmake-${CMAKE_VERSION}-linux-x86_64/bin:\$PATH" >> ~/.bashrc
             export PATH="/opt/cmake-${CMAKE_VERSION}-linux-x86_64/bin:$PATH"
             ;;
     esac
-    
+
     # Verify installation
     if command -v cmake &> /dev/null; then
         CMAKE_VER=$(cmake --version | head -n 1 | cut -d' ' -f3)
@@ -334,7 +334,7 @@ install_cmake() {
 # Function to install development tools
 install_dev_tools() {
     print_step "Installing Development Tools"
-    
+
     case $PACKAGE_MANAGER in
         apt)
             sudo apt-get install -y build-essential git curl wget || \
@@ -350,14 +350,14 @@ install_dev_tools() {
             brew install git curl wget || print_warning "Some tools may not have been installed"
             ;;
     esac
-    
+
     print_success "Development tools installation completed"
 }
 
 # Function to install GPU drivers and libraries
 install_gpu_support() {
     print_step "Setting up GPU Support"
-    
+
     case $GPU_TYPE in
         nvidia)
             print_success "NVIDIA drivers already detected"
@@ -407,7 +407,7 @@ install_gpu_support() {
                     print_warning "ROCm installation failed - continuing with CPU mode"
                     ;;
             esac
-            
+
             # Set up ROCm environment
             if [ -d "/opt/rocm" ]; then
                 echo "export ROCM_PATH=/opt/rocm" >> ~/.bashrc
@@ -445,18 +445,18 @@ install_gpu_support() {
 # Function to build the native library
 build_native_library() {
     print_step "Building Native C++ Library"
-    
+
     cd "${SCRIPT_DIR}/src/main/cpp" || {
         print_error "Cannot find C++ source directory"
         return 1
     }
-    
+
     # Clean previous builds
     rm -rf CMakeCache.txt CMakeFiles/ Makefile build/ || true
-    
+
     # Configure with CMake
     print_status "Configuring build with CMake..."
-    
+
     CMAKE_ARGS=""
     if [ "$GPU_TYPE" = "amd" ] || [ "$GPU_TYPE" = "amd_no_rocm" ]; then
         CMAKE_ARGS="-DUSE_ROCM=ON"
@@ -466,7 +466,7 @@ build_native_library() {
     elif [ "$GPU_TYPE" = "nvidia" ]; then
         CMAKE_ARGS="-DUSE_CUDA=ON"
     fi
-    
+
     print_status "Running: cmake . $CMAKE_ARGS"
     cmake . $CMAKE_ARGS 2>&1 | tee -a "${LOG_FILE}" || {
         print_warning "CMake configuration failed, trying CPU-only build..."
@@ -477,7 +477,7 @@ build_native_library() {
             return 1
         }
     }
-    
+
     # Build
     print_status "Building native library..."
     make -j$(nproc 2>/dev/null || echo 4) VERBOSE=1 2>&1 | tee -a "${LOG_FILE}" || {
@@ -488,31 +488,31 @@ build_native_library() {
             return 1
         }
     }
-    
+
     # Verify build
     if [ -f "libopennlp_gpu.so" ] || [ -f "libopennlp_gpu.dylib" ]; then
         print_success "Native library built successfully"
-        
+
         # Copy to Java resources
         mkdir -p "${SCRIPT_DIR}/src/main/resources/native/linux/x86_64" || true
         cp libopennlp_gpu.* "${SCRIPT_DIR}/src/main/resources/native/linux/x86_64/" 2>/dev/null || \
         cp libopennlp_gpu.* "${SCRIPT_DIR}/src/main/resources/" || \
         print_warning "Could not copy native library to resources directory"
-        
+
     else
         print_error "Native library build verification failed"
         return 1
     fi
-    
+
     cd "${SCRIPT_DIR}"
 }
 
 # Function to build the Java project
 build_java_project() {
     print_step "Building Java Project"
-    
+
     cd "${SCRIPT_DIR}"
-    
+
     # Clean and compile
     print_status "Running Maven clean compile..."
     mvn clean compile || {
@@ -526,41 +526,41 @@ build_java_project() {
             }
         }
     }
-    
+
     print_success "Java project built successfully"
 }
 
 # Function to run tests and validation
 run_validation() {
     print_step "Running Validation Tests"
-    
+
     cd "${SCRIPT_DIR}"
-    
+
     # Build classpath
     mvn dependency:build-classpath -Dmdep.outputFile=classpath.txt -q || {
         print_warning "Could not build classpath file"
         return 0
     }
-    
+
     # Run GPU diagnostics
     print_status "Running GPU diagnostics..."
     timeout 30s java -cp "target/classes:$(cat classpath.txt 2>/dev/null || echo '')" org.apache.opennlp.gpu.tools.GpuDiagnostics 2>/dev/null || {
         print_warning "GPU diagnostics failed or timed out"
     }
-    
+
     # Run demo
     print_status "Running GPU ML demo..."
     timeout 60s java -cp "target/classes:$(cat classpath.txt 2>/dev/null || echo '')" org.apache.opennlp.gpu.ml.GpuMlDemo 2>/dev/null || {
         print_warning "GPU ML demo failed or timed out"
     }
-    
+
     print_success "Validation completed"
 }
 
 # Function to create setup summary
 create_summary() {
     print_step "Setup Summary"
-    
+
     SUMMARY_FILE="${SCRIPT_DIR}/SETUP_SUMMARY.md"
     cat > "$SUMMARY_FILE" << EOF
 # OpenNLP GPU Extension - Setup Summary
@@ -618,7 +618,7 @@ $([ -n "$CUDA_HOME" ] && echo "- CUDA_HOME=$CUDA_HOME")
 
 Generated on: $(date)
 EOF
-    
+
     print_success "Setup summary created: $SUMMARY_FILE"
 }
 
@@ -635,16 +635,16 @@ main() {
 ║  Cloud: AWS, GCP, Azure, Local                               ║
 ╚════════════════════════════════════════════════════════════════╝
 EOF
-    
+
     print_status "Starting OpenNLP GPU Extension setup..."
     echo "Log file: $LOG_FILE"
     echo "Error log: $ERROR_LOG"
     echo
-    
+
     # Initialize logs
     echo "Setup started at $(date)" > "$LOG_FILE"
     echo "Setup started at $(date)" > "$ERROR_LOG"
-    
+
     # Main setup sequence
     detect_system
     install_java
@@ -656,12 +656,12 @@ EOF
     build_java_project
     run_validation
     create_summary
-    
+
     print_step "Setup Complete!"
     print_success "OpenNLP GPU Extension has been successfully set up!"
     print_status "Run './gpu_demo.sh' to see it in action"
     print_status "Check SETUP_SUMMARY.md for detailed information"
-    
+
     # Create quick demo script
     cat > "${SCRIPT_DIR}/gpu_demo.sh" << 'EOF'
 #!/bin/bash
@@ -675,8 +675,10 @@ echo
 echo "2. GPU ML Demo:"
 java -cp "target/classes:$(cat classpath.txt 2>/dev/null || echo '')" org.apache.opennlp.gpu.ml.GpuMlDemo
 EOF
+    # Make scripts executable
     chmod +x "${SCRIPT_DIR}/gpu_demo.sh"
-    
+    chmod +x "${PROJECT_ROOT}/docker/docker_setup.sh"
+
     echo
     print_success "🎉 All done! Your OpenNLP GPU Extension is ready to use!"
 }
