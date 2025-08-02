@@ -9,7 +9,7 @@
 
 ## ⚠️ Important Attribution Notice
 
-This project is an **independent GPU acceleration extension** for [Apache OpenNLP](https://opennlp.apache.org/) and is **not officially endorsed or maintained by the Apache Software Foundation**. 
+This project is an **independent GPU acceleration extension** for [Apache OpenNLP](https://opennlp.apache.org/) and is **not officially endorsed or maintained by the Apache Software Foundation**.
 
 | | |
 |---|---|
@@ -42,7 +42,7 @@ Add to your `pom.xml`:
         <artifactId>opennlp-tools</artifactId>
         <version>2.5.4</version>
     </dependency>
-    
+
     <!-- GPU Extension -->
     <dependency>
         <groupId>com.github.hkevin01</groupId>
@@ -80,8 +80,8 @@ dependencies {
 ```bash
 git clone https://github.com/hkevin01/opennlp-gpu.git
 cd opennlp-gpu
-./setup.sh        # Handles everything automatically!
-./gpu_demo.sh     # See it in action
+./scripts/setup.sh        # Handles everything automatically!
+./scripts/gpu_demo.sh     # See it in action
 ```
 
 ## 📊 **Performance Comparison**
@@ -155,21 +155,21 @@ After installation, verify everything works:
 
 ```bash
 # Quick system check
-./verify.sh
+./tests/verify.sh
 # ✅ Java 21+: Found
-# ✅ Maven 3.6+: Found  
+# ✅ Maven 3.6+: Found
 # ✅ GPU: NVIDIA RTX 4090
 # ✅ Native library: Built
 # ✅ Java integration: Working
 
 # Comprehensive test
-./test_install.sh
+./tests/test_install.sh
 # ✅ All 15 tests passed
 # ✅ GPU acceleration: 12.3x average speedup
 # ✅ CPU fallback: Working
 
 # Interactive demo
-./gpu_demo.sh
+./scripts/gpu_demo.sh
 # 🚀 Live performance demonstration
 ```
 
@@ -208,7 +208,7 @@ Java Project: ✅ Built
 
 1. GPU Diagnostics:
 ✅ AMD GPU: Detected: Radeon RX 5600 XT
-✅ ROCm Runtime: Available  
+✅ ROCm Runtime: Available
 ✅ GPU acceleration is ready!
 
 2. GPU ML Demo:
@@ -227,7 +227,7 @@ For AWS EC2 instances (especially GPU instances):
 sudo apt update
 git clone <repository-url>
 cd opennlp-gpu
-./aws_setup.sh    # AWS-optimized with GPU driver detection
+./scripts/setup_aws_gpu_environment.sh    # AWS-optimized with GPU driver detection
 ```
 
 ### **Docker Setup**
@@ -236,8 +236,8 @@ For containerized environments:
 ```bash
 git clone <repository-url>
 cd opennlp-gpu
-./docker_setup.sh     # Creates GPU-enabled Docker image
-./run_docker.sh       # Run in container
+./docker/docker_setup.sh     # Creates GPU-enabled Docker image
+./docker/run_docker.sh       # Run in container
 ```
 
 ### **Windows Setup**
@@ -278,9 +278,9 @@ setup_windows.bat      # Batch script alternative
 Check if everything is working:
 
 ```bash
-./verify.sh           # Quick system check
-./test_install.sh     # Comprehensive test
-./gpu_demo.sh         # Full demo
+./tests/verify.sh           # Quick system check
+./tests/test_install.sh     # Comprehensive test
+./scripts/gpu_demo.sh       # Full demo
 ```
 
 ## 🤖 **Development Acknowledgments**
@@ -297,7 +297,7 @@ The collaboration between human expertise and AI assistance enabled rapid develo
 
 ---
 
-*For detailed documentation, see [SETUP_GUIDE.md](docs/setup/SETUP_GUIDE.md) and [ONE_CLICK_SETUP_COMPLETE.md](docs/setup/ONE_CLICK_SETUP_COMPLETE.md)*
+*For detailed documentation, see [SETUP_GUIDE.md](SETUP_GUIDE.md) and [ONE_CLICK_SETUP_COMPLETE.md](ONE_CLICK_SETUP_COMPLETE.md)*
 
 ## 📦 **Java Project Integration**
 
@@ -332,18 +332,18 @@ public class GpuSentimentAnalysis {
         SentenceDetectorME sentenceDetector = /* load sentence model */;
         TokenizerME tokenizer = /* load tokenizer model */;
         MaxentModel sentimentModel = /* load sentiment model */;
-        
+
         // 2. Enable GPU acceleration (one line!)
         MaxentModel gpuSentimentModel = GpuModelFactory.createMaxentModel(sentimentModel);
-        
+
         // 3. Process text with GPU acceleration
         String text = "I love this product! It works great.";
         String[] sentences = sentenceDetector.sentDetect(text);
-        
+
         for (String sentence : sentences) {
             String[] tokens = tokenizer.tokenize(sentence);
             double[] probabilities = gpuSentimentModel.eval(tokens);
-            
+
             System.out.println("Sentence: " + sentence);
             System.out.println("Positive probability: " + probabilities[1]);
             // 10-15x faster than CPU-only version!
@@ -365,20 +365,20 @@ public class HighPerformanceBatchProcessor {
         config.setGpuEnabled(true);
         config.setBatchSize(64);  // Process 64 samples at once
         config.setMemoryPoolSizeMB(512);  // Use 512MB GPU memory
-        
+
         // Create GPU-accelerated model
         MaxentModel gpuModel = GpuModelFactory.createMaxentModel(originalModel, config);
-        
+
         // Process large batches efficiently
         String[] documents = loadDocuments(10000);  // 10K documents
-        
+
         long startTime = System.currentTimeMillis();
         for (String document : documents) {
             double[] probabilities = gpuModel.eval(extractFeatures(document));
             processResults(probabilities);
         }
         long duration = System.currentTimeMillis() - startTime;
-        
+
         System.out.println("Processed 10K documents in " + duration + "ms");
         // Typical result: ~800ms vs ~12000ms CPU-only (15x speedup)
     }
@@ -393,7 +393,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 
 public class RobustGpuIntegration {
     private MaxentModel model;
-    
+
     public void initializeModel(MaxentModel originalModel) {
         try {
             // Try GPU acceleration first
@@ -410,7 +410,7 @@ public class RobustGpuIntegration {
             System.out.println("⚠️ GPU initialization failed, using CPU: " + e.getMessage());
         }
     }
-    
+
     public double[] predict(String[] features) {
         return model.eval(features);  // Same API regardless of GPU/CPU
     }
@@ -426,13 +426,13 @@ public class PerformanceMonitoring {
     public static void monitorGpuPerformance(MaxentModel model) {
         if (model instanceof GpuMaxentModel) {
             GpuMaxentModel gpuModel = (GpuMaxentModel) model;
-            
-            System.out.println("GPU Status: " + 
+
+            System.out.println("GPU Status: " +
                 (gpuModel.isUsingGpu() ? "Enabled" : "CPU Fallback"));
             System.out.println("Speedup Factor: " + gpuModel.getSpeedupFactor() + "x");
-            
+
             Map<String, Object> stats = gpuModel.getPerformanceStats();
-            stats.forEach((key, value) -> 
+            stats.forEach((key, value) ->
                 System.out.println(key + ": " + value));
         }
     }
@@ -449,7 +449,7 @@ public class PerformanceMonitoring {
         <artifactId>opennlp-tools</artifactId>
         <version>2.5.4</version>
     </dependency>
-    
+
     <!-- GPU Extension -->
     <dependency>
         <groupId>com.github.hkevin01</groupId>
@@ -472,11 +472,11 @@ public class PerformanceMonitoring {
 
 | Topic | Link | Description |
 |-------|------|-------------|
-| **Complete Setup Guide** | [SETUP_GUIDE.md](docs/SETUP_GUIDE.md) | Detailed installation instructions |
-| **Java Integration Guide** | [java_integration_guide.md](docs/java_integration_guide.md) | Complete coding examples |
-| **Performance Benchmarks** | [performance_benchmarks.md](docs/performance_benchmarks.md) | Detailed performance analysis |
-| **API Documentation** | [API_DOCS.md](docs/API_DOCS.md) | Complete API reference |
-| **Troubleshooting** | [FAQ.md](docs/FAQ.md) | Common issues and solutions |
+| **Complete Setup Guide** | [SETUP_GUIDE.md](SETUP_GUIDE.md) | Detailed installation instructions |
+| **Java Integration Guide** | [java_integration_guide.md](java_integration_guide.md) | Complete coding examples |
+| **Performance Benchmarks** | [performance_benchmarks.md](performance_benchmarks.md) | Detailed performance analysis |
+| **API Documentation** | [API_DOCS.md](API_DOCS.md) | Complete API reference |
+| **Troubleshooting** | [FAQ.md](FAQ.md) | Common issues and solutions |
 
 ## 🤝 **Contributing**
 
@@ -493,9 +493,9 @@ We welcome contributions from the community! Here's how you can help:
 ```bash
 git clone https://github.com/hkevin01/opennlp-gpu.git
 cd opennlp-gpu
-./setup.sh                    # Set up development environment
-mvn clean compile test        # Run tests
-./scripts/run_all_demos.sh    # Verify functionality
+./scripts/setup.sh                    # Set up development environment
+mvn clean compile test                # Run tests
+./scripts/run_all_demos.sh            # Verify functionality
 ```
 
 ### **Code Quality Standards**
@@ -517,7 +517,7 @@ mvn clean compile test        # Run tests
 
 ## 📄 **License**
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.
 
 **Attribution**: This project builds upon [Apache OpenNLP](https://opennlp.apache.org/) © Apache Software Foundation.
 
@@ -587,11 +587,11 @@ Test the complete suite:
 # Output includes:
 # 🧪 Testing 5 GPU-accelerated examples...
 # ✅ Sentiment Analysis: 13.1x speedup
-# ✅ Named Entity Recognition: 14.3x speedup  
+# ✅ Named Entity Recognition: 14.3x speedup
 # ✅ Document Classification: 13.8x speedup
 # ✅ Language Detection: 12.5x speedup
 # ✅ Question Answering: 15.2x speedup
-# 
+#
 # 🎉 Average GPU speedup: 13.8x
 # 💾 Total processing time: 2.3s (vs 31.7s CPU-only)
 ```
