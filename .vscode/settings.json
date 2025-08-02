@@ -9,10 +9,38 @@
     "ROCM_PATH": "/opt/rocm",
     "HIP_PATH": "/opt/rocm"
   },
-  "cmake.configureArgs": ["-DUSE_ROCM=ON"],
+  "cmake.configureArgs": [
+    "-DUSE_ROCM=ON"
+  ],
   "cmake.sourceDirectory": "/home/kevin/Projects/opennlp-gpu/src/main/cpp",
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.debug.settings.onBuildFailureProceed": true,
   "powershell.powerShellDefaultVersion": "PowerShell (x64)",
-  "terminal.integrated.defaultProfile.linux": "bash"
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "chat.tools.autoApprove": true,
+  "chat.agent.maxRequests": 100,
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.chat.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": true,
+    "markdown": true,
+    "scminput": false
+  },
+  "github.copilot.advanced": {
+    "temperature": 0.3,
+    "top_p": 1,
+    "listCount": 10
+  },
+  "git.commitMessageConvention": "conventional",
+  "git.enableSmartCommit": true,
+  "git.suggestSmartCommit": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "workbench.editor.enablePreview": false
 }

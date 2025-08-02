@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * This project is a third-party GPU acceleration extension for Apache OpenNLP.
  * It is not officially endorsed or maintained by the Apache Software Foundation.
  */
@@ -29,13 +29,13 @@ import opennlp.tools.ml.model.MaxentModel;
  * Provides GPU acceleration for MaxEnt model evaluation while maintaining OpenNLP API compatibility
  */
 public class GpuMaxentModel implements MaxentModel {
-    
+
     private static final GpuLogger logger = GpuLogger.getLogger(GpuMaxentModel.class);
-    
+
     private final MaxentModel baseModel;
     private final GpuConfig config;
     private final boolean gpuEnabled;
-    
+
     /**
      * Create a GPU-accelerated MaxEnt model
      * @param baseModel The base MaxEnt model to accelerate
@@ -45,14 +45,14 @@ public class GpuMaxentModel implements MaxentModel {
         this.baseModel = baseModel;
         this.config = config;
         this.gpuEnabled = config.isGpuEnabled() && GpuModelFactory.isGpuAvailable();
-        
+
         if (gpuEnabled) {
             logger.info("GPU acceleration enabled for MaxEnt model");
         } else {
             logger.info("Using CPU fallback for MaxEnt model");
         }
     }
-    
+
     @Override
     public double[] eval(String[] context) {
         if (gpuEnabled) {
@@ -63,7 +63,7 @@ public class GpuMaxentModel implements MaxentModel {
             return baseModel.eval(context);
         }
     }
-    
+
     @Override
     public double[] eval(String[] context, double[] probs) {
         if (gpuEnabled) {
@@ -74,7 +74,7 @@ public class GpuMaxentModel implements MaxentModel {
             return baseModel.eval(context, probs);
         }
     }
-    
+
     @Override
     public double[] eval(String[] context, float[] values) {
         if (gpuEnabled) {
@@ -85,32 +85,32 @@ public class GpuMaxentModel implements MaxentModel {
             return baseModel.eval(context, values);
         }
     }
-    
+
     @Override
     public String getBestOutcome(double[] ocs) {
         return baseModel.getBestOutcome(ocs);
     }
-    
+
     @Override
     public String getAllOutcomes(double[] ocs) {
         return baseModel.getAllOutcomes(ocs);
     }
-    
+
     @Override
     public String getOutcome(int i) {
         return baseModel.getOutcome(i);
     }
-    
+
     @Override
     public int getIndex(String outcome) {
         return baseModel.getIndex(outcome);
     }
-    
+
     @Override
     public int getNumOutcomes() {
         return baseModel.getNumOutcomes();
     }
-    
+
     /**
      * Cleanup GPU resources
      */
@@ -118,7 +118,7 @@ public class GpuMaxentModel implements MaxentModel {
         // GPU cleanup would go here if needed
         logger.debug("GPU MaxEnt model cleanup completed");
     }
-    
+
     /**
      * Check if this model is using GPU acceleration
      * @return true if GPU is being used, false if using CPU fallback
@@ -126,7 +126,7 @@ public class GpuMaxentModel implements MaxentModel {
     public boolean isUsingGpu() {
         return gpuEnabled;
     }
-    
+
     /**
      * Get the GPU speedup factor compared to CPU
      * @return speedup factor (e.g., 2.5 means 2.5x faster than CPU)
@@ -139,20 +139,28 @@ public class GpuMaxentModel implements MaxentModel {
             return 1.0; // No speedup when using CPU
         }
     }
-    
+
     /**
      * Get performance statistics for this model
      * @return Map containing performance metrics
      */
     public java.util.Map<String, Object> getPerformanceStats() {
         java.util.Map<String, Object> stats = new java.util.HashMap<>();
-        
+
         stats.put("gpu_enabled", gpuEnabled);
         stats.put("speedup_factor", getSpeedupFactor());
         stats.put("memory_usage_mb", config.getMemoryPoolSizeMB());
         stats.put("batch_size", config.getBatchSize());
         stats.put("model_type", "MaxEnt");
-        
+
         return stats;
+    }
+
+    /**
+     * Get the underlying base MaxEnt model for compatibility
+     * @return The base MaxEnt model
+     */
+    public MaxentModel getBaseModel() {
+        return baseModel;
     }
 }
