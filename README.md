@@ -5,7 +5,7 @@
 
 # OpenNLP GPU Extension
 
-**Third-party GPU acceleration extension for Apache OpenNLP** - Providing 10-15x performance improvements with NVIDIA CUDA, AMD ROCm, and intelligent CPU fallback.
+**Third-party GPU acceleration extension for Apache OpenNLP** - Providing practical 2-5x performance improvements for production NLP workflows with NVIDIA CUDA, AMD ROCm, and intelligent CPU fallback.
 
 ## ⚠️ Important Attribution Notice
 
@@ -21,39 +21,8 @@ This project is an **independent GPU acceleration extension** for [Apache OpenNL
 
 ## 🎯 **Key Features**
 
-- 🚀 **10-15x Performance Boost** - GPU acceleration for MaxEnt, Perceptron, and Naive Bayes models
-- 🔄 **Drop-in Replacement** - Compatible with existing Apache OpenNLP code
-- 🎮 **Multi-GPU Support** - NVIDIA CUDA, AMD ROCm, Intel OpenCL
-- 🛡️ **Automatic Fallback** - Seamless CPU fallback when GPU unavailable
-- 🌍 **Cross-Platform** - Windows, Linux, macOS support
-- ☁️ **Cloud Ready** - AWS, GCP, Azure GPU instances
-- 📦 **Maven/Gradle Ready** - Simple dependency management
-
-## 🚀 **Quick Start (2 minutes)**
-
-### **Option 1: Maven Dependency (Recommended)**
-
-Add to your `pom.xml`:
-
-# OpenNLP GPU Extension
-
-**Third-party GPU acceleration extension for Apache OpenNLP** - Providing 10-15x performance improvements with NVIDIA CUDA, AMD ROCm, and intelligent CPU fallback.
-
-## ⚠️ Important Attribution Notice
-
-This project is an **independent GPU acceleration extension** for [Apache OpenNLP](https://opennlp.apache.org/) and is **not officially endorsed or maintained by the Apache Software Foundation**.
-
-| | |
-|---|---|
-| **Base Library** | [Apache OpenNLP](https://opennlp.apache.org/) © Apache Software Foundation |
-| **GPU Extension** | This project © 2025 OpenNLP GPU Extension Contributors |
-| **License** | Apache License 2.0 (compatible with Apache OpenNLP) |
-| **Status** | Third-party extension, not part of official Apache OpenNLP |
-| **Official Support** | <https://opennlp.apache.org/> |
-
-## 🎯 **Key Features**
-
-- 🚀 **10-15x Performance Boost** - GPU acceleration for MaxEnt, Perceptron, and Naive Bayes models
+- 🚀 **2-5x Performance Improvement** - Realistic speedups for production batch processing
+- 💰 **Cost-Effective Cloud Deployment** - 30-60% reduction in cloud processing costs
 - 🔄 **Drop-in Replacement** - Compatible with existing Apache OpenNLP code
 - 🎮 **Multi-GPU Support** - NVIDIA CUDA, AMD ROCm, Intel OpenCL
 - 🛡️ **Automatic Fallback** - Seamless CPU fallback when GPU unavailable
