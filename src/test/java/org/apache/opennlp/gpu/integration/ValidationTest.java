@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
- * ID: VT-001
+
  * Requirement: ValidationTest must validate numerical correctness of GPU operations against CPU reference implementation.
  * Purpose: JUnit test comparing GPU matrix operation results against CpuComputeProvider with tolerance 1e-5.
  * Rationale: Numerical validation catches GPU precision errors and kernel logic bugs early in the development cycle.

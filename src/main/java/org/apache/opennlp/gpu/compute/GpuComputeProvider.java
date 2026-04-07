@@ -20,7 +20,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * ID: GPUPROV-001
+
  * Requirement: Provide a GPU-backed ComputeProvider that dispatches matrix and
  *   NLP operations to OpenCL kernels, falling back to CpuComputeProvider when
  *   the GPU context is unavailable.
@@ -57,7 +57,7 @@ public class GpuComputeProvider implements ComputeProvider {
     private Object resourceManager;
 
     /**
-     * ID: GPUPROV-002
+
      * Requirement: Construct a provider with the supplied configuration.
      *   Does NOT initialize the GPU context — call initialize() separately.
      * Inputs: config — non-null GpuConfig instance.
@@ -72,7 +72,7 @@ public class GpuComputeProvider implements ComputeProvider {
     public boolean isGpuProvider() { return true; }
 
     /**
-     * ID: GPUPROV-010
+
      * Requirement: Release GPU context, command queues, and memory pools.
      *   Must be idempotent — safe to call multiple times.
      */
@@ -94,7 +94,7 @@ public class GpuComputeProvider implements ComputeProvider {
     public Type getType() { return Type.OPENCL; }
 
     /**
-     * ID: GPUPROV-011
+
      * Requirement: Report whether the GPU context was successfully initialized.
      * Outputs: true only after initialize() completes with a live GPU device.
      */
@@ -104,7 +104,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-012
+
      * Requirement: Report the GPU device's total memory in MB.
      * Outputs: Stub returns 4096 MB until native bridge is wired.
      */
@@ -112,7 +112,7 @@ public class GpuComputeProvider implements ComputeProvider {
     public long getMaxMemoryMB() { return 4096L; }
 
     /**
-     * ID: GPUPROV-013
+
      * Requirement: Report current GPU memory usage in MB.
      * Outputs: 0 until native memory tracking is implemented.
      */
@@ -126,7 +126,7 @@ public class GpuComputeProvider implements ComputeProvider {
     // ---- Compute Operations (GPU → CPU fallback pattern) ----
 
     /**
-     * ID: GPUPROV-020
+
      * Requirement: Execute matrix multiply on GPU; fall back to CPU if GPU
      *   context is unavailable.
      */
@@ -137,7 +137,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-021
+
      * Requirement: Execute element-wise matrix addition on GPU; fall back to CPU.
      */
     @Override
@@ -147,7 +147,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-022
+
      * Requirement: Execute matrix transpose on GPU; fall back to CPU.
      */
     @Override
@@ -157,7 +157,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-023
+
      * Requirement: Execute feature extraction on GPU; fall back to CPU.
      */
     @Override
@@ -167,7 +167,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-024
+
      * Requirement: Compute TF-IDF on GPU; fall back to CPU.
      */
     @Override
@@ -179,7 +179,7 @@ public class GpuComputeProvider implements ComputeProvider {
     // ---- Initialization ----
 
     /**
-     * ID: GPUPROV-030
+
      * Requirement: Initialize the OpenCL context and memory pool using the
      *   settings from the GpuConfig provided at construction.
      * Side Effects: Allocates GPU memory pool of size config.getMemoryPoolSizeMB().
@@ -200,7 +200,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-031
+
      * Requirement: Report supported operations. Returns false for all until
      *   native GPU context is wired up.
      */
@@ -210,7 +210,7 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /**
-     * ID: GPUPROV-040
+
      * Requirement: Report whether a GPU device is detectable on this host.
      * Purpose: Quick static guard used by factory classes before constructing
      *   a GpuComputeProvider.
@@ -222,7 +222,7 @@ public class GpuComputeProvider implements ComputeProvider {
     // ---- Private Helpers ----
 
     /**
-     * ID: GPUPROV-050
+
      * Requirement: Return a fresh {@link CpuComputeProvider} for use as a
      *   transparent fallback delegate.
      * Rationale: Creating per-call is acceptable for fallback paths which are

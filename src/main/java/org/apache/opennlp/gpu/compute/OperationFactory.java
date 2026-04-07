@@ -18,7 +18,7 @@ package org.apache.opennlp.gpu.compute;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 
 /**
- * ID: OPFAC-001
+
  * Requirement: Provide a factory that selects and constructs the appropriate
  *   {@link MatrixOperation} implementation based on the available compute
  *   provider or hardware environment.
@@ -41,7 +41,7 @@ import org.apache.opennlp.gpu.common.ComputeProvider;
 public class OperationFactory {
 
     /**
-     * ID: OPFAC-010
+
      * Requirement: Create a MatrixOperation using the best available backend.
      *   Falls back to CPU if no GPU is available.
      * Outputs: Non-null MatrixOperation — never throws.
@@ -51,7 +51,7 @@ public class OperationFactory {
     }
 
     /**
-     * ID: OPFAC-011
+
      * Requirement: Create a MatrixOperation backed by the supplied provider.
      *   If provider is null, falls back to DummyMatrixOperation.
      * Inputs: provider — may be null; if non-null, used to select backend.
@@ -61,7 +61,7 @@ public class OperationFactory {
     }
 
     /**
-     * ID: OPFAC-020
+
      * Requirement: Pure-Java CPU implementation of MatrixOperation that
      *   satisfies every method contract using simple loop-based algorithms.
      * Purpose: Provides a verifiably correct reference implementation used
@@ -84,7 +84,7 @@ public class OperationFactory {
         public void release() {}
 
         /**
-         * ID: OPFAC-021
+
          * Requirement: Matrix multiply C = A(m×k) * B(k×n) via triple nested loop.
          */
         @Override

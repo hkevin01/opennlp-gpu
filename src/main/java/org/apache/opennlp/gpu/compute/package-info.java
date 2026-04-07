@@ -1,5 +1,5 @@
 /**
- * ID: PKG-COMPUTE-001
+
  * Requirement: Package org.apache.opennlp.gpu.compute must provide concrete
  *              implementations of MatrixOperation and FeatureExtractionOperation
  *              for every supported backend: CPU, CUDA, OpenCL, ROCm, and cloud accelerators.

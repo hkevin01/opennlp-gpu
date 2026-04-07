@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 @EnabledIf("isGpuAvailable")
 /**
- * ID: MOT-001
+
  * Requirement: MatrixOpsTest must unit test all MatrixOperation implementations (CPU and GPU stubs) for correctness and edge cases.
  * Purpose: Parameterised JUnit 5 tests for every MatrixOperation method: multiply, softmax, sigmoid, normalize, dotProduct, etc.
  * Rationale: Every MatrixOperation method must be independently verified to prevent silent compute errors cascading into wrong predictions.

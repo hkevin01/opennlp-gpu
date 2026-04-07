@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * ID: TDL-001
+
  * Requirement: TestDataLoader must load and manage test data fixtures (model binaries, token arrays, feature vectors) for GPU test suite.
  * Purpose: Utility class centralising test resource loading, synthetic data generation, and test fixture management.
  * Rationale: Centralised test data loading prevents duplication; synthetic generation ensures tests run without external data dependencies.

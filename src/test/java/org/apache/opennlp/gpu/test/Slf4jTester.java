@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /**
- * ID: ST-001
+
  * Requirement: Slf4jTester must verify that SLF4J 2.0.17 is correctly configured and logs appear at expected levels.
  * Purpose: JUnit test confirming SLF4J binding is present, no ClassNotFoundException occurs, and log messages route to expected appender.
  * Rationale: SLF4J binding errors (ClassNotFoundException: StaticLoggerBinder) are a common JAR-conflict issue; early detection saves debugging time.

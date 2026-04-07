@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * ID: FEO-001
+
  * Requirement: FeatureExtractionOperation must define the interface for GPU-dispatched NLP feature extraction from token contexts.
  * Purpose: Interface specifying feature extraction from raw String context arrays to normalised float feature vectors.
  * Rationale: Abstracting extraction behind an interface allows the same NLP pipeline to use CPU, CUDA, OpenCL, or ROCm extraction at runtime.

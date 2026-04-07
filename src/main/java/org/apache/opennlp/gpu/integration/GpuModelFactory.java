@@ -26,7 +26,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: GMF-001
+
  * Requirement: GpuModelFactory must create GPU-accelerated wrappers for OpenNLP ML models (MaxEnt, NaiveBayes, Perceptron, Neural).
  * Purpose: Factory providing convenience constructors for all supported GPU model types with shared GpuConfig.
  * Rationale: Centralises GPU wrapper creation for the ml package, mirroring the integration.GpuModelFactory for ML-level callers.

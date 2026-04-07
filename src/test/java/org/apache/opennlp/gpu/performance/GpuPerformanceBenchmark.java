@@ -35,7 +35,7 @@ import opennlp.tools.ml.model.MaxentModel;
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 /**
- * ID: GPB-001
+
  * Requirement: GpuPerformanceBenchmark must JUnit-integrated performance benchmark measuring GPU provider throughput against SLA thresholds.
  * Purpose: JUnit test class that runs GPU and CPU benchmark iterations and asserts throughput meets minimum SLA requirements.
  * Rationale: Performance regression detection requires benchmark assertions in CI; this test will fail if throughput degrades beyond threshold.

@@ -16,7 +16,7 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * ID: CPROV-001
+
  * Requirement: Define the top-level contract for all compute backends
  *   (CPU, CUDA, ROCm, OpenCL) used by the OpenNLP GPU acceleration layer.
  * Purpose: Enables transparent runtime substitution of compute backends based
@@ -45,7 +45,7 @@ package org.apache.opennlp.gpu.common;
 public interface ComputeProvider {
 
     /**
-     * ID: CPROV-010
+
      * Requirement: Enumerate the supported hardware compute backends.
      * Purpose: Drive provider selection and capability reporting.
      */
@@ -61,14 +61,14 @@ public interface ComputeProvider {
     }
 
     /**
-     * ID: CPROV-020
+
      * Requirement: Return a human-readable display name for this provider.
      * Outputs: Non-null, non-empty string (e.g., "CPU Provider", "CUDA 12.1").
      */
     String getName();
 
     /**
-     * ID: CPROV-021
+
      * Requirement: Report whether this provider is operational and ready to
      *   accept compute requests without error.
      * Outputs: true if hardware is present, drivers are loaded, and memory is
@@ -77,7 +77,7 @@ public interface ComputeProvider {
     boolean isAvailable();
 
     /**
-     * ID: CPROV-022
+
      * Requirement: Initialize the provider with the supplied configuration.
      *   Must be idempotent — repeated calls with the same config are safe.
      * Side Effects: May allocate GPU context, command queues, or JNI buffers.
@@ -87,14 +87,14 @@ public interface ComputeProvider {
     void initialize(GpuConfig config);
 
     /**
-     * ID: CPROV-023
+
      * Requirement: Initialize with default internal configuration.
      *   Equivalent to initialize(new GpuConfig()).
      */
     void initialize();
 
     /**
-     * ID: CPROV-024
+
      * Requirement: Distinguish GPU-backed providers from the CPU provider.
      * Outputs: true for CUDA/OpenCL/ROCm providers; false for CPU.
      */
@@ -103,27 +103,27 @@ public interface ComputeProvider {
     }
 
     /**
-     * ID: CPROV-025
+
      * Requirement: Return the provider type enum value.
      */
     Type getType();
 
     /**
-     * ID: CPROV-026
+
      * Requirement: Report the maximum memory available on this device in MB.
      * Outputs: Positive long; 0 if measurement is unavailable.
      */
     long getMaxMemoryMB();
 
     /**
-     * ID: CPROV-027
+
      * Requirement: Report current memory consumption by this provider in MB.
      * Outputs: Non-negative long; ≤ getMaxMemoryMB().
      */
     long getCurrentMemoryUsageMB();
 
     /**
-     * ID: CPROV-028
+
      * Requirement: Report whether this provider can execute the named operation.
      * Inputs: operationType — operation identifier string (e.g., "matmul", "tfidf").
      * Outputs: true if the operation is implemented and ready.
@@ -131,7 +131,7 @@ public interface ComputeProvider {
     boolean supportsOperation(String operationType);
 
     /**
-     * ID: CPROV-029
+
      * Requirement: Return the native resource manager handle for advanced use.
      * Outputs: Provider-specific object (e.g., CudaResourceManager); null for CPU.
      */
@@ -140,7 +140,7 @@ public interface ComputeProvider {
     // ---- Compute Operations ----
 
     /**
-     * ID: CPROV-030
+
      * Requirement: General matrix multiplication C = A(m×k) * B(k×n).
      * Inputs:
      *   a      - row-major float[m*k]
@@ -151,20 +151,20 @@ public interface ComputeProvider {
     void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k);
 
     /**
-     * ID: CPROV-031
+
      * Requirement: Element-wise addition result[i] = a[i] + b[i].
      * Inputs: All arrays length ≥ size.
      */
     void matrixAdd(float[] a, float[] b, float[] result, int size);
 
     /**
-     * ID: CPROV-032
+
      * Requirement: Matrix transpose output(cols×rows) = input(rows×cols).
      */
     void matrixTranspose(float[] input, float[] output, int rows, int cols);
 
     /**
-     * ID: CPROV-033
+
      * Requirement: Extract numeric feature vectors from raw text tokens.
      * Inputs:
      *   text     - array of token strings; length determines feature inputs
@@ -174,7 +174,7 @@ public interface ComputeProvider {
     void extractFeatures(String[] text, float[] features);
 
     /**
-     * ID: CPROV-034
+
      * Requirement: Compute TF-IDF scores: result[i] = termFreq[i] * log(1 + 1/docFreq[i]).
      * Inputs: termFreq, docFreq — non-negative float arrays of length ≥ size.
      * Error Handling: docFreq[i] = 0 is guarded with epsilon to avoid division by zero.
@@ -184,7 +184,7 @@ public interface ComputeProvider {
     // ---- Lifecycle ----
 
     /**
-     * ID: CPROV-040
+
      * Requirement: Return structured capability metadata for this provider.
      * Outputs: Non-null ProviderCapabilities instance.
      */
@@ -193,7 +193,7 @@ public interface ComputeProvider {
     }
 
     /**
-     * ID: CPROV-041
+
      * Requirement: Release all resources held by this provider. Idempotent.
      * Side Effects: Frees GPU memory, destroys CUDA context or OpenCL command queue.
      * Postconditions: No further compute operations are valid on this instance.
@@ -203,7 +203,7 @@ public interface ComputeProvider {
     }
 
     /**
-     * ID: CPROV-050
+
      * Requirement: Carry provider capability flags as a plain value object.
      * Purpose: Enables callers to query parallelism and GPU support without
      *   casting to concrete provider types.

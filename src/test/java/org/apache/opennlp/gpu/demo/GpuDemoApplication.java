@@ -7,7 +7,7 @@ import org.apache.opennlp.gpu.integration.OpenNLPTestDataIntegration;
 import org.apache.opennlp.gpu.test.GpuTestSuite;
 
 /**
- * ID: GDA-001
+
  * Requirement: GpuDemoApplication must run all GPU acceleration demo scenarios as JUnit 5 tests with pass/fail assertions.
  * Purpose: JUnit test class driving the full demo suite, asserting that all GPU or CPU-fallback paths complete without error.
  * Rationale: Turning demos into assertions provides continuous correctness validation across builds.

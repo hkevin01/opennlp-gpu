@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ID: GCFG-001
+
  * Requirement: Encapsulate all runtime parameters that govern GPU compute
  *   provider selection, memory allocation, and batch processing behavior.
  * Purpose: Provides a single, well-typed configuration object that is passed
@@ -75,7 +75,7 @@ public class GpuConfig {
     private int maxMemoryUsageMB = 1024;
 
     /**
-     * ID: GCFG-002
+
      * Requirement: Construct a GpuConfig with all defaults suitable for a
      *   CPU-only or test environment.
      */
@@ -127,7 +127,7 @@ public class GpuConfig {
     // ---- Static Utility Methods ----
 
     /**
-     * ID: GCFG-010
+
      * Requirement: Detect whether GPU acceleration is available on this host
      *   by checking the system property {@code gpu.available}.
      * Purpose: Provides a lightweight guard used by model factories before
@@ -149,7 +149,7 @@ public class GpuConfig {
     }
 
     /**
-     * ID: GCFG-011
+
      * Requirement: Collect GPU hardware metadata for diagnostic and logging use.
      * Purpose: Used by GpuDiagnostics to populate health-check reports without
      *   requiring a live GPU context.

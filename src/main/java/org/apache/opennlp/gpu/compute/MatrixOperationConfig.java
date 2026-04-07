@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.compute;
 
 /**
- * ID: MOC-001
+
  * Requirement: MatrixOperationConfig must hold per-operation configuration parameters (work-group sizes, precision, tiling factors) for GPU kernel dispatch.
  * Purpose: Value object that tunes GPU kernel launch parameters for specific operation types and device characteristics.
  * Rationale: Optimal GPU kernel parameters are device-dependent; externalising them to a config object enables tuning without recompilation.

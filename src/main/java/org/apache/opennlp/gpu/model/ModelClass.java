@@ -2,7 +2,7 @@ package org.apache.opennlp.gpu.model;
 
 
 /**
- * ID: MC-001
+
  * Requirement: ModelClass must serve as a model registration and metadata class for GPU model type enumeration.
  * Purpose: Enumerates supported GPU model types and provides metadata accessors used by GpuModelFactory for model-type dispatch.
  * Rationale: Centralising model type metadata prevents string-based type comparisons scattered across factory/adapter code.

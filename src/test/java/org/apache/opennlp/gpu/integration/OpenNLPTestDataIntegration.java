@@ -16,7 +16,7 @@ import org.apache.opennlp.gpu.ml.GpuModelFactory;
 import org.apache.opennlp.gpu.test.GpuTestSuite;
 
 /**
- * ID: ONLPTD-001
+
  * Requirement: OpenNLPTestDataIntegration must test GPU-accelerated compute providers using real OpenNLP model binary files from the test resources.
  * Purpose: Integration test loading actual .bin model files (if present on classpath) and running GPU-accelerated eval against them.
  * Rationale: Testing with real model data exposes format compatibility issues not caught by synthetic array tests.

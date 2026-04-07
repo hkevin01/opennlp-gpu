@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * ID: NLL-001
+
  * Requirement: NativeLibraryLoader must detect host platform, extract the correct native shared library from the JAR, and load it into the JVM.
  * Purpose: Handles automatic extraction and loading of libopennlp_gpu.so / .dll / .dylib from JAR resources to a temp directory.
  * Rationale: Embedding native libraries in a JAR is the standard zero-install pattern for JVM-native bridges; extraction must be atomic to prevent partial reads.

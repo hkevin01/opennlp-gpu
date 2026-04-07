@@ -1,5 +1,5 @@
 /*
- * ID: LTEST-001
+
  * Requirement: LombokTest must verify that all previously Lombok-annotated classes compile
  *              correctly with manually-implemented getters, setters, equals, and hashCode.
  * Purpose: Compilation smoke test confirming that removing Lombok annotation processing

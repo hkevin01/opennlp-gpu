@@ -30,7 +30,7 @@ import org.apache.opennlp.gpu.compute.cloud.InferentiaComputeProvider;
 import org.apache.opennlp.gpu.compute.cloud.TpuComputeProvider;
 
 /**
- * ID: DIAG-001
+
  * Requirement: Provide a standalone diagnostic tool that probes the host
  *   environment for all prerequisites required by the OpenNLP GPU extension,
  *   produces a structured {@link DiagnosticReport}, and exits with code 0
@@ -61,7 +61,7 @@ public class GpuDiagnostics {
     private static final GpuLogger logger = GpuLogger.getLogger(GpuDiagnostics.class);
 
     /**
-     * ID: DIAG-010
+
      * Requirement: Entry point — run all diagnostic checks, print the report,
      *   and exit with code 0 if GPU is ready, 1 otherwise.
      * Purpose: Allows execution via {@code mvn exec:java -Dexec.mainClass=...GpuDiagnostics}
@@ -90,7 +90,7 @@ public class GpuDiagnostics {
     }
 
     /**
-     * ID: DIAG-011
+
      * Requirement: Execute all diagnostic sub-checks in deterministic order and
      *   aggregate results into a single DiagnosticReport.
      * Outputs: Non-null DiagnosticReport with all sections populated.

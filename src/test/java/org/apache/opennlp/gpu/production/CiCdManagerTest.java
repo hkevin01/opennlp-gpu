@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * ID: CCMT-001
+
  * Requirement: CiCdManagerTest must unit test CiCdManager build validation, dependency check, and deployment gate methods.
  * Purpose: JUnit tests exercising CiCdManager's pipeline gate logic with mock environment state.
  * Rationale: CI/CD gate logic must be deterministic and testable independently of actual CI infrastructure.

@@ -1,0 +1,6 @@
+jdk:
+  - openjdk21
+install:
+  - mvn clean package -DskipTests -DskipNativeBuild=true
+artifacts:
+  - target/opennlp-gpu-*.jar

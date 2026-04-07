@@ -28,7 +28,7 @@ import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: ICP-001
+
  * Requirement: InferentiaComputeProvider must implement ComputeProvider using AWS Inferentia NeuronCore via the AWS Neuron SDK.
  * Purpose: Routes NLP compute to AWS Inferentia NeuronCores for cost-effective inference at scale on AWS inf1/inf2 instances.
  * Rationale: Inferentia provides specialized matrix multiply units and lower per-inference cost than GPU instances for high-throughput NLP.

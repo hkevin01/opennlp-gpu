@@ -18,7 +18,7 @@ import opennlp.tools.util.TrainingConfiguration;
 import opennlp.tools.util.TrainingParameters;
 
 /**
- * ID: GMT-001
+
  * Requirement: GpuMaxentTrainer must train a MaxEnt model using GPU-accelerated gradient computation and feature extraction.
  * Purpose: Implements the OpenNLP EventTrainer interface, routing batch gradient computation to the active GPU provider.
  * Rationale: GPU-accelerated training reduces wall-clock time for large corpora with many features; CPU fallback preserves correctness.

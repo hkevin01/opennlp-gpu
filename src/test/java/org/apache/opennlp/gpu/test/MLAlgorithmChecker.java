@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.test;
 
 /**
- * ID: MLAC-001
+
  * Requirement: MLAlgorithmChecker must verify that all supported ML algorithm implementations (MaxEnt, NaiveBayes, Perceptron, Neural) produce valid outputs.
  * Purpose: Checker class running each GPU ML model type against synthetic feature vectors and asserting output dimensionality, probability sum ≈ 1, etc.
  * Rationale: Algorithm validity checks catch model API misuse and GPU output corruption in a single automated step.

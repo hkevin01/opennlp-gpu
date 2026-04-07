@@ -1,5 +1,5 @@
 /**
- * ID: GMFF-001
+
  * Requirement: GpuModelFactoryFixed must provide a corrected, stable version of GpuModelFactory addressing known initialisation race conditions.
  * Purpose: Improved factory with double-checked locking and atomic GPU availability detection, replacing GpuModelFactory where thread safety is required.
  * Rationale: The original factory had a TOCTOU race on GPU initialization; this version ensures correct GPU availability detection under concurrency.

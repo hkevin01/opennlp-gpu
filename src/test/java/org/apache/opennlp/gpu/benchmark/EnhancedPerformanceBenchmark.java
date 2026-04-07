@@ -6,7 +6,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.kernels.MatrixOps;
 
 /**
- * ID: EPB-001
+
  * Requirement: EnhancedPerformanceBenchmark must extend PerformanceBenchmark with statistical analysis, warm-up phases, and per-percentile latency reporting.
  * Purpose: Enhanced benchmark adding JVM warm-up, percentile (p50/p95/p99) tracking, and gc-pause-aware measurements.
  * Rationale: JVM warm-up and GC pauses distort naive benchmarks; warm-up phases and p95/p99 percentiles give production-representative results.

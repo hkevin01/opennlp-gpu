@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * ID: CMAT-001
+
  * Requirement: MatrixOperation must define hardware-agnostic matrix and vector arithmetic
  *              operations callable by any compute backend implementation.
  * Purpose: Shared interface in the common package for both CPU and GPU backends;

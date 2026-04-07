@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ID: RU-001
+
  * Requirement: RocmUtil must expose ROCm/HIP device query utilities (device count, name, memory) to Java via JNI.
  * Purpose: Provides Java-callable static methods wrapping hipGetDeviceProperties and related HIP runtime APIs.
  * Rationale: Centralising ROCm device queries in one JNI class mirrors the CudaUtil pattern for vendor symmetry.

@@ -1,5 +1,5 @@
 /**
- * ID: PKG-COMMON-001
+
  * Requirement: Package org.apache.opennlp.gpu.common must provide all shared
  *              interfaces, configuration, logging, and memory management types
  *              required by every GPU and CPU compute provider.

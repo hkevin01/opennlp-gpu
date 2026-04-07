@@ -8,7 +8,7 @@ import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
- * ID: GPM-001
+
  * Requirement: GpuPerceptronModel must implement a binary/multi-class Perceptron classifier with GPU-accelerated batch prediction.
  * Purpose: Wraps a trained Perceptron model, routing batch dot-product evaluation to GPU matrix ops for high-throughput NLP classification.
  * Rationale: Perceptron evaluation is a batched dot product; GPU achieves near-linear throughput scaling with batch size.

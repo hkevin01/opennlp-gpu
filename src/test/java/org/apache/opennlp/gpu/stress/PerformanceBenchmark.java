@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
- * ID: PB-001
+
  * Requirement: PerformanceBenchmark must run GPU performance benchmarks within the test infrastructure and assert throughput meets minimum targets.
  * Purpose: Benchmark suite in the stress test package covering sustained throughput for matrix ops and NLP eval at stress-level batch sizes.
  * Rationale: Sustained throughput measurements complement latency tests; combined they characterise both throughput and tail latency.

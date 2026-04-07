@@ -6,7 +6,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.integration.GpuModelFactory;
 
 /**
- * ID: QVT-001
+
  * Requirement: QuickValidationTest must run rapid GPU environment validation checks suitable for use as a startup health check.
  * Purpose: Fast JUnit test (target < 2 seconds) verifying GPU initialisation, a single matrix op, and a single model eval.
  * Rationale: A quick health check enables canary deployments and k8s liveness probe integration.

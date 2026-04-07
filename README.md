@@ -1,6 +1,6 @@
 <div align="center">
   <h1>⚡ OpenNLP GPU Extension</h1>
-  <p><em>Third-party GPU acceleration layer for Apache OpenNLP — transparent 2–5× speedups with NVIDIA CUDA, AMD ROCm, Intel OpenCL, and intelligent CPU fallback.</em></p>
+  <p><em>Third-party GPU acceleration layer for Apache OpenNLP - transparent 2–5× speedups with NVIDIA CUDA, AMD ROCm, Intel OpenCL, and intelligent CPU fallback.</em></p>
 </div>
 
 <div align="center">
@@ -14,7 +14,7 @@
 [![Java](https://img.shields.io/badge/Java-21%2B-orange?style=flat-square&logo=openjdk)](https://openjdk.net/)
 [![OpenNLP](https://img.shields.io/badge/OpenNLP-2.5.8-green?style=flat-square)](https://opennlp.apache.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.9%2B-red?style=flat-square&logo=apache-maven)](https://maven.apache.org/)
-[![JitPack](https://img.shields.io/badge/JitPack-1.0.0-blue?style=flat-square)](https://jitpack.io/#hkevin01/opennlp-gpu)
+[![JitPack](https://jitpack.io/v/hkevin01/opennlp-gpu.svg)](https://jitpack.io/#hkevin01/opennlp-gpu)
 
 </div>
 
@@ -50,7 +50,7 @@
 
 ### What Is This Project?
 
-**OpenNLP GPU Extension** is an independent third-party hardware acceleration layer that transparently routes [Apache OpenNLP](https://opennlp.apache.org/) compute-intensive matrix operations to GPU hardware — delivering 2–5× throughput improvements for NLP workloads while maintaining 100% API compatibility with all standard OpenNLP model interfaces.
+**OpenNLP GPU Extension** is an independent third-party hardware acceleration layer that transparently routes [Apache OpenNLP](https://opennlp.apache.org/) compute-intensive matrix operations to GPU hardware, delivering 2–5× throughput improvements for NLP workloads while maintaining 100% API compatibility with all standard OpenNLP model interfaces.
 
 The extension operates as a **drop-in decorator** around existing OpenNLP models. No changes to training pipelines, serialized model files, or application calling code are required. When GPU hardware is present and configured, dense matrix operations (GEMM, softmax, TF-IDF, cosine similarity) execute on GPU kernels; when no GPU is detected, a numerically-identical pure-Java implementation silently handles all operations.
 
@@ -61,7 +61,7 @@ Apache OpenNLP is the dominant production-grade NLP framework in the Java/JVM ec
 | Reason | Detail |
 |--------|--------|
 | **Java-native** | Integrates directly into Spring Boot, Jakarta EE, and enterprise JVM stacks without subprocess overhead |
-| **Stable API contracts** | `MaxentModel`, `TokenizerModel`, and `NameFinderME` interfaces are stable across releases — the decorator pattern is reliable |
+| **Stable API contracts** | `MaxentModel`, `TokenizerModel`, and `NameFinderME` interfaces are stable across releases; the decorator pattern is reliable |
 | **Apache governance** | Apache License 2.0; Apache Software Foundation oversight ensures long-term stability and commercial compatibility |
 | **Lightweight models** | Serialized `.bin` model files are compact, versioned, and deployable without a framework runtime on the target server |
 | **Extensibility** | Interface-based design means `GpuMaxentModel implements MaxentModel` with no changes to model loading or application logic |
@@ -71,12 +71,12 @@ Apache OpenNLP is the dominant production-grade NLP framework in the Java/JVM ec
 
 Traditional NLP workloads are dominated by dense matrix operations that run sequentially on single CPU threads:
 
-- **Maximum Entropy evaluation** — dot products between high-dimensional feature vectors and weight matrices (thousands of features × hundreds of outcomes per document)
-- **Named Entity Recognition** — per-token matrix multiplications across sequence windows in every sentence
-- **TF-IDF document scoring** — vocabulary-scale sparse-to-dense matrix operations across entire corpora
-- **Cosine similarity search** — pairwise distance calculations that scale O(N²) with corpus size
+- **Maximum Entropy evaluation**: dot products between high-dimensional feature vectors and weight matrices (thousands of features × hundreds of outcomes per document)
+- **Named Entity Recognition**: per-token matrix multiplications across sequence windows in every sentence
+- **TF-IDF document scoring**: vocabulary-scale sparse-to-dense matrix operations across entire corpora
+- **Cosine similarity search**: pairwise distance calculations that scale O(N²) with corpus size
 
-GPUs execute thousands of these operations simultaneously. A modern GPU with 10,000+ CUDA cores processes a 512×512 matrix multiplication as a single parallel batch that would require thousands of sequential CPU instructions. The result: the same per-document accuracy at a fraction of the wall-clock time — directly translating to smaller SLA requirements or larger processing windows under the same compute budget.
+GPUs execute thousands of these operations simultaneously. A modern GPU with 10,000+ CUDA cores processes a 512×512 matrix multiplication as a single parallel batch that would require thousands of sequential CPU instructions. The result: the same per-document accuracy at a fraction of the wall-clock time, directly translating to smaller SLA requirements or larger processing windows under the same compute budget.
 
 **Who this is for:**
 - Java NLP engineers processing high-volume batch workloads (10K+ documents/hour) who need lower latency without framework migration
@@ -95,7 +95,7 @@ GPUs execute thousands of these operations simultaneously. A modern GPU with 10,
 | ⚡ | **GPU-Accelerated Matrix Ops** | GEMM, transpose, and activation functions dispatched to GPU kernels | 2–5× throughput | ✅ Stable |
 | 🔄 | **Auto CPU Fallback** | Silent, transparent fallback to pure-Java when GPU unavailable | Zero downtime | ✅ Stable |
 | 🎯 | **Drop-in API Compatibility** | `GpuMaxentModel` implements OpenNLP `MaxentModel` interface exactly | No code changes | ✅ Stable |
-| 🖥️ | **Multi-Backend** | CUDA 11+, ROCm 5+, OpenCL 1.2+, CPU — runtime-selected | Broad hardware support | 🔄 In Progress |
+| 🖥️ | **Multi-Backend** | CUDA 11+, ROCm 5+, OpenCL 1.2+, CPU (runtime-selected) | Broad hardware support | 🔄 In Progress |
 | ☁️ | **Cloud Accelerators** | AWS Inferentia and Google TPU provider stubs | Cloud-native NLP | 🔄 In Progress |
 | 📊 | **Performance Monitor** | Real-time thread-safe metrics, latency alerts, memory tracking | Operational observability | ✅ Stable |
 | 🔍 | **GPU Diagnostics CLI** | Standalone tool to probe drivers, SDKs, and runtime environment | DevOps-friendly | ✅ Stable |
@@ -103,7 +103,7 @@ GPUs execute thousands of these operations simultaneously. A modern GPU with 10,
 
 **Highlights:**
 - **115 Java source files** covering ML models (MaxEnt, Perceptron, Naive Bayes, Neural), GPU backends, monitoring, and tooling
-- **NASA-standard commenting** on all core interfaces and compute classes — structured ID, requirement, purpose, and failure-mode documentation
+- **Structured commenting** on all core interfaces and compute classes: requirement, purpose, inputs, outputs, and failure-mode documentation
 - **Java 21 LTS** compilation target with full OpenNLP 2.5.8 API compatibility
 - Benchmarks against `CpuComputeProvider` reference implementation to validate numerical correctness
 
@@ -135,7 +135,7 @@ ETL pipelines for CRM, HR, compliance, and knowledge management systems:
 
 #### 4. Clinical NLP & Healthcare
 On-premises clinical text processing (EHR structuring, ICD coding, clinical concept extraction) where:
-- Privacy constraints prevent cloud API calls — local GPU server is required
+- Privacy constraints prevent cloud API calls; a local GPU server is required
 - High-accuracy MaxEnt models are used for medical term classification
 - Throughput matters for overnight batch processing of patient notes
 
@@ -280,8 +280,8 @@ mvn test -Dtest=GpuTestSuite
 | NVIDIA Hopper (H100, H200) | sm_90 | CUDA 12+ | 3.0 | CUDA + OpenCL |
 | AMD RDNA2 (RX 6000 series) | GFX1030 | ROCm 5.0+ | 2.0 | ROCm / HIP |
 | AMD RDNA3 (RX 7000 series) | GFX1100 | ROCm 5.5+ | 2.0 | ROCm / HIP |
-| Intel Arc (A-series) | Xe-HPG | — | 3.0 | OpenCL via JOCL |
-| Any OpenCL 1.2+ device | — | — | 1.2 | JOCL cross-vendor |
+| Intel Arc (A-series) | Xe-HPG | N/A | 3.0 | OpenCL via JOCL |
+| Any OpenCL 1.2+ device | N/A | N/A | 1.2 | JOCL cross-vendor |
 
 ### System Requirements
 
@@ -315,11 +315,11 @@ All kernels are implemented in CUDA C++ (`kernels.cu`), HIP/ROCm (`kernels.cpp`)
 
 | Operation | CPU Reference (ms) | GPU Target (ms) | Target Speedup |
 |-----------|------------------|-----------------|-----------------|
-| MaxEnt eval — 1K features, 100 outcomes | ~12 | ~3 | 4× |
-| Matrix multiply — 512×512 FP32 | ~19 | ~4 | 5× |
-| Softmax — 10K elements | ~2 | <1 | 3× |
-| TF-IDF — 10K docs × 5K terms | ~900 | ~190 | 4.7× |
-| Cosine similarity — 1K pairs × 512 dims | ~24 | ~6 | 4× |
+| MaxEnt eval: 1K features, 100 outcomes | ~12 | ~3 | 4× |
+| Matrix multiply: 512×512 FP32 | ~19 | ~4 | 5× |
+| Softmax: 10K elements | ~2 | <1 | 3× |
+| TF-IDF: 10K docs × 5K terms | ~900 | ~190 | 4.7× |
+| Cosine similarity: 1K pairs × 512 dims | ~24 | ~6 | 4× |
 
 ### Build Variants
 
@@ -338,7 +338,7 @@ All kernels are implemented in CUDA C++ (`kernels.cu`), HIP/ROCm (`kernels.cpp`)
 
 ```mermaid
 pie title GPU Backend Support Coverage
-    "OpenCL (JOCL — cross-vendor)" : 45
+    "OpenCL (JOCL cross-vendor)" : 45
     "CUDA (NVIDIA)" : 30
     "ROCm/HIP (AMD)" : 15
     "Cloud (Inferentia + TPU)" : 10
@@ -386,6 +386,11 @@ mvn clean package -Pnative
 
 ### Maven Dependency (via JitPack)
 
+> [!TIP]
+> Use a tagged release (e.g. `1.0.0`) for stable builds, or `main-SNAPSHOT` to track the latest commit on `main`.
+
+**Maven (`pom.xml`):**
+
 ```xml
 <repositories>
     <repository>
@@ -402,13 +407,39 @@ mvn clean package -Pnative
         <version>2.5.8</version>
     </dependency>
 
-    <!-- GPU Extension -->
+    <!-- GPU Extension (tagged release) -->
     <dependency>
         <groupId>com.github.hkevin01</groupId>
         <artifactId>opennlp-gpu</artifactId>
         <version>1.0.0</version>
     </dependency>
 </dependencies>
+```
+
+**Gradle (`build.gradle`):**
+
+```groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'org.apache.opennlp:opennlp-tools:2.5.8'
+    implementation 'com.github.hkevin01:opennlp-gpu:1.0.0'
+}
+```
+
+**Gradle Kotlin (`build.gradle.kts`):**
+
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    implementation("org.apache.opennlp:opennlp-tools:2.5.8")
+    implementation("com.github.hkevin01:opennlp-gpu:1.0.0")
+}
 ```
 
 ### Environment Setup (GPU)
@@ -467,7 +498,7 @@ gpuModel.cleanup(); // Release GPU resources
 
 ### 🧮 Matrix Operations
 
-The `MatrixOperation` interface (NASA ID: MATOP-001) provides 20+ operations:
+The `MatrixOperation` interface provides 20+ operations:
 
 | Category | Methods | Backend |
 |----------|---------|---------|
@@ -478,7 +509,7 @@ The `MatrixOperation` interface (NASA ID: MATOP-001) provides 20+ operations:
 | Utility | `copyArray`, `fillArray`, `findMax`, `findMin` | CPU ✅ / GPU 🔄 |
 
 > [!NOTE]
-> `DummyMatrixOperation` (CPU) implements every method with correct algorithms — including numerically-stable softmax with `exp(x - max(x))` and epsilon-guarded normalization. All GPU backends are validated against it.
+> `DummyMatrixOperation` (CPU) implements every method with correct algorithms, including numerically-stable softmax with `exp(x - max(x))` and epsilon-guarded normalization. All GPU backends are validated against it.
 
 ### 🤖 ML Model Wrappers
 
@@ -518,7 +549,7 @@ System.out.println("Avg latency: " + metrics.getAverageLatencyMs() + "ms");
 
 ## ⚙️ Configuration
 
-All settings are controlled via `GpuConfig` — a plain Java value object:
+All settings are controlled via `GpuConfig` (a plain Java value object):
 
 | Property | Default | Description |
 |----------|---------|-------------|
@@ -583,19 +614,19 @@ Exit code `0` = ready, `1` = setup incomplete.
 gantt
     title OpenNLP GPU Extension Roadmap
     dateFormat  YYYY-MM-DD
-    section Phase 1 — Foundation
+    section Phase 1: Foundation
         Core Interfaces & CPU Fallback     :done,    p1a, 2025-01-01, 2025-04-01
         ComputeProvider Hierarchy          :done,    p1b, 2025-01-01, 2025-04-01
         GpuConfig & Monitoring             :done,    p1c, 2025-03-01, 2025-05-01
-    section Phase 2 — ML Models
+    section Phase 2: ML Models
         MaxEnt / Perceptron / Naive Bayes  :done,    p2a, 2025-04-01, 2025-07-01
         Neural Network & Attention         :done,    p2b, 2025-05-01, 2025-08-01
         GPU Diagnostics Tool               :done,    p2c, 2025-06-01, 2025-08-01
-    section Phase 3 — Native GPU (Active)
+    section Phase 3 - Native GPU (Active)
         OpenCL JNI Bridge                  :active,  p3a, 2025-09-01, 2026-06-01
         CUDA Kernel Integration            :active,  p3b, 2025-10-01, 2026-07-01
         ROCm / HIP Integration             :         p3c, 2026-03-01, 2026-09-01
-    section Phase 4 — Cloud & Production
+    section Phase 4 - Cloud & Production
         AWS Inferentia Integration         :         p4a, 2026-06-01, 2026-10-01
         Google TPU Integration             :         p4b, 2026-07-01, 2026-11-01
         Maven Central Release              :         p4c, 2026-10-01, 2026-12-01
@@ -624,7 +655,7 @@ xychart-beta
 
 | Version | Phase | Stability | Java | OpenNLP | Key Limitation |
 |---------|-------|-----------|------|---------|----------------|
-| 1.0.0 | Phase 1-2 | Beta | 21 | 2.5.8 | GPU kernels are JNI stubs — CPU fallback only |
+| 1.0.0 | Phase 1-2 | Beta | 21 | 2.5.8 | GPU kernels are JNI stubs (CPU fallback only) |
 
 > [!WARNING]
 > GPU hardware acceleration (`isAvailable() == true`) requires the in-progress JNI bridge to be compiled with `-Pnative` **and** a compatible driver stack verified by the `GpuDiagnostics` tool. Until the native bridge is wired, all compute routes silently through `CpuComputeProvider`.
@@ -654,7 +685,7 @@ git push origin feature/my-improvement
 
 **Code Style**
 - Java 21 syntax; no Lombok (removed to reduce annotation processor complexity)
-- All new public APIs must include NASA-format structured comments (ID, Requirement, Purpose, Inputs, Outputs, Failure Modes)
+- All new public APIs must include structured Javadoc comments (Requirement, Purpose, Inputs, Outputs, Failure Modes)
 - Follow existing package structure: `common/`, `compute/`, `ml/`, `monitoring/`, `tools/`
 
 **Testing Requirements**

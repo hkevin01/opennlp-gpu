@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * ID: GMIT-001
+
  * Requirement: GpuModelIntegrationTest must integration test the full GPU model stack: provider init → model wrap → batch eval → metric collection.
  * Purpose: End-to-end JUnit test exercising GpuModelFactory, GpuMaxentModel, and GpuPerformanceMonitor in a single pipeline.
  * Rationale: Integration tests catch wiring bugs between model factory, GPU provider, and monitoring that unit tests miss.

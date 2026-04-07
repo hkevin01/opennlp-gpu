@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ID: BVT-001
+
  * Requirement: BasicValidationTest must validate fundamental GPU provider behaviours: availability, compute correctness, and cleanup.
  * Purpose: Basic JUnit smoke tests asserting that providers return non-null results, cleanup without exceptions, and isAvailable() returns a boolean.
  * Rationale: Basic validation catches API-level breakage early in the CI pipeline before more expensive integration tests run.

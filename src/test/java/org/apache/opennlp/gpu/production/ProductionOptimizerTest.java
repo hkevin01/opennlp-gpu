@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * ID: POT-001
+
  * Requirement: ProductionOptimizerTest must unit test ProductionOptimizer configuration tuning and hardware auto-detection logic.
  * Purpose: JUnit tests verifying that ProductionOptimizer selects correct GpuConfig parameters for given hardware profiles.
  * Rationale: Auto-tuning logic must be independently verifiable to ensure production configs are correct.

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ID: CFEO-001
+
  * Requirement: CudaFeatureExtractionOperation must implement FeatureExtractionOperation dispatching to CUDA kernels via JNI.
  * Purpose: Routes NLP feature extraction to CUDA device kernels for maximum throughput on NVIDIA hardware.
  * Rationale: GPU-accelerated feature extraction is the primary bottleneck in large-batch NLP pipelines on NVIDIA hardware.

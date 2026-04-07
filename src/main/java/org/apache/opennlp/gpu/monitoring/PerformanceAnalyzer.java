@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ID: PA-001
+
  * Requirement: PerformanceAnalyzer must analyse collected GpuPerformanceMonitor metrics and generate human-readable performance reports.
  * Purpose: Reads OperationMetrics records, detects slowest operations, computes GPU/CPU ratios, and formats diagnostic reports.
  * Rationale: Automated analysis surfaces actionable insights (e.g., 'matrixMultiply is 3× slower than expected') without manual metric inspection.

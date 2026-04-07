@@ -10,7 +10,7 @@ import org.apache.opennlp.gpu.compute.GpuMatrixOperation;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
- * ID: AGNN-001
+
  * Requirement: AdvancedGpuNeuralNetwork must implement an advanced GPU neural network with attention, residual connections, and multi-head capabilities.
  * Purpose: Extends GpuNeuralNetwork with multi-head self-attention, dropout, layer normalisation and residual shortcuts for transformer-style architectures.
  * Rationale: Advanced neural architectures (transformers, residual nets) deliver higher accuracy on NLP tasks; GPU acceleration makes them feasible for real-time use.

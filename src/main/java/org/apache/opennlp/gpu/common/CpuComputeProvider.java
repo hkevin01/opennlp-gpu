@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * ID: CCPU-001
+
  * Requirement: CpuComputeProvider must implement ComputeProvider using pure-Java
  *              CPU arithmetic with no native GPU dependencies, serving as both the
  *              universal fallback and the reference implementation for the common package.

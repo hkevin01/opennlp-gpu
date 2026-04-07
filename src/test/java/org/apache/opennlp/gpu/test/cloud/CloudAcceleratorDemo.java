@@ -27,7 +27,7 @@ import org.apache.opennlp.gpu.compute.cloud.InferentiaComputeProvider;
 import org.apache.opennlp.gpu.compute.cloud.TpuComputeProvider;
 
 /**
- * ID: CAD-001
+
  * Requirement: CloudAcceleratorDemo must demonstrate GPU acceleration on cloud accelerator backends (AWS Inferentia, Google TPU) in a test context.
  * Purpose: Test/demo class exercising InferentiaComputeProvider and TpuComputeProvider stubs with output validation.
  * Rationale: Cloud accelerator demos verify the provider stub API contract and serve as documentation for cloud deployment.

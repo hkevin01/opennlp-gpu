@@ -3,7 +3,7 @@ package org.apache.opennlp.gpu.examples;
 import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
- * ID: ISD-001
+
  * Requirement: IndustrySpecificDemo must demonstrate GPU-accelerated NLP applied to industry-specific use cases (finance, healthcare, legal).
  * Purpose: Shows GPU-accelerated entity extraction and classification applied to domain-specific text samples.
  * Rationale: Industry-specific demos address the needs of engineers evaluating the project for specific vertical applications.

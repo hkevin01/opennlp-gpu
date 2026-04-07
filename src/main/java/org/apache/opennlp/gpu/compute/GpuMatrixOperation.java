@@ -5,7 +5,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * ID: GMO-001
+
  * Requirement: GpuMatrixOperation must implement MatrixOperation using the best available GPU backend at runtime, with CPU fallback.
  * Purpose: Selects CUDA, ROCm, OpenCL, or CPU MatrixOperation implementation based on runtime hardware detection.
  * Rationale: Centralising backend selection in one class ensures callers never need to query hardware type directly.

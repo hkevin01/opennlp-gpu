@@ -39,7 +39,7 @@ import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * ID: CMO-001
+
  * Requirement: CpuMatrixOperation must implement MatrixOperation using pure-Java CPU arithmetic with no native dependencies.
  * Purpose: Full CPU implementation of all matrix operations (multiply, sigmoid, softmax, etc.) used as reference and fallback.
  * Rationale: Pure-Java ensures portability; correctness of all GPU kernels is verified against this implementation.

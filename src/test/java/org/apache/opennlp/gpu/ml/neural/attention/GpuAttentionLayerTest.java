@@ -34,7 +34,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * ID: GALT-001
+
  * Requirement: GpuAttentionLayerTest must unit test GPU attention layer computations for scaled dot-product attention correctness.
  * Purpose: JUnit tests verifying that softmax(QKᵀ/√d)V produces values within tolerance of known analytical results.
  * Rationale: Attention computation errors are subtle and compound across layers; unit tests at the layer level prevent hard-to-trace accuracy regressions.

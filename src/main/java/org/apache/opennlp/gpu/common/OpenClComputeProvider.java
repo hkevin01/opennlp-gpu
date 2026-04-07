@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * ID: OCCP-001
+
  * Requirement: OpenClComputeProvider must implement ComputeProvider using the cross-vendor OpenCL runtime via JOCL 2.0.6.
  * Purpose: Provides GPU acceleration on any OpenCL 1.2+ device (NVIDIA, AMD, Intel, Mali) without vendor lock-in.
  * Rationale: OpenCL is the most portable GPU API; using JOCL allows pure-Java build without CUDA headers.

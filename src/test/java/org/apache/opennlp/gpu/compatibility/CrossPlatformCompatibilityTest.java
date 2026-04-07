@@ -33,7 +33,7 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: CPCT-001
+
  * Requirement: CrossPlatformCompatibilityTest must verify that all compute providers initialise and produce correct results across simulated platform configurations.
  * Purpose: Parameterised test exercising CPU, CUDA stub, OpenCL stub, and ROCm stub providers with platform-specific GpuConfig.
  * Rationale: Cross-platform correctness is a key requirement; tests must pass even when GPU hardware is absent by using CPU fallback.

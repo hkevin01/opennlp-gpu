@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * ID: RM-001
+
  * Requirement: ResourceMetrics must hold GPU resource utilisation metrics (VRAM used, allocation count, pool hit rate) at a point in time.
  * Purpose: Snapshot value object capturing GPU resource state for logging and alerting by GpuPerformanceMonitor.
  * Rationale: Resource metrics complement operation latency metrics, enabling detection of memory pressure before OOM errors occur.

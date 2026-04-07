@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.demo;
 
 /**
- * ID: SGD-001
+
  * Requirement: StandaloneGpuDemo must run GPU acceleration demos without a test framework, suitable for direct java -jar invocation.
  * Purpose: Standalone main-method demo that exercises GPU model evaluation and prints results, requiring no JUnit on the classpath.
  * Rationale: Standalone demos are useful for quick environment validation in production images that exclude test dependencies.

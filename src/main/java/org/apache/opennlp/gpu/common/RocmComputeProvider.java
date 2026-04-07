@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * ID: RCP-001
+
  * Requirement: RocmComputeProvider must implement ComputeProvider using AMD ROCm/HIP as the hardware backend, with CPU fallback.
  * Purpose: Binds AMD ROCm GPU hardware to the ComputeProvider interface identically to CudaComputeProvider but using HIP APIs.
  * Rationale: ROCm/HIP is AMD's response to CUDA; using the same interface means the same OpenNLP code runs on AMD and NVIDIA hardware.

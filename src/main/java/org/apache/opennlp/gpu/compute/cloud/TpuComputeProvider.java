@@ -28,7 +28,7 @@ import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: TCP-001
+
  * Requirement: TpuComputeProvider must implement ComputeProvider using Google TPU matrix units via libtpu.
  * Purpose: Routes NLP compute to Google TPU cores for high-throughput inference on GCP TPU instances (v3/v4).
  * Rationale: TPUs provide extremely high matrix multiply throughput for batch NLP workloads at lower cost than GPU instances at scale.

@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.integration;
 
 /**
- * ID: ONIT-001
+
  * Requirement: OpenNlpIntegrationTest must validate integration of GpuMaxentModel and GpuNaiveBayesModel with OpenNLP evaluation API.
  * Purpose: JUnit test exercising the full eval() and getBestOutcome() API paths for GPU-decorated OpenNLP models.
  * Rationale: API compatibility with OpenNLP interfaces must be continuously verified as OpenNLP releases new versions (currently 2.5.8).

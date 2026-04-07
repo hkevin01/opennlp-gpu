@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * ID: GNPT-001
+
  * Requirement: GpuNeuralPipelineTest must unit and integration test the GpuNeuralPipeline for correct feature extraction and neural classification.
  * Purpose: JUnit tests for pipeline construction, forward pass correctness, and GPU/CPU parity for neural pipeline outputs.
  * Rationale: Neural pipeline tests ensure that combining feature extraction and neural classification steps produces correct results end-to-end.

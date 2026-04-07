@@ -7,7 +7,7 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: GMMW-001
+
  * Requirement: GpuMaxentModelWrapper must wrap a GpuMaxentModel with additional output formatting and logging for diagnostic use.
  * Purpose: Adds human-readable output and performance logging around GpuMaxentModel.eval() without changing model semantics.
  * Rationale: Diagnostic wrappers avoid modifying core model code while providing debugging visibility during development.

@@ -13,7 +13,7 @@ import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 import org.apache.opennlp.gpu.ml.neural.GpuNeuralNetwork;
 
 /**
- * ID: GTS-001
+
  * Requirement: GpuTestSuite must aggregate all GPU compute and ML model test classes into a single JUnit 5 test suite for CI.
  * Purpose: Suite descriptor referencing all test classes so they can be run as a single @Suite target.
  * Rationale: Aggregating tests into a suite ensures no tests are accidentally excluded from CI runs.

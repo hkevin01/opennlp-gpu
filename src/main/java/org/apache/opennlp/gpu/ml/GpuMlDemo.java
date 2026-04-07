@@ -17,7 +17,7 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: GMD-001
+
  * Requirement: GpuMlDemo must demonstrate GPU-accelerated ML model evaluation using all supported OpenNLP model types.
  * Purpose: Demo application exercising GpuMaxentModel, GpuNaiveBayesModel, GpuNeuralNetworkModel, and GpuPerceptronModel in a single run.
  * Rationale: A standalone demo validates the integration before embedding in a larger application and serves as documentation-by-example.

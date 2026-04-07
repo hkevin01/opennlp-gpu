@@ -11,7 +11,7 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
- * ID: GFE-001
+
  * Requirement: GpuFeatureExtractor must extract numeric feature vectors from NLP token contexts using the active GPU compute backend.
  * Purpose: Higher-level wrapper around FeatureExtractionOperation that integrates token normalisation, vocabulary lookup, and TF-IDF weighting.
  * Rationale: Consolidating feature extraction logic here decouples NLP feature engineering from GPU dispatch plumbing.

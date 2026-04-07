@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
- * ID: CCM-001
+
  * Requirement: CiCdManager must manage CI/CD pipeline integration for GPU-accelerated NLP models including build validation and deployment checks.
  * Purpose: Provides utility methods for CI/CD workflows: build validation, test gating, dependency version checks, and environment probes.
  * Rationale: GPU builds require additional validation steps (driver availability, native library compilation); centralising them ensures consistent CI gates.

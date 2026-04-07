@@ -3,7 +3,7 @@ package org.apache.opennlp.gpu.rocm;
 import org.apache.opennlp.gpu.common.GpuDevice;
 
 /**
- * ID: RD-001
+
  * Requirement: RocmDevice must represent a single AMD ROCm GPU device with its properties (name, VRAM, compute version).
  * Purpose: Value object populated from hipGetDeviceProperties to carry per-device metadata through diagnostics and config flows.
  * Rationale: A dedicated device-info type decouples hipDeviceProp_t from Java code and enables serialization/logging without JNI calls.

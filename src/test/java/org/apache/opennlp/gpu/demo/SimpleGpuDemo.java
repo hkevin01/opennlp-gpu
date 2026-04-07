@@ -1,7 +1,7 @@
 package org.apache.opennlp.gpu.demo;
 
 /**
- * ID: SGD-001
+
  * Requirement: SimpleGpuDemo must demonstrate the minimal code required to enable GPU acceleration in a new OpenNLP application.
  * Purpose: Minimal JUnit test showing the three-line integration: GpuConfig → OpenNlpGpuAdapter → gpuModel.eval().
  * Rationale: The simplest possible integration demo reduces the barrier to adoption for new users.

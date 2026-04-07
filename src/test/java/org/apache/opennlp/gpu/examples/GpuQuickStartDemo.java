@@ -15,7 +15,7 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * ID: GQSD-001
+
  * Requirement: GpuQuickStartDemo must provide a quick-start demonstration used in documentation examples showing GPU acceleration setup.
  * Purpose: Minimal runnable example targeting documentation and onboarding; should complete in under 5 seconds on any hardware.
  * Rationale: Quick-start examples are the first code new adopters run; they must be reliable and require minimal configuration.

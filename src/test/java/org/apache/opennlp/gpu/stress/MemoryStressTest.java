@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * ID: MST-001
+
  * Requirement: MemoryStressTest must stress test GPU memory pool allocation and release under concurrent high-pressure conditions.
  * Purpose: Multi-threaded test that repeatedly allocates and releases memory pool blocks, verifying no leaks or double-free errors.
  * Rationale: GPU memory pool correctness under concurrent access is critical to prevent OOM and corruption in production batch pipelines.

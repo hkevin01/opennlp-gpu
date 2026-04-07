@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
     ComprehensiveDemoTestSuite.PerformanceDemoTest.class
 })
 /**
- * ID: CDTS-001
+
  * Requirement: ComprehensiveDemoTestSuite must aggregate all demo tests into a single JUnit 5 test suite for CI execution.
  * Purpose: Suite descriptor collecting GpuDemoApplication, SimpleGpuDemo, and StandaloneGpuDemo into a single suite run.
  * Rationale: Suite aggregation reduces CI configuration complexity and ensures all demo scenarios run together before release.

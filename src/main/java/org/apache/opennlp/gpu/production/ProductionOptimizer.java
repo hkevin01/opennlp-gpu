@@ -22,7 +22,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
 
 /**
- * ID: PO-001
+
  * Requirement: ProductionOptimizer must apply production-level optimisations to GPU compute (batch tuning, kernel selection, memory pool sizing) at startup.
  * Purpose: Analyses hardware metrics at startup and configures GpuConfig parameters for optimal production throughput.
  * Rationale: Production workloads differ from development workloads; auto-tuning at startup captures device-specific optima without manual configuration.
