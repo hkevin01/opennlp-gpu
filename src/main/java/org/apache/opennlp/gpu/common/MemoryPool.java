@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.opennlp.gpu.common;
 
 /**
  * PHASE 2: CORE IMPLEMENTATION - MEMORY MANAGEMENT
- * 
+ *
  * Memory pooling implementation for efficient GPU memory management.
  * This class provides pooling capabilities to reduce the overhead of
  * repeated memory allocations and deallocations on the GPU.
- * 
+ *
  * Part of the OpenNLP GPU acceleration project.
  */
-package org.apache.opennlp.gpu.common;
 
 import java.util.Map;
 import java.util.Queue;
@@ -39,7 +39,7 @@ public class MemoryPool {
 
   public cl_mem acquire(long size) {
     Queue<cl_mem> q = pool.get(size);
-    return (q != null && !q.isEmpty()) ? q.poll() : null; 
+    return (q != null && !q.isEmpty()) ? q.poll() : null;
   }
 
   public void release(cl_mem buffer) {

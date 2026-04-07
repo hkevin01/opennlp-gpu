@@ -166,7 +166,7 @@ public class GpuMaxentTrainer implements EventTrainer {
         config.setMemoryPoolSizeMB(memoryPoolMB);
 
         // Check GPU availability
-        if (gpuEnabled && !config.isGpuAvailable()) {
+        if (gpuEnabled && !GpuConfig.isGpuAvailable()) {
             logger.warn("GPU acceleration requested but not available. Falling back to CPU training.");
             gpuEnabled = false;
         }

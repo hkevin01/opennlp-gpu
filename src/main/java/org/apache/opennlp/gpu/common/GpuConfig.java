@@ -12,95 +12,159 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * This project is a third-party GPU acceleration extension for Apache OpenNLP.
  * It is not officially endorsed or maintained by the Apache Software Foundation.
  */
 package org.apache.opennlp.gpu.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Configuration for GPU operations
+ * ID: GCFG-001
+ * Requirement: Encapsulate all runtime parameters that govern GPU compute
+ *   provider selection, memory allocation, and batch processing behavior.
+ * Purpose: Provides a single, well-typed configuration object that is passed
+ *   to ComputeProvider.initialize(), removing scattered System.getProperty()
+ *   calls from hot paths.
+ * Rationale: Centralizing configuration simplifies tuning for production
+ *   deployments, facilitates testing via constructor injection, and provides
+ *   a documented interface for each tunable parameter.
+ * Inputs: All fields are set via plain setters. Defaults are chosen for safe
+ *   operation on a machine with no GPU.
+ * Outputs: Read via getters; used by ComputeProvider implementations during
+ *   initialization.
+ * Preconditions: None — safe to construct without arguments.
+ * Postconditions: All getters return valid values immediately after construction.
+ * Assumptions: Memory values are in megabytes. batchSize ≥ 1.
+ * Side Effects: None. This class is a pure value object.
+ * Failure Modes: Negative memoryPoolSizeMB or batchSize values are not
+ *   validated at set time; providers must guard against them at init time.
+ * Constraints: maxMemoryUsageMB must be ≥ memoryPoolSizeMB for correct operation.
+ * Verification: Validated by BasicValidationTest; used in all integration tests.
+ * References: OpenNLP model evaluation pipeline; CUDA memory management best practices.
  */
 public class GpuConfig {
+
+    /** Whether GPU acceleration is requested. Defaults to false (safe CPU-only mode). */
     private boolean gpuEnabled = false;
+
+    /** When true, providers emit verbose diagnostic output. */
     private boolean debugMode = false;
-    private int memoryPoolSizeMB = 256; // Default 256MB
-    private int batchSize = 32; // Default batch size
-    private int maxMemoryUsageMB = 1024; // Default 1GB limit
-    
-    public GpuConfig() {
-        // Default configuration
-    }
-    
-    public boolean isGpuEnabled() {
-        return gpuEnabled;
-    }
-    
-    public void setGpuEnabled(boolean enabled) {
-        this.gpuEnabled = enabled;
-    }
-    
-    public boolean isDebugMode() {
-        return debugMode;
-    }
-    
-    public void setDebugMode(boolean debugMode) {
-        this.debugMode = debugMode;
-    }
-    
-    public int getMemoryPoolSizeMB() {
-        return memoryPoolSizeMB;
-    }
-    
-    public void setMemoryPoolSizeMB(int memoryPoolSizeMB) {
-        this.memoryPoolSizeMB = memoryPoolSizeMB;
-    }
-    
-    public int getBatchSize() {
-        return batchSize;
-    }
-    
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
-    }
-    
-    public int getMaxMemoryUsageMB() {
-        return maxMemoryUsageMB;
-    }
-    
-    public void setMaxMemoryUsageMB(int maxMemoryUsageMB) {
-        this.maxMemoryUsageMB = maxMemoryUsageMB;
-    }
-    
+
     /**
-     * Check if GPU acceleration is available on the system
-     * @return true if GPU is available and can be used
+     * Size of the pre-allocated GPU memory pool in MB.
+     * A pool avoids runtime cudaMalloc overhead during inference.
+     * Default: 256 MB.
+     */
+    private int memoryPoolSizeMB = 256;
+
+    /**
+     * Number of samples processed per GPU kernel launch.
+     * Higher values improve GPU utilization; lower values reduce latency.
+     * Default: 32.
+     */
+    private int batchSize = 32;
+
+    /**
+     * Hard upper bound on total GPU memory this provider may consume, in MB.
+     * Providers must refuse to allocate beyond this limit.
+     * Default: 1024 MB (1 GB).
+     */
+    private int maxMemoryUsageMB = 1024;
+
+    /**
+     * ID: GCFG-002
+     * Requirement: Construct a GpuConfig with all defaults suitable for a
+     *   CPU-only or test environment.
+     */
+    public GpuConfig() {
+        // All fields initialized to safe defaults above.
+    }
+
+    // ---- Getters and Setters ----
+
+    /** Returns whether GPU acceleration is requested. */
+    public boolean isGpuEnabled() { return gpuEnabled; }
+
+    /** Enables or disables GPU acceleration. */
+    public void setGpuEnabled(boolean enabled) { this.gpuEnabled = enabled; }
+
+    /** Returns whether verbose diagnostic mode is active. */
+    public boolean isDebugMode() { return debugMode; }
+
+    /** Enables or disables verbose diagnostic output. */
+    public void setDebugMode(boolean debugMode) { this.debugMode = debugMode; }
+
+    /** Returns the GPU memory pool size in MB. */
+    public int getMemoryPoolSizeMB() { return memoryPoolSizeMB; }
+
+    /**
+     * Sets the GPU memory pool size in MB.
+     * @param memoryPoolSizeMB must be positive
+     */
+    public void setMemoryPoolSizeMB(int memoryPoolSizeMB) { this.memoryPoolSizeMB = memoryPoolSizeMB; }
+
+    /** Returns the inference batch size. */
+    public int getBatchSize() { return batchSize; }
+
+    /**
+     * Sets the inference batch size.
+     * @param batchSize must be ≥ 1
+     */
+    public void setBatchSize(int batchSize) { this.batchSize = batchSize; }
+
+    /** Returns the maximum GPU memory usage limit in MB. */
+    public int getMaxMemoryUsageMB() { return maxMemoryUsageMB; }
+
+    /**
+     * Sets the maximum GPU memory usage limit in MB.
+     * @param maxMemoryUsageMB must be ≥ memoryPoolSizeMB
+     */
+    public void setMaxMemoryUsageMB(int maxMemoryUsageMB) { this.maxMemoryUsageMB = maxMemoryUsageMB; }
+
+    // ---- Static Utility Methods ----
+
+    /**
+     * ID: GCFG-010
+     * Requirement: Detect whether GPU acceleration is available on this host
+     *   by checking the system property {@code gpu.available}.
+     * Purpose: Provides a lightweight guard used by model factories before
+     *   attempting GPU provider initialization.
+     * Inputs: System property "gpu.available" (String "true"/"false").
+     * Outputs: true only when "true".equals(System.getProperty("gpu.available")).
+     * Side Effects: None. Reads one system property.
+     * Failure Modes: SecurityException from System.getProperty() is caught and
+     *   treated as unavailable.
+     * References: Java Security Manager property access.
      */
     public static boolean isGpuAvailable() {
         try {
-            // Simple check for development/testing
-            // In production, this would check for actual GPU hardware/drivers
             String gpuProperty = System.getProperty("gpu.available", "false");
             return "true".equals(gpuProperty);
-        } catch (Exception e) {
+        } catch (SecurityException e) {
             return false;
         }
     }
-    
+
     /**
-     * Get GPU information for diagnostics
-     * @return Map containing GPU information
+     * ID: GCFG-011
+     * Requirement: Collect GPU hardware metadata for diagnostic and logging use.
+     * Purpose: Used by GpuDiagnostics to populate health-check reports without
+     *   requiring a live GPU context.
+     * Outputs: Map with keys: available, vendor, device, driver_version,
+     *   memory_total, memory_free. Values are Strings or Boolean.
+     * Side Effects: Reads up to 6 system properties.
      */
-    public static java.util.Map<String, Object> getGpuInfo() {
-        java.util.Map<String, Object> info = new java.util.HashMap<>();
-        
-        info.put("available", isGpuAvailable());
-        info.put("vendor", System.getProperty("gpu.vendor", "Unknown"));
-        info.put("device", System.getProperty("gpu.device", "Unknown"));
-        info.put("driver_version", System.getProperty("gpu.driver", "Unknown"));
-        info.put("memory_total", System.getProperty("gpu.memory.total", "0"));
-        info.put("memory_free", System.getProperty("gpu.memory.free", "0"));
-        
+    public static Map<String, Object> getGpuInfo() {
+        Map<String, Object> info = new HashMap<>();
+        info.put("available",       isGpuAvailable());
+        info.put("vendor",          System.getProperty("gpu.vendor",         "Unknown"));
+        info.put("device",          System.getProperty("gpu.device",         "Unknown"));
+        info.put("driver_version",  System.getProperty("gpu.driver",         "Unknown"));
+        info.put("memory_total",    System.getProperty("gpu.memory.total",   "0"));
+        info.put("memory_free",     System.getProperty("gpu.memory.free",    "0"));
         return info;
     }
 }

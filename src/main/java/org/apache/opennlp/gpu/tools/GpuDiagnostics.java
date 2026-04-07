@@ -1,3 +1,18 @@
+/*
+ * Copyright 2025 OpenNLP GPU Extension Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.opennlp.gpu.tools;
 
 import java.io.BufferedReader;
@@ -15,16 +30,46 @@ import org.apache.opennlp.gpu.compute.cloud.InferentiaComputeProvider;
 import org.apache.opennlp.gpu.compute.cloud.TpuComputeProvider;
 
 /**
- * GPU Diagnostics Tool for OpenNLP GPU Acceleration
- *
- * Comprehensive tool to detect and validate GPU drivers, SDKs, and runtime environments
- * required for GPU acceleration to work properly. Now includes cloud accelerator detection
- * for AWS Inferentia and Google TPU.
+ * ID: DIAG-001
+ * Requirement: Provide a standalone diagnostic tool that probes the host
+ *   environment for all prerequisites required by the OpenNLP GPU extension,
+ *   produces a structured {@link DiagnosticReport}, and exits with code 0
+ *   (ready) or 1 (not ready).
+ * Purpose: Enables operators and developers to verify GPU driver, SDK, runtime,
+ *   and cloud accelerator availability before deploying the GPU extension,
+ *   reducing production configuration errors.
+ * Rationale: Embedding diagnostics in the same JAR as the extension allows a
+ *   single artefact to both verify and run, simplifying CI/CD pipelines.
+ * Inputs: No command-line arguments are required. Probes system via
+ *   OS commands (nvidia-smi, rocm-smi, clinfo), file existence checks,
+ *   and Java system properties.
+ * Outputs: Human-readable diagnostic report to System.out; exit code.
+ * Preconditions: JVM must have permission to spawn child processes for CLI
+ *   probes. Read access to /dev, /proc, and standard system directories.
+ * Postconditions: DiagnosticReport is fully populated; no system state changed.
+ * Assumptions: Running on Linux, macOS, or Windows. Internet access not required.
+ * Side Effects: Spawns short-lived subprocesses for driver detection.
+ * Failure Modes: Subprocess spawn failure is caught and logged as an error entry.
+ *   No exception escapes the diagnostic methods.
+ * Constraints: Subprocess timeout not enforced — avoid running on hosts where
+ *   nvidia-smi may hang (broken driver install).
+ * Verification: Manually verified on Ubuntu 22.04 + ROCm 5.7 and AWS Inferentia.
+ * References: CUDA Toolkit documentation; ROCm/HIP user guide; OpenCL ICD spec.
  */
 public class GpuDiagnostics {
 
     private static final GpuLogger logger = GpuLogger.getLogger(GpuDiagnostics.class);
 
+    /**
+     * ID: DIAG-010
+     * Requirement: Entry point — run all diagnostic checks, print the report,
+     *   and exit with code 0 if GPU is ready, 1 otherwise.
+     * Purpose: Allows execution via {@code mvn exec:java -Dexec.mainClass=...GpuDiagnostics}
+     *   or direct {@code java -jar} invocation.
+     * Inputs: args — unused; diagnostics are self-contained.
+     * Side Effects: Writes to System.out; calls System.exit().
+     * Error Handling: Never throws — all exceptions are caught within diagnostic methods.
+     */
     public static void main(String[] args) {
         System.out.println("🔍 OpenNLP GPU Acceleration - Hardware Diagnostics");
         System.out.println("==================================================");
@@ -44,6 +89,13 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+     * ID: DIAG-011
+     * Requirement: Execute all diagnostic sub-checks in deterministic order and
+     *   aggregate results into a single DiagnosticReport.
+     * Outputs: Non-null DiagnosticReport with all sections populated.
+     * Postconditions: report.isGpuReady() reflects true overall readiness.
+     */
     public DiagnosticReport runComprehensiveDiagnostics() {
         DiagnosticReport report = new DiagnosticReport();
 
@@ -176,7 +228,7 @@ public class GpuDiagnostics {
 
     private void detectWindowsGpuHardware(DiagnosticReport report) {
         try {
-            Process process = Runtime.getRuntime().exec("wmic path win32_VideoController get name");
+            Process process = Runtime.getRuntime().exec(new String[]{"wmic", "path", "win32_VideoController", "get", "name"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             List<String> gpus = new ArrayList<>();
@@ -214,7 +266,7 @@ public class GpuDiagnostics {
 
     private void detectMacGpuHardware(DiagnosticReport report) {
         try {
-            Process process = Runtime.getRuntime().exec("system_profiler SPDisplaysDataType");
+            Process process = Runtime.getRuntime().exec(new String[]{"system_profiler", "SPDisplaysDataType"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             StringBuilder output = new StringBuilder();
@@ -251,7 +303,7 @@ public class GpuDiagnostics {
 
         // Check nvidia-smi
         try {
-            Process process = Runtime.getRuntime().exec("nvidia-smi --version");
+            Process process = Runtime.getRuntime().exec(new String[]{"nvidia-smi", "--version"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = reader.readLine();
 
@@ -259,7 +311,7 @@ public class GpuDiagnostics {
                 report.addSuccess("NVIDIA Driver", "✅ Installed: " + line.trim());
 
                 // Get detailed GPU info
-                process = Runtime.getRuntime().exec("nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader");
+                process = Runtime.getRuntime().exec(new String[]{"nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"});
                 reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(", ");
@@ -289,7 +341,7 @@ public class GpuDiagnostics {
 
         // Check rocm-smi
         try {
-            Process process = Runtime.getRuntime().exec("rocm-smi --showproductname");
+            Process process = Runtime.getRuntime().exec(new String[]{"rocm-smi", "--showproductname"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = reader.readLine();
 
@@ -297,7 +349,7 @@ public class GpuDiagnostics {
                 report.addSuccess("AMD ROCm Driver", "✅ Installed and working");
 
                 // Get GPU details
-                process = Runtime.getRuntime().exec("rocm-smi --showmeminfo --showuse");
+                process = Runtime.getRuntime().exec(new String[]{"rocm-smi", "--showmeminfo", "--showuse"});
                 reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 StringBuilder info = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
@@ -313,7 +365,7 @@ public class GpuDiagnostics {
         } catch (Exception e) {
             // Try alternative detection
             try {
-                Process process = Runtime.getRuntime().exec("ls /opt/rocm");
+                Process process = Runtime.getRuntime().exec(new String[]{"ls", "/opt/rocm"});
                 if (process.waitFor() == 0) {
                     report.addWarning("AMD ROCm", "⚠️ ROCm directory found but rocm-smi not working");
                     report.addRecommendation("Check ROCm installation: /opt/rocm should contain bin, lib directories");
@@ -337,7 +389,7 @@ public class GpuDiagnostics {
 
         // Check for Intel GPU compute runtime
         try {
-            Process process = Runtime.getRuntime().exec("ls /usr/lib/x86_64-linux-gnu/intel-opencl");
+            Process process = Runtime.getRuntime().exec(new String[]{"ls", "/usr/lib/x86_64-linux-gnu/intel-opencl"});
             if (process.waitFor() == 0) {
                 report.addSuccess("Intel OpenCL", "✅ Intel OpenCL runtime detected");
             } else {
@@ -358,7 +410,7 @@ public class GpuDiagnostics {
         report.addSection("CUDA Runtime");
 
         try {
-            Process process = Runtime.getRuntime().exec("nvcc --version");
+            Process process = Runtime.getRuntime().exec(new String[]{"nvcc", "--version"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             boolean cudaFound = false;
@@ -446,7 +498,7 @@ public class GpuDiagnostics {
         report.addSection("OpenCL Runtime");
 
         try {
-            Process process = Runtime.getRuntime().exec("clinfo");
+            Process process = Runtime.getRuntime().exec(new String[]{"clinfo"});
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             StringBuilder output = new StringBuilder();
