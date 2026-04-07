@@ -13,8 +13,22 @@ import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
 import org.apache.opennlp.gpu.ml.neural.GpuNeuralNetwork;
 
 /**
- * Comprehensive test suite for GPU acceleration components
- * Tests accuracy, performance, and reliability
+ * ID: GTS-001
+ * Requirement: GpuTestSuite must aggregate all GPU compute and ML model test classes into a single JUnit 5 test suite for CI.
+ * Purpose: Suite descriptor referencing all test classes so they can be run as a single @Suite target.
+ * Rationale: Aggregating tests into a suite ensures no tests are accidentally excluded from CI runs.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None; JUnit 5 suite descriptor only.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuTestSuite {
     

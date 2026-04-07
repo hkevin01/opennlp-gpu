@@ -28,15 +28,22 @@ import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * AWS Inferentia compute provider for high-performance, cost-effective inference workloads.
- *
- * AWS Inferentia chips are purpose-built for machine learning inference, offering:
- * - 8-12x performance improvement for inference tasks
- * - Cost-effective alternative to traditional GPUs
- * - Optimized for transformer models and NLP workloads
- *
- * @author OpenNLP GPU Extension Contributors
- * @since 1.1.0
+ * ID: ICP-001
+ * Requirement: InferentiaComputeProvider must implement ComputeProvider using AWS Inferentia NeuronCore via the AWS Neuron SDK.
+ * Purpose: Routes NLP compute to AWS Inferentia NeuronCores for cost-effective inference at scale on AWS inf1/inf2 instances.
+ * Rationale: Inferentia provides specialized matrix multiply units and lower per-inference cost than GPU instances for high-throughput NLP.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises Neuron runtime; allocates Neuron device memory via NeuronBufferManager.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class InferentiaComputeProvider implements ComputeProvider {
 

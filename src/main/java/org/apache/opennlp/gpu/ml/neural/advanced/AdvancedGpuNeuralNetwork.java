@@ -10,8 +10,22 @@ import org.apache.opennlp.gpu.compute.GpuMatrixOperation;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
- * Advanced GPU-accelerated neural network with modern features
- * Includes batch normalization, dropout, advanced optimizers, and regularization
+ * ID: AGNN-001
+ * Requirement: AdvancedGpuNeuralNetwork must implement an advanced GPU neural network with attention, residual connections, and multi-head capabilities.
+ * Purpose: Extends GpuNeuralNetwork with multi-head self-attention, dropout, layer normalisation and residual shortcuts for transformer-style architectures.
+ * Rationale: Advanced neural architectures (transformers, residual nets) deliver higher accuracy on NLP tasks; GPU acceleration makes them feasible for real-time use.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Allocates attention weight matrices and residual buffers; GPU provider manages device memory.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class AdvancedGpuNeuralNetwork {
     

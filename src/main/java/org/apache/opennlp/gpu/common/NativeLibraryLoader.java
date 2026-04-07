@@ -9,20 +9,22 @@ import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Handles automatic loading of native GPU libraries from JAR resources.
- * 
- * This class automatically detects the platform and extracts the appropriate
- * native library from the JAR file to a temporary location for loading.
- * 
- * Features:
- * - Automatic platform detection (Windows, Linux, macOS)
- * - Architecture detection (x86_64, ARM64)
- * - Safe temporary file extraction
- * - Cleanup on JVM shutdown
- * - Fallback handling for missing libraries
- * 
- * @author OpenNLP GPU Extension Team
- * @since 1.0.0
+ * ID: NLL-001
+ * Requirement: NativeLibraryLoader must detect host platform, extract the correct native shared library from the JAR, and load it into the JVM.
+ * Purpose: Handles automatic extraction and loading of libopennlp_gpu.so / .dll / .dylib from JAR resources to a temp directory.
+ * Rationale: Embedding native libraries in a JAR is the standard zero-install pattern for JVM-native bridges; extraction must be atomic to prevent partial reads.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Creates a temp file on first load; registers JVM shutdown hook to delete it.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class NativeLibraryLoader {
     

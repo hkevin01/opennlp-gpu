@@ -1,3 +1,21 @@
+/*
+ * ID: HKL-001
+ * Requirement: HipKernelLaunchers.cpp must define ROCm/HIP kernel launcher functions for matrix ops on AMD GPUs, mirroring CudaKernelLaunchers.cu.
+ * Purpose: HIP .cpp file containing launchMatrixMultiply, launchMatrixAdd, launchTfIdf, and launchCosineSimilarity for ROCm.
+ * Rationale: Mirroring the CUDA launcher structure for HIP ensures feature parity and simplifies porting CUDA kernels to ROCm.
+ * Inputs: JNI call parameters or direct C++ function arguments as documented per function.
+ * Outputs: Return values / JNI jboolean, jint, jstring, jfloat array results.
+ * Preconditions: GPU runtime (CUDA/ROCm/OpenCL) initialised; JNI env pointer valid.
+ * Postconditions: GPU resources allocated or reported unavailable; error codes returned.
+ * Assumptions: Compiled with matching GPU SDK headers (CUDA 11+, ROCm 5+, or CPU fallback).
+ * Side Effects: Allocates/frees GPU device memory; prints error messages to stderr on failure.
+ * Failure Modes: GPU API errors return false/0/NULL; errors logged via fprintf(stderr).
+ * Error Handling: CHECK_CUDA_ERROR / CHECK_HIP_ERROR macros abort on API failures.
+ * Constraints: GPU memory bounded by device; operations are single-device by default.
+ * Verification: Integration tests in src/test; GpuDiagnostics CLI probe.
+ * References: CUDA Toolkit docs; ROCm/HIP API; OpenCL 1.2 spec; JNI Programmer's Guide.
+ */
+
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 #include <iostream>

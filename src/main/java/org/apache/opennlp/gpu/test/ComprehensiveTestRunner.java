@@ -8,8 +8,22 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.tools.GpuDiagnostics;
 
 /**
- * Comprehensive test runner for all OpenNLP GPU components
- * Runs diagnostics, tests, and benchmarks in sequence
+ * ID: CTR-001
+ * Requirement: ComprehensiveTestRunner must execute all GPU compute and model tests in a single orchestrated run, reporting pass/fail and performance metrics.
+ * Purpose: Standalone runner exercising all GPU provider adapters, matrix operations, and model wrappers without requiring a test framework.
+ * Rationale: A main-tree test runner enables environment validation and smoke-testing in production images where JUnit may not be present.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises GPU providers; prints pass/fail results to stdout; exits with non-zero code on failure.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class ComprehensiveTestRunner {
     

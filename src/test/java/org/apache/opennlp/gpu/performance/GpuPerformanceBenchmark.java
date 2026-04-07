@@ -34,6 +34,24 @@ import opennlp.tools.ml.model.MaxentModel;
  * Measures and validates performance improvements across different operations
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+/**
+ * ID: GPB-001
+ * Requirement: GpuPerformanceBenchmark must JUnit-integrated performance benchmark measuring GPU provider throughput against SLA thresholds.
+ * Purpose: JUnit test class that runs GPU and CPU benchmark iterations and asserts throughput meets minimum SLA requirements.
+ * Rationale: Performance regression detection requires benchmark assertions in CI; this test will fail if throughput degrades beyond threshold.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Runs timed compute loops; may warm up GPU; asserts throughput >= SLA.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
+ */
 public class GpuPerformanceBenchmark {
     
     private static final GpuLogger logger = GpuLogger.getLogger(GpuPerformanceBenchmark.class);

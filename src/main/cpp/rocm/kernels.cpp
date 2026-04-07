@@ -1,3 +1,21 @@
+/*
+ * ID: K-001
+ * Requirement: kernels.cpp must implement ROCm/HIP __global__ kernel equivalents for matrix multiply, softmax, TF-IDF, and n-gram extraction.
+ * Purpose: ROCm kernel file containing hipLaunchKernelGGL-compatible matrix and NLP kernels for AMD GPU execution.
+ * Rationale: ROCm kernels require HIP C++ syntax and are compiled with hipcc; separating them from launchers mirrors the CUDA architecture.
+ * Inputs: JNI call parameters or direct C++ function arguments as documented per function.
+ * Outputs: Return values / JNI jboolean, jint, jstring, jfloat array results.
+ * Preconditions: GPU runtime (CUDA/ROCm/OpenCL) initialised; JNI env pointer valid.
+ * Postconditions: GPU resources allocated or reported unavailable; error codes returned.
+ * Assumptions: Compiled with matching GPU SDK headers (CUDA 11+, ROCm 5+, or CPU fallback).
+ * Side Effects: Allocates/frees GPU device memory; prints error messages to stderr on failure.
+ * Failure Modes: GPU API errors return false/0/NULL; errors logged via fprintf(stderr).
+ * Error Handling: CHECK_CUDA_ERROR / CHECK_HIP_ERROR macros abort on API failures.
+ * Constraints: GPU memory bounded by device; operations are single-device by default.
+ * Verification: Integration tests in src/test; GpuDiagnostics CLI probe.
+ * References: CUDA Toolkit docs; ROCm/HIP API; OpenCL 1.2 spec; JNI Programmer's Guide.
+ */
+
 #include <hip/hip_runtime.h>
 #include <hip/hip_runtime_api.h>
 #include <iostream>

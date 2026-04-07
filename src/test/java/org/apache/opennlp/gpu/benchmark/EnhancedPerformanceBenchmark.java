@@ -6,8 +6,22 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.kernels.MatrixOps;
 
 /**
- * Enhanced performance benchmarking for GPU acceleration
- * Tests real-world NLP workloads and memory usage
+ * ID: EPB-001
+ * Requirement: EnhancedPerformanceBenchmark must extend PerformanceBenchmark with statistical analysis, warm-up phases, and per-percentile latency reporting.
+ * Purpose: Enhanced benchmark adding JVM warm-up, percentile (p50/p95/p99) tracking, and gc-pause-aware measurements.
+ * Rationale: JVM warm-up and GC pauses distort naive benchmarks; warm-up phases and p95/p99 percentiles give production-representative results.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Runs compute loops with warm-up; may trigger GC; prints statistical summaries.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class EnhancedPerformanceBenchmark {
     

@@ -15,8 +15,22 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * Quick start demonstration of OpenNLP GPU acceleration
- * Shows basic usage patterns and integration examples
+ * ID: GQSD-001
+ * Requirement: GpuQuickStartDemo must provide a quick-start demonstration used in documentation examples showing GPU acceleration setup.
+ * Purpose: Minimal runnable example targeting documentation and onboarding; should complete in under 5 seconds on any hardware.
+ * Rationale: Quick-start examples are the first code new adopters run; they must be reliable and require minimal configuration.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None beyond transient model objects and console output.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuQuickStartDemo {
     

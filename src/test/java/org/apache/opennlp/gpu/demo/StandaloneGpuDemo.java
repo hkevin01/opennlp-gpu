@@ -1,8 +1,22 @@
 package org.apache.opennlp.gpu.demo;
 
 /**
- * Standalone demo that can be compiled and run with javac directly
- * No package declaration - can be run from any directory
+ * ID: SGD-001
+ * Requirement: StandaloneGpuDemo must run GPU acceleration demos without a test framework, suitable for direct java -jar invocation.
+ * Purpose: Standalone main-method demo that exercises GPU model evaluation and prints results, requiring no JUnit on the classpath.
+ * Rationale: Standalone demos are useful for quick environment validation in production images that exclude test dependencies.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises GPU context; prints results to stdout.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class StandaloneGpuDemo {
     

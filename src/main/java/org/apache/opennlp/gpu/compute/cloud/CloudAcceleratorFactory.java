@@ -28,14 +28,29 @@ import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 
 /**
- * Factory for creating and discovering cloud accelerator compute providers.
- *
- * This factory automatically detects available cloud accelerators and provides
- * a unified interface for accessing AWS Inferentia, Google TPU, and traditional
- * GPU compute providers.
- *
- * @author OpenNLP GPU Extension Contributors
- * @since 1.1.0
+ * ID: CAFAC-001
+ * Requirement: CloudAcceleratorFactory must detect available cloud accelerator
+ *              compute providers (AWS Inferentia, Google TPU, and GPU) and return
+ *              the most capable provider for the current environment.
+ * Purpose: Factory that abstracts cloud accelerator discovery from callers, enabling
+ *          transparent use of AWS Inferentia NeuronCores, Google TPU, or traditional GPU
+ *          without embedding cloud-SDK detection logic in every caller.
+ * Rationale: Cloud accelerators expose proprietary SDKs (Neuron, libtpu); a factory isolates
+ *            runtime detection so callers use a single getBestProvider() call regardless
+ *            of whether they run on AWS inf1/inf2, GCP TPU, or standard GPU instances.
+ * Inputs: None (uses system environment and property detection internally).
+ * Outputs: ComputeProvider instances; List<ComputeProvider> of all available providers.
+ * Preconditions: JVM initialised; cloud SDK libraries present on library path if cloud
+ *               accelerators are expected.
+ * Postconditions: Returns a non-null ComputeProvider; falls back to CpuComputeProvider
+ *                if no accelerator is detected.
+ * Assumptions: Cloud accelerator detection is idempotent; SDK init is thread-safe.
+ * Side Effects: May initialise cloud accelerator SDK runtimes on first call; caches results.
+ * Failure Modes: SDK init fails → falls back to GPU or CPU provider; logged at WARN level.
+ * Error Handling: All detection exceptions are caught; fallback provider returned silently.
+ * Constraints: Provider list is cached after first call (volatile double-checked locking).
+ * Verification: CloudAcceleratorDemo; unit tests with mock SDK env.
+ * References: AWS Neuron SDK; Google libtpu; ComputeProvider interface; ARCHITECTURE_OVERVIEW.md.
  */
 public final class CloudAcceleratorFactory {
 

@@ -13,19 +13,22 @@ import org.apache.opennlp.gpu.ml.neural.GpuNeuralPipeline;
 import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
 
 /**
- * Advanced ML model integration system that combines traditional OpenNLP models
- * with GPU-accelerated neural networks, attention mechanisms, and feature extraction.
- * 
- * Features:
- * - Hybrid CPU/GPU model processing
- * - Neural pipeline integration
- * - Advanced feature extraction
- * - Performance monitoring and optimization
- * - Model ensemble capabilities
- * - Real-time adaptation and learning
- * 
- * @author OpenNLP GPU Team
- * @since 2.0.0
+ * ID: GMI-001
+ * Requirement: GpuModelIntegration must integrate GPU-accelerated models into an end-to-end OpenNLP pipeline for tokenisation, NER, and chunking.
+ * Purpose: Wires together multiple GPU model types into a complete NLP pipeline, verifying cross-component compatibility.
+ * Rationale: Pipeline integration tests catch interface mismatches between GPU model wrappers not visible in isolation.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises GPU providers; may allocate GPU context.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuModelIntegration {
     

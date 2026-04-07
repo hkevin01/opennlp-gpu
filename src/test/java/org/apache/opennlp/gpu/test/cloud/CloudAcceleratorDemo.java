@@ -27,13 +27,22 @@ import org.apache.opennlp.gpu.compute.cloud.InferentiaComputeProvider;
 import org.apache.opennlp.gpu.compute.cloud.TpuComputeProvider;
 
 /**
- * Test and demonstration class for cloud accelerator functionality.
- *
- * This class demonstrates how to use the cloud accelerator providers
- * and validates their functionality in the OpenNLP GPU Extension.
- *
- * @author OpenNLP GPU Extension Contributors
- * @since 1.1.0
+ * ID: CAD-001
+ * Requirement: CloudAcceleratorDemo must demonstrate GPU acceleration on cloud accelerator backends (AWS Inferentia, Google TPU) in a test context.
+ * Purpose: Test/demo class exercising InferentiaComputeProvider and TpuComputeProvider stubs with output validation.
+ * Rationale: Cloud accelerator demos verify the provider stub API contract and serve as documentation for cloud deployment.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises cloud provider stubs; asserts non-exception completion.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class CloudAcceleratorDemo {
 

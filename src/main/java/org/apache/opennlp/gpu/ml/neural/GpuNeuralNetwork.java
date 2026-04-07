@@ -8,8 +8,22 @@ import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
- * GPU-accelerated neural network implementation
- * Supports feedforward networks with configurable architectures
+ * ID: GNN-001
+ * Requirement: GpuNeuralNetwork must implement a feedforward neural network with GPU-accelerated forward pass using configurable layer sizes.
+ * Purpose: Provides a multi-layer perceptron (MLP) forward pass using GPU matrix multiply and activation functions, targeting NLP classification tasks.
+ * Rationale: MLPs are the compute backbone of NLP feature learning; GPU batching provides 2-10× speedup for batch inference.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Allocates weight matrices and activation arrays; uses GPU provider for matrix ops.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuNeuralNetwork {
     

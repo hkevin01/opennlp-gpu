@@ -1,3 +1,21 @@
+/*
+ * ID: CO-001
+ * Requirement: CudaOperations.cpp must implement JNI-exposed CUDA operation wrappers (init, device query, matrix multiply, softmax) for the CudaUtil Java class.
+ * Purpose: C++ source providing CUDA runtime API wrappers callable from Java via JNI: device enumeration, matrix multiply via cuBLAS, softmax.
+ * Rationale: CUDA operations require C++ and CUDA runtime headers not available in pure Java; this file provides the native side of the GPU bridge.
+ * Inputs: JNI call parameters or direct C++ function arguments as documented per function.
+ * Outputs: Return values / JNI jboolean, jint, jstring, jfloat array results.
+ * Preconditions: GPU runtime (CUDA/ROCm/OpenCL) initialised; JNI env pointer valid.
+ * Postconditions: GPU resources allocated or reported unavailable; error codes returned.
+ * Assumptions: Compiled with matching GPU SDK headers (CUDA 11+, ROCm 5+, or CPU fallback).
+ * Side Effects: Allocates/frees GPU device memory; prints error messages to stderr on failure.
+ * Failure Modes: GPU API errors return false/0/NULL; errors logged via fprintf(stderr).
+ * Error Handling: CHECK_CUDA_ERROR / CHECK_HIP_ERROR macros abort on API failures.
+ * Constraints: GPU memory bounded by device; operations are single-device by default.
+ * Verification: Integration tests in src/test; GpuDiagnostics CLI probe.
+ * References: CUDA Toolkit docs; ROCm/HIP API; OpenCL 1.2 spec; JNI Programmer's Guide.
+ */
+
 #include <jni.h>
 #include <cuda_runtime.h>
 #include <stdio.h>

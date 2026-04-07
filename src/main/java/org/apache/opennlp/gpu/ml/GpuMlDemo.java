@@ -17,8 +17,22 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * Demonstration of GPU-accelerated ML models
- * Shows how to use MaxEnt, Perceptron, and Naive Bayes models with GPU acceleration
+ * ID: GMD-001
+ * Requirement: GpuMlDemo must demonstrate GPU-accelerated ML model evaluation using all supported OpenNLP model types.
+ * Purpose: Demo application exercising GpuMaxentModel, GpuNaiveBayesModel, GpuNeuralNetworkModel, and GpuPerceptronModel in a single run.
+ * Rationale: A standalone demo validates the integration before embedding in a larger application and serves as documentation-by-example.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises GPU context; prints benchmark results to stdout.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuMlDemo {
     

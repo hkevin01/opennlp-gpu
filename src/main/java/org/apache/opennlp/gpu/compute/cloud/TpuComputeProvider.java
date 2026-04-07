@@ -28,16 +28,22 @@ import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * Google TPU compute provider for high-performance, scalable machine learning workloads.
- *
- * Google TPUs (Tensor Processing Units) are custom-designed for machine learning:
- * - 10-100x performance improvement for large-scale ML training
- * - Optimized for TensorFlow/JAX workloads
- * - High memory bandwidth for matrix operations
- * - Specialized for transformer and deep learning models
- *
- * @author OpenNLP GPU Extension Contributors
- * @since 1.1.0
+ * ID: TCP-001
+ * Requirement: TpuComputeProvider must implement ComputeProvider using Google TPU matrix units via libtpu.
+ * Purpose: Routes NLP compute to Google TPU cores for high-throughput inference on GCP TPU instances (v3/v4).
+ * Rationale: TPUs provide extremely high matrix multiply throughput for batch NLP workloads at lower cost than GPU instances at scale.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises libtpu runtime; allocates HBM buffers for batch inference.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class TpuComputeProvider implements ComputeProvider {
 

@@ -15,8 +15,22 @@ import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.naivebayes.NaiveBayesModel;
 
 /**
- * GPU-accelerated implementation of Naive Bayes model
- * Uses GPU matrix operations for enhanced performance with large feature sets
+ * ID: GNBM-001
+ * Requirement: GpuNaiveBayesModel must implement a Naive Bayes classifier decorated with GPU-accelerated log-probability computation.
+ * Purpose: Wraps a trained Naive Bayes model, routing batch posterior probability evaluation to GPU matrix ops.
+ * Rationale: Naive Bayes log-probability computation involves large dot products across vocabulary; GPU batching provides significant speedup.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None beyond GPU dispatch delegation; model weights are read-only.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuNaiveBayesModel implements MaxentModel {
     

@@ -5,8 +5,22 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * High-performance GPU matrix operations implementation
- * Uses OpenCL/CUDA for hardware acceleration
+ * ID: GMO-001
+ * Requirement: GpuMatrixOperation must implement MatrixOperation using the best available GPU backend at runtime, with CPU fallback.
+ * Purpose: Selects CUDA, ROCm, OpenCL, or CPU MatrixOperation implementation based on runtime hardware detection.
+ * Rationale: Centralising backend selection in one class ensures callers never need to query hardware type directly.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: May allocate GPU device buffers on first use; delegates cleanup to underlying provider.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuMatrixOperation implements MatrixOperation {
     

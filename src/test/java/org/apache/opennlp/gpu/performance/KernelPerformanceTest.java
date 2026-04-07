@@ -5,7 +5,22 @@ import java.util.Random;
 import org.apache.opennlp.gpu.kernels.MatrixOps;
 
 /**
- * Performance testing for GPU kernel optimizations
+ * ID: KPT-001
+ * Requirement: KernelPerformanceTest must measure individual GPU kernel launch latency and memory transfer overhead.
+ * Purpose: Fine-grained timing tests for individual GPU kernels, separating compute time from JNI/PCIe transfer overhead.
+ * Rationale: Separating kernel latency from transfer overhead identifies whether bottlenecks are compute-bound or memory-bound.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Runs GPU kernel benchmarks; may flush GPU pipeline between measurements.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class KernelPerformanceTest {
     

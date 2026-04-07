@@ -6,33 +6,47 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * Configuration for compute providers, allowing fine-tuning of provider selection and behavior.
+ * ID: CC-001
+ * Requirement: ComputeConfiguration must expose all configurable parameters for compute provider selection and behaviour.
+ * Purpose: Centralises GPU/CPU compute tuning parameters (provider preference, benchmark caching, problem-size thresholds) into a single value object.
+ * Rationale: Separating configuration from behaviour simplifies testing and hot-reload of compute parameters without rebuilding providers.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None beyond storing configuration state in memory.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
-// Remove Lombok annotations and implement manually
 public class ComputeConfiguration {
-    
+
     // The preferred provider type, null for automatic selection
     private ComputeProvider.Type preferredProviderType = null;
-    
+
     // Problem size threshold below which CPU is preferred
     private int smallProblemThreshold = 1000;
-    
+
     // Whether to perform automatic benchmarking
     private boolean autoBenchmark = true;
-    
+
     // How long (in ms) benchmark results are considered valid
     private long benchmarkCacheTimeMs = 3600000; // 1 hour
-    
+
     // Provider-specific options
     private final Map<String, String> providerOptions = new HashMap<String, String>();
-    
+
     /**
      * Default constructor.
      */
     public ComputeConfiguration() {
         // Default constructor with no parameters
     }
-    
+
     /**
      * Creates a configuration from a Properties object.
      *
@@ -48,7 +62,7 @@ public class ComputeConfiguration {
                 // Invalid provider type, ignore
             }
         }
-        
+
         // Load small problem threshold
         String thresholdStr = properties.getProperty("compute.smallProblemThreshold");
         if (thresholdStr != null && !thresholdStr.isEmpty()) {
@@ -58,13 +72,13 @@ public class ComputeConfiguration {
                 // Invalid threshold, ignore
             }
         }
-        
+
         // Load auto benchmark flag
         String autoBenchmarkStr = properties.getProperty("compute.autoBenchmark");
         if (autoBenchmarkStr != null && !autoBenchmarkStr.isEmpty()) {
             autoBenchmark = Boolean.parseBoolean(autoBenchmarkStr);
         }
-        
+
         // Load benchmark cache time
         String cacheTimeStr = properties.getProperty("compute.benchmarkCacheTimeMs");
         if (cacheTimeStr != null && !cacheTimeStr.isEmpty()) {
@@ -74,7 +88,7 @@ public class ComputeConfiguration {
                 // Invalid cache time, ignore
             }
         }
-        
+
         // Load provider-specific options
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith("provider.")) {
@@ -82,7 +96,7 @@ public class ComputeConfiguration {
             }
         }
     }
-    
+
     /**
      * Get a provider-specific option.
      *
@@ -92,7 +106,7 @@ public class ComputeConfiguration {
     public String getProviderOption(String key) {
         return providerOptions.get("provider." + key);
     }
-    
+
     /**
      * Set a provider-specific option.
      *
@@ -102,7 +116,7 @@ public class ComputeConfiguration {
     public void setProviderOption(String key, String value) {
         providerOptions.put("provider." + key, value);
     }
-    
+
     /**
      * Get all provider-specific options.
      *
@@ -111,45 +125,45 @@ public class ComputeConfiguration {
     public Map<String, String> getAllProviderOptions() {
         return new HashMap<>(providerOptions);
     }
-    
+
     public ComputeProvider.Type getPreferredProviderType() {
         return preferredProviderType;
     }
-    
+
     public void setPreferredProviderType(ComputeProvider.Type preferredProviderType) {
         this.preferredProviderType = preferredProviderType;
     }
-    
+
     public int getSmallProblemThreshold() {
         return smallProblemThreshold;
     }
-    
+
     public void setSmallProblemThreshold(int smallProblemThreshold) {
         this.smallProblemThreshold = smallProblemThreshold;
     }
-    
+
     public boolean isAutoBenchmark() {
         return autoBenchmark;
     }
-    
+
     public void setAutoBenchmark(boolean autoBenchmark) {
         this.autoBenchmark = autoBenchmark;
     }
-    
+
     public long getBenchmarkCacheTimeMs() {
         return benchmarkCacheTimeMs;
     }
-    
+
     public void setBenchmarkCacheTimeMs(long benchmarkCacheTimeMs) {
         this.benchmarkCacheTimeMs = benchmarkCacheTimeMs;
     }
-    
+
     public Map<String, String> getProviderOptions() {
         return providerOptions;
     }
-    
+
     // Implement equals, hashCode, and toString methods
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -161,13 +175,13 @@ public class ComputeConfiguration {
                Objects.equals(preferredProviderType, that.preferredProviderType) &&
                Objects.equals(providerOptions, that.providerOptions);
     }
-    
+
     @Override
     public int hashCode() {
-        return Objects.hash(preferredProviderType, smallProblemThreshold, autoBenchmark, 
+        return Objects.hash(preferredProviderType, smallProblemThreshold, autoBenchmark,
                           benchmarkCacheTimeMs, providerOptions);
     }
-    
+
     @Override
     public String toString() {
         return "ComputeConfiguration{" +

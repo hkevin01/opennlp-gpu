@@ -22,8 +22,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Comprehensive concurrency and stress testing for GPU acceleration components
- * Tests thread safety, memory management, and resource cleanup under load
+ * ID: CT-001
+ * Requirement: ConcurrencyTest must stress test GPU compute provider and performance monitor under high-concurrency parallel invocations.
+ * Purpose: Runs multiple threads concurrently calling GPU compute methods and monitors for race conditions, deadlocks, and numerical errors.
+ * Rationale: Concurrency bugs in GPU providers manifest under load and are invisible in sequential tests; stress tests expose them early.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Creates multiple threads; monitors thread state; asserts no exceptions and correct results.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class ConcurrencyTest {
     

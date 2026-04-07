@@ -16,23 +16,30 @@
  */
 package org.apache.opennlp.gpu.common;
 
-/**
- * PHASE 2: CORE IMPLEMENTATION - MEMORY MANAGEMENT
- *
- * Memory pooling implementation for efficient GPU memory management.
- * This class provides pooling capabilities to reduce the overhead of
- * repeated memory allocations and deallocations on the GPU.
- *
- * Part of the OpenNLP GPU acceleration project.
- */
-
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.jocl.cl_mem;
 
-/** Stub memory pool for GPU buffers */
+/**
+ * ID: MP-001
+ * Requirement: MemoryPool must pre-allocate and reuse GPU memory buffers to reduce per-operation allocation overhead.
+ * Purpose: Manages a fixed pool of GPU memory blocks sized per GpuConfig, handing out blocks to callers and returning them on release.
+ * Rationale: Repeated cudaMalloc/hipMalloc calls are expensive; pooling amortises this cost across batch NLP operations.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Allocates a fixed memory block on initialisation; updates pool state on every acquire/release.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
+ */
 public class MemoryPool {
 
   private final Map<Long,Queue<cl_mem>> pool = new ConcurrentHashMap<Long,Queue<cl_mem>>();

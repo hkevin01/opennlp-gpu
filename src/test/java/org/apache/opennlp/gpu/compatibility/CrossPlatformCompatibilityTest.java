@@ -33,8 +33,22 @@ import opennlp.tools.ml.model.Context;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * Cross-platform compatibility testing for GPU acceleration
- * Tests functionality across different operating systems, GPU vendors, and configurations
+ * ID: CPCT-001
+ * Requirement: CrossPlatformCompatibilityTest must verify that all compute providers initialise and produce correct results across simulated platform configurations.
+ * Purpose: Parameterised test exercising CPU, CUDA stub, OpenCL stub, and ROCm stub providers with platform-specific GpuConfig.
+ * Rationale: Cross-platform correctness is a key requirement; tests must pass even when GPU hardware is absent by using CPU fallback.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: May initialise GPU stubs; asserts numerical parity between providers.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class CrossPlatformCompatibilityTest {
     

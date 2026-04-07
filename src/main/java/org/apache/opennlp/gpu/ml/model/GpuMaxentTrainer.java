@@ -18,26 +18,22 @@ import opennlp.tools.util.TrainingConfiguration;
 import opennlp.tools.util.TrainingParameters;
 
 /**
- * GPU-accelerated MaxEnt trainer that provides a drop-in replacement for OpenNLP's MaxentTrainer.
- *
- * This trainer automatically detects GPU availability and uses GPU acceleration when possible,
- * falling back to CPU-based training when GPU is not available.
- *
- * Usage:
- * <pre>
- * {@code
- * // Replace OpenNLP's MaxentTrainer with this GPU version
- * TrainingParameters params = new TrainingParameters();
- * params.put("GPU_ENABLED", "true");
- * params.put("GPU_BATCH_SIZE", "512");
- *
- * MaxentModel model = GpuMaxentTrainer.train("en", eventStream, params);
- * // 10-15x faster training with same API!
- * }
- * </pre>
- *
- * @author OpenNLP GPU Extension Team
- * @since 1.0.0
+ * ID: GMT-001
+ * Requirement: GpuMaxentTrainer must train a MaxEnt model using GPU-accelerated gradient computation and feature extraction.
+ * Purpose: Implements the OpenNLP EventTrainer interface, routing batch gradient computation to the active GPU provider.
+ * Rationale: GPU-accelerated training reduces wall-clock time for large corpora with many features; CPU fallback preserves correctness.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Initialises GPU provider; writes trained model to EventTrainer output stream.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuMaxentTrainer implements EventTrainer {
 

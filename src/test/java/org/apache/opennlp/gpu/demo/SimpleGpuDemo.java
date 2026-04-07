@@ -1,8 +1,22 @@
 package org.apache.opennlp.gpu.demo;
 
 /**
- * Simple, standalone demo that doesn't require complex dependencies
- * Use this if ComprehensiveDemoTestSuite fails to run
+ * ID: SGD-001
+ * Requirement: SimpleGpuDemo must demonstrate the minimal code required to enable GPU acceleration in a new OpenNLP application.
+ * Purpose: Minimal JUnit test showing the three-line integration: GpuConfig → OpenNlpGpuAdapter → gpuModel.eval().
+ * Rationale: The simplest possible integration demo reduces the barrier to adoption for new users.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None beyond transient GpuConfig and model objects.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class SimpleGpuDemo {
     

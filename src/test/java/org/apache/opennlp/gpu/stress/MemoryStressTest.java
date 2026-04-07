@@ -14,8 +14,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Memory stress testing for GPU acceleration components
- * Tests memory usage, leaks, and resource management under load
+ * ID: MST-001
+ * Requirement: MemoryStressTest must stress test GPU memory pool allocation and release under concurrent high-pressure conditions.
+ * Purpose: Multi-threaded test that repeatedly allocates and releases memory pool blocks, verifying no leaks or double-free errors.
+ * Rationale: GPU memory pool correctness under concurrent access is critical to prevent OOM and corruption in production batch pipelines.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Allocates/frees pool blocks from multiple threads; asserts pool returns to baseline allocation after test.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class MemoryStressTest {
     

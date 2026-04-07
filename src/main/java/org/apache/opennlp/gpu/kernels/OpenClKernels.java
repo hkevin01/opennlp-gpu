@@ -1,8 +1,22 @@
 package org.apache.opennlp.gpu.kernels;
 
 /**
- * OpenCL kernel source code for GPU operations
- * Contains optimized kernels for matrix operations and neural networks
+ * ID: OCK-001
+ * Requirement: OpenClKernels must manage OpenCL kernel source strings, compilation, and execution via JOCL.
+ * Purpose: Holds OpenCL C kernel source code for matrix multiply, activation functions, and NLP ops; compiles them at runtime against the active device.
+ * Rationale: Runtime compilation with clBuildProgram enables kernel optimisation for the specific device and target precision at startup.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Compiles OpenCL kernels on first use via clBuildProgram; caches compiled program objects.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class OpenClKernels {
     

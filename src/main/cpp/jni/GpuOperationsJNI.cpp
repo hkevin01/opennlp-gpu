@@ -1,3 +1,21 @@
+/*
+ * ID: GOJNI-001
+ * Requirement: GpuOperationsJNI.cpp must implement the JNI bridge between Java GpuComputeProvider and native CUDA/ROCm GPU kernels.
+ * Purpose: C++ file providing all Java_org_apache_opennlp_gpu_* JNI method implementations for GPU initialisation, matrix multiply, and softmax.
+ * Rationale: JNI is the standard mechanism for calling native GPU APIs from Java; this bridge file isolates all Java↔native ABI concerns.
+ * Inputs: JNI call parameters or direct C++ function arguments as documented per function.
+ * Outputs: Return values / JNI jboolean, jint, jstring, jfloat array results.
+ * Preconditions: GPU runtime (CUDA/ROCm/OpenCL) initialised; JNI env pointer valid.
+ * Postconditions: GPU resources allocated or reported unavailable; error codes returned.
+ * Assumptions: Compiled with matching GPU SDK headers (CUDA 11+, ROCm 5+, or CPU fallback).
+ * Side Effects: Allocates/frees GPU device memory; prints error messages to stderr on failure.
+ * Failure Modes: GPU API errors return false/0/NULL; errors logged via fprintf(stderr).
+ * Error Handling: CHECK_CUDA_ERROR / CHECK_HIP_ERROR macros abort on API failures.
+ * Constraints: GPU memory bounded by device; operations are single-device by default.
+ * Verification: Integration tests in src/test; GpuDiagnostics CLI probe.
+ * References: CUDA Toolkit docs; ROCm/HIP API; OpenCL 1.2 spec; JNI Programmer's Guide.
+ */
+
 #include <jni.h>
 #include <iostream>
 #include <string>

@@ -13,8 +13,22 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
- * Utility class for loading and generating test data for GPU acceleration tests
- * Provides both real OpenNLP test data and synthetic data generation
+ * ID: TDL-001
+ * Requirement: TestDataLoader must load and manage test data fixtures (model binaries, token arrays, feature vectors) for GPU test suite.
+ * Purpose: Utility class centralising test resource loading, synthetic data generation, and test fixture management.
+ * Rationale: Centralised test data loading prevents duplication; synthetic generation ensures tests run without external data dependencies.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Reads test resource files from classpath; generates synthetic float arrays.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class TestDataLoader {
     

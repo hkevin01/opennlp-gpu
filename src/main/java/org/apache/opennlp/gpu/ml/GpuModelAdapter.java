@@ -10,9 +10,22 @@ import org.apache.opennlp.gpu.compute.GpuMemoryManager;
 import opennlp.tools.ml.model.MaxentModel;
 
 /**
- * Adapter that wraps any MaxEnt model to provide GPU acceleration
- * when beneficial, while maintaining full compatibility with the 
- * standard MaxEnt interface.
+ * ID: GMA-001
+ * Requirement: GpuModelAdapter must adapt a standard OpenNLP model to the GPU compute pipeline by wrapping eval() dispatch.
+ * Purpose: Generic adapter applying GPU acceleration to any MaxentModel implementation without modifying the base model.
+ * Rationale: Generic adapter reduces code duplication across the per-algorithm wrappers (MaxEnt, Naive Bayes, Perceptron, Neural).
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None beyond delegation to underlying model and GPU provider.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuModelAdapter implements MaxentModel {
     

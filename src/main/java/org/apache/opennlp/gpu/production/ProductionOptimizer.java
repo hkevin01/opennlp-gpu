@@ -22,9 +22,22 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
 
 /**
- * Production optimization manager for GPU operations.
- * Handles automatic scaling, resource management, and performance optimization
- * for production deployments.
+ * ID: PO-001
+ * Requirement: ProductionOptimizer must apply production-level optimisations to GPU compute (batch tuning, kernel selection, memory pool sizing) at startup.
+ * Purpose: Analyses hardware metrics at startup and configures GpuConfig parameters for optimal production throughput.
+ * Rationale: Production workloads differ from development workloads; auto-tuning at startup captures device-specific optima without manual configuration.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Reads GPU device properties; modifies GpuConfig state; may run short benchmark sweeps.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class ProductionOptimizer {
     private static final Logger logger = Logger.getLogger(ProductionOptimizer.class.getName());

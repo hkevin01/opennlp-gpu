@@ -5,8 +5,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ROCm implementation of matrix operations.
- * This class uses AMD's ROCm platform for GPU-accelerated matrix operations.
+ * ID: RMO-001
+ * Requirement: RocmMatrixOperation must implement MatrixOperation dispatching all operations to AMD ROCm/HIP kernels via JNI.
+ * Purpose: Routes matrix multiply, activations, and NLP operations to HIP device kernels for maximum throughput on AMD GPUs.
+ * Rationale: hipBLAS SGEMM delivers comparable throughput to cuBLAS on AMD hardware; ROCm is the primary acceleration path for AMD users.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Launches HIP kernels via JNI; manages float[] ↔ hipMalloc buffer transfers.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class RocmMatrixOperation implements MatrixOperation {
     private static final Logger log = LoggerFactory.getLogger(RocmMatrixOperation.class);

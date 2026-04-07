@@ -1,7 +1,22 @@
 package org.apache.opennlp.gpu.test;
 
 /**
- * Test to check what ML algorithms are available in OpenNLP 2.5.4
+ * ID: MLAC-001
+ * Requirement: MLAlgorithmChecker must verify that all supported ML algorithm implementations (MaxEnt, NaiveBayes, Perceptron, Neural) produce valid outputs.
+ * Purpose: Checker class running each GPU ML model type against synthetic feature vectors and asserting output dimensionality, probability sum ≈ 1, etc.
+ * Rationale: Algorithm validity checks catch model API misuse and GPU output corruption in a single automated step.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None; in-memory synthetic test data.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class MLAlgorithmChecker {
     public static void main(String[] args) {

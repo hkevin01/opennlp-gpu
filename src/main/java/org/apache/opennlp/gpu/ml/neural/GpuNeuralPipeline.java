@@ -12,19 +12,22 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
 
 /**
- * Advanced GPU-accelerated neural network pipeline integrating attention mechanisms,
- * performance monitoring, and multi-layer neural processing.
- * 
- * Features:
- * - Multi-layer neural network processing
- * - Attention mechanism integration
- * - Real-time performance monitoring
- * - Automatic GPU/CPU fallback
- * - Batch processing optimization
- * - Memory-efficient operation chaining
- * 
- * @author OpenNLP GPU Team
- * @since 2.0.0
+ * ID: GNP-001
+ * Requirement: GpuNeuralPipeline must provide an end-to-end GPU-accelerated NLP pipeline: tokenisation → feature extraction → neural classification.
+ * Purpose: Chains GpuFeatureExtractor and GpuNeuralNetwork into a single pipeline object for sentence classification or NER.
+ * Rationale: Pipelining reduces intermediate buffer copies between extraction and classification, improving throughput.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Allocates feature buffers; initialises GPU provider per pipeline instance.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuNeuralPipeline {
     

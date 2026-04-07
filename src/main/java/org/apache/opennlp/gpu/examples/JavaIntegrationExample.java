@@ -11,31 +11,22 @@ import org.apache.opennlp.gpu.ml.maxent.GpuMaxentModel;
 import org.apache.opennlp.gpu.tools.GpuDiagnostics;
 
 /**
- * Complete example showing how to integrate OpenNLP GPU extension into a Java project.
- * 
- * This example demonstrates:
- * 1. Adding the dependency to your Maven project
- * 2. Simple API usage for drop-in acceleration
- * 3. Performance benchmarking
- * 4. Error handling and fallback
- * 
- * To use this in your own project:
- * 
- * 1. Add to your pom.xml:
- * <pre>
- * {@code
- * <dependency>
- *     <groupId>org.apache.opennlp</groupId>
- *     <artifactId>opennlp-gpu</artifactId>
- *     <version>1.0.0</version>
- * </dependency>
- * }
- * </pre>
- * 
- * 2. Replace your OpenNLP training code with GPU-accelerated versions
- * 
- * @author OpenNLP GPU Extension Team
- * @since 1.0.0
+ * ID: JIE-001
+ * Requirement: JavaIntegrationExample must provide a concise, self-contained Java example of adding GPU acceleration to an existing OpenNLP application.
+ * Purpose: Minimal before/after example showing the code changes needed to add GPU acceleration to standard OpenNLP calls.
+ * Rationale: Minimal examples reduce the time to first adoption; this example targets engineers with existing OpenNLP applications.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None; example only; no persistent GPU state.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class JavaIntegrationExample {
     

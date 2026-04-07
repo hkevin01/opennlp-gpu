@@ -5,8 +5,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CUDA implementation of matrix operations.
- * This class uses NVIDIA's CUDA platform for GPU-accelerated matrix operations.
+ * ID: CMO-001
+ * Requirement: CudaMatrixOperation must implement MatrixOperation dispatching all operations to CUDA kernels via JNI.
+ * Purpose: Routes matrix multiply, activations, and NLP ops to CUDA device kernels for high throughput on NVIDIA GPUs.
+ * Rationale: CUDA SGEMM (via cuBLAS) delivers 10-100× speedup over CPU BLAS for large matrices common in NLP model evaluation.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Launches CUDA kernels via JNI; manages float[] ↔ device buffer transfers.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class CudaMatrixOperation implements MatrixOperation {
     // Add explicit logger declaration

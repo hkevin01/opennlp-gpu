@@ -21,8 +21,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Comprehensive tests for the ProductionOptimizer system.
- * Tests optimization strategies, performance monitoring, and production features.
+ * ID: POT-001
+ * Requirement: ProductionOptimizerTest must unit test ProductionOptimizer configuration tuning and hardware auto-detection logic.
+ * Purpose: JUnit tests verifying that ProductionOptimizer selects correct GpuConfig parameters for given hardware profiles.
+ * Rationale: Auto-tuning logic must be independently verifiable to ensure production configs are correct.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: None; mocked hardware profiles.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class ProductionOptimizerTest {
     

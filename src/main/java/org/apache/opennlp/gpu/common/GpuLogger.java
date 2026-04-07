@@ -1,8 +1,22 @@
 package org.apache.opennlp.gpu.common;
 
 /**
- * Simple logging wrapper for GPU operations
- * Provides consistent logging interface across the GPU acceleration framework
+ * ID: GL-001
+ * Requirement: GpuLogger must provide a consistent, lightweight logging wrapper for all GPU subsystem classes.
+ * Purpose: Drop-in logger that routes info/warn/error/debug messages to stdout/stderr, respecting the gpu.debug system property.
+ * Rationale: Using a custom wrapper avoids pulling in a full SLF4J backend at runtime when the extension is embedded in a host application.
+ * Inputs: Constructor parameters and method arguments as documented per method.
+ * Outputs: Provides services and data as defined by the implemented interface(s).
+ * Preconditions: JVM initialised; required dependencies available on classpath.
+ * Postconditions: Object state is consistent; resources are properly initialised or null.
+ * Assumptions: Called in a standard JVM environment with Java 21+ runtime.
+ * Side Effects: Writes to stdout (info, debug) and stderr (error); no file I/O.
+ * Failure Modes: Constructor failure throws RuntimeException; individual methods
+ *               document their own failure modes.
+ * Error Handling: Exceptions propagated to caller; fallback paths documented per method.
+ * Constraints: Thread safety per class-level documentation; memory bounded by config.
+ * Verification: Unit and integration tests in src/test; see GpuTestSuite.
+ * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuLogger {
     
