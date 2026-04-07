@@ -173,18 +173,18 @@ Teams on GPU cloud instances can:
 ```mermaid
 flowchart TD
     A[NLP Application] --> B[OpenNlpGpuAdapter]
-    B --> C{GpuConfig\ngpu.available?}
+    B --> C{"GpuConfig<br/>gpu.available?"}
     C -->|GPU Available| D[GpuComputeProvider]
     C -->|No GPU| E[CpuComputeProvider]
     D --> F{Backend Selection}
-    F -->|NVIDIA| G[CUDA Kernels\nJNI Bridge]
+    F -->|NVIDIA| G["CUDA Kernels<br/>JNI Bridge"]
     F -->|AMD| H[ROCm / HIP]
     F -->|Any Vendor| I[OpenCL / JOCL 2.0.6]
-    F -->|Cloud| J[AWS Inferentia\nGoogle TPU]
-    G & H & I & J --> K[MatrixOperation\nInterface]
+    F -->|Cloud| J["AWS Inferentia<br/>Google TPU"]
+    G & H & I & J --> K["MatrixOperation<br/>Interface"]
     E --> K
-    K --> L[Result to OpenNLP\nMaxentModel.eval]
-    L --> M[GpuPerformanceMonitor\nMetrics & Alerts]
+    K --> L["Result to OpenNLP<br/>MaxentModel.eval"]
+    L --> M["GpuPerformanceMonitor<br/>Metrics & Alerts"]
 ```
 
 **Component responsibilities:**
@@ -213,16 +213,15 @@ sequenceDiagram
     participant Adapter as OpenNlpGpuAdapter
     participant Factory as ComputeProviderFactory
     participant GPU as GpuComputeProvider
-    participant CPU as CpuComputeProvider
     participant Model as GpuMaxentModel
     participant Monitor as GpuPerformanceMonitor
 
     App->>Adapter: new OpenNlpGpuAdapter()
     Adapter->>Factory: selectProvider(GpuConfig)
-    Factory-->>Adapter: GpuComputeProvider (or CpuFallback)
+    Factory-->>Adapter: GpuComputeProvider or CpuFallback
     App->>Model: new GpuMaxentModel(baseModel, config)
     Model->>GPU: initialize()
-    GPU-->>Model: ready (or silently falls back)
+    GPU-->>Model: ready or silently falls back
     App->>Model: eval(context[])
     Model->>GPU: matrixMultiply / extractFeatures
     GPU-->>Model: double[] probabilities
@@ -646,11 +645,14 @@ gantt
 ## 📈 Development Status
 
 ```mermaid
-xychart-beta
-    title "Component Readiness (% complete)"
-    x-axis ["CPU Fallback", "Monitoring", "ML Wrappers", "Diagnostics", "OpenCL Bridge", "CUDA Kernels", "Cloud Provers"]
-    y-axis "Completeness %" 0 --> 100
-    bar [100, 95, 90, 95, 35, 20, 15]
+pie title Component Readiness (% complete)
+    "CPU Fallback (100%)" : 100
+    "Monitoring (95%)" : 95
+    "Diagnostics (95%)" : 95
+    "ML Wrappers (90%)" : 90
+    "OpenCL Bridge (35%)" : 35
+    "CUDA Kernels (20%)" : 20
+    "Cloud Providers (15%)" : 15
 ```
 
 | Version | Phase | Stability | Java | OpenNLP | Key Limitation |
