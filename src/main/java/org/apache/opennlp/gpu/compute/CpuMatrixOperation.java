@@ -35,6 +35,8 @@
  */
 package org.apache.opennlp.gpu.compute;
 
+import java.util.stream.IntStream;
+
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuLogger;
 
@@ -57,43 +59,63 @@ import org.apache.opennlp.gpu.common.GpuLogger;
  * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class CpuMatrixOperation implements MatrixOperation {
-    
+
     private static final GpuLogger logger = GpuLogger.getLogger(CpuMatrixOperation.class);
-    
+
+    /**
+     * Element count threshold above which matrix operations use parallel streams.
+     * Below this threshold, sequential loops have less overhead.
+     * 4096 = 64x64, a reasonable crossover point on modern multi-core CPUs.
+     */
+    private static final int PARALLEL_THRESHOLD = 4096;
+
     private final ComputeProvider provider;
-    
+
     public CpuMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
         CpuMatrixOperation.logger.debug("Initialized CPU matrix operations");
     }
-    
+
     @Override
     public ComputeProvider getProvider() {
         return provider;
     }
-    
+
     @Override
     public void release() {
         // No resources to release for CPU implementation
         CpuMatrixOperation.logger.debug("Released CPU matrix operation resources");
     }
-    
+
     // Basic Matrix Operations
-    
+
     @Override
     public void multiply(float[] a, float[] b, float[] result, int m, int n, int k) {
-        // Optimized cache-friendly matrix multiplication
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                float sum = 0.0f;
-                for (int l = 0; l < k; l++) {
-                    sum += a[i * k + l] * b[l * n + j];
+        if ((long) m * n * k >= PARALLEL_THRESHOLD) {
+            // Parallel path: each row of A is independent — parallelise over rows
+            IntStream.range(0, m).parallel().forEach(i -> {
+                for (int j = 0; j < n; j++) {
+                    float sum = 0.0f;
+                    for (int l = 0; l < k; l++) {
+                        sum += a[i * k + l] * b[l * n + j];
+                    }
+                    result[i * n + j] = sum;
                 }
-                result[i * n + j] = sum;
+            });
+        } else {
+            // Sequential path for small matrices (avoids stream overhead)
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < n; j++) {
+                    float sum = 0.0f;
+                    for (int l = 0; l < k; l++) {
+                        sum += a[i * k + l] * b[l * n + j];
+                    }
+                    result[i * n + j] = sum;
+                }
             }
         }
     }
-    
+
     @Override
     public void transpose(float[] input, float[] output, int rows, int cols) {
         for (int i = 0; i < rows; i++) {
@@ -102,30 +124,30 @@ public class CpuMatrixOperation implements MatrixOperation {
             }
         }
     }
-    
+
     @Override
     public void scalarMultiply(float[] input, float[] output, float scalar, int length) {
         for (int i = 0; i < length; i++) {
             output[i] = input[i] * scalar;
         }
     }
-    
+
     @Override
     public void add(float[] a, float[] b, float[] result, int size) {
         for (int i = 0; i < size; i++) {
             result[i] = a[i] + b[i];
         }
     }
-    
+
     @Override
     public void subtract(float[] a, float[] b, float[] result, int size) {
         for (int i = 0; i < size; i++) {
             result[i] = a[i] - b[i];
         }
     }
-    
+
     // Advanced Matrix Operations
-    
+
     @Override
     public void dotProduct(float[] a, float[] b, float[] result, int length) {
         float sum = 0.0f;
@@ -134,7 +156,7 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
         result[0] = sum;
     }
-    
+
     @Override
     public void vectorNorm(float[] input, float[] result, int length) {
         float sumSquares = 0.0f;
@@ -143,14 +165,14 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
         result[0] = (float) Math.sqrt(sumSquares);
     }
-    
+
     @Override
     public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
         for (int i = 0; i < size; i++) {
             result[i] = a[i] * b[i];
         }
     }
-    
+
     @Override
     public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
         for (int i = 0; i < rows; i++) {
@@ -161,55 +183,58 @@ public class CpuMatrixOperation implements MatrixOperation {
             result[i] = sum;
         }
     }
-    
+
     // Activation Functions
-    
+
     @Override
     public void sigmoid(float[] input, float[] result, int size) {
         for (int i = 0; i < size; i++) {
             result[i] = 1.0f / (1.0f + (float) Math.exp(-input[i]));
         }
     }
-    
+
     @Override
     public void tanh(float[] input, float[] result, int size) {
         for (int i = 0; i < size; i++) {
             result[i] = (float) Math.tanh(input[i]);
         }
     }
-    
+
     @Override
     public void relu(float[] input, float[] result, int size) {
         for (int i = 0; i < size; i++) {
             result[i] = Math.max(0.0f, input[i]);
         }
     }
-    
+
     @Override
     public void softmax(float[] input, float[] result, int size) {
-        // Find maximum for numerical stability
+        // Numerically stable softmax: subtract max before exponentiation
         float max = input[0];
         for (int i = 1; i < size; i++) {
-            if (input[i] > max) {
-                max = input[i];
+            if (input[i] > max) max = input[i];
+        }
+
+        if (size >= PARALLEL_THRESHOLD) {
+            // Parallel exponential computation
+            final float maxVal = max;
+            IntStream.range(0, size).parallel().forEach(i ->
+                result[i] = (float) Math.exp(input[i] - maxVal)
+            );
+        } else {
+            for (int i = 0; i < size; i++) {
+                result[i] = (float) Math.exp(input[i] - max);
             }
         }
-        
-        // Compute exponentials and sum
+
         float sum = 0.0f;
-        for (int i = 0; i < size; i++) {
-            result[i] = (float) Math.exp(input[i] - max);
-            sum += result[i];
-        }
-        
-        // Normalize
-        for (int i = 0; i < size; i++) {
-            result[i] /= sum;
-        }
+        for (int i = 0; i < size; i++) sum += result[i];
+        final float invSum = 1.0f / sum;
+        for (int i = 0; i < size; i++) result[i] *= invSum;
     }
-    
+
     // Statistical Operations
-    
+
     @Override
     public void mean(float[] input, float[] result, int size) {
         float sum = 0.0f;
@@ -218,7 +243,7 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
         result[0] = sum / size;
     }
-    
+
     @Override
     public void variance(float[] input, float[] result, int size, float mean) {
         float sumSquaredDiffs = 0.0f;
@@ -228,67 +253,67 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
         result[0] = sumSquaredDiffs / size;
     }
-    
+
     @Override
     public void normalize(float[] input, float[] result, int size) {
         // Calculate mean
         float[] meanResult = new float[1];
         mean(input, meanResult, size);
         float meanValue = meanResult[0];
-        
+
         // Calculate variance
         float[] varianceResult = new float[1];
         variance(input, varianceResult, size, meanValue);
         float stdDev = (float) Math.sqrt(varianceResult[0]);
-        
+
         // Normalize
         for (int i = 0; i < size; i++) {
             result[i] = (input[i] - meanValue) / (stdDev + 1e-8f);
         }
     }
-    
+
     // Utility Operations
-    
+
     @Override
     public void copyArray(float[] source, float[] destination, int size) {
         System.arraycopy(source, 0, destination, 0, size);
     }
-    
+
     @Override
     public void fillArray(float[] array, float value, int size) {
         for (int i = 0; i < size; i++) {
             array[i] = value;
         }
     }
-    
+
     @Override
     public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
         float max = input[0];
         int maxIdx = 0;
-        
+
         for (int i = 1; i < size; i++) {
             if (input[i] > max) {
                 max = input[i];
                 maxIdx = i;
             }
         }
-        
+
         maxValue[0] = max;
         maxIndex[0] = maxIdx;
     }
-    
+
     @Override
     public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
         float min = input[0];
         int minIdx = 0;
-        
+
         for (int i = 1; i < size; i++) {
             if (input[i] < min) {
                 min = input[i];
                 minIdx = i;
             }
         }
-        
+
         minValue[0] = min;
         minIndex[0] = minIdx;
     }
