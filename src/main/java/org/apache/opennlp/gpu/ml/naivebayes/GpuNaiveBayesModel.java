@@ -16,6 +16,7 @@ import opennlp.tools.ml.naivebayes.NaiveBayesModel;
 
 /**
 
+ * ID: GPU-GNBM-001
  * Requirement: GpuNaiveBayesModel must implement a Naive Bayes classifier decorated with GPU-accelerated log-probability computation.
  * Purpose: Wraps a trained Naive Bayes model, routing batch posterior probability evaluation to GPU matrix ops.
  * Rationale: Naive Bayes log-probability computation involves large dot products across vocabulary; GPU batching provides significant speedup.

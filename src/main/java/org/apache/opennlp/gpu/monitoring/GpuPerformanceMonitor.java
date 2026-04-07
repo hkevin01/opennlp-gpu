@@ -28,6 +28,7 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
 
+ * ID: GPU-GPM-001
  * Requirement: Provide a thread-safe, singleton performance monitoring system
  *   that collects, aggregates, and alerts on GPU and CPU compute operation
  *   metrics in real time.
@@ -63,6 +64,7 @@ public class GpuPerformanceMonitor {
 
     /**
 
+     * ID: GPU-GPM-002
      * Requirement: Singleton instance reference, lazily initialized via
      *   compare-and-set to avoid synchronized block overhead on hot paths.
      */
@@ -125,6 +127,7 @@ public class GpuPerformanceMonitor {
 
     /**
 
+     * ID: GPU-GPM-003
      * Requirement: Update the maximum history retention size and immediately
      *   trim any histories that now exceed the new limit.
      * Inputs: size — must be ≥ 100; values below 100 are coerced to 100.
@@ -136,6 +139,7 @@ public class GpuPerformanceMonitor {
 
     /**
 
+     * ID: GPU-GPM-004
      * Requirement: Trim all per-operation history lists to maxHistorySize,
      *   removing the oldest entries first (FIFO).
      * Side Effects: Modifies operationHistory lists in place.

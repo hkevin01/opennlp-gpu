@@ -4,6 +4,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
 
+ * ID: GPU-GMM-001
  * Requirement: GpuMemoryManager must manage GPU device memory across CUDA, ROCm, and OpenCL buffers for matrix operations.
  * Purpose: Provides a unified memory management layer ensuring device buffers are allocated, used, and released without leaks.
  * Rationale: Device memory is a scarce resource; centralised management prevents over-allocation and enables pool reuse.

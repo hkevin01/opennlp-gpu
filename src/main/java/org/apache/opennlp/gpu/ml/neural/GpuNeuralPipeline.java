@@ -13,6 +13,7 @@ import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
 
 /**
 
+ * ID: GPU-GNP-001
  * Requirement: GpuNeuralPipeline must provide an end-to-end GPU-accelerated NLP pipeline: tokenisation → feature extraction → neural classification.
  * Purpose: Chains GpuFeatureExtractor and GpuNeuralNetwork into a single pipeline object for sentence classification or NER.
  * Rationale: Pipelining reduces intermediate buffer copies between extraction and classification, improving throughput.

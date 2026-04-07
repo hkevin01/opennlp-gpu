@@ -6,6 +6,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
 
+ * ID: GPU-RBD-001
  * Requirement: RealisticBenchmarkDemo must benchmark GPU vs CPU performance on realistic NLP workloads (batch MaxEnt eval, feature extraction).
  * Purpose: Runs timed iterations of GPU and CPU evaluation on representative batch sizes and reports speedup ratios.
  * Rationale: Realistic benchmarks with actual NLP feature dimensions reveal true performance characteristics beyond microbenchmarks.

@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.common;
 
 /**
 
+ * ID: GPU-CPF-001
  * Requirement: ComputeProviderFactory must construct and return the correct ComputeProvider implementation for a given Type.
  * Purpose: Factory that decouples caller code from concrete provider classes (CpuComputeProvider, CudaComputeProvider, OpenClComputeProvider, RocmComputeProvider).
  * Rationale: Factory pattern eliminates switch/case duplication across callers and makes adding new vendors a single-point change.

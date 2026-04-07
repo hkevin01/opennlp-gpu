@@ -9,6 +9,7 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
 
+ * ID: GPU-GNN-001
  * Requirement: GpuNeuralNetwork must implement a feedforward neural network with GPU-accelerated forward pass using configurable layer sizes.
  * Purpose: Provides a multi-layer perceptron (MLP) forward pass using GPU matrix multiply and activation functions, targeting NLP classification tasks.
  * Rationale: MLPs are the compute backbone of NLP feature learning; GPU batching provides 2-10× speedup for batch inference.

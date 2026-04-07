@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
 
+ * ID: GPU-RM-001
  * Requirement: ResourceManager must track, cache, and release GPU kernel objects and device memory buffers across provider instances.
  * Purpose: Central lifecycle manager for GPU resources (kernels, allocated buffers, data caches) shared across a single compute session.
  * Rationale: Prevents double-free and memory leaks in complex pipelines where multiple providers share the same device.

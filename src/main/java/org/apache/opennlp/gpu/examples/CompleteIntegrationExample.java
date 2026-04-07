@@ -9,6 +9,7 @@ import opennlp.tools.tokenize.SimpleTokenizer;
 
 /**
 
+ * ID: GPU-CIE-001
  * Requirement: CompleteIntegrationExample must provide a complete working example of GPU-accelerated OpenNLP integration covering all major components.
  * Purpose: End-to-end example creating a full NLP pipeline with tokenisation, POS tagging, and NER using GPU-accelerated models.
  * Rationale: A complete, runnable example is the most effective documentation for new adopters who want to see the full integration picture.

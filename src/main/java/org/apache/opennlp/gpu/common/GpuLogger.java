@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.common;
 
 /**
 
+ * ID: GPU-GL-001
  * Requirement: GpuLogger must provide a consistent, lightweight logging wrapper for all GPU subsystem classes.
  * Purpose: Drop-in logger that routes info/warn/error/debug messages to stdout/stderr, respecting the gpu.debug system property.
  * Rationale: Using a custom wrapper avoids pulling in a full SLF4J backend at runtime when the extension is embedded in a host application.

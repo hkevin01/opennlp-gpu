@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-OCLU-001
  * Requirement: OpenCLUtil must expose OpenCL platform and device enumeration utilities to Java via JOCL.
  * Purpose: Provides Java-callable static methods to enumerate OpenCL platforms, devices, and capabilities.
  * Rationale: Centralising OpenCL discovery in one class simplifies build-time and runtime environment detection.

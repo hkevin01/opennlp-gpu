@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-CU-001
  * Requirement: CudaUtil must expose CUDA device query utilities (device count, name, memory, compute capability) to Java via JNI.
  * Purpose: Provides Java-callable static methods wrapping cudaGetDeviceProperties and related CUDA runtime APIs.
  * Rationale: Centralising CUDA device queries in one JNI class avoids scattered System.loadLibrary calls and simplifies diagnostics.

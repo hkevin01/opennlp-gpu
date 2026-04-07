@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-CMO-001
  * Requirement: CudaMatrixOperation must implement MatrixOperation dispatching all operations to CUDA kernels via JNI.
  * Purpose: Routes matrix multiply, activations, and NLP ops to CUDA device kernels for high throughput on NVIDIA GPUs.
  * Rationale: CUDA SGEMM (via cuBLAS) delivers 10-100× speedup over CPU BLAS for large matrices common in NLP model evaluation.

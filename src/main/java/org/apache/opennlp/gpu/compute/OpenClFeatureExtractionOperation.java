@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-OCFEO-001
  * Requirement: OpenClFeatureExtractionOperation must implement FeatureExtractionOperation using OpenCL kernels for cross-vendor GPU feature extraction.
  * Purpose: Routes NLP feature extraction to OpenCL device kernels, enabling GPU acceleration on non-NVIDIA hardware.
  * Rationale: OpenCL kernels are portable; the same kernel source runs on AMD, Intel, and NVIDIA hardware.

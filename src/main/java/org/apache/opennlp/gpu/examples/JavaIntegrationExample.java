@@ -12,6 +12,7 @@ import org.apache.opennlp.gpu.tools.GpuDiagnostics;
 
 /**
 
+ * ID: GPU-JIE-001
  * Requirement: JavaIntegrationExample must provide a concise, self-contained Java example of adding GPU acceleration to an existing OpenNLP application.
  * Purpose: Minimal before/after example showing the code changes needed to add GPU acceleration to standard OpenNLP calls.
  * Rationale: Minimal examples reduce the time to first adoption; this example targets engineers with existing OpenNLP applications.

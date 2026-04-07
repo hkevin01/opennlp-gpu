@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.common;
 
 /**
 
+ * ID: GPU-CCP-001
  * Requirement: CudaComputeProvider must implement ComputeProvider using CUDA as the hardware backend, with CPU fallback for all operations.
  * Purpose: Binds CUDA GPU hardware to the ComputeProvider interface so callers use identical APIs regardless of GPU vendor.
  * Rationale: CUDA delivers the highest throughput on NVIDIA hardware but requires the CUDA Toolkit; CPU fallback ensures correctness on unsupported hardware.

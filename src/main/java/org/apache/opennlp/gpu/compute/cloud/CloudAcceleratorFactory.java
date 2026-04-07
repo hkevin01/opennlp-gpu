@@ -29,6 +29,7 @@ import org.apache.opennlp.gpu.compute.GpuComputeProvider;
 
 /**
 
+ * ID: GPU-CAF-001
  * Requirement: CloudAcceleratorFactory must detect available cloud accelerator
  *              compute providers (AWS Inferentia, Google TPU, and GPU) and return
  *              the most capable provider for the current environment.

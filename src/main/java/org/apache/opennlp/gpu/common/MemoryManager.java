@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.common;
 
 /**
 
+ * ID: GPU-MM-001
  * Requirement: MemoryManager must define the lifecycle contract for GPU memory buffers: allocate, copy, and release.
  * Purpose: Interface required by every GPU backend for native buffer management, ensuring no GPU memory leaks across JNI boundaries.
  * Rationale: Interface separation lets CPU and GPU providers implement memory lifecycle with platform-specific APIs (cudaMalloc, hipMalloc, etc.).

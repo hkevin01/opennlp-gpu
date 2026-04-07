@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.kernels;
 
 /**
 
+ * ID: GPU-OCK-001
  * Requirement: OpenClKernels must manage OpenCL kernel source strings, compilation, and execution via JOCL.
  * Purpose: Holds OpenCL C kernel source code for matrix multiply, activation functions, and NLP ops; compiles them at runtime against the active device.
  * Rationale: Runtime compilation with clBuildProgram enables kernel optimisation for the specific device and target precision at startup.

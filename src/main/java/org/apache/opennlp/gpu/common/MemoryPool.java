@@ -24,6 +24,7 @@ import org.jocl.cl_mem;
 
 /**
 
+ * ID: GPU-MP-001
  * Requirement: MemoryPool must pre-allocate and reuse GPU memory buffers to reduce per-operation allocation overhead.
  * Purpose: Manages a fixed pool of GPU memory blocks sized per GpuConfig, handing out blocks to callers and returning them on release.
  * Rationale: Repeated cudaMalloc/hipMalloc calls are expensive; pooling amortises this cost across batch NLP operations.

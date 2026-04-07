@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.analysis;
 
 /**
 
+ * ID: GPU-CED-001
  * Requirement: CostEfficiencyDemo must demonstrate and compute cost-efficiency ratios of GPU vs CPU NLP processing at various batch scales.
  * Purpose: Calculates processing cost per sample for GPU and CPU providers using throughput and simulated infrastructure costs.
  * Rationale: Cost modelling helps engineers decide when GPU acceleration delivers ROI vs pure-CPU deployments.

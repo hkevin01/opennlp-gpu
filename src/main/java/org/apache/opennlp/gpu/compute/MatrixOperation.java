@@ -19,6 +19,7 @@ import org.apache.opennlp.gpu.common.ComputeProvider;
 
 /**
 
+ * ID: GPU-MO-001
  * Requirement: Define a hardware-agnostic interface for all matrix and vector
  *   operations required by GPU-accelerated NLP pipelines.
  * Purpose: Provides a single contract fulfilled by CPU, CUDA, ROCm, and OpenCL
@@ -47,6 +48,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-002
      * Requirement: Return the backing compute provider for introspection and
      *   resource lifecycle management.
      * Outputs: Non-null ComputeProvider; never null after initialization.
@@ -55,6 +57,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-003
      * Requirement: Release all GPU/native resources held by this operation
      *   instance. Must be idempotent.
      * Side Effects: Frees GPU buffers, unregisters kernels, and nulls handles.
@@ -66,6 +69,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-004
      * Requirement: Compute C = A * B (general matrix multiply, GEMM).
      * Inputs:
      *   a      - row-major matrix A, length = m * k
@@ -80,6 +84,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-005
      * Requirement: Transpose matrix A(rows × cols) into output B(cols × rows).
      * Inputs:
      *   input  - row-major source, length = rows * cols
@@ -89,6 +94,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-006
      * Requirement: Multiply every element of input by scalar, write to output.
      * Inputs: scalar - finite float32 multiplier.
      */
@@ -96,12 +102,14 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-007
      * Requirement: Element-wise addition: result[i] = a[i] + b[i].
      */
     void add(float[] a, float[] b, float[] result, int size);
 
     /**
 
+     * ID: GPU-MO-008
      * Requirement: Element-wise subtraction: result[i] = a[i] - b[i].
      */
     void subtract(float[] a, float[] b, float[] result, int size);
@@ -110,24 +118,28 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-009
      * Requirement: Compute dot product sum(a[i]*b[i]) into result[0].
      */
     void dotProduct(float[] a, float[] b, float[] result, int length);
 
     /**
 
+     * ID: GPU-MO-010
      * Requirement: Compute L2 norm of input vector, write to result[0].
      */
     void vectorNorm(float[] input, float[] result, int length);
 
     /**
 
+     * ID: GPU-MO-011
      * Requirement: Element-wise product: result[i] = a[i] * b[i] (Hadamard).
      */
     void elementWiseMultiply(float[] a, float[] b, float[] result, int size);
 
     /**
 
+     * ID: GPU-MO-012
      * Requirement: Matrix-vector product: result(rows) = matrix(rows×cols) * vector(cols).
      */
     void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols);
@@ -136,6 +148,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-013
      * Requirement: Apply sigmoid σ(x) = 1/(1+e^-x) element-wise.
      * Constraints: Numerically stable for |x| < 87 (float32 range).
      */
@@ -143,18 +156,21 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-014
      * Requirement: Apply hyperbolic tangent tanh(x) element-wise.
      */
     void tanh(float[] input, float[] result, int size);
 
     /**
 
+     * ID: GPU-MO-015
      * Requirement: Apply ReLU max(0, x) element-wise.
      */
     void relu(float[] input, float[] result, int size);
 
     /**
 
+     * ID: GPU-MO-016
      * Requirement: Apply numerically-stable softmax over the full size vector.
      * Rationale: exp(x - max(x)) formulation prevents float overflow.
      */
@@ -164,12 +180,14 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-017
      * Requirement: Compute arithmetic mean, write to result[0].
      */
     void mean(float[] input, float[] result, int size);
 
     /**
 
+     * ID: GPU-MO-018
      * Requirement: Compute population variance given a pre-computed mean.
      * Inputs: mean - pre-computed mean value from mean().
      */
@@ -177,6 +195,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-019
      * Requirement: Normalize input to zero-mean, unit-variance in-place style.
      * Postconditions: result has mean ≈ 0 and std ≈ 1 (epsilon-guarded).
      */
@@ -186,6 +205,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-020
      * Requirement: Copy size elements from source to destination (memcpy semantics).
      * Preconditions: source and destination must not overlap.
      */
@@ -193,12 +213,14 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-021
      * Requirement: Fill first size elements of array with the given constant value.
      */
     void fillArray(float[] array, float value, int size);
 
     /**
 
+     * ID: GPU-MO-022
      * Requirement: Find the maximum value and its index over size elements.
      * Outputs:
      *   maxIndex[0]  - 0-based index of maximum element.
@@ -208,6 +230,7 @@ public interface MatrixOperation {
 
     /**
 
+     * ID: GPU-MO-023
      * Requirement: Find the minimum value and its index over size elements.
      * Outputs:
      *   minIndex[0]  - 0-based index of minimum element.

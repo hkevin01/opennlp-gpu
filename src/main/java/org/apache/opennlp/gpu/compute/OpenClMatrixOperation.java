@@ -4,6 +4,7 @@ import org.apache.opennlp.gpu.common.ComputeProvider;
 
 /**
 
+ * ID: GPU-OCMO-001
  * Requirement: OpenClMatrixOperation must implement MatrixOperation dispatching all operations to OpenCL kernels via JOCL.
  * Purpose: Routes matrix arithmetic to OpenCL device kernels for hardware-agnostic GPU acceleration.
  * Rationale: JOCL 2.0.6 provides pure-Java OpenCL bindings; no CUDA or ROCm SDK required for OpenCL operations.

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
 
+ * ID: GPU-RFEO-001
  * Requirement: RocmFeatureExtractionOperation must implement FeatureExtractionOperation using AMD ROCm/HIP kernels via JNI.
  * Purpose: Routes NLP feature extraction to HIP device kernels for high throughput on AMD GPU hardware.
  * Rationale: AMD GPUs require ROCm/HIP-specific kernel dispatch; this class isolates AMD-specific paths from the rest of the pipeline.

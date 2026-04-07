@@ -5,6 +5,7 @@ import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
 
 /**
 
+ * ID: GPU-CFEO-001
  * Requirement: CpuFeatureExtractionOperation must implement FeatureExtractionOperation using pure-Java CPU arithmetic with no native dependencies.
  * Purpose: Returns feature vectors for NLP contexts using Java-only computation, serving as the reference and fallback implementation.
  * Rationale: A correct CPU implementation validates all GPU kernels through parity tests and ensures correctness on systems without GPU hardware.

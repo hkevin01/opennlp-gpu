@@ -17,6 +17,7 @@ package org.apache.opennlp.gpu.common;
 
 /**
 
+ * ID: GPU-CP-001
  * Requirement: Define the top-level contract for all compute backends
  *   (CPU, CUDA, ROCm, OpenCL) used by the OpenNLP GPU acceleration layer.
  * Purpose: Enables transparent runtime substitution of compute backends based
@@ -46,6 +47,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-002
      * Requirement: Enumerate the supported hardware compute backends.
      * Purpose: Drive provider selection and capability reporting.
      */
@@ -62,6 +64,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-003
      * Requirement: Return a human-readable display name for this provider.
      * Outputs: Non-null, non-empty string (e.g., "CPU Provider", "CUDA 12.1").
      */
@@ -69,6 +72,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-004
      * Requirement: Report whether this provider is operational and ready to
      *   accept compute requests without error.
      * Outputs: true if hardware is present, drivers are loaded, and memory is
@@ -78,6 +82,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-005
      * Requirement: Initialize the provider with the supplied configuration.
      *   Must be idempotent — repeated calls with the same config are safe.
      * Side Effects: May allocate GPU context, command queues, or JNI buffers.
@@ -88,6 +93,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-006
      * Requirement: Initialize with default internal configuration.
      *   Equivalent to initialize(new GpuConfig()).
      */
@@ -95,6 +101,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-007
      * Requirement: Distinguish GPU-backed providers from the CPU provider.
      * Outputs: true for CUDA/OpenCL/ROCm providers; false for CPU.
      */
@@ -104,12 +111,14 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-008
      * Requirement: Return the provider type enum value.
      */
     Type getType();
 
     /**
 
+     * ID: GPU-CP-009
      * Requirement: Report the maximum memory available on this device in MB.
      * Outputs: Positive long; 0 if measurement is unavailable.
      */
@@ -117,6 +126,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-010
      * Requirement: Report current memory consumption by this provider in MB.
      * Outputs: Non-negative long; ≤ getMaxMemoryMB().
      */
@@ -124,6 +134,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-011
      * Requirement: Report whether this provider can execute the named operation.
      * Inputs: operationType — operation identifier string (e.g., "matmul", "tfidf").
      * Outputs: true if the operation is implemented and ready.
@@ -132,6 +143,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-012
      * Requirement: Return the native resource manager handle for advanced use.
      * Outputs: Provider-specific object (e.g., CudaResourceManager); null for CPU.
      */
@@ -141,6 +153,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-013
      * Requirement: General matrix multiplication C = A(m×k) * B(k×n).
      * Inputs:
      *   a      - row-major float[m*k]
@@ -152,6 +165,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-014
      * Requirement: Element-wise addition result[i] = a[i] + b[i].
      * Inputs: All arrays length ≥ size.
      */
@@ -159,12 +173,14 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-015
      * Requirement: Matrix transpose output(cols×rows) = input(rows×cols).
      */
     void matrixTranspose(float[] input, float[] output, int rows, int cols);
 
     /**
 
+     * ID: GPU-CP-016
      * Requirement: Extract numeric feature vectors from raw text tokens.
      * Inputs:
      *   text     - array of token strings; length determines feature inputs
@@ -175,6 +191,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-017
      * Requirement: Compute TF-IDF scores: result[i] = termFreq[i] * log(1 + 1/docFreq[i]).
      * Inputs: termFreq, docFreq — non-negative float arrays of length ≥ size.
      * Error Handling: docFreq[i] = 0 is guarded with epsilon to avoid division by zero.
@@ -185,6 +202,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-018
      * Requirement: Return structured capability metadata for this provider.
      * Outputs: Non-null ProviderCapabilities instance.
      */
@@ -194,6 +212,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-019
      * Requirement: Release all resources held by this provider. Idempotent.
      * Side Effects: Frees GPU memory, destroys CUDA context or OpenCL command queue.
      * Postconditions: No further compute operations are valid on this instance.
@@ -204,6 +223,7 @@ public interface ComputeProvider {
 
     /**
 
+     * ID: GPU-CP-020
      * Requirement: Carry provider capability flags as a plain value object.
      * Purpose: Enables callers to query parallelism and GPU support without
      *   casting to concrete provider types.

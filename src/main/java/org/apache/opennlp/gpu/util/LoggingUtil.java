@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-LU-001
  * Requirement: LoggingUtil must provide formatting and routing utilities for GPU subsystem log messages.
  * Purpose: Wraps GpuLogger with structured log formats for common GPU operation events (kernel launch, memory alloc, fallback triggered).
  * Rationale: Consistent log format across all GPU classes simplifies log aggregation and pattern matching in production monitoring.

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-FEA-001
  * Requirement: FeatureExtractionAdapter must adapt raw text or token inputs to the FeatureExtractionOperation interface expected by GPU compute providers.
  * Purpose: Bridges OpenNLP feature contexts (String[] contexts) to numeric feature vectors consumed by GPU matrix operations.
  * Rationale: Decoupling NLP feature format conversion from compute dispatch keeps compute providers format-agnostic.

@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
 
+ * ID: GPU-DMM-001
  * Requirement: DefaultMemoryManager must provide a default in-process memory manager for GPU buffer lifecycle tracking.
  * Purpose: Implements MemoryManager to track allocation and release of GPU-side buffers, preventing leaks during JNI-bridged operations.
  * Rationale: Centralising memory management enables pool-based optimisation and audit logging without scattering allocate/free calls across compute classes.

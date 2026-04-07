@@ -29,6 +29,7 @@ import opennlp.tools.ml.model.MaxentModel;
 
 /**
 
+ * ID: GPU-GMM-001
  * Requirement: Provide a drop-in wrapper around any OpenNLP {@link MaxentModel}
  *   that transparently routes evaluation to GPU kernels when hardware is
  *   available, and silently falls back to the wrapped CPU model otherwise.
@@ -76,6 +77,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-002
      * Requirement: Construct a GPU-accelerated wrapper around the supplied model.
      *   GPU enablement is evaluated once at construction and cached.
      * Inputs:
@@ -98,6 +100,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-003
      * Requirement: Evaluate the probability distribution given a feature context.
      * Inputs: context - non-null, non-empty String[] of active feature names.
      * Outputs: double[] of length getNumOutcomes() summing to 1.0.
@@ -111,6 +114,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-004
      * Requirement: Evaluate with a pre-allocated probability array to avoid
      *   allocation on the hot path.
      * Inputs:
@@ -125,6 +129,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-005
      * Requirement: Evaluate with float-valued feature weights.
      * Inputs:
      *   context - feature name array
@@ -160,6 +165,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-006
      * Requirement: Release GPU resources associated with this model instance.
      *   Idempotent — safe to call multiple times.
      * Side Effects: Logs cleanup at DEBUG level.
@@ -172,6 +178,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-007
      * Requirement: Report whether this instance is actively using GPU acceleration.
      * Outputs: true if GPU was available and enabled at construction time.
      */
@@ -179,6 +186,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-008
      * Requirement: Return an estimated GPU speedup factor vs. CPU.
      * Inputs: System property "gpu.speedup.factor" (optional, default "2.0").
      * Outputs: double ≥ 1.0; returns 1.0 when GPU is not active.
@@ -195,6 +203,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-009
      * Requirement: Return a map of performance and configuration metrics for
      *   monitoring and diagnostic dashboards.
      * Outputs: Map with keys: gpu_enabled, speedup_factor, memory_usage_mb,
@@ -212,6 +221,7 @@ public class GpuMaxentModel implements MaxentModel {
 
     /**
 
+     * ID: GPU-GMM-010
      * Requirement: Expose the unwrapped base model for interoperability with
      *   code that requires the concrete MaxentModel type.
      * Outputs: Non-null MaxentModel reference provided at construction.

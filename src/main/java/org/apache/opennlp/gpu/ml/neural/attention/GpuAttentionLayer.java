@@ -24,6 +24,7 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
 
 /**
 
+ * ID: GPU-GAL-001
  * Requirement: GpuAttentionLayer must compute scaled dot-product attention over GPU-dispatched query, key, and value matrices.
  * Purpose: Implements soft attention: Attention(Q,K,V) = softmax(Q Kᵀ / √d_k) V using GPU matrix multiply and softmax kernels.
  * Rationale: Attention mechanisms are the core bottleneck in transformer-style NLP models; GPU batching provides 4-10× speedup over CPU for typical head/sequence sizes.

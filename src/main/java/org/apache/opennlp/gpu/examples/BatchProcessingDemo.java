@@ -4,6 +4,7 @@ import org.apache.opennlp.gpu.common.GpuConfig;
 
 /**
 
+ * ID: GPU-BPD-001
  * Requirement: BatchProcessingDemo must demonstrate GPU-accelerated batch NLP processing for large document corpora.
  * Purpose: Shows how to configure batch sizes, create GpuMaxentModel instances, and process thousands of documents efficiently.
  * Rationale: Batch processing is the primary throughput-optimisation pattern for GPU-accelerated NLP; this demo provides a copy-paste starting point.

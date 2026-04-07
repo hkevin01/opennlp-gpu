@@ -11,6 +11,7 @@ import opennlp.tools.ml.model.MaxentModel;
 
 /**
 
+ * ID: GPU-GMA-001
  * Requirement: GpuModelAdapter must adapt a standard OpenNLP model to the GPU compute pipeline by wrapping eval() dispatch.
  * Purpose: Generic adapter applying GPU acceleration to any MaxentModel implementation without modifying the base model.
  * Rationale: Generic adapter reduces code duplication across the per-algorithm wrappers (MaxEnt, Naive Bayes, Perceptron, Neural).

@@ -7,6 +7,7 @@ import java.util.Properties;
 
 /**
 
+ * ID: GPU-CC-001
  * Requirement: ComputeConfiguration must expose all configurable parameters for compute provider selection and behaviour.
  * Purpose: Centralises GPU/CPU compute tuning parameters (provider preference, benchmark caching, problem-size thresholds) into a single value object.
  * Rationale: Separating configuration from behaviour simplifies testing and hot-reload of compute parameters without rebuilding providers.

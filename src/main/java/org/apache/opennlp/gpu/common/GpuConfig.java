@@ -23,6 +23,7 @@ import java.util.Map;
 
 /**
 
+ * ID: GPU-GC-001
  * Requirement: Encapsulate all runtime parameters that govern GPU compute
  *   provider selection, memory allocation, and batch processing behavior.
  * Purpose: Provides a single, well-typed configuration object that is passed
@@ -76,6 +77,7 @@ public class GpuConfig {
 
     /**
 
+     * ID: GPU-GC-002
      * Requirement: Construct a GpuConfig with all defaults suitable for a
      *   CPU-only or test environment.
      */
@@ -146,6 +148,7 @@ public class GpuConfig {
 
     /**
 
+     * ID: GPU-GC-003
      * Requirement: Detect whether GPU acceleration is available on this host
      *   by checking the system property {@code gpu.available}.
      * Purpose: Provides a lightweight guard used by model factories before
@@ -168,6 +171,7 @@ public class GpuConfig {
 
     /**
 
+     * ID: GPU-GC-004
      * Requirement: Collect GPU hardware metadata for diagnostic and logging use.
      * Purpose: Used by GpuDiagnostics to populate health-check reports without
      *   requiring a live GPU context.

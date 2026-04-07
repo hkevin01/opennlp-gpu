@@ -6,6 +6,7 @@ import org.apache.opennlp.gpu.tools.GpuDiagnostics;
 
 /**
 
+ * ID: GPU-IT-001
  * Requirement: IntegrationTest must validate end-to-end integration of GPU compute providers with OpenNLP model evaluation.
  * Purpose: Smoke-test class that exercises the full pipeline: config → provider selection → model wrap → eval(), verifying no exceptions and correct output types.
  * Rationale: Integration tests catch wiring errors that unit tests miss; running in main/ provides standalone verification without the test framework.

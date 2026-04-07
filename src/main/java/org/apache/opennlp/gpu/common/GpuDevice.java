@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.common;
 
 /**
 
+ * ID: GPU-GD-001
  * Requirement: GpuDevice must expose device identity and memory capacity for a single GPU or compute device.
  * Purpose: Lightweight interface for querying per-device metadata (name, device ID, VRAM in MB) used by diagnostics and configuration.
  * Rationale: Abstracting device queries behind an interface allows swapping CUDA/ROCm/OpenCL device representations without caller changes.

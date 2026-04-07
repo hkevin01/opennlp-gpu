@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-RMO-001
  * Requirement: RocmMatrixOperation must implement MatrixOperation dispatching all operations to AMD ROCm/HIP kernels via JNI.
  * Purpose: Routes matrix multiply, activations, and NLP operations to HIP device kernels for maximum throughput on AMD GPUs.
  * Rationale: hipBLAS SGEMM delivers comparable throughput to cuBLAS on AMD hardware; ROCm is the primary acceleration path for AMD users.

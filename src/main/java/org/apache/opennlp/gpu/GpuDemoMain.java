@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-GDM-001
  * Requirement: GpuDemoMain must serve as the main entry point for the GPU acceleration demo, orchestrating all demo scenarios.
  * Purpose: Main class that invokes all demo scenarios in sequence and reports pass/fail with performance summaries.
  * Rationale: A single entry point for all demos simplifies CI integration and enables one-command environment validation.

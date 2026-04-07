@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-RMM-001
  * Requirement: RocmMemoryManager must manage ROCm/HIP device memory allocation and transfer for matrix operation buffers.
  * Purpose: Provides hipMalloc / hipMemcpy / hipFree lifecycle management for device buffers used by RocmMatrixOperation.
  * Rationale: ROCm device memory management is distinct from CPU or CUDA memory management; isolating it simplifies provider logic.

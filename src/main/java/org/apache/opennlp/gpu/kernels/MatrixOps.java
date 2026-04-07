@@ -26,6 +26,7 @@ import org.jocl.cl_program;
 
 /**
 
+ * ID: GPU-MO-001
  * Requirement: MatrixOps must provide Java-side wrappers for GPU matrix operation kernels dispatched via JNI.
  * Purpose: Encapsulates JNI calls for GPU matrix multiply, add, transpose, softmax, and NLP-specific ops into a single utility class.
  * Rationale: Centralising JNI calls avoids repeated UnsatisfiedLinkError handling and simplifies GPU capability detection at the Java layer.

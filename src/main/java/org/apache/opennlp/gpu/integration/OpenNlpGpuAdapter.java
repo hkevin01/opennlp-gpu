@@ -19,6 +19,7 @@ import opennlp.tools.tokenize.TokenizerModel;
 
 /**
 
+ * ID: GPU-ONGA-001
  * Requirement: OpenNlpGpuAdapter must provide a high-level adapter integrating GPU compute into a standard OpenNLP NLP pipeline.
  * Purpose: Configures compute provider selection, wraps base OpenNLP models with GPU decorators, and manages provider lifecycle.
  * Rationale: Adapter pattern isolates GPU integration details from OpenNLP pipeline code, enabling GPU acceleration with minimal caller changes.

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 
+ * ID: GPU-GU-001
  * Requirement: GpuUtils must provide stateless utility methods for GPU memory arithmetic, array conversion, and diagnostic formatting.
  * Purpose: Utility class with static helpers used across compute and ml packages: byte count formatting, float[] ↔ double[] conversion, GPU availability checks.
  * Rationale: Centralising common utility logic prevents duplication and simplifies testing of shared arithmetic helpers.

@@ -21,6 +21,7 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
 
+ * ID: GPU-CCP-001
  * Requirement: Provide a pure-Java CPU implementation of ComputeProvider that
  *   executes all matrix and NLP operations without native GPU dependencies,
  *   serving as both a production fallback and a test baseline.
@@ -50,6 +51,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-002
      * Requirement: Report that this provider does not use a GPU device.
      */
     @Override
@@ -59,6 +61,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-003
      * Requirement: Release provider resources. For CPU this is a no-op logged
      *   for operational traceability.
      */
@@ -77,6 +80,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-004
      * Requirement: Always return true — the CPU is unconditionally available.
      */
     @Override
@@ -84,6 +88,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-005
      * Requirement: Report JVM maximum heap memory as the effective memory limit.
      * Outputs: Runtime.maxMemory() / (1024*1024), in MB.
      */
@@ -94,6 +99,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-006
      * Requirement: Report current JVM heap consumption in MB.
      * Outputs: (totalMemory - freeMemory) / (1024*1024).
      */
@@ -108,6 +114,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-007
      * Requirement: Compute matrix product C = A(m×k) * B(k×n) using the
      *   standard O(m·n·k) triple-loop algorithm.
      * Rationale: Correctness over performance; GPU backends replace this.
@@ -129,6 +136,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-008
      * Requirement: Element-wise addition: result[i] = a[i] + b[i].
      */
     @Override
@@ -140,6 +148,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-009
      * Requirement: Transpose matrix input(rows×cols) into output(cols×rows).
      * Algorithm: output[j*rows + i] = input[i*cols + j] for all i, j.
      */
@@ -154,6 +163,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-010
      * Requirement: Produce a simple numeric feature vector from text tokens.
      * Algorithm: features[i] = (float) text[i].length() for i < min(text.length, features.length).
      * Rationale: Provides a deterministic, dependency-free baseline feature
@@ -169,6 +179,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-011
      * Requirement: Compute TF-IDF score:
      *   result[i] = termFreq[i] * ln(1 + 1 / (docFreq[i] + ε))
      *   where ε = 1e-10 guards against division by zero.
@@ -184,6 +195,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-012
      * Requirement: Initialize the CPU provider. No-op beyond trace logging.
      */
     @Override
@@ -199,6 +211,7 @@ public class CpuComputeProvider implements ComputeProvider {
 
     /**
 
+     * ID: GPU-CCP-013
      * Requirement: Report that all operation types are supported by the CPU backend.
      */
     @Override

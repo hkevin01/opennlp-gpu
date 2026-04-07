@@ -7,6 +7,7 @@ import org.apache.opennlp.gpu.common.GpuLogger;
 
 /**
 
+ * ID: GPU-GNNM-001
  * Requirement: GpuNeuralNetworkModel must wrap a trained GpuNeuralNetwork as an OpenNLP MaxentModel for drop-in pipeline compatibility.
  * Purpose: Implements MaxentModel so neural network predictions can replace MaxEnt models in standard OpenNLP pipelines without API changes.
  * Rationale: Adapter pattern allows pipelines using MaxentModel to transparently switch to neural predictions.

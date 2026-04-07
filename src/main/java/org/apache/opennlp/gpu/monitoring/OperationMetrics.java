@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
 
+ * ID: GPU-OM-001
  * Requirement: OperationMetrics must hold aggregated performance metrics (call count, total/min/max/avg latency, memory) for a single named GPU operation.
  * Purpose: Immutable value object populated by GpuPerformanceMonitor, surfacing per-operation latency histogram data to callers.
  * Rationale: Per-operation metric aggregation (not just totals) enables percentile-based SLA monitoring and latency regression detection.
