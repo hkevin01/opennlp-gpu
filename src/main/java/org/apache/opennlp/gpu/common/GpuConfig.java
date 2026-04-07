@@ -39,8 +39,8 @@ import java.util.Map;
  * Postconditions: All getters return valid values immediately after construction.
  * Assumptions: Memory values are in megabytes. batchSize ≥ 1.
  * Side Effects: None. This class is a pure value object.
- * Failure Modes: Negative memoryPoolSizeMB or batchSize values are not
- *   validated at set time; providers must guard against them at init time.
+ * Failure Modes: Negative or zero memoryPoolSizeMB, batchSize, or
+ *   maxMemoryUsageMB values throw IllegalArgumentException at set time.
  * Constraints: maxMemoryUsageMB must be ≥ memoryPoolSizeMB for correct operation.
  * Verification: Validated by BasicValidationTest; used in all integration tests.
  * References: OpenNLP model evaluation pipeline; CUDA memory management best practices.
@@ -103,8 +103,14 @@ public class GpuConfig {
     /**
      * Sets the GPU memory pool size in MB.
      * @param memoryPoolSizeMB must be positive
+     * @throws IllegalArgumentException if memoryPoolSizeMB is not positive
      */
-    public void setMemoryPoolSizeMB(int memoryPoolSizeMB) { this.memoryPoolSizeMB = memoryPoolSizeMB; }
+    public void setMemoryPoolSizeMB(int memoryPoolSizeMB) {
+        if (memoryPoolSizeMB <= 0) {
+            throw new IllegalArgumentException("memoryPoolSizeMB must be > 0, got: " + memoryPoolSizeMB);
+        }
+        this.memoryPoolSizeMB = memoryPoolSizeMB;
+    }
 
     /** Returns the inference batch size. */
     public int getBatchSize() { return batchSize; }
@@ -112,17 +118,29 @@ public class GpuConfig {
     /**
      * Sets the inference batch size.
      * @param batchSize must be ≥ 1
+     * @throws IllegalArgumentException if batchSize is less than 1
      */
-    public void setBatchSize(int batchSize) { this.batchSize = batchSize; }
+    public void setBatchSize(int batchSize) {
+        if (batchSize < 1) {
+            throw new IllegalArgumentException("batchSize must be >= 1, got: " + batchSize);
+        }
+        this.batchSize = batchSize;
+    }
 
     /** Returns the maximum GPU memory usage limit in MB. */
     public int getMaxMemoryUsageMB() { return maxMemoryUsageMB; }
 
     /**
      * Sets the maximum GPU memory usage limit in MB.
-     * @param maxMemoryUsageMB must be ≥ memoryPoolSizeMB
+     * @param maxMemoryUsageMB must be positive
+     * @throws IllegalArgumentException if maxMemoryUsageMB is not positive
      */
-    public void setMaxMemoryUsageMB(int maxMemoryUsageMB) { this.maxMemoryUsageMB = maxMemoryUsageMB; }
+    public void setMaxMemoryUsageMB(int maxMemoryUsageMB) {
+        if (maxMemoryUsageMB <= 0) {
+            throw new IllegalArgumentException("maxMemoryUsageMB must be > 0, got: " + maxMemoryUsageMB);
+        }
+        this.maxMemoryUsageMB = maxMemoryUsageMB;
+    }
 
     // ---- Static Utility Methods ----
 

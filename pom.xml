@@ -214,6 +214,7 @@
         <version>3.5.3</version>
         <configuration>
           <includes>
+            <include>**/CoreFunctionalityTest.java</include>
             <include>**/GpuTestSuite.java</include>
             <include>**/MatrixOpsTest.java</include>
             <include>**/OpenNLPTestDataIntegration.java</include>
