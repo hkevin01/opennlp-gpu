@@ -35,6 +35,18 @@ public class RocmDevice implements GpuDevice {
      * @param deviceId device index
      * @param devicePtr native device pointer
      */
+    /**
+    
+     * ID: GPU-RD-002
+     * Requirement: RocmDevice must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a RocmDevice instance.
+     * Inputs: String name, int deviceId, long devicePtr
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public RocmDevice(String name, int deviceId, long devicePtr) {
         this.name = name != null ? name : "Unknown";
         this.deviceId = deviceId;
@@ -46,6 +58,18 @@ public class RocmDevice implements GpuDevice {
      *
      * @return the device name
      */
+    /**
+    
+     * ID: GPU-RD-003
+     * Requirement: Return the Name field value without side effects.
+     * Purpose: Return the value of the Name property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public String getName() {
         return name;
     }
@@ -54,6 +78,18 @@ public class RocmDevice implements GpuDevice {
      * Get the device index.
      *
      * @return the device index
+     */
+    /**
+    
+     * ID: GPU-RD-004
+     * Requirement: Return the DeviceId field value without side effects.
+     * Purpose: Return the value of the DeviceId property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public int getDeviceId() {
         return deviceId;
@@ -64,6 +100,18 @@ public class RocmDevice implements GpuDevice {
      *
      * @return the device pointer
      */
+    /**
+    
+     * ID: GPU-RD-005
+     * Requirement: Return the DevicePtr field value without side effects.
+     * Purpose: Return the value of the DevicePtr property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getDevicePtr() {
         return devicePtr;
     }
@@ -72,6 +120,18 @@ public class RocmDevice implements GpuDevice {
      * Get the amount of memory in megabytes.
      * 
      * @return the memory size in MB
+     */
+    /**
+    
+     * ID: GPU-RD-006
+     * Requirement: Return the MemoryMB field value without side effects.
+     * Purpose: Return the value of the MemoryMB property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     @Override
     public long getMemoryMB() {
@@ -84,6 +144,18 @@ public class RocmDevice implements GpuDevice {
      * 
      * @return a string describing the device
      */
+    /**
+    
+     * ID: GPU-RD-007
+     * Requirement: Return the Description field value without side effects.
+     * Purpose: Return the value of the Description property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public String getDescription() {
         return String.format("%s (%s) with %d MB", name, architecture, getMemoryMB());
     }
@@ -93,6 +165,18 @@ public class RocmDevice implements GpuDevice {
      * 
      * @param requiredBytes the number of bytes required
      * @return true if the device has enough memory
+     */
+    /**
+    
+     * ID: GPU-RD-008
+     * Requirement: Evaluate and return the boolean result of hasEnoughMemory.
+     * Purpose: Return whether hasEnoughMemory condition holds.
+     * Inputs: long requiredBytes
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public boolean hasEnoughMemory(long requiredBytes) {
         // Allow up to 80% of total memory to be used

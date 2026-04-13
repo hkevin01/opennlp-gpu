@@ -50,10 +50,34 @@ public class GpuPerceptronModel {
     private static final int MIN_FEATURES_FOR_GPU = 1000;
     private static final int MIN_SAMPLES_FOR_GPU = 100;
     
+    /**
+    
+     * ID: GPU-GPM-002
+     * Requirement: GpuPerceptronModel must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuPerceptronModel instance.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuPerceptronModel(GpuConfig config) {
         this(config, GpuPerceptronModel.DEFAULT_LEARNING_RATE, GpuPerceptronModel.DEFAULT_MAX_ITERATIONS);
     }
     
+    /**
+    
+     * ID: GPU-GPM-003
+     * Requirement: GpuPerceptronModel must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuPerceptronModel instance.
+     * Inputs: GpuConfig config, float learningRate, int maxIterations
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuPerceptronModel(GpuConfig config, float learningRate, int maxIterations) {
         this.config = config;
         this.learningRate = learningRate;
@@ -67,6 +91,18 @@ public class GpuPerceptronModel {
         GpuPerceptronModel.logger.info("Created GPU perceptron model with learning rate: " + learningRate);
     }
     
+    /**
+    
+     * ID: GPU-GPM-004
+     * Requirement: createComputeProvider must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new ComputeProvider.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private ComputeProvider createComputeProvider() {
         try {
             if (config.isGpuEnabled() && GpuComputeProvider.isGpuAvailable()) {
@@ -78,6 +114,18 @@ public class GpuPerceptronModel {
         return new CpuComputeProvider();
     }
     
+    /**
+    
+     * ID: GPU-GPM-005
+     * Requirement: createMatrixOperation must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new MatrixOperation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private MatrixOperation createMatrixOperation() {
         if (computeProvider.isGpuProvider()) {
             return new org.apache.opennlp.gpu.compute.GpuMatrixOperation(computeProvider, config);
@@ -88,6 +136,18 @@ public class GpuPerceptronModel {
     
     /**
      * Train the perceptron model with GPU acceleration
+     */
+    /**
+    
+     * ID: GPU-GPM-006
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: float[][] features, int[] labels
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void train(float[][] features, int[] labels) {
         if (features.length == 0) {
@@ -108,6 +168,18 @@ public class GpuPerceptronModel {
     /**
      * Train with double precision features (convenience method)
      */
+    /**
+    
+     * ID: GPU-GPM-007
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: double[][] features, int[] labels
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void train(double[][] features, int[] labels) {
         float[][] floatFeatures = convertToFloat(features);
         train(floatFeatures, labels);
@@ -115,6 +187,18 @@ public class GpuPerceptronModel {
     
     /**
      * Predict using the perceptron model
+     */
+    /**
+    
+     * ID: GPU-GPM-008
+     * Requirement: predict must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public int predict(float[] features) {
         if (weights.length != features.length) {
@@ -132,6 +216,18 @@ public class GpuPerceptronModel {
     /**
      * Predict with double precision features (convenience method)
      */
+    /**
+    
+     * ID: GPU-GPM-009
+     * Requirement: predict must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: double[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int predict(double[] features) {
         float[] floatFeatures = new float[features.length];
         for (int i = 0; i < features.length; i++) {
@@ -142,6 +238,18 @@ public class GpuPerceptronModel {
     
     /**
      * Batch prediction for multiple samples
+     */
+    /**
+    
+     * ID: GPU-GPM-010
+     * Requirement: predictBatch must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public int[] predictBatch(float[][] features) {
         int[] predictions = new int[features.length];
@@ -160,6 +268,18 @@ public class GpuPerceptronModel {
     /**
      * Get the decision function value (before thresholding)
      */
+    /**
+    
+     * ID: GPU-GPM-011
+     * Requirement: decisionFunction must execute correctly within the contract defined by this class.
+     * Purpose: Implement the decisionFunction operation for this class.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float decisionFunction(float[] features) {
         if (weights.length != features.length) {
             return 0.0f;
@@ -174,6 +294,18 @@ public class GpuPerceptronModel {
     
     // GPU training implementation
     
+    /**
+    
+     * ID: GPU-GPM-012
+     * Requirement: trainOnGpu must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: float[][] features, int[] labels
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void trainOnGpu(float[][] features, int[] labels) {
         GpuPerceptronModel.logger.debug("Training perceptron on GPU with " + features.length + " samples");
         
@@ -219,6 +351,18 @@ public class GpuPerceptronModel {
         }
     }
     
+    /**
+    
+     * ID: GPU-GPM-013
+     * Requirement: trainOnCpu must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: float[][] features, int[] labels
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void trainOnCpu(float[][] features, int[] labels) {
         GpuPerceptronModel.logger.debug("Training perceptron on CPU with " + features.length + " samples");
         
@@ -247,16 +391,52 @@ public class GpuPerceptronModel {
     
     // GPU prediction implementations
     
+    /**
+    
+     * ID: GPU-GPM-014
+     * Requirement: predictOnGpu must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private int predictOnGpu(float[] features) {
         float decision = decisionFunctionGpu(features);
         return decision >= 0 ? 1 : 0;
     }
     
+    /**
+    
+     * ID: GPU-GPM-015
+     * Requirement: predictOnCpu must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private int predictOnCpu(float[] features) {
         float decision = decisionFunctionCpu(features);
         return decision >= 0 ? 1 : 0;
     }
     
+    /**
+    
+     * ID: GPU-GPM-016
+     * Requirement: predictBatchOnGpu must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private int[] predictBatchOnGpu(float[][] features) {
         try {
             GpuPerceptronModel.logger.debug("GPU batch prediction for " + features.length + " samples");
@@ -290,6 +470,18 @@ public class GpuPerceptronModel {
         }
     }
     
+    /**
+    
+     * ID: GPU-GPM-017
+     * Requirement: decisionFunctionGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the decisionFunctionGpu operation for this class.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float decisionFunctionGpu(float[] features) {
         try {
             // Calculate dot product using GPU
@@ -302,6 +494,18 @@ public class GpuPerceptronModel {
         }
     }
     
+    /**
+    
+     * ID: GPU-GPM-018
+     * Requirement: decisionFunctionCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the decisionFunctionCpu operation for this class.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float decisionFunctionCpu(float[] features) {
         float sum = bias;
         for (int i = 0; i < featureCount; i++) {
@@ -310,6 +514,18 @@ public class GpuPerceptronModel {
         return sum;
     }
     
+    /**
+    
+     * ID: GPU-GPM-019
+     * Requirement: updateWeightsGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateWeightsGpu operation for this class.
+     * Inputs: float[] features, float delta
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateWeightsGpu(float[] features, float delta) {
         try {
             // Scale features by learning rate and delta
@@ -329,6 +545,18 @@ public class GpuPerceptronModel {
         }
     }
     
+    /**
+    
+     * ID: GPU-GPM-020
+     * Requirement: updateWeightsCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateWeightsCpu operation for this class.
+     * Inputs: float[] features, float delta
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateWeightsCpu(float[] features, float delta) {
         float adjustment = learningRate * delta;
         for (int i = 0; i < featureCount; i++) {
@@ -339,6 +567,18 @@ public class GpuPerceptronModel {
     
     // Helper methods
     
+    /**
+    
+     * ID: GPU-GPM-021
+     * Requirement: initializeWeights must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: int numFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeWeights(int numFeatures) {
         this.featureCount = numFeatures;
         this.weights = new float[featureCount];
@@ -352,23 +592,71 @@ public class GpuPerceptronModel {
         GpuPerceptronModel.logger.debug("Initialized weights for " + featureCount + " features");
     }
     
+    /**
+    
+     * ID: GPU-GPM-022
+     * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpu operation for this class.
+     * Inputs: float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean shouldUseGpu(float[][] features) {
         return computeProvider.isGpuProvider() && 
                features.length >= GpuPerceptronModel.MIN_SAMPLES_FOR_GPU &&
                features[0].length >= GpuPerceptronModel.MIN_FEATURES_FOR_GPU;
     }
     
+    /**
+    
+     * ID: GPU-GPM-023
+     * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpu operation for this class.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean shouldUseGpu(float[] features) {
         return computeProvider.isGpuProvider() && 
                features.length >= GpuPerceptronModel.MIN_FEATURES_FOR_GPU;
     }
     
+    /**
+    
+     * ID: GPU-GPM-024
+     * Requirement: shouldUseGpuBatch must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpuBatch operation for this class.
+     * Inputs: float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean shouldUseGpuBatch(float[][] features) {
         return computeProvider.isGpuProvider() && 
                features.length >= 10 && // Minimum batch size
                features[0].length >= GpuPerceptronModel.MIN_FEATURES_FOR_GPU;
     }
     
+    /**
+    
+     * ID: GPU-GPM-025
+     * Requirement: convertToFloat must execute correctly within the contract defined by this class.
+     * Purpose: Implement the convertToFloat operation for this class.
+     * Inputs: double[][] doubleFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[][] convertToFloat(double[][] doubleFeatures) {
         float[][] floatFeatures = new float[doubleFeatures.length][];
         for (int i = 0; i < doubleFeatures.length; i++) {
@@ -380,6 +668,18 @@ public class GpuPerceptronModel {
         return floatFeatures;
     }
     
+    /**
+    
+     * ID: GPU-GPM-026
+     * Requirement: flattenFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the flattenFeatures operation for this class.
+     * Inputs: float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] flattenFeatures(float[][] features) {
         int totalSize = features.length * features[0].length;
         float[] flattened = new float[totalSize];
@@ -396,12 +696,36 @@ public class GpuPerceptronModel {
     /**
      * Get model weights
      */
+    /**
+    
+     * ID: GPU-GPM-027
+     * Requirement: Return the Weights field value without side effects.
+     * Purpose: Return the value of the Weights property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float[] getWeights() {
         return weights.clone();
     }
     
     /**
      * Get model bias
+     */
+    /**
+    
+     * ID: GPU-GPM-028
+     * Requirement: Return the Bias field value without side effects.
+     * Purpose: Return the value of the Bias property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public float getBias() {
         return bias;
@@ -410,12 +734,36 @@ public class GpuPerceptronModel {
     /**
      * Get number of features
      */
+    /**
+    
+     * ID: GPU-GPM-029
+     * Requirement: Return the FeatureCount field value without side effects.
+     * Purpose: Return the value of the FeatureCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getFeatureCount() {
         return featureCount;
     }
     
     /**
      * Get learning rate
+     */
+    /**
+    
+     * ID: GPU-GPM-030
+     * Requirement: Return the LearningRate field value without side effects.
+     * Purpose: Return the value of the LearningRate property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public float getLearningRate() {
         return learningRate;
@@ -424,12 +772,36 @@ public class GpuPerceptronModel {
     /**
      * Get training iterations performed
      */
+    /**
+    
+     * ID: GPU-GPM-031
+     * Requirement: Return the TrainingIterations field value without side effects.
+     * Purpose: Return the value of the TrainingIterations property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getTrainingIterations() {
         return trainingIterations;
     }
     
     /**
      * Get performance statistics
+     */
+    /**
+    
+     * ID: GPU-GPM-032
+     * Requirement: Return the PerformanceStats field value without side effects.
+     * Purpose: Return the value of the PerformanceStats property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public PerceptronPerformanceStats getPerformanceStats() {
         return new PerceptronPerformanceStats(
@@ -442,6 +814,18 @@ public class GpuPerceptronModel {
     
     /**
      * Cleanup GPU resources
+     */
+    /**
+    
+     * ID: GPU-GPM-033
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void cleanup() {
         if (matrixOp != null) {
@@ -462,6 +846,18 @@ public class GpuPerceptronModel {
         private final int trainingIterations;
         private final float learningRate;
         
+        /**
+        
+         * ID: GPU-GPM-034
+         * Requirement: PerceptronPerformanceStats must execute correctly within the contract defined by this class.
+         * Purpose: Implement the PerceptronPerformanceStats operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public PerceptronPerformanceStats(String providerName, int featureCount, 
                                         int trainingIterations, float learningRate) {
             this.providerName = providerName;
@@ -470,11 +866,71 @@ public class GpuPerceptronModel {
             this.learningRate = learningRate;
         }
         
+        /**
+        
+         * ID: GPU-GPM-035
+         * Requirement: Return the ProviderName field value without side effects.
+         * Purpose: Return the value of the ProviderName property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getProviderName() { return providerName; }
+        /**
+        
+         * ID: GPU-GPM-036
+         * Requirement: Return the FeatureCount field value without side effects.
+         * Purpose: Return the value of the FeatureCount property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public int getFeatureCount() { return featureCount; }
+        /**
+        
+         * ID: GPU-GPM-037
+         * Requirement: Return the TrainingIterations field value without side effects.
+         * Purpose: Return the value of the TrainingIterations property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public int getTrainingIterations() { return trainingIterations; }
+        /**
+        
+         * ID: GPU-GPM-038
+         * Requirement: Return the LearningRate field value without side effects.
+         * Purpose: Return the value of the LearningRate property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public float getLearningRate() { return learningRate; }
         
+        /**
+        
+         * ID: GPU-GPM-039
+         * Requirement: toString must execute correctly within the contract defined by this class.
+         * Purpose: Implement the toString operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public String toString() {
             return String.format("PerceptronStats{provider=%s, features=%d, iterations=%d, lr=%.3f}", 

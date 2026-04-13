@@ -47,6 +47,18 @@ public class PerformanceBenchmark {
     private static final int[] FEATURE_SIZES = {1000, 5000, 10000, 20000};
     private static final int[] NEURAL_SIZES = {100, 500, 1000, 2000};
     
+    /**
+    
+     * ID: GPU-PB-002
+     * Requirement: PerformanceBenchmark must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a PerformanceBenchmark instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public PerformanceBenchmark() {
         this.config = new GpuConfig();
         PerformanceBenchmark.logger.info("Initialized performance benchmark suite");
@@ -54,6 +66,18 @@ public class PerformanceBenchmark {
     
     /**
      * Run comprehensive benchmarks and return results
+     */
+    /**
+    
+     * ID: GPU-PB-003
+     * Requirement: runFullBenchmark must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runFullBenchmark operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public BenchmarkResults runFullBenchmark() {
         PerformanceBenchmark.logger.info("Starting comprehensive performance benchmark");
@@ -85,6 +109,18 @@ public class PerformanceBenchmark {
         return results;
     }
     
+    /**
+    
+     * ID: GPU-PB-004
+     * Requirement: benchmarkMatrixOperations must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkMatrixOperations.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Map<String, BenchmarkMetrics> benchmarkMatrixOperations() {
         PerformanceBenchmark.logger.info("Benchmarking matrix operations...");
         Map<String, BenchmarkMetrics> results = new HashMap<String, BenchmarkMetrics>();
@@ -122,6 +158,18 @@ public class PerformanceBenchmark {
         return results;
     }
     
+    /**
+    
+     * ID: GPU-PB-005
+     * Requirement: benchmarkMatrixMultiplication must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkMatrixMultiplication.
+     * Inputs: MatrixOperation cpuOp, MatrixOperation gpuOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkMatrixMultiplication(MatrixOperation cpuOp, MatrixOperation gpuOp) {
         BenchmarkMetrics metrics = new BenchmarkMetrics("Matrix Multiplication");
         
@@ -158,6 +206,18 @@ public class PerformanceBenchmark {
         return metrics;
     }
     
+    /**
+    
+     * ID: GPU-PB-006
+     * Requirement: benchmarkMatrixAddition must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkMatrixAddition.
+     * Inputs: MatrixOperation cpuOp, MatrixOperation gpuOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkMatrixAddition(MatrixOperation cpuOp, MatrixOperation gpuOp) {
         BenchmarkMetrics metrics = new BenchmarkMetrics("Matrix Addition");
         
@@ -194,18 +254,66 @@ public class PerformanceBenchmark {
         return metrics;
     }
     
+    /**
+    
+     * ID: GPU-PB-007
+     * Requirement: benchmarkSigmoidActivation must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkSigmoidActivation.
+     * Inputs: MatrixOperation cpuOp, MatrixOperation gpuOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkSigmoidActivation(MatrixOperation cpuOp, MatrixOperation gpuOp) {
         return benchmarkActivationFunction(cpuOp, gpuOp, "sigmoid", "Sigmoid Activation");
     }
     
+    /**
+    
+     * ID: GPU-PB-008
+     * Requirement: benchmarkReluActivation must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkReluActivation.
+     * Inputs: MatrixOperation cpuOp, MatrixOperation gpuOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkReluActivation(MatrixOperation cpuOp, MatrixOperation gpuOp) {
         return benchmarkActivationFunction(cpuOp, gpuOp, "relu", "ReLU Activation");
     }
     
+    /**
+    
+     * ID: GPU-PB-009
+     * Requirement: benchmarkSoftmaxActivation must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkSoftmaxActivation.
+     * Inputs: MatrixOperation cpuOp, MatrixOperation gpuOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkSoftmaxActivation(MatrixOperation cpuOp, MatrixOperation gpuOp) {
         return benchmarkActivationFunction(cpuOp, gpuOp, "softmax", "Softmax Activation");
     }
     
+    /**
+    
+     * ID: GPU-PB-010
+     * Requirement: benchmarkActivationFunction must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkActivationFunction.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkActivationFunction(MatrixOperation cpuOp, MatrixOperation gpuOp, 
                                                          String function, String name) {
         BenchmarkMetrics metrics = new BenchmarkMetrics(name);
@@ -242,6 +350,18 @@ public class PerformanceBenchmark {
         return metrics;
     }
     
+    /**
+    
+     * ID: GPU-PB-011
+     * Requirement: applyActivation must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyActivation operation for this class.
+     * Inputs: MatrixOperation op, String function, float[] input, float[] output, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyActivation(MatrixOperation op, String function, float[] input, float[] output, int size) {
         switch (function) {
             case "sigmoid":
@@ -256,6 +376,18 @@ public class PerformanceBenchmark {
         }
     }
     
+    /**
+    
+     * ID: GPU-PB-012
+     * Requirement: benchmarkVectorNormalization must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkVectorNormalization.
+     * Inputs: MatrixOperation cpuOp, MatrixOperation gpuOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private BenchmarkMetrics benchmarkVectorNormalization(MatrixOperation cpuOp, MatrixOperation gpuOp) {
         BenchmarkMetrics metrics = new BenchmarkMetrics("Vector Normalization");
         
@@ -289,6 +421,18 @@ public class PerformanceBenchmark {
         return metrics;
     }
     
+    /**
+    
+     * ID: GPU-PB-013
+     * Requirement: benchmarkFeatureExtraction must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkFeatureExtraction.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Map<String, BenchmarkMetrics> benchmarkFeatureExtraction() {
         PerformanceBenchmark.logger.info("Benchmarking feature extraction...");
         Map<String, BenchmarkMetrics> results = new HashMap<String, BenchmarkMetrics>();
@@ -336,6 +480,18 @@ public class PerformanceBenchmark {
         return results;
     }
     
+    /**
+    
+     * ID: GPU-PB-014
+     * Requirement: benchmarkNeuralNetworks must execute correctly within the contract defined by this class.
+     * Purpose: Measure and record performance metrics for benchmarkNeuralNetworks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Map<String, BenchmarkMetrics> benchmarkNeuralNetworks() {
         PerformanceBenchmark.logger.info("Benchmarking neural networks...");
         Map<String, BenchmarkMetrics> results = new HashMap<String, BenchmarkMetrics>();
@@ -398,6 +554,18 @@ public class PerformanceBenchmark {
     
     // Utility methods
     
+    /**
+    
+     * ID: GPU-PB-015
+     * Requirement: generateRandomMatrix must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateRandomMatrix operation for this class.
+     * Inputs: int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] generateRandomMatrix(int size) {
         float[] matrix = new float[size];
         for (int i = 0; i < size; i++) {
@@ -406,6 +574,18 @@ public class PerformanceBenchmark {
         return matrix;
     }
     
+    /**
+    
+     * ID: GPU-PB-016
+     * Requirement: generateTestDocuments must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateTestDocuments operation for this class.
+     * Inputs: int count
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private String[] generateTestDocuments(int count) {
         String[] documents = new String[count];
         String[] words = {"machine", "learning", "natural", "language", "processing", "gpu", "acceleration", 
@@ -423,6 +603,18 @@ public class PerformanceBenchmark {
         return documents;
     }
     
+    /**
+    
+     * ID: GPU-PB-017
+     * Requirement: Return the LatestResults field value without side effects.
+     * Purpose: Return the value of the LatestResults property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public BenchmarkResults getLatestResults() {
         return latestResults;
     }
@@ -435,15 +627,51 @@ public class PerformanceBenchmark {
         private final Map<Integer, Double> cpuTimes = new HashMap<Integer, Double>();
         private final Map<Integer, Double> gpuTimes = new HashMap<Integer, Double>();
         
+        /**
+        
+         * ID: GPU-PB-018
+         * Requirement: BenchmarkMetrics must execute correctly within the contract defined by this class.
+         * Purpose: Implement the BenchmarkMetrics operation for this class.
+         * Inputs: String operationName
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public BenchmarkMetrics(String operationName) {
             this.operationName = operationName;
         }
         
+        /**
+        
+         * ID: GPU-PB-019
+         * Requirement: addDataPoint must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: int size, double cpuTime, double gpuTime
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addDataPoint(int size, double cpuTime, double gpuTime) {
             cpuTimes.put(size, cpuTime);
             gpuTimes.put(size, gpuTime);
         }
         
+        /**
+        
+         * ID: GPU-PB-020
+         * Requirement: Return the AverageSpeedup field value without side effects.
+         * Purpose: Return the value of the AverageSpeedup property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getAverageSpeedup() {
             double totalSpeedup = 0.0;
             int count = 0;
@@ -459,8 +687,44 @@ public class PerformanceBenchmark {
             return count > 0 ? totalSpeedup / count : 1.0;
         }
         
+        /**
+        
+         * ID: GPU-PB-021
+         * Requirement: Return the OperationName field value without side effects.
+         * Purpose: Return the value of the OperationName property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getOperationName() { return operationName; }
+        /**
+        
+         * ID: GPU-PB-022
+         * Requirement: Return the CpuTimes field value without side effects.
+         * Purpose: Return the value of the CpuTimes property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public Map<Integer, Double> getCpuTimes() { return new HashMap<Integer, Double>(cpuTimes); }
+        /**
+        
+         * ID: GPU-PB-023
+         * Requirement: Return the GpuTimes field value without side effects.
+         * Purpose: Return the value of the GpuTimes property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public Map<Integer, Double> getGpuTimes() { return new HashMap<Integer, Double>(gpuTimes); }
     }
     
@@ -471,14 +735,50 @@ public class PerformanceBenchmark {
         private final Map<String, Map<String, BenchmarkMetrics>> categoryResults = new HashMap<String, Map<String, BenchmarkMetrics>>();
         private final StringBuilder errorLog = new StringBuilder();
         
+        /**
+        
+         * ID: GPU-PB-024
+         * Requirement: addCategory must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String category, Map<String, BenchmarkMetrics> metrics
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addCategory(String category, Map<String, BenchmarkMetrics> metrics) {
             categoryResults.put(category, metrics);
         }
         
+        /**
+        
+         * ID: GPU-PB-025
+         * Requirement: addError must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String error, Exception e
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addError(String error, Exception e) {
             errorLog.append("ERROR: ").append(error).append(" - ").append(e.getMessage()).append("\n");
         }
         
+        /**
+        
+         * ID: GPU-PB-026
+         * Requirement: Return the OverallSpeedup field value without side effects.
+         * Purpose: Return the value of the OverallSpeedup property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getOverallSpeedup() {
             double totalSpeedup = 0.0;
             int count = 0;
@@ -493,18 +793,66 @@ public class PerformanceBenchmark {
             return count > 0 ? totalSpeedup / count : 1.0;
         }
         
+        /**
+        
+         * ID: GPU-PB-027
+         * Requirement: Evaluate and return the boolean result of isValid.
+         * Purpose: Return whether isValid condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean isValid() {
             return !categoryResults.isEmpty() && errorLog.length() == 0;
         }
         
+        /**
+        
+         * ID: GPU-PB-028
+         * Requirement: Return the CategoryResults field value without side effects.
+         * Purpose: Return the value of the CategoryResults property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public Map<String, Map<String, BenchmarkMetrics>> getCategoryResults() {
             return new HashMap<String, Map<String, BenchmarkMetrics>>(categoryResults);
         }
         
+        /**
+        
+         * ID: GPU-PB-029
+         * Requirement: Return the ErrorLog field value without side effects.
+         * Purpose: Return the value of the ErrorLog property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getErrorLog() {
             return errorLog.toString();
         }
         
+        /**
+        
+         * ID: GPU-PB-030
+         * Requirement: generateReport must execute correctly within the contract defined by this class.
+         * Purpose: Implement the generateReport operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String generateReport() {
             StringBuilder report = new StringBuilder();
             report.append("=== OpenNLP GPU Benchmark Report ===\n\n");
@@ -529,6 +877,18 @@ public class PerformanceBenchmark {
             return report.toString();
         }
         
+        /**
+        
+         * ID: GPU-PB-031
+         * Requirement: Return the DetailedReport field value without side effects.
+         * Purpose: Return the value of the DetailedReport property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getDetailedReport() {
             StringBuilder report = new StringBuilder();
             report.append("=== OpenNLP GPU Benchmark Detailed Report ===\n\n");
@@ -557,6 +917,18 @@ public class PerformanceBenchmark {
     
     /**
      * Main method to run comprehensive performance benchmarks
+     */
+    /**
+    
+     * ID: GPU-PB-032
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static void main(String[] args) {
         System.out.println("==========================================================");

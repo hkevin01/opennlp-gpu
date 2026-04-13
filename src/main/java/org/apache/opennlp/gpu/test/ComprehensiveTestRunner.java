@@ -33,6 +33,18 @@ public class ComprehensiveTestRunner {
     private final List<String> results = new ArrayList<>();
     private boolean allTestsPassed = true;
     
+    /**
+    
+     * ID: GPU-CTR-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         System.out.println("==============================================================");
         System.out.println("OpenNLP GPU - Comprehensive Test Suite");
@@ -62,6 +74,18 @@ public class ComprehensiveTestRunner {
         System.exit(success ? 0 : 1);
     }
     
+    /**
+    
+     * ID: GPU-CTR-003
+     * Requirement: runAllTests must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runAllTests operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean runAllTests() {
         // Step 1: GPU Diagnostics
         runGpuDiagnostics();
@@ -78,6 +102,18 @@ public class ComprehensiveTestRunner {
         return allTestsPassed;
     }
     
+    /**
+    
+     * ID: GPU-CTR-004
+     * Requirement: runGpuDiagnostics must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runGpuDiagnostics operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void runGpuDiagnostics() {
         System.out.println("1️⃣  Running GPU Diagnostics...");
         System.out.println("------------------------------");
@@ -106,6 +142,18 @@ public class ComprehensiveTestRunner {
         System.out.println();
     }
     
+    /**
+    
+     * ID: GPU-CTR-005
+     * Requirement: runCoreComponentTests must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runCoreComponentTests operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void runCoreComponentTests() {
         System.out.println("2️⃣  Running Core Component Tests...");
         System.out.println("------------------------------------");
@@ -122,6 +170,18 @@ public class ComprehensiveTestRunner {
         System.out.println();
     }
     
+    /**
+    
+     * ID: GPU-CTR-006
+     * Requirement: testMatrixOperations must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void testMatrixOperations() {
         try {
             System.out.println("Testing Matrix Operations...");
@@ -160,6 +220,18 @@ public class ComprehensiveTestRunner {
         }
     }
     
+    /**
+    
+     * ID: GPU-CTR-007
+     * Requirement: testFeatureExtraction must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void testFeatureExtraction() {
         try {
             System.out.println("Testing Feature Extraction...");
@@ -184,6 +256,18 @@ public class ComprehensiveTestRunner {
         }
     }
     
+    /**
+    
+     * ID: GPU-CTR-008
+     * Requirement: testNeuralPipeline must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void testNeuralPipeline() {
         try {
             System.out.println("Testing Neural Pipeline...");
@@ -208,6 +292,18 @@ public class ComprehensiveTestRunner {
         }
     }
     
+    /**
+    
+     * ID: GPU-CTR-009
+     * Requirement: runPerformanceBenchmarks must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runPerformanceBenchmarks operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void runPerformanceBenchmarks() {
         System.out.println("3️⃣  Running Performance Benchmarks...");
         System.out.println("-------------------------------------");
@@ -239,6 +335,18 @@ public class ComprehensiveTestRunner {
         System.out.println();
     }
     
+    /**
+    
+     * ID: GPU-CTR-010
+     * Requirement: runIntegrationTests must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runIntegrationTests operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void runIntegrationTests() {
         System.out.println("4️⃣  Running Integration Tests...");
         System.out.println("--------------------------------");
@@ -252,6 +360,18 @@ public class ComprehensiveTestRunner {
         System.out.println();
     }
     
+    /**
+    
+     * ID: GPU-CTR-011
+     * Requirement: testOpenNlpIntegration must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void testOpenNlpIntegration() {
         try {
             System.out.println("Testing OpenNLP Integration...");
@@ -276,6 +396,18 @@ public class ComprehensiveTestRunner {
         }
     }
     
+    /**
+    
+     * ID: GPU-CTR-012
+     * Requirement: testExampleApplications must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void testExampleApplications() {
         try {
             System.out.println("Testing Example Applications...");

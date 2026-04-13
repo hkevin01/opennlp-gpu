@@ -23,6 +23,18 @@ import org.apache.opennlp.gpu.common.GpuConfig;
  */
 public class IndustrySpecificDemo {
 
+    /**
+    
+     * ID: GPU-ISD-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         System.out.println("🏢 Industry-Specific GPU Acceleration Demos");
         System.out.println("============================================");
@@ -51,6 +63,18 @@ public class IndustrySpecificDemo {
         }
     }
 
+    /**
+    
+     * ID: GPU-ISD-003
+     * Requirement: runHealthcareDemo must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runHealthcareDemo operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runHealthcareDemo() {
         System.out.println("🏥 Healthcare: Clinical Text Processing");
         System.out.println("========================================");
@@ -80,6 +104,18 @@ public class IndustrySpecificDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-ISD-004
+     * Requirement: runFinanceDemo must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runFinanceDemo operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runFinanceDemo() {
         System.out.println("💰 Finance: Document Analysis & Risk Assessment");
         System.out.println("===============================================");
@@ -109,6 +145,18 @@ public class IndustrySpecificDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-ISD-005
+     * Requirement: runLegalDemo must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runLegalDemo operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runLegalDemo() {
         System.out.println("⚖️  Legal: Document Review & Case Preparation");
         System.out.println("==============================================");
@@ -138,6 +186,18 @@ public class IndustrySpecificDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-ISD-006
+     * Requirement: runECommerceDemo must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runECommerceDemo operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runECommerceDemo() {
         System.out.println("🛒 E-Commerce: Customer Support & Review Analysis");
         System.out.println("==================================================");
@@ -167,6 +227,18 @@ public class IndustrySpecificDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-ISD-007
+     * Requirement: runMediaDemo must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runMediaDemo operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runMediaDemo() {
         System.out.println("📰 Media: News Processing & Content Categorization");
         System.out.println("===================================================");
@@ -196,6 +268,18 @@ public class IndustrySpecificDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-ISD-008
+     * Requirement: showCpuBaselineScenarios must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void showCpuBaselineScenarios() {
         System.out.println("📊 CPU Baseline Performance (Industry Scenarios):");
         System.out.println();

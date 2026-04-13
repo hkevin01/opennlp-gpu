@@ -34,6 +34,18 @@ public class GpuModelFactory {
     /**
      * Creates a new GPU model factory with the given configuration
      */
+    /**
+    
+     * ID: GPU-GMF-002
+     * Requirement: GpuModelFactory must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuModelFactory instance.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuModelFactory(GpuConfig config) {
         this.config = config;
         logger.info("Created GPU model factory with GPU enabled: " + config.isGpuEnabled());
@@ -41,6 +53,18 @@ public class GpuModelFactory {
     
     /**
      * Creates a GPU-accelerated MaxEnt model
+     */
+    /**
+    
+     * ID: GPU-GMF-003
+     * Requirement: createGpuMaxentModel must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new GpuMaxentModel.
+     * Inputs: MaxentModel cpuModel
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public MaxentModel createGpuMaxentModel(MaxentModel cpuModel) {
         try {
@@ -59,6 +83,18 @@ public class GpuModelFactory {
     /**
      * Creates a GPU-accelerated model adapter
      */
+    /**
+    
+     * ID: GPU-GMF-004
+     * Requirement: createGpuModelAdapter must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new GpuModelAdapter.
+     * Inputs: MaxentModel cpuModel
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public MaxentModel createGpuModelAdapter(MaxentModel cpuModel) {
         try {
             return new GpuModelAdapter(cpuModel, config);
@@ -71,6 +107,18 @@ public class GpuModelFactory {
     /**
      * Determines if GPU acceleration should be used for the given model
      */
+    /**
+    
+     * ID: GPU-GMF-005
+     * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpu operation for this class.
+     * Inputs: MaxentModel model
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean shouldUseGpu(MaxentModel model) {
         return config.isGpuEnabled() && 
                model.getNumOutcomes() > 10;
@@ -78,6 +126,18 @@ public class GpuModelFactory {
     
     /**
      * Gets the current GPU configuration
+     */
+    /**
+    
+     * ID: GPU-GMF-006
+     * Requirement: Return the Config field value without side effects.
+     * Purpose: Return the value of the Config property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public GpuConfig getConfig() {
         return config;

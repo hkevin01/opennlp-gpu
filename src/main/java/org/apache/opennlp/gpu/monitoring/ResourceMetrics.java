@@ -51,6 +51,18 @@ public class ResourceMetrics {
     private final Map<GpuPerformanceMonitor.MemoryType, AtomicLong> memoryByType = 
         new ConcurrentHashMap<GpuPerformanceMonitor.MemoryType, AtomicLong>();
     
+    /**
+    
+     * ID: GPU-RM-002
+     * Requirement: ResourceMetrics must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a ResourceMetrics instance.
+     * Inputs: String deviceId
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public ResourceMetrics(String deviceId) {
         this.deviceId = deviceId;
         
@@ -60,6 +72,18 @@ public class ResourceMetrics {
         }
     }
     
+    /**
+    
+     * ID: GPU-RM-003
+     * Requirement: recordMemoryAllocation must execute correctly within the contract defined by this class.
+     * Purpose: Implement the recordMemoryAllocation operation for this class.
+     * Inputs: long size, GpuPerformanceMonitor.MemoryType type
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void recordMemoryAllocation(long size, GpuPerformanceMonitor.MemoryType type) {
         usedMemory.addAndGet(size);
         allocationCount.incrementAndGet();
@@ -74,6 +98,18 @@ public class ResourceMetrics {
         }
     }
     
+    /**
+    
+     * ID: GPU-RM-004
+     * Requirement: recordMemoryDeallocation must execute correctly within the contract defined by this class.
+     * Purpose: Implement the recordMemoryDeallocation operation for this class.
+     * Inputs: long size, GpuPerformanceMonitor.MemoryType type
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void recordMemoryDeallocation(long size, GpuPerformanceMonitor.MemoryType type) {
         usedMemory.addAndGet(-size);
         deallocationCount.incrementAndGet();
@@ -84,17 +120,101 @@ public class ResourceMetrics {
         }
     }
     
+    /**
+    
+     * ID: GPU-RM-005
+     * Requirement: Return the DeviceId field value without side effects.
+     * Purpose: Return the value of the DeviceId property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public String getDeviceId() { return deviceId; }
+    /**
+    
+     * ID: GPU-RM-006
+     * Requirement: Return the TotalMemory field value without side effects.
+     * Purpose: Return the value of the TotalMemory property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getTotalMemory() { return totalMemory.get(); }
+    /**
+    
+     * ID: GPU-RM-007
+     * Requirement: Return the UsedMemory field value without side effects.
+     * Purpose: Return the value of the UsedMemory property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getUsedMemory() { return Math.max(0, usedMemory.get()); }
+    /**
+    
+     * ID: GPU-RM-008
+     * Requirement: Return the AllocationCount field value without side effects.
+     * Purpose: Return the value of the AllocationCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getAllocationCount() { return allocationCount.get(); }
+    /**
+    
+     * ID: GPU-RM-009
+     * Requirement: Return the DeallocationCount field value without side effects.
+     * Purpose: Return the value of the DeallocationCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getDeallocationCount() { return deallocationCount.get(); }
     
+    /**
+    
+     * ID: GPU-RM-010
+     * Requirement: Return the MemoryUsageRatio field value without side effects.
+     * Purpose: Return the value of the MemoryUsageRatio property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public double getMemoryUsageRatio() {
         long total = totalMemory.get();
         return total > 0 ? (double) getUsedMemory() / total : 0.0;
     }
     
+    /**
+    
+     * ID: GPU-RM-011
+     * Requirement: Return the MemoryByType field value without side effects.
+     * Purpose: Return the value of the MemoryByType property.
+     * Inputs: GpuPerformanceMonitor.MemoryType type
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getMemoryByType(GpuPerformanceMonitor.MemoryType type) {
         AtomicLong counter = memoryByType.get(type);
         return counter != null ? Math.max(0, counter.get()) : 0;

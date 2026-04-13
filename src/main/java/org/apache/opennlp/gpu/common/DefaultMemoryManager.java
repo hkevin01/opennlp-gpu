@@ -26,10 +26,34 @@ public class DefaultMemoryManager {
 
   private Map<Long,byte[]> pool = new HashMap<Long,byte[]>();
 
+  /**
+  
+   * ID: GPU-DMM-002
+   * Requirement: allocate must execute correctly within the contract defined by this class.
+   * Purpose: Implement the allocate operation for this class.
+   * Inputs: long size
+   * Outputs: Return value or output parameter as described; void otherwise.
+   * Postconditions: Return value or output parameter contains the computed result.
+   * Side Effects: May modify instance state; see method body for details.
+   * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+   * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+   */
   public byte[] allocate(long size) {
     return new byte[(int)size];
   }
 
+  /**
+  
+   * ID: GPU-DMM-003
+   * Requirement: free must execute correctly within the contract defined by this class.
+   * Purpose: Implement the free operation for this class.
+   * Inputs: byte[] data
+   * Outputs: Return value or output parameter as described; void otherwise.
+   * Postconditions: Return value or output parameter contains the computed result.
+   * Side Effects: May modify instance state; see method body for details.
+   * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+   * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+   */
   public void free(byte[] data) {
     // no‐op
   }

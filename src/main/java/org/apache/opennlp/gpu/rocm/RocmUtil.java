@@ -51,6 +51,18 @@ public class RocmUtil {
      *
      * @return true if initialization was successful
      */
+    /**
+    
+     * ID: GPU-RU-002
+     * Requirement: initialize must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean initialize() {
         if (initialized) {
             return true;
@@ -98,6 +110,18 @@ public class RocmUtil {
      *
      * @return true if ROCm is available
      */
+    /**
+    
+     * ID: GPU-RU-003
+     * Requirement: Evaluate and return the boolean result of isAvailable.
+     * Purpose: Return whether isAvailable condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean isAvailable() {
         return initialize() && getDeviceCount() > 0;
     }
@@ -106,6 +130,18 @@ public class RocmUtil {
      * Check if ROCm libraries are available on the system.
      *
      * @return true if ROCm libraries are found
+     */
+    /**
+    
+     * ID: GPU-RU-004
+     * Requirement: checkRocmLibraries must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for RocmLibraries.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static boolean checkRocmLibraries() {
         File rocmDir = new File(ROCM_LIBRARY_PATH);
@@ -125,6 +161,18 @@ public class RocmUtil {
      *
      * @return the number of ROCm devices, or 0 if ROCm is not available
      */
+    /**
+    
+     * ID: GPU-RU-005
+     * Requirement: Return the DeviceCount field value without side effects.
+     * Purpose: Return the value of the DeviceCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static int getDeviceCount() {
         if (!initialize()) {
             return 0;
@@ -142,6 +190,18 @@ public class RocmUtil {
     
     /**
      * Release ROCm resources.
+     */
+    /**
+    
+     * ID: GPU-RU-006
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static void release() {
         if (!initialized) {

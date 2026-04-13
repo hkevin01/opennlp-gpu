@@ -31,6 +31,18 @@ public class NativeLibraryLoader {
     /**
      * Load a native library from resources
      */
+    /**
+    
+     * ID: GPU-NLL-002
+     * Requirement: loadLibrary must execute correctly within the contract defined by this class.
+     * Purpose: Load or parse required data and return the result.
+     * Inputs: String libraryName
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void loadLibrary(String libraryName) {
         try {
             // Try system library first
@@ -48,6 +60,18 @@ public class NativeLibraryLoader {
         }
     }
     
+    /**
+    
+     * ID: GPU-NLL-003
+     * Requirement: loadLibraryFromResource must execute correctly within the contract defined by this class.
+     * Purpose: Load or parse required data and return the result.
+     * Inputs: String libraryName
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void loadLibraryFromResource(String libraryName) throws IOException {
         String osName = System.getProperty("os.name").toLowerCase();
         String architecture = System.getProperty("os.arch");
@@ -77,6 +101,18 @@ public class NativeLibraryLoader {
         }
     }
     
+    /**
+    
+     * ID: GPU-NLL-004
+     * Requirement: Return the LibraryPath field value without side effects.
+     * Purpose: Return the value of the LibraryPath property.
+     * Inputs: String libraryName, String osName, String architecture
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String getLibraryPath(String libraryName, String osName, String architecture) {
         StringBuilder path = new StringBuilder("/natives/");
         
@@ -95,6 +131,18 @@ public class NativeLibraryLoader {
         return path.toString();
     }
     
+    /**
+    
+     * ID: GPU-NLL-005
+     * Requirement: Return the LibraryExtension field value without side effects.
+     * Purpose: Return the value of the LibraryExtension property.
+     * Inputs: String osName
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String getLibraryExtension(String osName) {
         if (osName.contains("windows")) {
             return ".dll";

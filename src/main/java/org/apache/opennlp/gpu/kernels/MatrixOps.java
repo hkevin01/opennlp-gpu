@@ -86,6 +86,18 @@ public class MatrixOps {
         "    }\n" +
         "}\n";
     
+    /**
+    
+     * ID: GPU-MO-002
+     * Requirement: MatrixOps must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a MatrixOps instance.
+     * Inputs: cl_context context, cl_command_queue commandQueue, cl_device_id device
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public MatrixOps(cl_context context, cl_command_queue commandQueue, cl_device_id device) {
         this.context = context;
         this.commandQueue = commandQueue;
@@ -94,6 +106,18 @@ public class MatrixOps {
         initializeKernels();
     }
     
+    /**
+    
+     * ID: GPU-MO-003
+     * Requirement: initializeKernels must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeKernels() {
         try {
             // Create program from source
@@ -120,6 +144,18 @@ public class MatrixOps {
     
     /**
      * Perform matrix multiplication: C = A * B using GPU kernels
+     */
+    /**
+    
+     * ID: GPU-MO-004
+     * Requirement: matrixMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixMultiply operation for this class.
+     * Inputs: float[] a, float[] b, float[] c, int m, int n, int k
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void matrixMultiply(float[] a, float[] b, float[] c, int m, int n, int k) {
         if (matrixMultiplyKernel == null) {
@@ -168,6 +204,18 @@ public class MatrixOps {
     /**
      * CPU fallback for matrix multiplication
      */
+    /**
+    
+     * ID: GPU-MO-005
+     * Requirement: matrixMultiplyCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixMultiplyCpu operation for this class.
+     * Inputs: float[] a, float[] b, float[] c, int m, int n, int k
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void matrixMultiplyCpu(float[] a, float[] b, float[] c, int m, int n, int k) {
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
@@ -182,6 +230,18 @@ public class MatrixOps {
     
     /**
      * Perform matrix addition: C = A + B using GPU kernels
+     */
+    /**
+    
+     * ID: GPU-MO-006
+     * Requirement: matrixAdd must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixAdd operation for this class.
+     * Inputs: float[] a, float[] b, float[] c, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void matrixAdd(float[] a, float[] b, float[] c, int size) {
         if (matrixAddKernel == null) {
@@ -228,6 +288,18 @@ public class MatrixOps {
     /**
      * CPU fallback for matrix addition
      */
+    /**
+    
+     * ID: GPU-MO-007
+     * Requirement: matrixAddCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixAddCpu operation for this class.
+     * Inputs: float[] a, float[] b, float[] c, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void matrixAddCpu(float[] a, float[] b, float[] c, int size) {
         for (int i = 0; i < size; i++) {
             c[i] = a[i] + b[i];
@@ -237,6 +309,18 @@ public class MatrixOps {
     /**
      * Enhanced matrix multiplication with optimized OpenCL kernel
      * Supports batching and performance monitoring
+     */
+    /**
+    
+     * ID: GPU-MO-008
+     * Requirement: multiplyOptimized must execute correctly within the contract defined by this class.
+     * Purpose: Implement the multiplyOptimized operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static void multiplyOptimized(float[] a, float[] b, float[] result, 
                                        int rowsA, int colsA, int colsB) {
@@ -304,6 +388,18 @@ public class MatrixOps {
     /**
      * Optimized CPU fallback with loop unrolling and blocking
      */
+    /**
+    
+     * ID: GPU-MO-009
+     * Requirement: multiplyFallbackOptimized must execute correctly within the contract defined by this class.
+     * Purpose: Implement the multiplyFallbackOptimized operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void multiplyFallbackOptimized(float[] a, float[] b, float[] result, 
                                                  int rowsA, int colsA, int colsB) {
         final int BLOCK_SIZE = 64; // Cache-friendly block size
@@ -339,6 +435,18 @@ public class MatrixOps {
     /**
      * Log performance metrics for benchmarking
      */
+    /**
+    
+     * ID: GPU-MO-010
+     * Requirement: logPerformance must execute correctly within the contract defined by this class.
+     * Purpose: Implement the logPerformance operation for this class.
+     * Inputs: String method, long startTime, int operations
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void logPerformance(String method, long startTime, int operations) {
         long duration = System.nanoTime() - startTime;
         double seconds = duration / 1_000_000_000.0;
@@ -351,6 +459,18 @@ public class MatrixOps {
     /**
      * Release OpenCL resources
      */
+    /**
+    
+     * ID: GPU-MO-011
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void release() {
         // TODO: Release OpenCL kernels and buffers
         // For now, this is a no-op
@@ -358,6 +478,18 @@ public class MatrixOps {
     
     /**
      * CPU fallback implementation for matrix multiplication
+     */
+    /**
+    
+     * ID: GPU-MO-012
+     * Requirement: multiplyFallback must execute correctly within the contract defined by this class.
+     * Purpose: Implement the multiplyFallback operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void multiplyFallback(float[] a, float[] b, float[] result, 
                                        int rowsA, int colsA, int colsB) {
@@ -382,6 +514,18 @@ public class MatrixOps {
      * Get the GPU device information for diagnostics
      * @return the OpenCL device ID
      */
+    /**
+    
+     * ID: GPU-MO-013
+     * Requirement: Return the Device field value without side effects.
+     * Purpose: Return the value of the Device property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public cl_device_id getDevice() {
         return device;
     }
@@ -390,6 +534,18 @@ public class MatrixOps {
      * Normalize a vector using GPU acceleration (placeholder for future implementation)
      * @param vector the vector to normalize
      * @param size the size of the vector
+     */
+    /**
+    
+     * ID: GPU-MO-014
+     * Requirement: normalizeVector must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeVector operation for this class.
+     * Inputs: float[] vector, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void normalizeVector(float[] vector, int size) {
         if (vectorNormalizeKernel != null) {

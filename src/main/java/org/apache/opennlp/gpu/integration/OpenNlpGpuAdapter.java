@@ -42,6 +42,18 @@ public class OpenNlpGpuAdapter {
     private final GpuFeatureExtractor featureExtractor;
     private boolean gpuEnabled;
 
+    /**
+    
+     * ID: GPU-ONGA-002
+     * Requirement: OpenNlpGpuAdapter must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a OpenNlpGpuAdapter instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public OpenNlpGpuAdapter() {
         this.gpuConfig = new GpuConfig();
         ComputeProvider provider = new CpuComputeProvider();
@@ -60,6 +72,18 @@ public class OpenNlpGpuAdapter {
         private final GpuFeatureExtractor gpuFeatures;
         private final boolean useGpu;
 
+        /**
+        
+         * ID: GPU-ONGA-003
+         * Requirement: GpuTokenizerME must execute correctly within the contract defined by this class.
+         * Purpose: Implement the GpuTokenizerME operation for this class.
+         * Inputs: TokenizerModel model, GpuFeatureExtractor gpuFeatures
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public GpuTokenizerME(TokenizerModel model, GpuFeatureExtractor gpuFeatures) {
             super(model);
             this.gpuFeatures = gpuFeatures;
@@ -69,6 +93,18 @@ public class OpenNlpGpuAdapter {
                               (useGpu ? "GPU mode" : "CPU mode"));
         }
 
+        /**
+        
+         * ID: GPU-ONGA-004
+         * Requirement: tokenize must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tokenize operation for this class.
+         * Inputs: String sentence
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public String[] tokenize(String sentence) {
             if (useGpu && sentence.length() > 100) {
@@ -80,6 +116,18 @@ public class OpenNlpGpuAdapter {
             }
         }
 
+        /**
+        
+         * ID: GPU-ONGA-005
+         * Requirement: tokenizeBatch must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tokenizeBatch operation for this class.
+         * Inputs: String[] sentences
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String[] tokenizeBatch(String[] sentences) {
             if (useGpu && sentences.length > 10) {
                 return tokenizeBatchGpu(sentences);
@@ -96,6 +144,18 @@ public class OpenNlpGpuAdapter {
             }
         }
 
+        /**
+        
+         * ID: GPU-ONGA-006
+         * Requirement: tokenizeGpu must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tokenizeGpu operation for this class.
+         * Inputs: String sentence
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         private String[] tokenizeGpu(String sentence) {
             try {
                 // Simulate GPU-accelerated tokenization
@@ -120,6 +180,18 @@ public class OpenNlpGpuAdapter {
             }
         }
 
+        /**
+        
+         * ID: GPU-ONGA-007
+         * Requirement: tokenizeBatchGpu must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tokenizeBatchGpu operation for this class.
+         * Inputs: String[] sentences
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         private String[] tokenizeBatchGpu(String[] sentences) {
             try {
                 System.out.println("🔥 GPU batch tokenization: " + sentences.length + " sentences");
@@ -161,6 +233,18 @@ public class OpenNlpGpuAdapter {
         private final GpuFeatureExtractor gpuFeatures;
         private final boolean useGpu;
 
+        /**
+        
+         * ID: GPU-ONGA-008
+         * Requirement: GpuSentenceDetectorME must execute correctly within the contract defined by this class.
+         * Purpose: Implement the GpuSentenceDetectorME operation for this class.
+         * Inputs: SentenceModel model, GpuFeatureExtractor gpuFeatures
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public GpuSentenceDetectorME(SentenceModel model, GpuFeatureExtractor gpuFeatures) {
             super(model);
             this.gpuFeatures = gpuFeatures;
@@ -170,6 +254,18 @@ public class OpenNlpGpuAdapter {
                               (useGpu ? "GPU mode" : "CPU mode"));
         }
 
+        /**
+        
+         * ID: GPU-ONGA-009
+         * Requirement: sentDetect must execute correctly within the contract defined by this class.
+         * Purpose: Implement the sentDetect operation for this class.
+         * Inputs: CharSequence s
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public String[] sentDetect(CharSequence s) {
             String text = s.toString();
@@ -180,6 +276,18 @@ public class OpenNlpGpuAdapter {
             }
         }
 
+        /**
+        
+         * ID: GPU-ONGA-010
+         * Requirement: sentDetectGpu must execute correctly within the contract defined by this class.
+         * Purpose: Implement the sentDetectGpu operation for this class.
+         * Inputs: String text
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         private String[] sentDetectGpu(String text) {
             try {
                 System.out.println("🔥 GPU sentence detection: " + text.length() + " characters");
@@ -210,6 +318,18 @@ public class OpenNlpGpuAdapter {
         private final GpuFeatureExtractor gpuFeatures;
         private final boolean useGpu;
 
+        /**
+        
+         * ID: GPU-ONGA-011
+         * Requirement: GpuPOSTaggerME must execute correctly within the contract defined by this class.
+         * Purpose: Implement the GpuPOSTaggerME operation for this class.
+         * Inputs: POSModel model, GpuFeatureExtractor gpuFeatures
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public GpuPOSTaggerME(POSModel model, GpuFeatureExtractor gpuFeatures) {
             super(model);
             this.gpuFeatures = gpuFeatures;
@@ -219,6 +339,18 @@ public class OpenNlpGpuAdapter {
                               (useGpu ? "GPU mode" : "CPU mode"));
         }
 
+        /**
+        
+         * ID: GPU-ONGA-012
+         * Requirement: tag must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tag operation for this class.
+         * Inputs: String[] tokens
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public String[] tag(String[] tokens) {
             if (useGpu && tokens.length > 20) {
@@ -228,6 +360,18 @@ public class OpenNlpGpuAdapter {
             }
         }
 
+        /**
+        
+         * ID: GPU-ONGA-013
+         * Requirement: tagGpu must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tagGpu operation for this class.
+         * Inputs: String[] tokens
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         private String[] tagGpu(String[] tokens) {
             try {
                 System.out.println("🔥 GPU POS tagging: " + tokens.length + " tokens");
@@ -254,14 +398,50 @@ public class OpenNlpGpuAdapter {
     /**
      * Factory methods for creating GPU-accelerated OpenNLP components
      */
+    /**
+    
+     * ID: GPU-ONGA-014
+     * Requirement: createTokenizer must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new Tokenizer.
+     * Inputs: TokenizerModel model
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuTokenizerME createTokenizer(TokenizerModel model) {
         return new GpuTokenizerME(model, featureExtractor);
     }
 
+    /**
+    
+     * ID: GPU-ONGA-015
+     * Requirement: createSentenceDetector must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new SentenceDetector.
+     * Inputs: SentenceModel model
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuSentenceDetectorME createSentenceDetector(SentenceModel model) {
         return new GpuSentenceDetectorME(model, featureExtractor);
     }
 
+    /**
+    
+     * ID: GPU-ONGA-016
+     * Requirement: createPOSTagger must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new POSTagger.
+     * Inputs: POSModel model
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuPOSTaggerME createPOSTagger(POSModel model) {
         return new GpuPOSTaggerME(model, featureExtractor);
     }
@@ -269,10 +449,34 @@ public class OpenNlpGpuAdapter {
     /**
      * Get GPU configuration status
      */
+    /**
+    
+     * ID: GPU-ONGA-017
+     * Requirement: Evaluate and return the boolean result of isGpuEnabled.
+     * Purpose: Return whether isGpuEnabled condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isGpuEnabled() {
         return gpuEnabled;
     }
 
+    /**
+    
+     * ID: GPU-ONGA-018
+     * Requirement: Return the GpuConfig field value without side effects.
+     * Purpose: Return the value of the GpuConfig property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuConfig getGpuConfig() {
         return gpuConfig;
     }

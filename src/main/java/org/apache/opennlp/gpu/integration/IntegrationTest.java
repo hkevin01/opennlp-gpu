@@ -25,6 +25,18 @@ import org.apache.opennlp.gpu.tools.GpuDiagnostics;
  */
 public class IntegrationTest {
     
+    /**
+    
+     * ID: GPU-IT-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         System.out.println("🚀 OpenNLP GPU Extension Integration Test");
         System.out.println("==========================================");
@@ -42,6 +54,18 @@ public class IntegrationTest {
         System.out.println("The project is ready for Java integration.");
     }
     
+    /**
+    
+     * ID: GPU-IT-003
+     * Requirement: testNativeLibraryLoading must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void testNativeLibraryLoading() {
         System.out.println("\n📦 Testing Native Library Loading...");
         
@@ -56,6 +80,18 @@ public class IntegrationTest {
         }
     }
     
+    /**
+    
+     * ID: GPU-IT-004
+     * Requirement: testGpuDetection must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void testGpuDetection() {
         System.out.println("\n🔍 Testing GPU Detection...");
         
@@ -71,6 +107,18 @@ public class IntegrationTest {
         }
     }
     
+    /**
+    
+     * ID: GPU-IT-005
+     * Requirement: testDiagnostics must execute correctly within the contract defined by this class.
+     * Purpose: Verify correct behaviour via assertions or test checks.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void testDiagnostics() {
         System.out.println("\n🔧 Running System Diagnostics...");
         

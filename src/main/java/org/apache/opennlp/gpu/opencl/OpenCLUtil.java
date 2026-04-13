@@ -33,6 +33,18 @@ public class OpenCLUtil {
      *
      * @return true if OpenCL is available, false otherwise
      */
+    /**
+    
+     * ID: GPU-OCLU-002
+     * Requirement: Evaluate and return the boolean result of isAvailable.
+     * Purpose: Return whether isAvailable condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean isAvailable() {
         initialize();
         return deviceCount > 0;
@@ -43,6 +55,18 @@ public class OpenCLUtil {
      *
      * @return the number of available OpenCL devices
      */
+    /**
+    
+     * ID: GPU-OCLU-003
+     * Requirement: Return the DeviceCount field value without side effects.
+     * Purpose: Return the value of the DeviceCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static int getDeviceCount() {
         initialize();
         return deviceCount;
@@ -50,6 +74,18 @@ public class OpenCLUtil {
     
     /**
      * Initialize the OpenCL environment.
+     */
+    /**
+    
+     * ID: GPU-OCLU-004
+     * Requirement: initialize must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void initialize() {
         if (initialized) {
@@ -78,6 +114,18 @@ public class OpenCLUtil {
      * Count the available OpenCL devices.
      *
      * @return the number of available devices
+     */
+    /**
+    
+     * ID: GPU-OCLU-005
+     * Requirement: countDevices must execute correctly within the contract defined by this class.
+     * Purpose: Implement the countDevices operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static int countDevices() {
         // Native implementation would go here

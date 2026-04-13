@@ -28,12 +28,36 @@ public class LoggingUtil {
     /**
      * Private constructor to prevent instantiation.
      */
+    /**
+    
+     * ID: GPU-LU-002
+     * Requirement: LoggingUtil must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a LoggingUtil instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private LoggingUtil() {
         // Utility class should not be instantiated
     }
     
     /**
      * Configure logging for the application.
+     */
+    /**
+    
+     * ID: GPU-LU-003
+     * Requirement: configureLogging must execute correctly within the contract defined by this class.
+     * Purpose: Implement the configureLogging operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static void configureLogging() {
         logger.info("Configuring logging system");
@@ -44,6 +68,18 @@ public class LoggingUtil {
      * Set the logging level.
      * 
      * @param level the logging level name
+     */
+    /**
+    
+     * ID: GPU-LU-004
+     * Requirement: Update the LoggingLevel field to the supplied non-null value.
+     * Purpose: Set the LoggingLevel property to the supplied value.
+     * Inputs: String level
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static void setLoggingLevel(String level) {
         logger.info("Setting logging level to: {}", level);

@@ -30,6 +30,18 @@ public class GpuNeuralNetworkModel {
     
     private final GpuConfig config;
     
+    /**
+    
+     * ID: GPU-GNNM-002
+     * Requirement: GpuNeuralNetworkModel must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuNeuralNetworkModel instance.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuNeuralNetworkModel(GpuConfig config) {
         this.config = config;
         logger.info("Created GPU neural network model (stub implementation)");
@@ -38,6 +50,18 @@ public class GpuNeuralNetworkModel {
     /**
      * Placeholder for neural network inference
      */
+    /**
+    
+     * ID: GPU-GNNM-003
+     * Requirement: predict must execute correctly within the contract defined by this class.
+     * Purpose: Produce a prediction or classification for the input.
+     * Inputs: double[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public double[] predict(double[] input) {
         // TODO: Implement GPU-accelerated neural network inference
         return new double[0];
@@ -45,6 +69,18 @@ public class GpuNeuralNetworkModel {
     
     /**
      * Cleanup resources
+     */
+    /**
+    
+     * ID: GPU-GNNM-004
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void cleanup() {
         logger.info("Cleaning up GPU neural network model");

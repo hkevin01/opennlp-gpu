@@ -54,6 +54,18 @@ public class NativeLibraryLoader {
      * 
      * @return true if library was loaded successfully, false otherwise
      */
+    /**
+    
+     * ID: GPU-NLL-002
+     * Requirement: loadNativeLibrary must execute correctly within the contract defined by this class.
+     * Purpose: Load or parse required data and return the result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean loadNativeLibrary() {
         if (libraryLoaded.get()) {
             return true;
@@ -94,6 +106,18 @@ public class NativeLibraryLoader {
      * 
      * @return true if loaded successfully
      */
+    /**
+    
+     * ID: GPU-NLL-003
+     * Requirement: loadSystemLibrary must execute correctly within the contract defined by this class.
+     * Purpose: Load or parse required data and return the result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static boolean loadSystemLibrary() {
         try {
             System.loadLibrary(LIBRARY_NAME);
@@ -108,6 +132,18 @@ public class NativeLibraryLoader {
      * Extract the library from JAR resources and load it.
      * 
      * @return true if loaded successfully
+     */
+    /**
+    
+     * ID: GPU-NLL-004
+     * Requirement: loadFromResources must execute correctly within the contract defined by this class.
+     * Purpose: Load or parse required data and return the result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static boolean loadFromResources() {
         try {
@@ -142,6 +178,18 @@ public class NativeLibraryLoader {
      * 
      * @return Library path or null if platform not supported
      */
+    /**
+    
+     * ID: GPU-NLL-005
+     * Requirement: Return the NativeLibraryPath field value without side effects.
+     * Purpose: Return the value of the NativeLibraryPath property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String getNativeLibraryPath() {
         String platform = getPlatformName();
         String architecture = getArchitectureName();
@@ -159,6 +207,18 @@ public class NativeLibraryLoader {
      * 
      * @return Platform name or null if unsupported
      */
+    /**
+    
+     * ID: GPU-NLL-006
+     * Requirement: Return the PlatformName field value without side effects.
+     * Purpose: Return the value of the PlatformName property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String getPlatformName() {
         if (OS_NAME.contains("windows")) {
             return "windows";
@@ -175,6 +235,18 @@ public class NativeLibraryLoader {
      * 
      * @return Architecture name or null if unsupported
      */
+    /**
+    
+     * ID: GPU-NLL-007
+     * Requirement: Return the ArchitectureName field value without side effects.
+     * Purpose: Return the value of the ArchitectureName property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String getArchitectureName() {
         if (OS_ARCH.contains("amd64") || OS_ARCH.contains("x86_64")) {
             return "x86_64";
@@ -188,6 +260,18 @@ public class NativeLibraryLoader {
      * Get the library file name for the current platform.
      * 
      * @return Library file name or null if unsupported
+     */
+    /**
+    
+     * ID: GPU-NLL-008
+     * Requirement: Return the LibraryFileName field value without side effects.
+     * Purpose: Return the value of the LibraryFileName property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static String getLibraryFileName() {
         if (OS_NAME.contains("windows")) {
@@ -205,6 +289,18 @@ public class NativeLibraryLoader {
      * 
      * @param resourcePath Path to the library within the JAR
      * @return Temporary file containing the library, or null if extraction failed
+     */
+    /**
+    
+     * ID: GPU-NLL-009
+     * Requirement: extractLibraryFromJar must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractLibraryFromJar operation for this class.
+     * Inputs: String resourcePath
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static File extractLibraryFromJar(String resourcePath) {
         try (InputStream inputStream = NativeLibraryLoader.class.getResourceAsStream(resourcePath)) {
@@ -244,6 +340,18 @@ public class NativeLibraryLoader {
      * 
      * @return true if library is loaded and available
      */
+    /**
+    
+     * ID: GPU-NLL-010
+     * Requirement: Evaluate and return the boolean result of isNativeLibraryLoaded.
+     * Purpose: Return whether isNativeLibraryLoaded condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean isNativeLibraryLoaded() {
         return libraryLoaded.get();
     }
@@ -252,6 +360,18 @@ public class NativeLibraryLoader {
      * Get information about the native library loading status.
      * 
      * @return Status information string
+     */
+    /**
+    
+     * ID: GPU-NLL-011
+     * Requirement: Return the LoadingStatus field value without side effects.
+     * Purpose: Return the value of the LoadingStatus property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static String getLoadingStatus() {
         if (libraryLoaded.get()) {
@@ -267,6 +387,18 @@ public class NativeLibraryLoader {
      * This method should not be used in production code.
      * 
      * @return true if reload was successful
+     */
+    /**
+    
+     * ID: GPU-NLL-012
+     * Requirement: forceReload must execute correctly within the contract defined by this class.
+     * Purpose: Implement the forceReload operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static boolean forceReload() {
         libraryLoaded.set(false);

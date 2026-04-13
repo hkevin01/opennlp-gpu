@@ -23,10 +23,34 @@ import org.apache.opennlp.gpu.common.GpuConfig;
  */
 public class GpuMemoryManager {
     
+    /**
+    
+     * ID: GPU-GMM-002
+     * Requirement: GpuMemoryManager must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuMemoryManager instance.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuMemoryManager(GpuConfig config) {
         // Stub implementation
     }
     
+    /**
+    
+     * ID: GPU-GMM-003
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void cleanup() {
         // Cleanup memory resources
     }

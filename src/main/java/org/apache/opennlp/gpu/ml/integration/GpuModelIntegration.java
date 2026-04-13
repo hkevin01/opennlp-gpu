@@ -63,6 +63,18 @@ public class GpuModelIntegration {
         public String defaultActivationFunction = "relu";
         public int featureVectorSize = 512;
         
+        /**
+        
+         * ID: GPU-GMI-002
+         * Requirement: IntegrationConfig must execute correctly within the contract defined by this class.
+         * Purpose: Implement the IntegrationConfig operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public IntegrationConfig() {}
     }
     
@@ -79,6 +91,18 @@ public class GpuModelIntegration {
         public float averageProcessingTime;
         public Map<String, Object> metadata;
         
+        /**
+        
+         * ID: GPU-GMI-003
+         * Requirement: ModelState must execute correctly within the contract defined by this class.
+         * Purpose: Implement the ModelState operation for this class.
+         * Inputs: String modelId, String modelType
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public ModelState(String modelId, String modelType) {
             this.modelId = modelId;
             this.modelType = modelType;
@@ -104,6 +128,18 @@ public class GpuModelIntegration {
         public final String performanceSummary;
         public final Map<String, Object> diagnostics;
         
+        /**
+        
+         * ID: GPU-GMI-004
+         * Requirement: IntegrationResult must execute correctly within the contract defined by this class.
+         * Purpose: Implement the IntegrationResult operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public IntegrationResult(float[] primaryOutput, Map<String, float[]> modelOutputs,
                                Map<String, Float> modelConfidences, float[] ensembleOutput,
                                long totalTime, boolean usedGpu, String performanceSummary,
@@ -121,6 +157,18 @@ public class GpuModelIntegration {
     
     /**
      * Create a new ML model integration system.
+     */
+    /**
+    
+     * ID: GPU-GMI-005
+     * Requirement: GpuModelIntegration must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuModelIntegration instance.
+     * Inputs: ComputeProvider provider, IntegrationConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public GpuModelIntegration(ComputeProvider provider, IntegrationConfig config) {
         this.config = config != null ? config : new IntegrationConfig();
@@ -146,6 +194,18 @@ public class GpuModelIntegration {
     /**
      * Register a model for integration.
      */
+    /**
+    
+     * ID: GPU-GMI-006
+     * Requirement: registerModel must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: String modelId, String modelType, float initialWeight
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void registerModel(String modelId, String modelType, float initialWeight) {
         ModelState state = new ModelState(modelId, modelType);
         modelStates.put(modelId, state);
@@ -156,6 +216,18 @@ public class GpuModelIntegration {
     
     /**
      * Process input through integrated models.
+     */
+    /**
+    
+     * ID: GPU-GMI-007
+     * Requirement: processIntegrated must execute correctly within the contract defined by this class.
+     * Purpose: Implement the processIntegrated operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public IntegrationResult processIntegrated(float[] input, String[] textTokens, 
                                              Map<String, Object> context) {
@@ -245,6 +317,18 @@ public class GpuModelIntegration {
     /**
      * Process a batch of inputs through integrated models.
      */
+    /**
+    
+     * ID: GPU-GMI-008
+     * Requirement: processBatch must execute correctly within the contract defined by this class.
+     * Purpose: Implement the processBatch operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public List<IntegrationResult> processBatch(List<float[]> inputs, List<String[]> textTokensList, 
                                               Map<String, Object> context) {
         if (inputs == null || inputs.isEmpty()) {
@@ -267,6 +351,18 @@ public class GpuModelIntegration {
     
     /**
      * Extract and enhance features from input.
+     */
+    /**
+    
+     * ID: GPU-GMI-009
+     * Requirement: extractAndEnhanceFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractAndEnhanceFeatures operation for this class.
+     * Inputs: float[] input, String[] textTokens, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] extractAndEnhanceFeatures(float[] input, String[] textTokens, Map<String, Object> context) {
         try {
@@ -298,6 +394,18 @@ public class GpuModelIntegration {
     /**
      * Process through traditional OpenNLP models.
      */
+    /**
+    
+     * ID: GPU-GMI-010
+     * Requirement: processTraditionalModels must execute correctly within the contract defined by this class.
+     * Purpose: Implement the processTraditionalModels operation for this class.
+     * Inputs: float[] features, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] processTraditionalModels(float[] features, Map<String, Object> context) {
         // Placeholder for traditional model integration
         // In a real implementation, this would call actual OpenNLP models
@@ -320,6 +428,18 @@ public class GpuModelIntegration {
     
     /**
      * Create ensemble output from multiple models.
+     */
+    /**
+    
+     * ID: GPU-GMI-011
+     * Requirement: createEnsemble must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new Ensemble.
+     * Inputs: Map<String, float[]> modelOutputs, Map<String, Float> modelConfidences
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] createEnsemble(Map<String, float[]> modelOutputs, Map<String, Float> modelConfidences) {
         if (modelOutputs.isEmpty()) {
@@ -368,6 +488,18 @@ public class GpuModelIntegration {
     /**
      * Calculate confidence score for model output.
      */
+    /**
+    
+     * ID: GPU-GMI-012
+     * Requirement: calculateConfidence must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the calculateConfidence result.
+     * Inputs: float[] output
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float calculateConfidence(float[] output) {
         if (output == null || output.length == 0) {
             return 0.0f;
@@ -393,6 +525,18 @@ public class GpuModelIntegration {
     /**
      * Adapt model weights based on performance.
      */
+    /**
+    
+     * ID: GPU-GMI-013
+     * Requirement: adaptModelWeights must execute correctly within the contract defined by this class.
+     * Purpose: Implement the adaptModelWeights operation for this class.
+     * Inputs: Map<String, float[]> modelOutputs, Map<String, Float> modelConfidences
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void adaptModelWeights(Map<String, float[]> modelOutputs, Map<String, Float> modelConfidences) {
         // Simple adaptive learning - increase weights for high-confidence models
         for (String modelId : modelOutputs.keySet()) {
@@ -407,6 +551,18 @@ public class GpuModelIntegration {
     
     /**
      * Normalize feature vector.
+     */
+    /**
+    
+     * ID: GPU-GMI-014
+     * Requirement: normalizeFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeFeatures operation for this class.
+     * Inputs: float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] normalizeFeatures(float[] features) {
         float sumSquares = 0.0f;
@@ -430,6 +586,18 @@ public class GpuModelIntegration {
     /**
      * Generate performance summary.
      */
+    /**
+    
+     * ID: GPU-GMI-015
+     * Requirement: generatePerformanceSummary must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generatePerformanceSummary operation for this class.
+     * Inputs: long totalTime, boolean usedGpu, int modelCount
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private String generatePerformanceSummary(long totalTime, boolean usedGpu, int modelCount) {
         StringBuilder summary = new StringBuilder();
         summary.append("Integration Performance Summary:\n");
@@ -444,6 +612,18 @@ public class GpuModelIntegration {
     
     /**
      * Update usage statistics.
+     */
+    /**
+    
+     * ID: GPU-GMI-016
+     * Requirement: updateUsageStatistics must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateUsageStatistics operation for this class.
+     * Inputs: Iterable<String> modelIds, long totalTime
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void updateUsageStatistics(Iterable<String> modelIds, long totalTime) {
         for (String modelId : modelIds) {
@@ -462,6 +642,18 @@ public class GpuModelIntegration {
     
     /**
      * Get integration statistics.
+     */
+    /**
+    
+     * ID: GPU-GMI-017
+     * Requirement: Return the IntegrationStatistics field value without side effects.
+     * Purpose: Return the value of the IntegrationStatistics property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Map<String, Object> getIntegrationStatistics() {
         Map<String, Object> stats = new HashMap<>();
@@ -494,12 +686,36 @@ public class GpuModelIntegration {
     /**
      * Get model weights.
      */
+    /**
+    
+     * ID: GPU-GMI-018
+     * Requirement: Return the ModelWeights field value without side effects.
+     * Purpose: Return the value of the ModelWeights property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Map<String, Float> getModelWeights() {
         return new HashMap<>(modelWeights);
     }
     
     /**
      * Update model weight.
+     */
+    /**
+    
+     * ID: GPU-GMI-019
+     * Requirement: updateModelWeight must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateModelWeight operation for this class.
+     * Inputs: String modelId, float weight
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void updateModelWeight(String modelId, float weight) {
         if (modelStates.containsKey(modelId)) {
@@ -512,6 +728,18 @@ public class GpuModelIntegration {
     
     /**
      * Activate or deactivate a model.
+     */
+    /**
+    
+     * ID: GPU-GMI-020
+     * Requirement: Update the ModelActive field to the supplied non-null value.
+     * Purpose: Set the ModelActive property to the supplied value.
+     * Inputs: String modelId, boolean active
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void setModelActive(String modelId, boolean active) {
         ModelState state = modelStates.get(modelId);
@@ -526,12 +754,36 @@ public class GpuModelIntegration {
     /**
      * Get configuration.
      */
+    /**
+    
+     * ID: GPU-GMI-021
+     * Requirement: Return the Config field value without side effects.
+     * Purpose: Return the value of the Config property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public IntegrationConfig getConfig() {
         return config;
     }
     
     /**
      * Clean up integration resources.
+     */
+    /**
+    
+     * ID: GPU-GMI-022
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void cleanup() {
         try {

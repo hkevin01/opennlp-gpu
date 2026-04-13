@@ -88,6 +88,18 @@ public class AdvancedGpuNeuralNetwork {
     /**
      * Constructor for advanced neural network
      */
+    /**
+    
+     * ID: GPU-AGNN-002
+     * Requirement: AdvancedGpuNeuralNetwork must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a AdvancedGpuNeuralNetwork instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public AdvancedGpuNeuralNetwork(int[] layerSizes, String[] activationFunctions, 
                                    GpuConfig config, NetworkConfiguration netConfig) {
         this.layerSizes = layerSizes.clone();
@@ -118,6 +130,18 @@ public class AdvancedGpuNeuralNetwork {
                    ", Optimizer=" + optimizerType);
     }
     
+    /**
+    
+     * ID: GPU-AGNN-003
+     * Requirement: createComputeProvider must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new ComputeProvider.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private ComputeProvider createComputeProvider() {
         try {
             if (config.isGpuEnabled() && GpuComputeProvider.isGpuAvailable()) {
@@ -129,6 +153,18 @@ public class AdvancedGpuNeuralNetwork {
         return new CpuComputeProvider();
     }
     
+    /**
+    
+     * ID: GPU-AGNN-004
+     * Requirement: createMatrixOperation must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new MatrixOperation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private MatrixOperation createMatrixOperation() {
         if (computeProvider.isGpuProvider()) {
             return new GpuMatrixOperation(computeProvider, config);
@@ -137,6 +173,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-005
+     * Requirement: initializeNetwork must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeNetwork() {
         // Initialize weights and biases
         weights = new float[numLayers - 1][][];
@@ -204,6 +252,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-006
+     * Requirement: initializeOptimizer must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeOptimizer() {
         if (optimizerType == OptimizerType.MOMENTUM || optimizerType == OptimizerType.ADAM) {
             velocityWeights = new float[numLayers - 1][][];
@@ -244,6 +304,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-007
+     * Requirement: Return the InitializationScale field value without side effects.
+     * Purpose: Return the value of the InitializationScale property.
+     * Inputs: String activation, int inputSize, int outputSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float getInitializationScale(String activation, int inputSize, int outputSize) {
         switch (activation.toLowerCase()) {
             case "relu":
@@ -262,6 +334,18 @@ public class AdvancedGpuNeuralNetwork {
     
     /**
      * Forward propagation with advanced features
+     */
+    /**
+    
+     * ID: GPU-AGNN-008
+     * Requirement: forward must execute correctly within the contract defined by this class.
+     * Purpose: Implement the forward operation for this class.
+     * Inputs: float[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public float[] forward(float[] input) {
         if (input.length != layerSizes[0]) {
@@ -283,6 +367,18 @@ public class AdvancedGpuNeuralNetwork {
         return output;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-009
+     * Requirement: forwardLayer must execute correctly within the contract defined by this class.
+     * Purpose: Implement the forwardLayer operation for this class.
+     * Inputs: int layer
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void forwardLayer(int layer) {
         int inputSize = layerSizes[layer];
         int outputSize = layerSizes[layer + 1];
@@ -315,6 +411,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-010
+     * Requirement: applyBatchNormalization must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyBatchNormalization operation for this class.
+     * Inputs: int layer
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyBatchNormalization(int layer) {
         int size = layerSizes[layer + 1];
         
@@ -333,6 +441,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-011
+     * Requirement: applyDropout must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyDropout operation for this class.
+     * Inputs: int layer
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyDropout(int layer) {
         int size = layerSizes[layer + 1];
         float scale = 1.0f / (1.0f - dropoutRate);
@@ -348,6 +468,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-012
+     * Requirement: applyActivation must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyActivation operation for this class.
+     * Inputs: float[] input, float[] output, int size, String activationType
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyActivation(float[] input, float[] output, int size, String activationType) {
         switch (activationType.toLowerCase()) {
             case "sigmoid":
@@ -372,6 +504,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-013
+     * Requirement: applyLeakyRelu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyLeakyRelu operation for this class.
+     * Inputs: float[] input, float[] output, int size, float alpha
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyLeakyRelu(float[] input, float[] output, int size, float alpha) {
         for (int i = 0; i < size; i++) {
             output[i] = input[i] > 0 ? input[i] : alpha * input[i];
@@ -380,6 +524,18 @@ public class AdvancedGpuNeuralNetwork {
     
     /**
      * Train the network using backpropagation with advanced optimizers
+     */
+    /**
+    
+     * ID: GPU-AGNN-014
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: float[][] inputs, float[][] targets, int epochs, LossFunction lossFunction
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void train(float[][] inputs, float[][] targets, int epochs, LossFunction lossFunction) {
         if (inputs.length != targets.length) {
@@ -428,6 +584,18 @@ public class AdvancedGpuNeuralNetwork {
         logger.info("Training completed");
     }
     
+    /**
+    
+     * ID: GPU-AGNN-015
+     * Requirement: trainBatch must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: float[][] inputs, float[][] targets, LossFunction lossFunction
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float trainBatch(float[][] inputs, float[][] targets, LossFunction lossFunction) {
         float batchLoss = 0.0f;
         int batchSize = inputs.length;
@@ -457,6 +625,18 @@ public class AdvancedGpuNeuralNetwork {
         return batchLoss / batchSize;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-016
+     * Requirement: backpropagate must execute correctly within the contract defined by this class.
+     * Purpose: Implement the backpropagate operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void backpropagate(float[] target, float[][][] weightGradients, 
                               float[][] biasGradients, LossFunction lossFunction) {
         int outputLayer = numLayers - 1;
@@ -480,6 +660,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-017
+     * Requirement: calculateOutputDelta must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the calculateOutputDelta result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void calculateOutputDelta(float[] output, float[] target, float[] delta, 
                                      LossFunction lossFunction) {
         int size = output.length;
@@ -501,6 +693,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-018
+     * Requirement: calculateLayerGradients must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the calculateLayerGradients result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void calculateLayerGradients(int layer, float[] delta, float[][] weightGrads, 
                                         float[] biasGrads) {
         int inputSize = layerSizes[layer];
@@ -528,6 +732,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-019
+     * Requirement: calculateHiddenDelta must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the calculateHiddenDelta result.
+     * Inputs: int layer, float[] nextDelta, float[] delta
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void calculateHiddenDelta(int layer, float[] nextDelta, float[] delta) {
         int inputSize = layerSizes[layer];
         int outputSize = layerSizes[layer + 1];
@@ -554,6 +770,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-020
+     * Requirement: applyActivationDerivative must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyActivationDerivative operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyActivationDerivative(float[] delta, float[] activation, int size, 
                                           String activationType) {
         switch (activationType.toLowerCase()) {
@@ -584,6 +812,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-021
+     * Requirement: updateWeights must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateWeights operation for this class.
+     * Inputs: float[][][] weightGradients, float[][] biasGradients
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateWeights(float[][][] weightGradients, float[][] biasGradients) {
         switch (optimizerType) {
             case SGD:
@@ -600,6 +840,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-022
+     * Requirement: updateWeightsSGD must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateWeightsSGD operation for this class.
+     * Inputs: float[][][] weightGradients, float[][] biasGradients
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateWeightsSGD(float[][][] weightGradients, float[][] biasGradients) {
         for (int layer = 0; layer < numLayers - 1; layer++) {
             int inputSize = layerSizes[layer];
@@ -619,6 +871,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-023
+     * Requirement: updateWeightsMomentum must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateWeightsMomentum operation for this class.
+     * Inputs: float[][][] weightGradients, float[][] biasGradients
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateWeightsMomentum(float[][][] weightGradients, float[][] biasGradients) {
         for (int layer = 0; layer < numLayers - 1; layer++) {
             int inputSize = layerSizes[layer];
@@ -642,6 +906,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-024
+     * Requirement: updateWeightsAdam must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateWeightsAdam operation for this class.
+     * Inputs: float[][][] weightGradients, float[][] biasGradients
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateWeightsAdam(float[][][] weightGradients, float[][] biasGradients) {
         adamStep++;
         float lr = learningRate * (float) Math.sqrt(1 - Math.pow(beta2, adamStep)) / 
@@ -685,6 +961,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-025
+     * Requirement: calculateLoss must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the calculateLoss result.
+     * Inputs: float[] prediction, float[] target, LossFunction lossFunction
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float calculateLoss(float[] prediction, float[] target, LossFunction lossFunction) {
         int size = prediction.length;
         float loss = 0.0f;
@@ -717,6 +1005,18 @@ public class AdvancedGpuNeuralNetwork {
     
     // Helper methods
     
+    /**
+    
+     * ID: GPU-AGNN-026
+     * Requirement: initializeWeightGradients must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[][][] initializeWeightGradients() {
         float[][][] gradients = new float[numLayers - 1][][];
         for (int layer = 0; layer < numLayers - 1; layer++) {
@@ -727,6 +1027,18 @@ public class AdvancedGpuNeuralNetwork {
         return gradients;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-027
+     * Requirement: initializeBiasGradients must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[][] initializeBiasGradients() {
         float[][] gradients = new float[numLayers - 1][];
         for (int layer = 0; layer < numLayers - 1; layer++) {
@@ -735,6 +1047,18 @@ public class AdvancedGpuNeuralNetwork {
         return gradients;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-028
+     * Requirement: averageGradients must execute correctly within the contract defined by this class.
+     * Purpose: Implement the averageGradients operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void averageGradients(float[][][] weightGradients, float[][] biasGradients, 
                                  int batchSize) {
         for (int layer = 0; layer < numLayers - 1; layer++) {
@@ -753,6 +1077,18 @@ public class AdvancedGpuNeuralNetwork {
         }
     }
     
+    /**
+    
+     * ID: GPU-AGNN-029
+     * Requirement: shuffleIndices must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shuffleIndices operation for this class.
+     * Inputs: int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private int[] shuffleIndices(int size) {
         int[] indices = new int[size];
         for (int i = 0; i < size; i++) {
@@ -770,6 +1106,18 @@ public class AdvancedGpuNeuralNetwork {
         return indices;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-030
+     * Requirement: Return the TotalParameters field value without side effects.
+     * Purpose: Return the value of the TotalParameters property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getTotalParameters() {
         int total = 0;
         for (int layer = 0; layer < numLayers - 1; layer++) {
@@ -783,14 +1131,50 @@ public class AdvancedGpuNeuralNetwork {
         return total;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-031
+     * Requirement: Update the TrainingMode field to the supplied non-null value.
+     * Purpose: Set the TrainingMode property to the supplied value.
+     * Inputs: boolean training
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void setTrainingMode(boolean training) {
         this.isTraining = training;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-032
+     * Requirement: Evaluate and return the boolean result of isTraining.
+     * Purpose: Return whether isTraining condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isTraining() {
         return isTraining;
     }
     
+    /**
+    
+     * ID: GPU-AGNN-033
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void cleanup() {
         if (matrixOp != null) {
             matrixOp.release();
@@ -816,30 +1200,102 @@ public class AdvancedGpuNeuralNetwork {
         public float beta2 = 0.999f;
         public float weightDecay = 0.0f;
         
+        /**
+        
+         * ID: GPU-AGNN-034
+         * Requirement: NetworkConfiguration must execute correctly within the contract defined by this class.
+         * Purpose: Implement the NetworkConfiguration operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public NetworkConfiguration() {}
         
+        /**
+        
+         * ID: GPU-AGNN-035
+         * Requirement: Update the BatchSize field to the supplied non-null value.
+         * Purpose: Set the BatchSize property to the supplied value.
+         * Inputs: int batchSize
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public NetworkConfiguration setBatchSize(int batchSize) {
             this.batchSize = batchSize;
             return this;
         }
         
+        /**
+        
+         * ID: GPU-AGNN-036
+         * Requirement: useBatchNorm must execute correctly within the contract defined by this class.
+         * Purpose: Implement the useBatchNorm operation for this class.
+         * Inputs: boolean use
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public NetworkConfiguration useBatchNorm(boolean use) {
             this.useBatchNorm = use;
             return this;
         }
         
+        /**
+        
+         * ID: GPU-AGNN-037
+         * Requirement: useDropout must execute correctly within the contract defined by this class.
+         * Purpose: Implement the useDropout operation for this class.
+         * Inputs: boolean use, float rate
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public NetworkConfiguration useDropout(boolean use, float rate) {
             this.useDropout = use;
             this.dropoutRate = rate;
             return this;
         }
         
+        /**
+        
+         * ID: GPU-AGNN-038
+         * Requirement: Update the Optimizer field to the supplied non-null value.
+         * Purpose: Set the Optimizer property to the supplied value.
+         * Inputs: OptimizerType type, float lr
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public NetworkConfiguration setOptimizer(OptimizerType type, float lr) {
             this.optimizerType = type;
             this.learningRate = lr;
             return this;
         }
         
+        /**
+        
+         * ID: GPU-AGNN-039
+         * Requirement: Update the Regularization field to the supplied non-null value.
+         * Purpose: Set the Regularization property to the supplied value.
+         * Inputs: float weightDecay
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public NetworkConfiguration setRegularization(float weightDecay) {
             this.weightDecay = weightDecay;
             return this;

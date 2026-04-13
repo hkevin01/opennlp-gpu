@@ -28,6 +28,18 @@ import opennlp.tools.tokenize.SimpleTokenizer;
  */
 public class CompleteIntegrationExample {
     
+    /**
+    
+     * ID: GPU-CIE-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         try {
             // 1. Check GPU availability
@@ -70,6 +82,18 @@ public class CompleteIntegrationExample {
     /**
      * Demonstrates how to integrate GPU acceleration with existing models
      */
+    /**
+    
+     * ID: GPU-CIE-003
+     * Requirement: demonstrateModelIntegration must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void demonstrateModelIntegration() {
         System.out.println("=== Model Integration Pattern ===");
         
@@ -103,6 +127,18 @@ public class CompleteIntegrationExample {
     
     /**
      * Demonstrates performance characteristics
+     */
+    /**
+    
+     * ID: GPU-CIE-004
+     * Requirement: performanceDemo must execute correctly within the contract defined by this class.
+     * Purpose: Execute the performanceDemo operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void performanceDemo() {
         System.out.println("=== Performance Characteristics ===");

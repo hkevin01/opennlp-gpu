@@ -75,6 +75,18 @@ public class GpuModelFactory {
      * Check if GPU support is available
      * @return true if GPU support is initialized and available
      */
+    /**
+    
+     * ID: GPU-GMF-002
+     * Requirement: Evaluate and return the boolean result of isGpuAvailable.
+     * Purpose: Return whether isGpuAvailable condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean isGpuAvailable() {
         return gpuInitialized && config != null && GpuConfig.isGpuAvailable();
     }
@@ -83,6 +95,18 @@ public class GpuModelFactory {
      * Create a GPU-optimized MaxentModel with automatic GPU/CPU fallback
      * @param cpuModel Base MaxentModel to enhance with GPU acceleration
      * @return Enhanced MaxentModel (same interface, GPU acceleration when available)
+     */
+    /**
+    
+     * ID: GPU-GMF-003
+     * Requirement: createMaxentModel must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new MaxentModel.
+     * Inputs: MaxentModel cpuModel
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static MaxentModel createMaxentModel(MaxentModel cpuModel) {
         if (isGpuAvailable()) {
@@ -101,6 +125,18 @@ public class GpuModelFactory {
     /**
      * Get GPU device information
      * @return Map containing GPU device information
+     */
+    /**
+    
+     * ID: GPU-GMF-004
+     * Requirement: Return the GpuInfo field value without side effects.
+     * Purpose: Return the value of the GpuInfo property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static Map<String, Object> getGpuInfo() {
         Map<String, Object> info = new HashMap<>();
@@ -122,6 +158,18 @@ public class GpuModelFactory {
      * Get basic configuration for GPU training
      * @return Map with basic training parameters
      */
+    /**
+    
+     * ID: GPU-GMF-005
+     * Requirement: createGpuOptimizedParameters must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new GpuOptimizedParameters.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static Map<String, String> createGpuOptimizedParameters() {
         return createGpuOptimizedParameters(1024, 512);
     }
@@ -131,6 +179,18 @@ public class GpuModelFactory {
      * @param batchSize Training batch size
      * @param memoryPoolMB Memory pool size in MB
      * @return Map with training parameters
+     */
+    /**
+    
+     * ID: GPU-GMF-006
+     * Requirement: createGpuOptimizedParameters must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new GpuOptimizedParameters.
+     * Inputs: int batchSize, int memoryPoolMB
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static Map<String, String> createGpuOptimizedParameters(int batchSize, int memoryPoolMB) {
         Map<String, String> params = new HashMap<>();
@@ -160,6 +220,18 @@ public class GpuModelFactory {
      * Get CPU-only configuration parameters
      * @return Map with CPU training parameters
      */
+    /**
+    
+     * ID: GPU-GMF-007
+     * Requirement: createCpuParameters must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new CpuParameters.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static Map<String, String> createCpuParameters() {
         Map<String, String> params = new HashMap<>();
         params.put("algorithm", "gis");
@@ -173,6 +245,18 @@ public class GpuModelFactory {
     /**
      * Get system information for diagnostics
      * @return Map containing system and GPU information
+     */
+    /**
+    
+     * ID: GPU-GMF-008
+     * Requirement: Return the SystemInfo field value without side effects.
+     * Purpose: Return the value of the SystemInfo property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static Map<String, Object> getSystemInfo() {
         Map<String, Object> info = new HashMap<>();
@@ -194,6 +278,18 @@ public class GpuModelFactory {
      * Get recommended parameters based on available hardware
      * @return Map with recommended training parameters
      */
+    /**
+    
+     * ID: GPU-GMF-009
+     * Requirement: Return the RecommendedParameters field value without side effects.
+     * Purpose: Return the value of the RecommendedParameters property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static Map<String, String> getRecommendedParameters() {
         if (isGpuAvailable()) {
             // Recommend GPU parameters with moderate settings
@@ -208,6 +304,18 @@ public class GpuModelFactory {
      * Get current GPU configuration
      * @return GpuConfig instance
      */
+    /**
+    
+     * ID: GPU-GMF-010
+     * Requirement: Return the Config field value without side effects.
+     * Purpose: Return the value of the Config property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static GpuConfig getConfig() {
         return config;
     }
@@ -217,6 +325,18 @@ public class GpuModelFactory {
      * @param batchSize Batch size for GPU operations
      * @param memoryPoolMB Memory pool size in MB
      * @return Configured GpuConfig instance
+     */
+    /**
+    
+     * ID: GPU-GMF-011
+     * Requirement: createGpuConfig must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new GpuConfig.
+     * Inputs: int batchSize, int memoryPoolMB
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static GpuConfig createGpuConfig(int batchSize, int memoryPoolMB) {
         GpuConfig gpuConfig = new GpuConfig();

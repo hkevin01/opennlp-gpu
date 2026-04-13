@@ -58,8 +58,32 @@ public class GpuNeuralPipeline {
         public boolean enableGradientClipping = true;
         public float gradientClipThreshold = 1.0f;
         
+        /**
+        
+         * ID: GPU-GNP-002
+         * Requirement: PipelineConfig must execute correctly within the contract defined by this class.
+         * Purpose: Implement the PipelineConfig operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public PipelineConfig() {}
         
+        /**
+        
+         * ID: GPU-GNP-003
+         * Requirement: PipelineConfig must execute correctly within the contract defined by this class.
+         * Purpose: Implement the PipelineConfig operation for this class.
+         * Inputs: int attentionHeads, int attentionDimensions
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public PipelineConfig(int attentionHeads, int attentionDimensions) {
             this.attentionHeads = attentionHeads;
             this.attentionDimensions = attentionDimensions;
@@ -77,6 +101,18 @@ public class GpuNeuralPipeline {
         public boolean enableBatchNorm;
         public boolean enableResidualConnection;
         
+        /**
+        
+         * ID: GPU-GNP-004
+         * Requirement: LayerConfig must execute correctly within the contract defined by this class.
+         * Purpose: Implement the LayerConfig operation for this class.
+         * Inputs: int inputSize, int outputSize, String activationFunction
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public LayerConfig(int inputSize, int outputSize, String activationFunction) {
             this.inputSize = inputSize;
             this.outputSize = outputSize;
@@ -98,6 +134,18 @@ public class GpuNeuralPipeline {
         public final boolean usedGpu;
         public final String performanceSummary;
         
+        /**
+        
+         * ID: GPU-GNP-005
+         * Requirement: PipelineResult must execute correctly within the contract defined by this class.
+         * Purpose: Implement the PipelineResult operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public PipelineResult(float[] output, Map<String, Float> attentionWeights,
                             Map<String, Long> layerTimes, long totalTime, boolean usedGpu,
                             String performanceSummary) {
@@ -115,6 +163,18 @@ public class GpuNeuralPipeline {
     /**
      * Create a new neural pipeline with the specified configuration.
      */
+    /**
+    
+     * ID: GPU-GNP-006
+     * Requirement: GpuNeuralPipeline must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuNeuralPipeline instance.
+     * Inputs: ComputeProvider provider, PipelineConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuNeuralPipeline(ComputeProvider provider, PipelineConfig config) {
         this.config = config != null ? config : new PipelineConfig();
         this.computeProvider = provider;
@@ -126,6 +186,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Process input through the complete neural pipeline.
+     */
+    /**
+    
+     * ID: GPU-GNP-007
+     * Requirement: process must execute correctly within the contract defined by this class.
+     * Purpose: Implement the process operation for this class.
+     * Inputs: float[] input, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public PipelineResult process(float[] input, Map<String, Object> context) {
         if (input == null || input.length == 0) {
@@ -190,6 +262,18 @@ public class GpuNeuralPipeline {
     /**
      * Process input through batch optimization.
      */
+    /**
+    
+     * ID: GPU-GNP-008
+     * Requirement: processBatch must execute correctly within the contract defined by this class.
+     * Purpose: Implement the processBatch operation for this class.
+     * Inputs: List<float[]> inputs, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public List<PipelineResult> processBatch(List<float[]> inputs, Map<String, Object> context) {
         if (inputs == null || inputs.isEmpty()) {
             throw new IllegalArgumentException("Input batch cannot be null or empty");
@@ -234,6 +318,18 @@ public class GpuNeuralPipeline {
     /**
      * Process input through configured neural layers.
      */
+    /**
+    
+     * ID: GPU-GNP-009
+     * Requirement: processNeuralLayers must execute correctly within the contract defined by this class.
+     * Purpose: Implement the processNeuralLayers operation for this class.
+     * Inputs: float[] input, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] processNeuralLayers(float[] input, Map<String, Object> context) {
         // Simple neural processing - can be enhanced later
         try {
@@ -251,6 +347,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Apply final processing and normalization.
+     */
+    /**
+    
+     * ID: GPU-GNP-010
+     * Requirement: applyFinalProcessing must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyFinalProcessing operation for this class.
+     * Inputs: float[] input, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] applyFinalProcessing(float[] input, Map<String, Object> context) {
         try {
@@ -275,6 +383,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Process a batch with optimization.
+     */
+    /**
+    
+     * ID: GPU-GNP-011
+     * Requirement: processOptimizedBatch must execute correctly within the contract defined by this class.
+     * Purpose: Implement the processOptimizedBatch operation for this class.
+     * Inputs: List<float[]> batch, Map<String, Object> context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private List<PipelineResult> processOptimizedBatch(List<float[]> batch, Map<String, Object> context) {
         // For now, process individually but could be optimized for true batch processing
@@ -305,6 +425,18 @@ public class GpuNeuralPipeline {
     /**
      * Apply activation function to input.
      */
+    /**
+    
+     * ID: GPU-GNP-012
+     * Requirement: applyActivationFunction must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyActivationFunction operation for this class.
+     * Inputs: float[] input, String function
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] applyActivationFunction(float[] input, String function) {
         try {
             switch (function.toLowerCase()) {
@@ -328,6 +460,18 @@ public class GpuNeuralPipeline {
     /**
      * Apply ReLU activation function.
      */
+    /**
+    
+     * ID: GPU-GNP-013
+     * Requirement: applyRelu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyRelu operation for this class.
+     * Inputs: float[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] applyRelu(float[] input) {
         float[] output = new float[input.length];
         for (int i = 0; i < input.length; i++) {
@@ -338,6 +482,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Apply sigmoid activation function.
+     */
+    /**
+    
+     * ID: GPU-GNP-014
+     * Requirement: applySigmoid must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applySigmoid operation for this class.
+     * Inputs: float[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] applySigmoid(float[] input) {
         float[] output = new float[input.length];
@@ -350,6 +506,18 @@ public class GpuNeuralPipeline {
     /**
      * Apply tanh activation function.
      */
+    /**
+    
+     * ID: GPU-GNP-015
+     * Requirement: applyTanh must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyTanh operation for this class.
+     * Inputs: float[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] applyTanh(float[] input) {
         float[] output = new float[input.length];
         for (int i = 0; i < input.length; i++) {
@@ -360,6 +528,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Apply softmax activation function.
+     */
+    /**
+    
+     * ID: GPU-GNP-016
+     * Requirement: applySoftmax must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applySoftmax operation for this class.
+     * Inputs: float[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] applySoftmax(float[] input) {
         float[] output = new float[input.length];
@@ -390,6 +570,18 @@ public class GpuNeuralPipeline {
     /**
      * Normalize array to unit length.
      */
+    /**
+    
+     * ID: GPU-GNP-017
+     * Requirement: normalizeArray must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeArray operation for this class.
+     * Inputs: float[] input
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] normalizeArray(float[] input) {
         float sumSquares = 0;
         for (float value : input) {
@@ -412,6 +604,18 @@ public class GpuNeuralPipeline {
     /**
      * Apply dropout to input.
      */
+    /**
+    
+     * ID: GPU-GNP-018
+     * Requirement: applyDropout must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyDropout operation for this class.
+     * Inputs: float[] input, float dropoutRate
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] applyDropout(float[] input, float dropoutRate) {
         float[] output = new float[input.length];
         float keepProb = 1.0f - dropoutRate;
@@ -425,6 +629,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Generate performance summary.
+     */
+    /**
+    
+     * ID: GPU-GNP-019
+     * Requirement: generatePerformanceSummary must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generatePerformanceSummary operation for this class.
+     * Inputs: Map<String, Long> layerTimes, long totalTime, boolean usedGpu
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private String generatePerformanceSummary(Map<String, Long> layerTimes, long totalTime, boolean usedGpu) {
         StringBuilder summary = new StringBuilder();
@@ -444,6 +660,18 @@ public class GpuNeuralPipeline {
     /**
      * Update operation statistics.
      */
+    /**
+    
+     * ID: GPU-GNP-020
+     * Requirement: updateOperationStats must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateOperationStats operation for this class.
+     * Inputs: String operation, long timeMs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateOperationStats(String operation, long timeMs) {
         operationTimes.merge(operation, timeMs, Long::sum);
         operationCounts.merge(operation, 1, Integer::sum);
@@ -451,6 +679,18 @@ public class GpuNeuralPipeline {
     
     /**
      * Get pipeline performance statistics.
+     */
+    /**
+    
+     * ID: GPU-GNP-021
+     * Requirement: Return the PerformanceStats field value without side effects.
+     * Purpose: Return the value of the PerformanceStats property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Map<String, Object> getPerformanceStats() {
         Map<String, Object> stats = new HashMap<>();
@@ -474,6 +714,18 @@ public class GpuNeuralPipeline {
     /**
      * Reset pipeline performance statistics.
      */
+    /**
+    
+     * ID: GPU-GNP-022
+     * Requirement: resetPerformanceStats must execute correctly within the contract defined by this class.
+     * Purpose: Implement the resetPerformanceStats operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void resetPerformanceStats() {
         operationTimes.clear();
         operationCounts.clear();
@@ -483,6 +735,18 @@ public class GpuNeuralPipeline {
     /**
      * Get pipeline configuration.
      */
+    /**
+    
+     * ID: GPU-GNP-023
+     * Requirement: Return the Config field value without side effects.
+     * Purpose: Return the value of the Config property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public PipelineConfig getConfig() {
         return config;
     }
@@ -490,12 +754,36 @@ public class GpuNeuralPipeline {
     /**
      * Check if the pipeline is ready for processing.
      */
+    /**
+    
+     * ID: GPU-GNP-024
+     * Requirement: Evaluate and return the boolean result of isReady.
+     * Purpose: Return whether isReady condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isReady() {
         return computeProvider != null && performanceMonitor != null;
     }
     
     /**
      * Clean up pipeline resources.
+     */
+    /**
+    
+     * ID: GPU-GNP-025
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void cleanup() {
         try {

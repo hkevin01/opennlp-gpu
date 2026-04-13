@@ -45,15 +45,51 @@ public class MemoryPool {
 
   private final Map<Long,Queue<cl_mem>> pool = new ConcurrentHashMap<Long,Queue<cl_mem>>();
 
+  /**
+  
+   * ID: GPU-MP-002
+   * Requirement: acquire must execute correctly within the contract defined by this class.
+   * Purpose: Implement the acquire operation for this class.
+   * Inputs: long size
+   * Outputs: Return value or output parameter as described; void otherwise.
+   * Postconditions: Return value or output parameter contains the computed result.
+   * Side Effects: May modify instance state; see method body for details.
+   * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+   * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+   */
   public cl_mem acquire(long size) {
     Queue<cl_mem> q = pool.get(size);
     return (q != null && !q.isEmpty()) ? q.poll() : null;
   }
 
+  /**
+  
+   * ID: GPU-MP-003
+   * Requirement: release must execute correctly within the contract defined by this class.
+   * Purpose: Release all held resources and reset internal state.
+   * Inputs: cl_mem buffer
+   * Outputs: Return value or output parameter as described; void otherwise.
+   * Postconditions: Return value or output parameter contains the computed result.
+   * Side Effects: May modify instance state; see method body for details.
+   * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+   * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+   */
   public void release(cl_mem buffer) {
     // no‐op
   }
 
+  /**
+  
+   * ID: GPU-MP-004
+   * Requirement: cleanup must execute correctly within the contract defined by this class.
+   * Purpose: Release all held resources and reset internal state.
+   * Inputs: None — no parameters.
+   * Outputs: Return value or output parameter as described; void otherwise.
+   * Postconditions: Return value or output parameter contains the computed result.
+   * Side Effects: May modify instance state; see method body for details.
+   * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+   * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+   */
   public void cleanup() {
     pool.clear();
   }

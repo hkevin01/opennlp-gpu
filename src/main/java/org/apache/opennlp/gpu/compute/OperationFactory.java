@@ -80,10 +80,34 @@ public class OperationFactory {
     public static class DummyMatrixOperation implements MatrixOperation {
 
         /** Returns null — no backing provider for the CPU reference implementation. */
+        /**
+        
+         * ID: GPU-OF-006
+         * Requirement: Return the Provider field value without side effects.
+         * Purpose: Return the value of the Provider property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public ComputeProvider getProvider() { return null; }
 
         /** No-op — no native resources to release. */
+        /**
+        
+         * ID: GPU-OF-007
+         * Requirement: release must execute correctly within the contract defined by this class.
+         * Purpose: Release all held resources and reset internal state.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void release() {}
 
@@ -106,24 +130,72 @@ public class OperationFactory {
         }
 
         /** Element-wise add: c[i] = a[i] + b[i]. */
+        /**
+        
+         * ID: GPU-OF-008
+         * Requirement: add must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: float[] a, float[] b, float[] c, int elements
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void add(float[] a, float[] b, float[] c, int elements) {
             for (int i = 0; i < elements; i++) { c[i] = a[i] + b[i]; }
         }
 
         /** Element-wise subtract: c[i] = a[i] - b[i]. */
+        /**
+        
+         * ID: GPU-OF-009
+         * Requirement: subtract must execute correctly within the contract defined by this class.
+         * Purpose: Implement the subtract operation for this class.
+         * Inputs: float[] a, float[] b, float[] c, int elements
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void subtract(float[] a, float[] b, float[] c, int elements) {
             for (int i = 0; i < elements; i++) { c[i] = a[i] - b[i]; }
         }
 
         /** Scalar multiply: b[i] = a[i] * scalar for all i. */
+        /**
+        
+         * ID: GPU-OF-010
+         * Requirement: scalarMultiply must execute correctly within the contract defined by this class.
+         * Purpose: Implement the scalarMultiply operation for this class.
+         * Inputs: float[] a, float[] b, float scalar, int elements
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
             for (int i = 0; i < elements; i++) { b[i] = a[i] * scalar; }
         }
 
         /** Matrix transpose: b[j*rows+i] = a[i*cols+j]. */
+        /**
+        
+         * ID: GPU-OF-011
+         * Requirement: transpose must execute correctly within the contract defined by this class.
+         * Purpose: Implement the transpose operation for this class.
+         * Inputs: float[] a, float[] b, int rows, int cols
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void transpose(float[] a, float[] b, int rows, int cols) {
             for (int i = 0; i < rows; i++) {
@@ -134,18 +206,54 @@ public class OperationFactory {
         }
 
         /** Fills first {@code size} elements of array with value. */
+        /**
+        
+         * ID: GPU-OF-012
+         * Requirement: fillArray must execute correctly within the contract defined by this class.
+         * Purpose: Implement the fillArray operation for this class.
+         * Inputs: float[] array, float value, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void fillArray(float[] array, float value, int size) {
             for (int i = 0; i < size; i++) { array[i] = value; }
         }
 
         /** Copies first {@code size} elements from source to destination. */
+        /**
+        
+         * ID: GPU-OF-013
+         * Requirement: copyArray must execute correctly within the contract defined by this class.
+         * Purpose: Implement the copyArray operation for this class.
+         * Inputs: float[] source, float[] destination, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void copyArray(float[] source, float[] destination, int size) {
             System.arraycopy(source, 0, destination, 0, size);
         }
 
         /** Finds the maximum value and its index in the first {@code size} elements. */
+        /**
+        
+         * ID: GPU-OF-014
+         * Requirement: findMax must execute correctly within the contract defined by this class.
+         * Purpose: Implement the findMax operation for this class.
+         * Inputs: float[] input, int[] maxIndex, float[] maxValue, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
             float max = Float.NEGATIVE_INFINITY;
@@ -158,6 +266,18 @@ public class OperationFactory {
         }
 
         /** Finds the minimum value and its index in the first {@code size} elements. */
+        /**
+        
+         * ID: GPU-OF-015
+         * Requirement: findMin must execute correctly within the contract defined by this class.
+         * Purpose: Implement the findMin operation for this class.
+         * Inputs: float[] input, int[] minIndex, float[] minValue, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
             float min = Float.POSITIVE_INFINITY;
@@ -170,6 +290,18 @@ public class OperationFactory {
         }
 
         /** Dot product result[0] = sum(a[i]*b[i]). */
+        /**
+        
+         * ID: GPU-OF-016
+         * Requirement: dotProduct must execute correctly within the contract defined by this class.
+         * Purpose: Implement the dotProduct operation for this class.
+         * Inputs: float[] a, float[] b, float[] result, int length
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void dotProduct(float[] a, float[] b, float[] result, int length) {
             float sum = 0.0f;
@@ -178,6 +310,18 @@ public class OperationFactory {
         }
 
         /** L2 norm result[0] = sqrt(sum(input[i]^2)). */
+        /**
+        
+         * ID: GPU-OF-017
+         * Requirement: vectorNorm must execute correctly within the contract defined by this class.
+         * Purpose: Implement the vectorNorm operation for this class.
+         * Inputs: float[] input, float[] result, int length
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void vectorNorm(float[] input, float[] result, int length) {
             float sum = 0.0f;
@@ -186,12 +330,36 @@ public class OperationFactory {
         }
 
         /** Hadamard product: result[i] = a[i] * b[i]. */
+        /**
+        
+         * ID: GPU-OF-018
+         * Requirement: elementWiseMultiply must execute correctly within the contract defined by this class.
+         * Purpose: Implement the elementWiseMultiply operation for this class.
+         * Inputs: float[] a, float[] b, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
             for (int i = 0; i < size; i++) { result[i] = a[i] * b[i]; }
         }
 
         /** Matrix-vector product: result(rows) = matrix(rows×cols) * vector(cols). */
+        /**
+        
+         * ID: GPU-OF-019
+         * Requirement: matrixVectorMultiply must execute correctly within the contract defined by this class.
+         * Purpose: Implement the matrixVectorMultiply operation for this class.
+         * Inputs: float[] matrix, float[] vector, float[] result, int rows, int cols
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
             for (int i = 0; i < rows; i++) {
@@ -202,18 +370,54 @@ public class OperationFactory {
         }
 
         /** Sigmoid σ(x) = 1/(1+e^-x) element-wise. */
+        /**
+        
+         * ID: GPU-OF-020
+         * Requirement: sigmoid must execute correctly within the contract defined by this class.
+         * Purpose: Implement the sigmoid operation for this class.
+         * Inputs: float[] input, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void sigmoid(float[] input, float[] result, int size) {
             for (int i = 0; i < size; i++) { result[i] = 1.0f / (1.0f + (float) Math.exp(-input[i])); }
         }
 
         /** Hyperbolic tangent tanh(x) element-wise. */
+        /**
+        
+         * ID: GPU-OF-021
+         * Requirement: tanh must execute correctly within the contract defined by this class.
+         * Purpose: Implement the tanh operation for this class.
+         * Inputs: float[] input, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void tanh(float[] input, float[] result, int size) {
             for (int i = 0; i < size; i++) { result[i] = (float) Math.tanh(input[i]); }
         }
 
         /** ReLU max(0, x) element-wise. */
+        /**
+        
+         * ID: GPU-OF-022
+         * Requirement: relu must execute correctly within the contract defined by this class.
+         * Purpose: Implement the relu operation for this class.
+         * Inputs: float[] input, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void relu(float[] input, float[] result, int size) {
             for (int i = 0; i < size; i++) { result[i] = Math.max(0.0f, input[i]); }
@@ -222,6 +426,18 @@ public class OperationFactory {
         /**
          * Numerically-stable softmax using exp(x - max(x)) formulation.
          * Prevents float32 overflow.
+         */
+        /**
+        
+         * ID: GPU-OF-023
+         * Requirement: softmax must execute correctly within the contract defined by this class.
+         * Purpose: Implement the softmax operation for this class.
+         * Inputs: float[] input, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
          */
         @Override
         public void softmax(float[] input, float[] result, int size) {
@@ -233,6 +449,18 @@ public class OperationFactory {
         }
 
         /** Arithmetic mean written to result[0]. */
+        /**
+        
+         * ID: GPU-OF-024
+         * Requirement: mean must execute correctly within the contract defined by this class.
+         * Purpose: Implement the mean operation for this class.
+         * Inputs: float[] input, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void mean(float[] input, float[] result, int size) {
             float sum = 0.0f;
@@ -241,6 +469,18 @@ public class OperationFactory {
         }
 
         /** Population variance given pre-computed mean, written to result[0]. */
+        /**
+        
+         * ID: GPU-OF-025
+         * Requirement: variance must execute correctly within the contract defined by this class.
+         * Purpose: Implement the variance operation for this class.
+         * Inputs: float[] input, float[] result, int size, float mean
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void variance(float[] input, float[] result, int size, float mean) {
             float sum = 0.0f;
@@ -249,6 +489,18 @@ public class OperationFactory {
         }
 
         /** Zero-mean, unit-variance normalization (epsilon = 1e-8 guard). */
+        /**
+        
+         * ID: GPU-OF-026
+         * Requirement: normalize must execute correctly within the contract defined by this class.
+         * Purpose: Implement the normalize operation for this class.
+         * Inputs: float[] input, float[] result, int size
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         @Override
         public void normalize(float[] input, float[] result, int size) {
             float[] meanArr = new float[1];

@@ -34,32 +34,104 @@ public class OpenClFeatureExtractionOperation implements FeatureExtractionOperat
      *
      * @param provider the compute provider
      */
+    /**
+    
+     * ID: GPU-OCFEO-002
+     * Requirement: OpenClFeatureExtractionOperation must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a OpenClFeatureExtractionOperation instance.
+     * Inputs: ComputeProvider provider
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public OpenClFeatureExtractionOperation(ComputeProvider provider) {
         this.provider = provider;
         logger.info("Created OpenCL feature extraction operation with provider: {}", provider.getName());
     }
     
+    /**
+    
+     * ID: GPU-OCFEO-003
+     * Requirement: extract must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extract operation for this class.
+     * Inputs: Object inputData
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Object extract(Object inputData) {
         logger.info("Extracting features using OpenCL");
         // Implementation would go here
         return null;
     }
     
+    /**
+    
+     * ID: GPU-OCFEO-004
+     * Requirement: Evaluate and return the boolean result of isSupported.
+     * Purpose: Return whether isSupported condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isSupported() {
         return provider.isAvailable();
     }
 
+    /**
+    
+     * ID: GPU-OCFEO-005
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public ComputeProvider getProvider() {
         return provider;
     }
     
+    /**
+    
+     * ID: GPU-OCFEO-006
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void release() {
         logger.info("Releasing OpenCL feature extraction resources");
         // Release any OpenCL resources
     }
     
+    /**
+    
+     * ID: GPU-OCFEO-007
+     * Requirement: extractFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractFeatures operation for this class.
+     * Inputs: String[] tokens
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float[] extractFeatures(String[] tokens) {
         logger.info("Extracting features from {} tokens using OpenCL", tokens.length);
         // Placeholder implementation
@@ -70,6 +142,18 @@ public class OpenClFeatureExtractionOperation implements FeatureExtractionOperat
         return features;
     }
     
+    /**
+    
+     * ID: GPU-OCFEO-008
+     * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeTfIdf result.
+     * Inputs: String[] documents
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float[] computeTfIdf(String[] documents) {
         logger.info("Computing TF-IDF for {} documents using OpenCL", documents.length);
         // Placeholder implementation
@@ -78,6 +162,18 @@ public class OpenClFeatureExtractionOperation implements FeatureExtractionOperat
         return tfidf;
     }
     
+    /**
+    
+     * ID: GPU-OCFEO-009
+     * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeCosineSimilarity result.
+     * Inputs: float[] vector1, float[] vector2
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float computeCosineSimilarity(float[] vector1, float[] vector2) {
         logger.info("Computing cosine similarity between vectors of length {} and {}", 
                    vector1.length, vector2.length);

@@ -26,6 +26,18 @@ import org.slf4j.LoggerFactory;
 public class RocmMatrixOperation implements MatrixOperation {
     private static final Logger log = LoggerFactory.getLogger(RocmMatrixOperation.class);
     // Removed // Removed @Override
+    /**
+    
+     * ID: GPU-RMO-002
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public ComputeProvider getProvider() {
         return this.provider;
@@ -36,20 +48,140 @@ public class RocmMatrixOperation implements MatrixOperation {
     private int deviceId = 0;
     
     // JNI method declarations for ROCm matrix operations
+    /**
+    
+     * ID: GPU-RMO-003
+     * Requirement: allocateDeviceMemory must execute correctly within the contract defined by this class.
+     * Purpose: Implement the allocateDeviceMemory operation for this class.
+     * Inputs: long size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native long allocateDeviceMemory(long size);
+    /**
+    
+     * ID: GPU-RMO-004
+     * Requirement: freeDeviceMemory must execute correctly within the contract defined by this class.
+     * Purpose: Implement the freeDeviceMemory operation for this class.
+     * Inputs: long devicePtr
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void freeDeviceMemory(long devicePtr);
+    /**
+    
+     * ID: GPU-RMO-005
+     * Requirement: copyHostToDevice must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyHostToDevice operation for this class.
+     * Inputs: float[] hostArray, long devicePtr, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyHostToDevice(float[] hostArray, long devicePtr, int size);
+    /**
+    
+     * ID: GPU-RMO-006
+     * Requirement: copyDeviceToHost must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyDeviceToHost operation for this class.
+     * Inputs: long devicePtr, float[] hostArray, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyDeviceToHost(long devicePtr, float[] hostArray, int size);
+    /**
+    
+     * ID: GPU-RMO-007
+     * Requirement: rocmMatrixMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmMatrixMultiply operation for this class.
+     * Inputs: long aPtr, long bPtr, long cPtr, int rowsA, int colsB, int sharedDim
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmMatrixMultiply(long aPtr, long bPtr, long cPtr, int rowsA, int colsB, int sharedDim);
+    /**
+    
+     * ID: GPU-RMO-008
+     * Requirement: rocmMatrixAdd must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmMatrixAdd operation for this class.
+     * Inputs: long aPtr, long bPtr, long cPtr, int elements
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmMatrixAdd(long aPtr, long bPtr, long cPtr, int elements);
+    /**
+    
+     * ID: GPU-RMO-009
+     * Requirement: rocmMatrixSubtract must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmMatrixSubtract operation for this class.
+     * Inputs: long aPtr, long bPtr, long cPtr, int elements
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmMatrixSubtract(long aPtr, long bPtr, long cPtr, int elements);
+    /**
+    
+     * ID: GPU-RMO-010
+     * Requirement: rocmMatrixScalarMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmMatrixScalarMultiply operation for this class.
+     * Inputs: long aPtr, long bPtr, float scalar, int elements
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmMatrixScalarMultiply(long aPtr, long bPtr, float scalar, int elements);
+    /**
+    
+     * ID: GPU-RMO-011
+     * Requirement: rocmMatrixTranspose must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmMatrixTranspose operation for this class.
+     * Inputs: long aPtr, long bPtr, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmMatrixTranspose(long aPtr, long bPtr, int rows, int cols);
     
     /**
      * Creates a new ROCm matrix operation with the specified provider.
      *
      * @param provider the compute provider to use
+     */
+    /**
+    
+     * ID: GPU-RMO-012
+     * Requirement: RocmMatrixOperation must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a RocmMatrixOperation instance.
+     * Inputs: ComputeProvider provider
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public RocmMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
@@ -72,6 +204,18 @@ public class RocmMatrixOperation implements MatrixOperation {
     }
     
     // Removed // Removed @Override
+    /**
+    
+     * ID: GPU-RMO-013
+     * Requirement: multiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the multiply operation for this class.
+     * Inputs: float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void multiply(float[] a, float[] b, float[] c, int rowsA, int colsB, int sharedDim) {
         if (!initialized) {
@@ -104,6 +248,18 @@ public class RocmMatrixOperation implements MatrixOperation {
     }
     
     // Removed // Removed @Override
+    /**
+    
+     * ID: GPU-RMO-014
+     * Requirement: add must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: float[] a, float[] b, float[] c, int elements
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void add(float[] a, float[] b, float[] c, int elements) {
         if (!initialized) {
@@ -136,6 +292,18 @@ public class RocmMatrixOperation implements MatrixOperation {
     }
     
     // Removed // Removed @Override
+    /**
+    
+     * ID: GPU-RMO-015
+     * Requirement: subtract must execute correctly within the contract defined by this class.
+     * Purpose: Implement the subtract operation for this class.
+     * Inputs: float[] a, float[] b, float[] c, int elements
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void subtract(float[] a, float[] b, float[] c, int elements) {
         if (!initialized) {
@@ -168,6 +336,18 @@ public class RocmMatrixOperation implements MatrixOperation {
     }
     
     // Removed // Removed @Override
+    /**
+    
+     * ID: GPU-RMO-016
+     * Requirement: scalarMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the scalarMultiply operation for this class.
+     * Inputs: float[] a, float[] b, float scalar, int elements
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void scalarMultiply(float[] a, float[] b, float scalar, int elements) {
         if (!initialized) {
@@ -197,6 +377,18 @@ public class RocmMatrixOperation implements MatrixOperation {
     }
     
     // Removed // Removed @Override
+    /**
+    
+     * ID: GPU-RMO-017
+     * Requirement: transpose must execute correctly within the contract defined by this class.
+     * Purpose: Implement the transpose operation for this class.
+     * Inputs: float[] a, float[] b, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void transpose(float[] a, float[] b, int rows, int cols) {
         if (!initialized) {
@@ -225,6 +417,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         }
     }
     
+    /**
+    
+     * ID: GPU-RMO-018
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void release() {
         RocmMatrixOperation.log.info("Releasing ROCm matrix operation resources");
@@ -232,6 +436,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         // Native resources are managed per-operation
     }
 
+    /**
+    
+     * ID: GPU-RMO-019
+     * Requirement: normalize must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalize operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void normalize(float[] input, float[] result, int size) {
         // TODO: Implement ROCm normalization
@@ -240,6 +456,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.normalize(input, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-020
+     * Requirement: copyArray must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyArray operation for this class.
+     * Inputs: float[] source, float[] destination, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void copyArray(float[] source, float[] destination, int size) {
         // TODO: Implement ROCm array copy
@@ -247,6 +475,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         System.arraycopy(source, 0, destination, 0, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-021
+     * Requirement: fillArray must execute correctly within the contract defined by this class.
+     * Purpose: Implement the fillArray operation for this class.
+     * Inputs: float[] array, float value, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void fillArray(float[] array, float value, int size) {
         // TODO: Implement ROCm array fill
@@ -255,6 +495,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.fillArray(array, value, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-022
+     * Requirement: findMax must execute correctly within the contract defined by this class.
+     * Purpose: Implement the findMax operation for this class.
+     * Inputs: float[] input, int[] maxIndex, float[] maxValue, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
         // TODO: Implement ROCm max finding
@@ -263,6 +515,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.findMax(input, maxIndex, maxValue, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-023
+     * Requirement: findMin must execute correctly within the contract defined by this class.
+     * Purpose: Implement the findMin operation for this class.
+     * Inputs: float[] input, int[] minIndex, float[] minValue, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
         // TODO: Implement ROCm min finding
@@ -271,6 +535,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.findMin(input, minIndex, minValue, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-024
+     * Requirement: dotProduct must execute correctly within the contract defined by this class.
+     * Purpose: Implement the dotProduct operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int length
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void dotProduct(float[] a, float[] b, float[] result, int length) {
         // TODO: Implement ROCm dot product
@@ -279,6 +555,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.dotProduct(a, b, result, length);
     }
 
+    /**
+    
+     * ID: GPU-RMO-025
+     * Requirement: vectorNorm must execute correctly within the contract defined by this class.
+     * Purpose: Implement the vectorNorm operation for this class.
+     * Inputs: float[] input, float[] result, int length
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void vectorNorm(float[] input, float[] result, int length) {
         // TODO: Implement ROCm vector norm
@@ -287,6 +575,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.vectorNorm(input, result, length);
     }
 
+    /**
+    
+     * ID: GPU-RMO-026
+     * Requirement: elementWiseMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the elementWiseMultiply operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
         // TODO: Implement ROCm element-wise multiply
@@ -295,6 +595,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.elementWiseMultiply(a, b, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-027
+     * Requirement: matrixVectorMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixVectorMultiply operation for this class.
+     * Inputs: float[] matrix, float[] vector, float[] result, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
         // TODO: Implement ROCm matrix-vector multiply
@@ -303,6 +615,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.matrixVectorMultiply(matrix, vector, result, rows, cols);
     }
 
+    /**
+    
+     * ID: GPU-RMO-028
+     * Requirement: sigmoid must execute correctly within the contract defined by this class.
+     * Purpose: Implement the sigmoid operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void sigmoid(float[] input, float[] result, int size) {
         // TODO: Implement ROCm sigmoid
@@ -311,6 +635,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.sigmoid(input, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-029
+     * Requirement: tanh must execute correctly within the contract defined by this class.
+     * Purpose: Implement the tanh operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void tanh(float[] input, float[] result, int size) {
         // TODO: Implement ROCm tanh
@@ -319,6 +655,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.tanh(input, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-030
+     * Requirement: relu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the relu operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void relu(float[] input, float[] result, int size) {
         // TODO: Implement ROCm ReLU
@@ -327,6 +675,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.relu(input, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-031
+     * Requirement: softmax must execute correctly within the contract defined by this class.
+     * Purpose: Implement the softmax operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void softmax(float[] input, float[] result, int size) {
         // TODO: Implement ROCm softmax
@@ -335,6 +695,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.softmax(input, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-032
+     * Requirement: mean must execute correctly within the contract defined by this class.
+     * Purpose: Implement the mean operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void mean(float[] input, float[] result, int size) {
         // TODO: Implement ROCm mean
@@ -343,6 +715,18 @@ public class RocmMatrixOperation implements MatrixOperation {
         cpu.mean(input, result, size);
     }
 
+    /**
+    
+     * ID: GPU-RMO-033
+     * Requirement: variance must execute correctly within the contract defined by this class.
+     * Purpose: Implement the variance operation for this class.
+     * Inputs: float[] input, float[] result, int size, float mean
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void variance(float[] input, float[] result, int size, float mean) {
         // TODO: Implement ROCm variance

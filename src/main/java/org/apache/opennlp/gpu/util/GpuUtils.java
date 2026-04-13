@@ -29,6 +29,18 @@ public class GpuUtils {
     
     private static final Logger logger = LoggerFactory.getLogger(GpuUtils.class);
     
+    /**
+    
+     * ID: GPU-GU-002
+     * Requirement: GpuUtils must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuUtils instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private GpuUtils() {
         // Private constructor to prevent instantiation
     }
@@ -37,6 +49,18 @@ public class GpuUtils {
      * Checks if any GPU is available on the system.
      *
      * @return true if at least one GPU is available, false otherwise
+     */
+    /**
+    
+     * ID: GPU-GU-003
+     * Requirement: Evaluate and return the boolean result of isGpuAvailable.
+     * Purpose: Return whether isGpuAvailable condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static boolean isGpuAvailable() {
         try {
@@ -51,6 +75,18 @@ public class GpuUtils {
      * Gets the number of available GPUs.
      *
      * @return the number of available GPUs
+     */
+    /**
+    
+     * ID: GPU-GU-004
+     * Requirement: Return the GpuCount field value without side effects.
+     * Purpose: Return the value of the GpuCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static int getGpuCount() {
         int count = 0;

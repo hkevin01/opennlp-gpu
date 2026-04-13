@@ -88,24 +88,96 @@ public class GpuConfig {
     // ---- Getters and Setters ----
 
     /** Returns whether GPU acceleration is requested. */
+    /**
+    
+     * ID: GPU-GC-005
+     * Requirement: Evaluate and return the boolean result of isGpuEnabled.
+     * Purpose: Return whether isGpuEnabled condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isGpuEnabled() { return gpuEnabled; }
 
     /** Enables or disables GPU acceleration. */
+    /**
+    
+     * ID: GPU-GC-006
+     * Requirement: Update the GpuEnabled field to the supplied non-null value.
+     * Purpose: Set the GpuEnabled property to the supplied value.
+     * Inputs: boolean enabled
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void setGpuEnabled(boolean enabled) { this.gpuEnabled = enabled; }
 
     /** Returns whether verbose diagnostic mode is active. */
+    /**
+    
+     * ID: GPU-GC-007
+     * Requirement: Evaluate and return the boolean result of isDebugMode.
+     * Purpose: Return whether isDebugMode condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isDebugMode() { return debugMode; }
 
     /** Enables or disables verbose diagnostic output. */
+    /**
+    
+     * ID: GPU-GC-008
+     * Requirement: Update the DebugMode field to the supplied non-null value.
+     * Purpose: Set the DebugMode property to the supplied value.
+     * Inputs: boolean debugMode
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void setDebugMode(boolean debugMode) { this.debugMode = debugMode; }
 
     /** Returns the GPU memory pool size in MB. */
+    /**
+    
+     * ID: GPU-GC-009
+     * Requirement: Return the MemoryPoolSizeMB field value without side effects.
+     * Purpose: Return the value of the MemoryPoolSizeMB property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getMemoryPoolSizeMB() { return memoryPoolSizeMB; }
 
     /**
      * Sets the GPU memory pool size in MB.
      * @param memoryPoolSizeMB must be positive
      * @throws IllegalArgumentException if memoryPoolSizeMB is not positive
+     */
+    /**
+    
+     * ID: GPU-GC-010
+     * Requirement: Update the MemoryPoolSizeMB field to the supplied non-null value.
+     * Purpose: Set the MemoryPoolSizeMB property to the supplied value.
+     * Inputs: int memoryPoolSizeMB
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void setMemoryPoolSizeMB(int memoryPoolSizeMB) {
         if (memoryPoolSizeMB <= 0) {
@@ -115,12 +187,36 @@ public class GpuConfig {
     }
 
     /** Returns the inference batch size. */
+    /**
+    
+     * ID: GPU-GC-011
+     * Requirement: Return the BatchSize field value without side effects.
+     * Purpose: Return the value of the BatchSize property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getBatchSize() { return batchSize; }
 
     /**
      * Sets the inference batch size.
      * @param batchSize must be ≥ 1
      * @throws IllegalArgumentException if batchSize is less than 1
+     */
+    /**
+    
+     * ID: GPU-GC-012
+     * Requirement: Update the BatchSize field to the supplied non-null value.
+     * Purpose: Set the BatchSize property to the supplied value.
+     * Inputs: int batchSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void setBatchSize(int batchSize) {
         if (batchSize < 1) {
@@ -130,12 +226,36 @@ public class GpuConfig {
     }
 
     /** Returns the maximum GPU memory usage limit in MB. */
+    /**
+    
+     * ID: GPU-GC-013
+     * Requirement: Return the MaxMemoryUsageMB field value without side effects.
+     * Purpose: Return the value of the MaxMemoryUsageMB property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getMaxMemoryUsageMB() { return maxMemoryUsageMB; }
 
     /**
      * Sets the maximum GPU memory usage limit in MB.
      * @param maxMemoryUsageMB must be positive
      * @throws IllegalArgumentException if maxMemoryUsageMB is not positive
+     */
+    /**
+    
+     * ID: GPU-GC-014
+     * Requirement: Update the MaxMemoryUsageMB field to the supplied non-null value.
+     * Purpose: Set the MaxMemoryUsageMB property to the supplied value.
+     * Inputs: int maxMemoryUsageMB
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void setMaxMemoryUsageMB(int maxMemoryUsageMB) {
         if (maxMemoryUsageMB <= 0) {

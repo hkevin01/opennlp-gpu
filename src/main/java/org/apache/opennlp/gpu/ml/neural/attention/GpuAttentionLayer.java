@@ -86,6 +86,18 @@ public class GpuAttentionLayer {
      * @param numHeads the number of attention heads
      * @param usePositionalEncoding whether to use positional encoding
      */
+    /**
+    
+     * ID: GPU-GAL-002
+     * Requirement: GpuAttentionLayer must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuAttentionLayer instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuAttentionLayer(ComputeProvider provider, GpuConfig config, MatrixOperation matrixOp,
                             int hiddenSize, int numHeads, boolean usePositionalEncoding) {
         this.provider = provider;
@@ -124,6 +136,18 @@ public class GpuAttentionLayer {
      * @param seqLen the sequence length
      * @param mask optional attention mask (null if not used)
      */
+    /**
+    
+     * ID: GPU-GAL-003
+     * Requirement: applyAttention must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyAttention operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void applyAttention(float[] queries, float[] keys, float[] values, float[] output,
                               int batchSize, int seqLen, float[] mask) {
         
@@ -146,6 +170,18 @@ public class GpuAttentionLayer {
      * @param seqLen the sequence length
      * @param mask optional attention mask (null if not used)
      */
+    /**
+    
+     * ID: GPU-GAL-004
+     * Requirement: applySelfAttention must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applySelfAttention operation for this class.
+     * Inputs: float[] input, float[] output, int batchSize, int seqLen, float[] mask
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void applySelfAttention(float[] input, float[] output, int batchSize, int seqLen, float[] mask) {
         logger.debug("Applying self-attention: batchSize={}, seqLen={}", batchSize, seqLen);
         applyAttention(input, input, input, output, batchSize, seqLen, mask);
@@ -159,6 +195,18 @@ public class GpuAttentionLayer {
      * @param scores the output scores [batchSize * numHeads, seqLen, seqLen]
      * @param batchSize the batch size
      * @param seqLen the sequence length
+     */
+    /**
+    
+     * ID: GPU-GAL-005
+     * Requirement: computeAttentionScores must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeAttentionScores result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void computeAttentionScores(float[] queries, float[] keys, float[] scores,
                                       int batchSize, int seqLen) {
@@ -190,6 +238,18 @@ public class GpuAttentionLayer {
      * @param seqLen the sequence length
      * @param mask optional attention mask
      */
+    /**
+    
+     * ID: GPU-GAL-006
+     * Requirement: applyAttentionSoftmax must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyAttentionSoftmax operation for this class.
+     * Inputs: float[] scores, float[] weights, int batchSize, int seqLen, float[] mask
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void applyAttentionSoftmax(float[] scores, float[] weights, int batchSize, int seqLen, float[] mask) {
         int totalHeads = batchSize * numHeads;
         
@@ -220,6 +280,18 @@ public class GpuAttentionLayer {
      * @param output the output matrix [batchSize * numHeads, seqLen, headDim]
      * @param batchSize the batch size
      * @param seqLen the sequence length
+     */
+    /**
+    
+     * ID: GPU-GAL-007
+     * Requirement: computeWeightedValues must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeWeightedValues result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void computeWeightedValues(float[] weights, float[] values, float[] output,
                                      int batchSize, int seqLen) {
@@ -253,6 +325,18 @@ public class GpuAttentionLayer {
      * @param batchSize the batch size
      * @param seqLen the sequence length
      */
+    /**
+    
+     * ID: GPU-GAL-008
+     * Requirement: addPositionalEncoding must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: float[] input, float[] output, int batchSize, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void addPositionalEncoding(float[] input, float[] output, int batchSize, int seqLen) {
         if (!usePositionalEncoding) {
             System.arraycopy(input, 0, output, 0, input.length);
@@ -274,6 +358,18 @@ public class GpuAttentionLayer {
     
     // Private implementation methods
     
+    /**
+    
+     * ID: GPU-GAL-009
+     * Requirement: initializeParameters must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeParameters() {
         logger.debug("Initializing attention parameters");
         
@@ -295,6 +391,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-010
+     * Requirement: allocateBuffers must execute correctly within the contract defined by this class.
+     * Purpose: Implement the allocateBuffers operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void allocateBuffers() {
         logger.debug("Allocating attention buffers");
         
@@ -310,6 +418,18 @@ public class GpuAttentionLayer {
         contextBuffer = new float[maxBatchSize * numHeads * maxSeqLen * headDim];
     }
     
+    /**
+    
+     * ID: GPU-GAL-011
+     * Requirement: initializeWeights must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: float[] weights, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeWeights(float[] weights, int rows, int cols) {
         float scale = (float) Math.sqrt(2.0 / (rows + cols)); // Xavier initialization
         
@@ -318,6 +438,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-012
+     * Requirement: initializePositionalEncodings must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializePositionalEncodings() {
         int maxSeqLen = 512; // Maximum sequence length
         positionalEncodings = new float[maxSeqLen * hiddenSize];
@@ -339,6 +471,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-013
+     * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpu operation for this class.
+     * Inputs: int batchSize, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean shouldUseGpu(int batchSize, int seqLen) {
         return provider.isGpuProvider() && 
                config.isGpuEnabled() &&
@@ -347,6 +491,18 @@ public class GpuAttentionLayer {
                hiddenSize >= MIN_HIDDEN_SIZE_FOR_GPU;
     }
     
+    /**
+    
+     * ID: GPU-GAL-014
+     * Requirement: applyAttentionGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyAttentionGpu operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyAttentionGpu(float[] queries, float[] keys, float[] values, float[] output,
                                   int batchSize, int seqLen, float[] mask) {
         logger.debug("Using GPU for attention computation");
@@ -373,6 +529,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-015
+     * Requirement: applyAttentionCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyAttentionCpu operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyAttentionCpu(float[] queries, float[] keys, float[] values, float[] output,
                                   int batchSize, int seqLen, float[] mask) {
         logger.debug("Using CPU for attention computation");
@@ -403,6 +571,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-016
+     * Requirement: transformInputs must execute correctly within the contract defined by this class.
+     * Purpose: Implement the transformInputs operation for this class.
+     * Inputs: float[] queries, float[] keys, float[] values, int batchSize, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void transformInputs(float[] queries, float[] keys, float[] values, int batchSize, int seqLen) {
         // Apply linear transformations: Q = XW_Q, K = XW_K, V = XW_V
         
@@ -466,6 +646,18 @@ public class GpuAttentionLayer {
         reshapeForMultiHead(valueBuffer, batchSize, seqLen);
     }
     
+    /**
+    
+     * ID: GPU-GAL-017
+     * Requirement: reshapeForMultiHead must execute correctly within the contract defined by this class.
+     * Purpose: Implement the reshapeForMultiHead operation for this class.
+     * Inputs: float[] matrix, int batchSize, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void reshapeForMultiHead(float[] matrix, int batchSize, int seqLen) {
         // Reshape from [batchSize, seqLen, hiddenSize] to [batchSize * numHeads, seqLen, headDim]
         // This is done in-place for efficiency
@@ -486,6 +678,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-018
+     * Requirement: computeScaledDotProduct must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeScaledDotProduct result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void computeScaledDotProduct(float[] queries, int queryOffset, 
                                        float[] keys, int keyOffset,
                                        float[] scores, int scoreOffset,
@@ -506,6 +710,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-019
+     * Requirement: applyMask must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyMask operation for this class.
+     * Inputs: float[] scores, int scoreOffset, float[] mask, int maskOffset, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyMask(float[] scores, int scoreOffset, float[] mask, int maskOffset, int seqLen) {
         for (int i = 0; i < seqLen; i++) {
             if (mask[maskOffset + i] == 0) {
@@ -514,6 +730,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-020
+     * Requirement: projectOutput must execute correctly within the contract defined by this class.
+     * Purpose: Implement the projectOutput operation for this class.
+     * Inputs: float[] context, float[] output, int batchSize, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void projectOutput(float[] context, float[] output, int batchSize, int seqLen) {
         // Reshape context back from multi-head format
         float[] reshaped = new float[batchSize * seqLen * hiddenSize];
@@ -549,6 +777,18 @@ public class GpuAttentionLayer {
         }
     }
     
+    /**
+    
+     * ID: GPU-GAL-021
+     * Requirement: computeSimpleAttentionScore must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeSimpleAttentionScore result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float computeSimpleAttentionScore(float[] queries, float[] keys, 
                                             int batch, int i, int j, int seqLen) {
         float score = 0.0f;
@@ -562,6 +802,18 @@ public class GpuAttentionLayer {
         return score * scaleFactor;
     }
     
+    /**
+    
+     * ID: GPU-GAL-022
+     * Requirement: Return the Value field value without side effects.
+     * Purpose: Return the value of the Value property.
+     * Inputs: float[] values, int batch, int pos, int dim, int seqLen
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float getValue(float[] values, int batch, int pos, int dim, int seqLen) {
         int idx = batch * seqLen * hiddenSize + pos * hiddenSize + dim;
         return values[idx];
@@ -569,6 +821,18 @@ public class GpuAttentionLayer {
     
     /**
      * Release resources used by the attention layer.
+     */
+    /**
+    
+     * ID: GPU-GAL-023
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void release() {
         logger.debug("Releasing attention layer resources");
@@ -589,9 +853,69 @@ public class GpuAttentionLayer {
     
     // Getters for testing and introspection
     
+    /**
+    
+     * ID: GPU-GAL-024
+     * Requirement: Return the HiddenSize field value without side effects.
+     * Purpose: Return the value of the HiddenSize property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getHiddenSize() { return hiddenSize; }
+    /**
+    
+     * ID: GPU-GAL-025
+     * Requirement: Return the NumHeads field value without side effects.
+     * Purpose: Return the value of the NumHeads property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getNumHeads() { return numHeads; }
+    /**
+    
+     * ID: GPU-GAL-026
+     * Requirement: Return the HeadDim field value without side effects.
+     * Purpose: Return the value of the HeadDim property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getHeadDim() { return headDim; }
+    /**
+    
+     * ID: GPU-GAL-027
+     * Requirement: Evaluate and return the boolean result of isUsingPositionalEncoding.
+     * Purpose: Return whether isUsingPositionalEncoding condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isUsingPositionalEncoding() { return usePositionalEncoding; }
+    /**
+    
+     * ID: GPU-GAL-028
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public ComputeProvider getProvider() { return provider; }
 }

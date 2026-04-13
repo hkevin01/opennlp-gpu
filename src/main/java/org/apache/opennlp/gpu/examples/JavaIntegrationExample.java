@@ -33,6 +33,18 @@ public class JavaIntegrationExample {
     
     private static final GpuLogger logger = GpuLogger.getLogger(JavaIntegrationExample.class);
     
+    /**
+    
+     * ID: GPU-JIE-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         try {
             // Step 1: Check GPU availability
@@ -54,6 +66,18 @@ public class JavaIntegrationExample {
     
     /**
      * Demonstrate GPU detection and system information.
+     */
+    /**
+    
+     * ID: GPU-JIE-003
+     * Requirement: demonstrateGpuDetection must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void demonstrateGpuDetection() {
         System.out.println("=== GPU Detection Example ===");
@@ -84,6 +108,18 @@ public class JavaIntegrationExample {
     
     /**
      * Demonstrate simple usage that replaces standard OpenNLP code.
+     */
+    /**
+    
+     * ID: GPU-JIE-004
+     * Requirement: demonstrateSimpleUsage must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void demonstrateSimpleUsage() {
         System.out.println("=== Simple Usage Example ===");
@@ -129,6 +165,18 @@ public class JavaIntegrationExample {
     /**
      * Demonstrate performance comparison between CPU and GPU.
      */
+    /**
+    
+     * ID: GPU-JIE-005
+     * Requirement: demonstratePerformanceComparison must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void demonstratePerformanceComparison() {
         System.out.println("=== Performance Comparison ===");
         
@@ -167,6 +215,18 @@ public class JavaIntegrationExample {
     
     /**
      * Demonstrate error handling and graceful fallback.
+     */
+    /**
+    
+     * ID: GPU-JIE-006
+     * Requirement: demonstrateErrorHandling must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void demonstrateErrorHandling() {
         System.out.println("=== Error Handling Example ===");
@@ -208,6 +268,18 @@ public class JavaIntegrationExample {
     /**
      * Create sample training data for examples.
      */
+    /**
+    
+     * ID: GPU-JIE-007
+     * Requirement: createSampleTrainingData must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new SampleTrainingData.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static List<TrainingExample> createSampleTrainingData() {
         List<TrainingExample> data = new ArrayList<>();
         
@@ -223,6 +295,18 @@ public class JavaIntegrationExample {
     
     /**
      * Create a larger training dataset for performance testing.
+     */
+    /**
+    
+     * ID: GPU-JIE-008
+     * Requirement: createLargeTrainingDataset must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new LargeTrainingDataset.
+     * Inputs: int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static List<TrainingExample> createLargeTrainingDataset(int size) {
         List<TrainingExample> data = new ArrayList<>();
@@ -261,6 +345,18 @@ public class JavaIntegrationExample {
     /**
      * Train a GPU-accelerated model with default settings.
      */
+    /**
+    
+     * ID: GPU-JIE-009
+     * Requirement: trainGpuModel must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: List<TrainingExample> data
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static GpuMaxentModel trainGpuModel(List<TrainingExample> data) throws IOException {
         GpuConfig config = new GpuConfig();
         config.setGpuEnabled(true);
@@ -272,6 +368,18 @@ public class JavaIntegrationExample {
     
     /**
      * Train a GPU-accelerated model with custom configuration.
+     */
+    /**
+    
+     * ID: GPU-JIE-010
+     * Requirement: trainGpuModelWithConfig must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static GpuMaxentModel trainGpuModelWithConfig(List<TrainingExample> data, 
                                                          GpuConfig config) throws IOException {

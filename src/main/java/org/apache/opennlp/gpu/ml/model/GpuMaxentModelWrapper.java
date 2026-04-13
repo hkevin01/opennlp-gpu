@@ -37,6 +37,18 @@ public class GpuMaxentModelWrapper implements MaxentModel {
      * 
      * @param gpuModel The underlying GPU model
      */
+    /**
+    
+     * ID: GPU-GMMW-002
+     * Requirement: GpuMaxentModelWrapper must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuMaxentModelWrapper instance.
+     * Inputs: GpuMaxentModel gpuModel
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuMaxentModelWrapper(GpuMaxentModel gpuModel) {
         this.gpuModel = gpuModel;
         // Get the base model from the GPU model for compatibility
@@ -46,46 +58,154 @@ public class GpuMaxentModelWrapper implements MaxentModel {
                     baseModel.getNumOutcomes());
     }
     
+    /**
+    
+     * ID: GPU-GMMW-003
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] features) {
         return gpuModel.eval(features);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-004
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] features, double[] priors
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] features, double[] priors) {
         return gpuModel.eval(features, priors);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-005
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] features, float[] values
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] features, float[] values) {
         return gpuModel.eval(features, values);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-006
+     * Requirement: Return the BestOutcome field value without side effects.
+     * Purpose: Return the value of the BestOutcome property.
+     * Inputs: double[] outcomes
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getBestOutcome(double[] outcomes) {
         return gpuModel.getBestOutcome(outcomes);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-007
+     * Requirement: Return the AllOutcomes field value without side effects.
+     * Purpose: Return the value of the AllOutcomes property.
+     * Inputs: double[] outcomes
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getAllOutcomes(double[] outcomes) {
         return gpuModel.getAllOutcomes(outcomes);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-008
+     * Requirement: Return the Outcome field value without side effects.
+     * Purpose: Return the value of the Outcome property.
+     * Inputs: int index
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getOutcome(int index) {
         return gpuModel.getOutcome(index);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-009
+     * Requirement: Return the Index field value without side effects.
+     * Purpose: Return the value of the Index property.
+     * Inputs: String outcome
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getIndex(String outcome) {
         return gpuModel.getIndex(outcome);
     }
     
+    /**
+    
+     * ID: GPU-GMMW-010
+     * Requirement: Return the NumOutcomes field value without side effects.
+     * Purpose: Return the value of the NumOutcomes property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getNumOutcomes() {
         return gpuModel.getNumOutcomes();
     }
     
+    /**
+    
+     * ID: GPU-GMMW-011
+     * Requirement: Return the DataStructures field value without side effects.
+     * Purpose: Return the value of the DataStructures property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Context[] getDataStructures() {
         // This method is not available in OpenNLP 2.5.4, so we'll return null
         // In a full implementation, this would extract the parameter structure
@@ -96,6 +216,18 @@ public class GpuMaxentModelWrapper implements MaxentModel {
      * Get the underlying GPU model for advanced operations.
      * 
      * @return The GPU-accelerated model
+     */
+    /**
+    
+     * ID: GPU-GMMW-012
+     * Requirement: Return the GpuModel field value without side effects.
+     * Purpose: Return the value of the GpuModel property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public GpuMaxentModel getGpuModel() {
         return gpuModel;
@@ -115,6 +247,18 @@ public class GpuMaxentModelWrapper implements MaxentModel {
      * 
      * @return true if using GPU, false if using CPU fallback
      */
+    /**
+    
+     * ID: GPU-GMMW-013
+     * Requirement: Evaluate and return the boolean result of isUsingGpu.
+     * Purpose: Return whether isUsingGpu condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public boolean isUsingGpu() {
         return gpuModel.isUsingGpu();
     }
@@ -124,10 +268,34 @@ public class GpuMaxentModelWrapper implements MaxentModel {
      * 
      * @return Speedup factor (e.g., 13.6 for 13.6x faster)
      */
+    /**
+    
+     * ID: GPU-GMMW-014
+     * Requirement: Return the SpeedupFactor field value without side effects.
+     * Purpose: Return the value of the SpeedupFactor property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public double getSpeedupFactor() {
         return gpuModel.getSpeedupFactor();
     }
     
+    /**
+    
+     * ID: GPU-GMMW-015
+     * Requirement: toString must execute correctly within the contract defined by this class.
+     * Purpose: Implement the toString operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String toString() {
         return String.format("GpuMaxentModel(outcomes=%d, gpu=%s, speedup=%.1fx)",

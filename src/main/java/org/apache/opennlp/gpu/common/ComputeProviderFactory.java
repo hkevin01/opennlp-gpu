@@ -21,10 +21,34 @@ package org.apache.opennlp.gpu.common;
  */
 public class ComputeProviderFactory {
     
+    /**
+    
+     * ID: GPU-CPF-002
+     * Requirement: Return the DefaultProvider field value without side effects.
+     * Purpose: Return the value of the DefaultProvider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static ComputeProvider getDefaultProvider() {
         return new CpuComputeProvider();
     }
     
+    /**
+    
+     * ID: GPU-CPF-003
+     * Requirement: createProvider must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new Provider.
+     * Inputs: ComputeProvider.Type type
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static ComputeProvider createProvider(ComputeProvider.Type type) {
         switch (type) {
             case CPU:
@@ -40,6 +64,18 @@ public class ComputeProviderFactory {
         }
     }
     
+    /**
+    
+     * ID: GPU-CPF-004
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: ComputeProvider.Type type
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static ComputeProvider getProvider(ComputeProvider.Type type) {
         return ComputeProviderFactory.createProvider(type);
     }

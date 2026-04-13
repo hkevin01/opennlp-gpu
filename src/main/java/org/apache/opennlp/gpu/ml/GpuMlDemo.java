@@ -39,6 +39,18 @@ public class GpuMlDemo {
     
     private static final GpuLogger logger = GpuLogger.getLogger(GpuMlDemo.class);
     
+    /**
+    
+     * ID: GPU-GMD-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         GpuMlDemo.logger.info("Starting OpenNLP GPU ML Demo");
         
@@ -59,6 +71,18 @@ public class GpuMlDemo {
         }
     }
     
+    /**
+    
+     * ID: GPU-GMD-003
+     * Requirement: demoMaxentModel must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void demoMaxentModel() {
         GpuMlDemo.logger.info("=== GPU MaxEnt Model Demo ===");
         
@@ -122,6 +146,18 @@ public class GpuMlDemo {
         gpuModel.cleanup();
     }
     
+    /**
+    
+     * ID: GPU-GMD-004
+     * Requirement: demoPerceptronModel must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void demoPerceptronModel() {
         GpuMlDemo.logger.info("=== GPU Perceptron Model Demo ===");
         
@@ -166,6 +202,18 @@ public class GpuMlDemo {
         perceptron.cleanup();
     }
     
+    /**
+    
+     * ID: GPU-GMD-005
+     * Requirement: demoNaiveBayesModel must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void demoNaiveBayesModel() {
         GpuMlDemo.logger.info("=== GPU Naive Bayes Model Demo ===");
         
@@ -229,6 +277,18 @@ public class GpuMlDemo {
     
     // Helper methods for generating sample data
     
+    /**
+    
+     * ID: GPU-GMD-006
+     * Requirement: generateSampleFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateSampleFeatures operation for this class.
+     * Inputs: int numSamples, int numFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static float[][] generateSampleFeatures(int numSamples, int numFeatures) {
         float[][] features = new float[numSamples][numFeatures];
         
@@ -246,6 +306,18 @@ public class GpuMlDemo {
         return features;
     }
     
+    /**
+    
+     * ID: GPU-GMD-007
+     * Requirement: generateSampleLabels must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateSampleLabels operation for this class.
+     * Inputs: int numSamples, float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static int[] generateSampleLabels(int numSamples, float[][] features) {
         int[] labels = new int[numSamples];
         
@@ -262,6 +334,18 @@ public class GpuMlDemo {
         return labels;
     }
     
+    /**
+    
+     * ID: GPU-GMD-008
+     * Requirement: generateTextFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateTextFeatures operation for this class.
+     * Inputs: int numSamples, int numFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String[][] generateTextFeatures(int numSamples, int numFeatures) {
         String[] featureNames = {"word_good", "word_bad", "word_great", "word_terrible", "word_excellent", 
                                 "word_poor", "word_amazing", "word_awful", "word_wonderful", "word_horrible",
@@ -283,6 +367,18 @@ public class GpuMlDemo {
         return features;
     }
     
+    /**
+    
+     * ID: GPU-GMD-009
+     * Requirement: generateTextClassificationLabels must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateTextClassificationLabels operation for this class.
+     * Inputs: int numSamples, String[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static String[] generateTextClassificationLabels(int numSamples, String[][] features) {
         String[] labels = new String[numSamples];
         
@@ -328,6 +424,18 @@ public class GpuMlDemo {
         private long totalEvaluations = 0;
         private long totalTime = 0;
         
+        /**
+        
+         * ID: GPU-GMD-010
+         * Requirement: GpuNaiveBayesStandalone must execute correctly within the contract defined by this class.
+         * Purpose: Implement the GpuNaiveBayesStandalone operation for this class.
+         * Inputs: String[] outcomes, GpuConfig config
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public GpuNaiveBayesStandalone(String[] outcomes, GpuConfig config) {
             this.outcomes = outcomes;
             
@@ -348,6 +456,18 @@ public class GpuMlDemo {
             }
         }
         
+        /**
+        
+         * ID: GPU-GMD-011
+         * Requirement: train must execute correctly within the contract defined by this class.
+         * Purpose: Train the model on the supplied data.
+         * Inputs: String[][] trainingData, String[] labels
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void train(String[][] trainingData, String[] labels) {
             // Count feature occurrences per class
             Map<String, Map<String, Integer>> featureCounts = new HashMap<>();
@@ -388,6 +508,18 @@ public class GpuMlDemo {
             }
         }
         
+        /**
+        
+         * ID: GPU-GMD-012
+         * Requirement: eval must execute correctly within the contract defined by this class.
+         * Purpose: Compute and return the eval result.
+         * Inputs: String[] context
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double[] eval(String[] context) {
             long startTime = System.nanoTime();
             
@@ -417,6 +549,18 @@ public class GpuMlDemo {
             return probs;
         }
         
+        /**
+        
+         * ID: GPU-GMD-013
+         * Requirement: normalizeLogProbabilities must execute correctly within the contract defined by this class.
+         * Purpose: Implement the normalizeLogProbabilities operation for this class.
+         * Inputs: double[] logProbs
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         private double[] normalizeLogProbabilities(double[] logProbs) {
             // Find max for numerical stability
             double maxLogProb = Arrays.stream(logProbs).max().orElse(0.0);
@@ -438,6 +582,18 @@ public class GpuMlDemo {
             return probs;
         }
         
+        /**
+        
+         * ID: GPU-GMD-014
+         * Requirement: Return the BestOutcome field value without side effects.
+         * Purpose: Return the value of the BestOutcome property.
+         * Inputs: double[] probabilities
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getBestOutcome(double[] probabilities) {
             int bestIndex = 0;
             double bestScore = probabilities[0];
@@ -452,6 +608,18 @@ public class GpuMlDemo {
             return outcomes[bestIndex];
         }
         
+        /**
+        
+         * ID: GPU-GMD-015
+         * Requirement: Return the PerformanceStats field value without side effects.
+         * Purpose: Return the value of the PerformanceStats property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getPerformanceStats() {
             double avgTimeMs = totalEvaluations > 0 ? 
                 (totalTime / 1_000_000.0) / totalEvaluations : 0.0;
@@ -463,6 +631,18 @@ public class GpuMlDemo {
                 avgTimeMs);
         }
         
+        /**
+        
+         * ID: GPU-GMD-016
+         * Requirement: cleanup must execute correctly within the contract defined by this class.
+         * Purpose: Release all held resources and reset internal state.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void cleanup() {
             if (computeProvider != null) {
                 computeProvider.cleanup();

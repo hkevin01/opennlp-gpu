@@ -48,6 +48,18 @@ public class GpuFeatureExtractor {
     private static final int MIN_DOCS_FOR_GPU = 100;
     private static final int MIN_FEATURES_FOR_GPU = 1000;
 
+    /**
+    
+     * ID: GPU-GFE-002
+     * Requirement: GpuFeatureExtractor must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuFeatureExtractor instance.
+     * Inputs: ComputeProvider provider, GpuConfig config, MatrixOperation matrixOp
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuFeatureExtractor(ComputeProvider provider, GpuConfig config, MatrixOperation matrixOp) {
         this.provider  = Objects.requireNonNull(provider,  "provider must not be null");
         this.config    = Objects.requireNonNull(config,    "config must not be null");
@@ -57,6 +69,18 @@ public class GpuFeatureExtractor {
 
     /**
      * Extract n-gram features from text documents
+     */
+    /**
+    
+     * ID: GPU-GFE-003
+     * Requirement: extractNGramFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractNGramFeatures operation for this class.
+     * Inputs: String[] documents, int ngramSize, int maxFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public float[][] extractNGramFeatures(String[] documents, int ngramSize, int maxFeatures) {
         Objects.requireNonNull(documents, "documents must not be null");
@@ -82,6 +106,18 @@ public class GpuFeatureExtractor {
 
     /**
      * Extract TF-IDF features from text documents
+     */
+    /**
+    
+     * ID: GPU-GFE-004
+     * Requirement: extractTfIdfFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractTfIdfFeatures operation for this class.
+     * Inputs: String[] documents, int ngramSize, int maxFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public float[][] extractTfIdfFeatures(String[] documents, int ngramSize, int maxFeatures) {
         Objects.requireNonNull(documents, "documents must not be null");
@@ -111,6 +147,18 @@ public class GpuFeatureExtractor {
     /**
      * Extract context window features around target words
      */
+    /**
+    
+     * ID: GPU-GFE-005
+     * Requirement: extractContextFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractContextFeatures operation for this class.
+     * Inputs: String[] documents, String[] targetWords, int windowSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float[][] extractContextFeatures(String[] documents, String[] targetWords, int windowSize) {
         logger.debug("Extracting context features with window size " + windowSize);
 
@@ -135,6 +183,18 @@ public class GpuFeatureExtractor {
     /**
      * Apply feature normalization
      */
+    /**
+    
+     * ID: GPU-GFE-006
+     * Requirement: normalizeFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeFeatures operation for this class.
+     * Inputs: float[][] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void normalizeFeatures(float[][] features) {
         Objects.requireNonNull(features, "features must not be null");
         if (features.length == 0) return;
@@ -152,6 +212,18 @@ public class GpuFeatureExtractor {
 
     // Private helper methods
 
+    /**
+    
+     * ID: GPU-GFE-007
+     * Requirement: buildVocabulary must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new ocabulary.
+     * Inputs: String[] documents, int ngramSize, int maxFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void buildVocabulary(String[] documents, int ngramSize, int maxFeatures) {
         Map<String, Integer> ngramCounts = new HashMap<String, Integer>();
 
@@ -179,6 +251,18 @@ public class GpuFeatureExtractor {
         logger.debug("Built vocabulary with " + vocabularySize + " features");
     }
 
+    /**
+    
+     * ID: GPU-GFE-008
+     * Requirement: calculateIdfScores must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the calculateIdfScores result.
+     * Inputs: String[] documents, int ngramSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void calculateIdfScores(String[] documents, int ngramSize) {
         Map<String, Integer> documentFrequency = new HashMap<String, Integer>();
 
@@ -210,11 +294,35 @@ public class GpuFeatureExtractor {
         logger.debug("Calculated IDF scores for " + idfScores.size() + " features");
     }
 
+    /**
+    
+     * ID: GPU-GFE-009
+     * Requirement: tokenize must execute correctly within the contract defined by this class.
+     * Purpose: Implement the tokenize operation for this class.
+     * Inputs: String text
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private String[] tokenize(String text) {
         // Simple whitespace tokenization (can be enhanced)
         return text.toLowerCase().split("\\s+");
     }
 
+    /**
+    
+     * ID: GPU-GFE-010
+     * Requirement: generateNGrams must execute correctly within the contract defined by this class.
+     * Purpose: Implement the generateNGrams operation for this class.
+     * Inputs: String[] tokens, int n
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private List<String> generateNGrams(String[] tokens, int n) {
         List<String> ngrams = new ArrayList<String>();
 
@@ -230,6 +338,18 @@ public class GpuFeatureExtractor {
         return ngrams;
     }
 
+    /**
+    
+     * ID: GPU-GFE-011
+     * Requirement: extractContextWindow must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractContextWindow operation for this class.
+     * Inputs: String[] tokens, int targetIndex, int windowSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] extractContextWindow(String[] tokens, int targetIndex, int windowSize) {
         float[] context = new float[windowSize * 2];
 
@@ -250,6 +370,18 @@ public class GpuFeatureExtractor {
 
     // CPU implementations
 
+    /**
+    
+     * ID: GPU-GFE-012
+     * Requirement: extractNGramFeaturesCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractNGramFeaturesCpu operation for this class.
+     * Inputs: String[] documents, float[][] features, int ngramSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void extractNGramFeaturesCpu(String[] documents, float[][] features, int ngramSize) {
         for (int docIndex = 0; docIndex < documents.length; docIndex++) {
             String[] tokens = tokenize(documents[docIndex]);
@@ -265,6 +397,18 @@ public class GpuFeatureExtractor {
         }
     }
 
+    /**
+    
+     * ID: GPU-GFE-013
+     * Requirement: applyTfIdfTransformationCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyTfIdfTransformationCpu operation for this class.
+     * Inputs: float[][] tfFeatures, float[][] tfidfFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyTfIdfTransformationCpu(float[][] tfFeatures, float[][] tfidfFeatures) {
         for (int docIndex = 0; docIndex < tfFeatures.length; docIndex++) {
             for (Map.Entry<String, Integer> entry : vocabulary.entrySet()) {
@@ -278,6 +422,18 @@ public class GpuFeatureExtractor {
         }
     }
 
+    /**
+    
+     * ID: GPU-GFE-014
+     * Requirement: normalizeFeaturesCpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeFeaturesCpu operation for this class.
+     * Inputs: float[][] features, int numDocs, int numFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void normalizeFeaturesCpu(float[][] features, int numDocs, int numFeatures) {
         for (int docIndex = 0; docIndex < numDocs; docIndex++) {
             float[] docFeatures = features[docIndex];
@@ -303,6 +459,18 @@ public class GpuFeatureExtractor {
     // GPU implementations using parallel streams
     // (provides real multi-core speedup without requiring GPU hardware)
 
+    /**
+    
+     * ID: GPU-GFE-015
+     * Requirement: extractNGramFeaturesGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractNGramFeaturesGpu operation for this class.
+     * Inputs: String[] documents, float[][] features, int ngramSize
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void extractNGramFeaturesGpu(String[] documents, float[][] features, int ngramSize) {
         logger.debug("Parallel n-gram extraction for " + documents.length + " documents");
         IntStream.range(0, documents.length).parallel().forEach(docIndex -> {
@@ -325,6 +493,18 @@ public class GpuFeatureExtractor {
         });
     }
 
+    /**
+    
+     * ID: GPU-GFE-016
+     * Requirement: applyTfIdfTransformationGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyTfIdfTransformationGpu operation for this class.
+     * Inputs: float[][] tfFeatures, float[][] tfidfFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyTfIdfTransformationGpu(float[][] tfFeatures, float[][] tfidfFeatures) {
         logger.debug("Parallel TF-IDF transformation for " + tfFeatures.length + " documents");
         // Each document row is independent — safe to parallelise
@@ -337,6 +517,18 @@ public class GpuFeatureExtractor {
         });
     }
 
+    /**
+    
+     * ID: GPU-GFE-017
+     * Requirement: normalizeFeaturesGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeFeaturesGpu operation for this class.
+     * Inputs: float[][] features, int numDocs, int numFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void normalizeFeaturesGpu(float[][] features, int numDocs, int numFeatures) {
         logger.debug("Parallel L2 normalisation for " + numDocs + " document vectors");
         // Row-level normalisation: each document vector is independent
@@ -357,6 +549,18 @@ public class GpuFeatureExtractor {
 
     // Helper methods
 
+    /**
+    
+     * ID: GPU-GFE-018
+     * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpu operation for this class.
+     * Inputs: int numDocuments, int numFeatures
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean shouldUseGpu(int numDocuments, int numFeatures) {
         return provider.isGpuProvider() &&
                config.isGpuEnabled() &&
@@ -364,14 +568,50 @@ public class GpuFeatureExtractor {
                numFeatures >= MIN_FEATURES_FOR_GPU;
     }
 
+    /**
+    
+     * ID: GPU-GFE-019
+     * Requirement: Return the VocabularySize field value without side effects.
+     * Purpose: Return the value of the VocabularySize property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getVocabularySize() {
         return vocabularySize;
     }
 
+    /**
+    
+     * ID: GPU-GFE-020
+     * Requirement: Return the Vocabulary field value without side effects.
+     * Purpose: Return the value of the Vocabulary property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Map<String, Integer> getVocabulary() {
         return new HashMap<String, Integer>(vocabulary);
     }
 
+    /**
+    
+     * ID: GPU-GFE-021
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void release() {
         vocabulary.clear();
         idfScores.clear();

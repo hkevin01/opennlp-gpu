@@ -21,6 +21,18 @@ package org.apache.opennlp.gpu.analysis;
  */
 public class CostEfficiencyDemo {
 
+    /**
+    
+     * ID: GPU-CED-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         System.out.println("💰 Cost-Efficiency Analysis");
         System.out.println("============================");
@@ -33,6 +45,18 @@ public class CostEfficiencyDemo {
         displayRealWorldScenarios();
     }
 
+    /**
+    
+     * ID: GPU-CED-003
+     * Requirement: displayCloudCostComparison must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void displayCloudCostComparison() {
         System.out.println("☁️  Cloud Instance Cost Comparison (AWS/GCP/Azure):");
         System.out.println("   📊 Processing 1M documents daily:");
@@ -52,6 +76,18 @@ public class CostEfficiencyDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-CED-004
+     * Requirement: displayEnergyEfficiency must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void displayEnergyEfficiency() {
         System.out.println("🔋 Energy Efficiency Analysis:");
         System.out.println("   Processing 100K documents:");
@@ -71,6 +107,18 @@ public class CostEfficiencyDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-CED-005
+     * Requirement: displayMemoryEfficiency must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void displayMemoryEfficiency() {
         System.out.println("🧠 Memory Efficiency Metrics:");
         System.out.println("   Large-scale feature processing:");
@@ -90,6 +138,18 @@ public class CostEfficiencyDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-CED-006
+     * Requirement: displayThroughputAnalysis must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void displayThroughputAnalysis() {
         System.out.println("📈 Throughput Scaling Analysis:");
         System.out.println("   Real-world processing rates:");
@@ -112,6 +172,18 @@ public class CostEfficiencyDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-CED-007
+     * Requirement: displayRealWorldScenarios must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void displayRealWorldScenarios() {
         System.out.println("🏢 Real-World Production Scenarios:");
         System.out.println();

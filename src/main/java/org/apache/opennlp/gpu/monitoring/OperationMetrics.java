@@ -55,10 +55,34 @@ public class OperationMetrics {
     private final Object historyLock = new Object();
     private static final int MAX_HISTORY_SIZE = 100;
     
+    /**
+    
+     * ID: GPU-OM-002
+     * Requirement: OperationMetrics must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a OperationMetrics instance.
+     * Inputs: String operationName
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public OperationMetrics(String operationName) {
         this.operationName = operationName;
     }
     
+    /**
+    
+     * ID: GPU-OM-003
+     * Requirement: recordExecution must execute correctly within the contract defined by this class.
+     * Purpose: Implement the recordExecution operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void recordExecution(long duration, long dataSize, boolean success, 
                                GpuPerformanceMonitor.OperationType operationType) {
         executionCount.incrementAndGet();
@@ -87,6 +111,18 @@ public class OperationMetrics {
         }
     }
     
+    /**
+    
+     * ID: GPU-OM-004
+     * Requirement: updateMinTime must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateMinTime operation for this class.
+     * Inputs: long duration
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateMinTime(long duration) {
         long current = minTime.get();
         while (duration < current && !minTime.compareAndSet(current, duration)) {
@@ -94,6 +130,18 @@ public class OperationMetrics {
         }
     }
     
+    /**
+    
+     * ID: GPU-OM-005
+     * Requirement: updateMaxTime must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updateMaxTime operation for this class.
+     * Inputs: long duration
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updateMaxTime(long duration) {
         long current = maxTime.get();
         while (duration > current && !maxTime.compareAndSet(current, duration)) {
@@ -101,25 +149,157 @@ public class OperationMetrics {
         }
     }
     
+    /**
+    
+     * ID: GPU-OM-006
+     * Requirement: Return the OperationName field value without side effects.
+     * Purpose: Return the value of the OperationName property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public String getOperationName() { return operationName; }
+    /**
+    
+     * ID: GPU-OM-007
+     * Requirement: Return the ExecutionCount field value without side effects.
+     * Purpose: Return the value of the ExecutionCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getExecutionCount() { return executionCount.get(); }
+    /**
+    
+     * ID: GPU-OM-008
+     * Requirement: Return the SuccessCount field value without side effects.
+     * Purpose: Return the value of the SuccessCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getSuccessCount() { return successCount.get(); }
+    /**
+    
+     * ID: GPU-OM-009
+     * Requirement: Return the TotalTime field value without side effects.
+     * Purpose: Return the value of the TotalTime property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getTotalTime() { return totalTime.get(); }
+    /**
+    
+     * ID: GPU-OM-010
+     * Requirement: Return the TotalDataProcessed field value without side effects.
+     * Purpose: Return the value of the TotalDataProcessed property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getTotalDataProcessed() { return totalDataProcessed.get(); }
+    /**
+    
+     * ID: GPU-OM-011
+     * Requirement: Return the MinTime field value without side effects.
+     * Purpose: Return the value of the MinTime property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getMinTime() { return minTime.get() == Long.MAX_VALUE ? 0 : minTime.get(); }
+    /**
+    
+     * ID: GPU-OM-012
+     * Requirement: Return the MaxTime field value without side effects.
+     * Purpose: Return the value of the MaxTime property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getMaxTime() { return maxTime.get(); }
+    /**
+    
+     * ID: GPU-OM-013
+     * Requirement: Return the CpuFallbackCount field value without side effects.
+     * Purpose: Return the value of the CpuFallbackCount property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getCpuFallbackCount() { return cpuFallbackCount.get(); }
     
+    /**
+    
+     * ID: GPU-OM-014
+     * Requirement: Return the SuccessRate field value without side effects.
+     * Purpose: Return the value of the SuccessRate property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public double getSuccessRate() {
         long total = executionCount.get();
         return total > 0 ? (double) successCount.get() / total : 0.0;
     }
     
+    /**
+    
+     * ID: GPU-OM-015
+     * Requirement: Return the AverageTime field value without side effects.
+     * Purpose: Return the value of the AverageTime property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public long getAverageTime() {
         long total = executionCount.get();
         return total > 0 ? totalTime.get() / total : 0;
     }
     
+    /**
+    
+     * ID: GPU-OM-016
+     * Requirement: Return the AverageThroughputMBps field value without side effects.
+     * Purpose: Return the value of the AverageThroughputMBps property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public double getAverageThroughputMBps() {
         long totalTimeMs = totalTime.get() / 1_000_000; // Convert to milliseconds
         long totalDataMB = totalDataProcessed.get() / (1024 * 1024);

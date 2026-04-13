@@ -57,6 +57,18 @@ public class GpuMaxentTrainer implements EventTrainer {
     /**
      * Default constructor (required by OpenNLP framework)
      */
+    /**
+    
+     * ID: GPU-GMT-002
+     * Requirement: GpuMaxentTrainer must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuMaxentTrainer instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuMaxentTrainer() {
         this.config = new GpuConfig();
         this.config.setGpuEnabled(DEFAULT_GPU_ENABLED);
@@ -68,6 +80,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * Constructor with GPU configuration
      * @param config GPU configuration
      */
+    /**
+    
+     * ID: GPU-GMT-003
+     * Requirement: GpuMaxentTrainer must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuMaxentTrainer instance.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuMaxentTrainer(GpuConfig config) {
         this.config = config;
     }
@@ -76,6 +100,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * Initialize the trainer (required by OpenNLP Trainer interface)
      * @param trainingParameters Training parameters
      * @param reportMap Optional report map
+     */
+    /**
+    
+     * ID: GPU-GMT-004
+     * Requirement: init must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void init(TrainingParameters trainingParameters,
                      Map<String, String> reportMap) {
@@ -96,6 +132,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * @param reportMap Optional report map
      * @param trainingConfiguration Training configuration
      */
+    /**
+    
+     * ID: GPU-GMT-005
+     * Requirement: init must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void init(TrainingParameters trainingParameters,
                      Map<String, String> reportMap,
                      TrainingConfiguration trainingConfiguration) {
@@ -111,6 +159,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * @param indexer The data indexer containing training data
      * @param trainingParams Training parameters
      * @return Trained MaxEnt model
+     */
+    /**
+    
+     * ID: GPU-GMT-006
+     * Requirement: trainModel must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: DataIndexer indexer, TrainingParameters trainingParams
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public MaxentModel trainModel(DataIndexer indexer, TrainingParameters trainingParams) {
         logger.info("Training MaxEnt model with GPU acceleration");
@@ -146,6 +206,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * @return Trained MaxEnt model
      * @throws IOException If training fails
      */
+    /**
+    
+     * ID: GPU-GMT-007
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static MaxentModel train(String languageCode, ObjectStream<Event> eventStream,
                                    TrainingParameters trainParams) throws IOException {
 
@@ -180,6 +252,18 @@ public class GpuMaxentTrainer implements EventTrainer {
     /**
      * Train using GPU acceleration.
      */
+    /**
+    
+     * ID: GPU-GMT-008
+     * Requirement: trainWithGpu must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static MaxentModel trainWithGpu(ObjectStream<Event> eventStream,
                                            TrainingParameters trainParams,
                                            GpuConfig config) throws IOException {
@@ -212,6 +296,18 @@ public class GpuMaxentTrainer implements EventTrainer {
     /**
      * Train using CPU fallback (standard OpenNLP implementation).
      */
+    /**
+    
+     * ID: GPU-GMT-009
+     * Requirement: trainWithCpu must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static MaxentModel trainWithCpu(ObjectStream<Event> eventStream,
                                            TrainingParameters trainParams) throws IOException {
 
@@ -222,6 +318,18 @@ public class GpuMaxentTrainer implements EventTrainer {
         return cpuTrainer.train(eventStream);
     }
 
+    /**
+    
+     * ID: GPU-GMT-010
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: ObjectStream<Event> events
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public MaxentModel train(ObjectStream<Event> events) throws IOException {
         // Default training parameters for direct usage
@@ -231,6 +339,18 @@ public class GpuMaxentTrainer implements EventTrainer {
         return train("en", events, params);
     }
 
+    /**
+    
+     * ID: GPU-GMT-011
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: DataIndexer indexer
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public MaxentModel train(DataIndexer indexer) throws IOException {
         // Default training parameters for direct usage
@@ -245,6 +365,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      *
      * @return true if GPU acceleration is available, false otherwise
      */
+    /**
+    
+     * ID: GPU-GMT-012
+     * Requirement: Evaluate and return the boolean result of isGpuAvailable.
+     * Purpose: Return whether isGpuAvailable condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean isGpuAvailable() {
         return GpuConfig.isGpuAvailable();
     }
@@ -253,6 +385,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * Get GPU information for diagnostics.
      *
      * @return Map containing GPU information
+     */
+    /**
+    
+     * ID: GPU-GMT-013
+     * Requirement: Return the GpuInfo field value without side effects.
+     * Purpose: Return the value of the GpuInfo property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static Map<String, Object> getGpuInfo() {
         return GpuConfig.getGpuInfo();
@@ -264,6 +408,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * @param batchSize GPU batch size (default: 256)
      * @param memoryPoolMB GPU memory pool size in MB (default: 512)
      * @return Optimized training parameters
+     */
+    /**
+    
+     * ID: GPU-GMT-014
+     * Requirement: createGpuOptimizedParameters must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new GpuOptimizedParameters.
+     * Inputs: int batchSize, int memoryPoolMB
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static TrainingParameters createGpuOptimizedParameters(int batchSize, int memoryPoolMB) {
         TrainingParameters params = new TrainingParameters();
@@ -283,6 +439,18 @@ public class GpuMaxentTrainer implements EventTrainer {
      * Create default GPU-optimized training parameters.
      *
      * @return Default GPU-optimized training parameters
+     */
+    /**
+    
+     * ID: GPU-GMT-015
+     * Requirement: createDefaultGpuParameters must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new DefaultGpuParameters.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static TrainingParameters createDefaultGpuParameters() {
         return createGpuOptimizedParameters(DEFAULT_BATCH_SIZE, DEFAULT_MEMORY_POOL_MB);

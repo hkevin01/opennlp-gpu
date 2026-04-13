@@ -44,6 +44,18 @@ public class GpuModelAdapter implements MaxentModel {
     /**
      * Creates a GPU-accelerated adapter for the given model
      */
+    /**
+    
+     * ID: GPU-GMA-002
+     * Requirement: GpuModelAdapter must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuModelAdapter instance.
+     * Inputs: MaxentModel cpuModel, GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuModelAdapter(MaxentModel cpuModel, GpuConfig config) {
         this.cpuModel = cpuModel;
         this.config = config;
@@ -53,6 +65,18 @@ public class GpuModelAdapter implements MaxentModel {
         logger.info("Created GPU model adapter for: " + cpuModel.toString());
     }
     
+    /**
+    
+     * ID: GPU-GMA-003
+     * Requirement: createComputeProvider must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new ComputeProvider.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private ComputeProvider createComputeProvider() {
         try {
             if (config.isGpuEnabled() && GpuComputeProvider.isGpuAvailable()) {
@@ -67,6 +91,18 @@ public class GpuModelAdapter implements MaxentModel {
     /**
      * Determines whether to use GPU acceleration for this evaluation
      */
+    /**
+    
+     * ID: GPU-GMA-004
+     * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shouldUseGpu operation for this class.
+     * Inputs: String[] context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean shouldUseGpu(String[] context) {
         if (!computeProvider.isGpuProvider()) {
             return false;
@@ -77,6 +113,18 @@ public class GpuModelAdapter implements MaxentModel {
                cpuModel.getNumOutcomes() >= GPU_THRESHOLD_OUTCOMES;
     }
     
+    /**
+    
+     * ID: GPU-GMA-005
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] context) {
         if (shouldUseGpu(context)) {
@@ -86,6 +134,18 @@ public class GpuModelAdapter implements MaxentModel {
         }
     }
     
+    /**
+    
+     * ID: GPU-GMA-006
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] context, double[] probs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] context, double[] probs) {
         if (shouldUseGpu(context)) {
@@ -95,37 +155,121 @@ public class GpuModelAdapter implements MaxentModel {
         }
     }
     
+    /**
+    
+     * ID: GPU-GMA-007
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] context, float[] values
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] context, float[] values) {
         // For now, delegate to CPU implementation
         return cpuModel.eval(context, values);
     }
 
+    /**
+    
+     * ID: GPU-GMA-008
+     * Requirement: Return the BestOutcome field value without side effects.
+     * Purpose: Return the value of the BestOutcome property.
+     * Inputs: double[] ocs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getBestOutcome(double[] ocs) {
         return cpuModel.getBestOutcome(ocs);
     }
 
+    /**
+    
+     * ID: GPU-GMA-009
+     * Requirement: Return the AllOutcomes field value without side effects.
+     * Purpose: Return the value of the AllOutcomes property.
+     * Inputs: double[] ocs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getAllOutcomes(double[] ocs) {
         return cpuModel.getAllOutcomes(ocs);
     }
     
+    /**
+    
+     * ID: GPU-GMA-010
+     * Requirement: Return the Outcome field value without side effects.
+     * Purpose: Return the value of the Outcome property.
+     * Inputs: int index
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getOutcome(int index) {
         return cpuModel.getOutcome(index);
     }
     
+    /**
+    
+     * ID: GPU-GMA-011
+     * Requirement: Return the NumOutcomes field value without side effects.
+     * Purpose: Return the value of the NumOutcomes property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getNumOutcomes() {
         return cpuModel.getNumOutcomes();
     }
     
+    /**
+    
+     * ID: GPU-GMA-012
+     * Requirement: Return the Index field value without side effects.
+     * Purpose: Return the value of the Index property.
+     * Inputs: String outcome
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getIndex(String outcome) {
         return cpuModel.getIndex(outcome);
     }
     
+    /**
+    
+     * ID: GPU-GMA-013
+     * Requirement: Return the AllOutcomes field value without side effects.
+     * Purpose: Return the value of the AllOutcomes property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public String[] getAllOutcomes() {
         int numOutcomes = cpuModel.getNumOutcomes();
         String[] outcomes = new String[numOutcomes];
@@ -137,6 +281,18 @@ public class GpuModelAdapter implements MaxentModel {
     
     /**
      * GPU-accelerated evaluation method
+     */
+    /**
+    
+     * ID: GPU-GMA-014
+     * Requirement: evaluateOnGpu must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the evaluateOnGpu result.
+     * Inputs: String[] context, double[] probs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private double[] evaluateOnGpu(String[] context, double[] probs) {
         try {
@@ -155,6 +311,18 @@ public class GpuModelAdapter implements MaxentModel {
     
     /**
      * Cleanup GPU resources
+     */
+    /**
+    
+     * ID: GPU-GMA-015
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void cleanup() {
         if (computeProvider != null) {

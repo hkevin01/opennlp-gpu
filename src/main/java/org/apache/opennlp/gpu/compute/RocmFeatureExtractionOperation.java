@@ -29,19 +29,139 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     private boolean initialized = false;
     private int deviceId = 0;
     // JNI method declarations for ROCm feature extraction operations
+    /**
+    
+     * ID: GPU-RFEO-002
+     * Requirement: allocateDeviceMemory must execute correctly within the contract defined by this class.
+     * Purpose: Implement the allocateDeviceMemory operation for this class.
+     * Inputs: long size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native long allocateDeviceMemory(long size);
+    /**
+    
+     * ID: GPU-RFEO-003
+     * Requirement: freeDeviceMemory must execute correctly within the contract defined by this class.
+     * Purpose: Implement the freeDeviceMemory operation for this class.
+     * Inputs: long devicePtr
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void freeDeviceMemory(long devicePtr);
+    /**
+    
+     * ID: GPU-RFEO-004
+     * Requirement: copyIntHostToDevice must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyIntHostToDevice operation for this class.
+     * Inputs: int[] hostArray, long devicePtr, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyIntHostToDevice(int[] hostArray, long devicePtr, int size);
+    /**
+    
+     * ID: GPU-RFEO-005
+     * Requirement: copyIntDeviceToHost must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyIntDeviceToHost operation for this class.
+     * Inputs: long devicePtr, int[] hostArray, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyIntDeviceToHost(long devicePtr, int[] hostArray, int size);
+    /**
+    
+     * ID: GPU-RFEO-006
+     * Requirement: copyFloatHostToDevice must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyFloatHostToDevice operation for this class.
+     * Inputs: float[] hostArray, long devicePtr, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyFloatHostToDevice(float[] hostArray, long devicePtr, int size);
+    /**
+    
+     * ID: GPU-RFEO-007
+     * Requirement: copyFloatDeviceToHost must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyFloatDeviceToHost operation for this class.
+     * Inputs: long devicePtr, float[] hostArray, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyFloatDeviceToHost(long devicePtr, float[] hostArray, int size);
+    /**
+    
+     * ID: GPU-RFEO-008
+     * Requirement: rocmExtractNGrams must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmExtractNGrams operation for this class.
+     * Inputs: long tokensPtr, int numTokens, int maxNGramLength, long featureMapPtr, int fe...
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native int rocmExtractNGrams(long tokensPtr, int numTokens, int maxNGramLength, long featureMapPtr, int featureMapSize);
+    /**
+    
+     * ID: GPU-RFEO-009
+     * Requirement: rocmComputeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmComputeTfIdf operation for this class.
+     * Inputs: long termFreqPtr, long docFreqPtr, int numDocs, long tfidfPtr, int numTerms
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmComputeTfIdf(long termFreqPtr, long docFreqPtr, int numDocs, long tfidfPtr, int numTerms);
+    /**
+    
+     * ID: GPU-RFEO-010
+     * Requirement: rocmComputeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Implement the rocmComputeCosineSimilarity operation for this class.
+     * Inputs: long docVectorsPtr, int numDocs, int vectorSize, long similaritiesPtr
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void rocmComputeCosineSimilarity(long docVectorsPtr, int numDocs, int vectorSize, long similaritiesPtr);
     /**
      * Creates a new ROCm feature extraction operation with the specified provider.
      *
      * @param provider the compute provider to use
+     */
+    /**
+    
+     * ID: GPU-RFEO-011
+     * Requirement: RocmFeatureExtractionOperation must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a RocmFeatureExtractionOperation instance.
+     * Inputs: ComputeProvider provider
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public RocmFeatureExtractionOperation(ComputeProvider provider) {
         this.provider = provider;
@@ -61,6 +181,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     // Remove @Override annotation
+    /**
+    
+     * ID: GPU-RFEO-012
+     * Requirement: extractNGrams must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractNGrams operation for this class.
+     * Inputs: int[] tokens, int numTokens, int maxNGramLength, int[] featureMap
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int extractNGrams(int[] tokens, int numTokens, int maxNGramLength, int[] featureMap) {
         if (!initialized) {
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
@@ -84,6 +216,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     // Remove @Override annotation
+    /**
+    
+     * ID: GPU-RFEO-013
+     * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeTfIdf result.
+     * Inputs: float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void computeTfIdf(float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms) {
         if (!initialized) {
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
@@ -109,6 +253,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     // Remove @Override annotation
+    /**
+    
+     * ID: GPU-RFEO-014
+     * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeCosineSimilarity result.
+     * Inputs: float[] docVectors, int numDocs, int vectorSize, float[] similarities
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void computeCosineSimilarity(float[] docVectors, int numDocs, int vectorSize, float[] similarities) {
         if (!initialized) {
             throw new IllegalStateException("ROCm feature extraction operations not initialized");
@@ -131,6 +287,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         }
     }
     // Add missing interface method implementation
+    /**
+    
+     * ID: GPU-RFEO-015
+     * Requirement: extractFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractFeatures operation for this class.
+     * Inputs: String[] tokens
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public float[] extractFeatures(String[] tokens) {
         logger.debug("Extracting features from {} tokens", tokens.length);
@@ -151,6 +319,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         return features;
     }
     // Add missing interface method implementation
+    /**
+    
+     * ID: GPU-RFEO-016
+     * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeTfIdf result.
+     * Inputs: String[] documents
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public float[] computeTfIdf(String[] documents) {
         logger.debug("Computing TF-IDF for {} documents", documents.length);
@@ -173,6 +353,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         return tfidf;
     }
     // Existing method stays to provide implementation detail
+    /**
+    
+     * ID: GPU-RFEO-017
+     * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeCosineSimilarity result.
+     * Inputs: float[] vector1, float[] vector2
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public float computeCosineSimilarity(float[] vector1, float[] vector2) {
         if (vector1.length != vector2.length) {
             throw new IllegalArgumentException("Vector dimensions must match");
@@ -190,6 +382,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         }
         return dotProduct / (float) Math.sqrt(norm1 * norm2);
     }
+    /**
+    
+     * ID: GPU-RFEO-018
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void release() {
         logger.info("Releasing ROCm feature extraction resources");
@@ -199,6 +403,18 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     /**
      * Explicitly implement the getProvider method required by the interface
      * @return the compute provider
+     */
+    /**
+    
+     * ID: GPU-RFEO-019
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     @Override
     public ComputeProvider getProvider() {

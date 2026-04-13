@@ -79,6 +79,18 @@ public class CiCdManager {
         private final int minMemoryMB;
         private final int maxBatchSize;
         
+        /**
+        
+         * ID: GPU-CCM-002
+         * Requirement: EnvironmentConfig must execute correctly within the contract defined by this class.
+         * Purpose: Implement the EnvironmentConfig operation for this class.
+         * Inputs: String name, EnvironmentType type
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public EnvironmentConfig(String name, EnvironmentType type) {
             this.name = name;
             this.type = type;
@@ -90,23 +102,143 @@ public class CiCdManager {
         }
         
         // Getters
+        /**
+        
+         * ID: GPU-CCM-003
+         * Requirement: Return the Name field value without side effects.
+         * Purpose: Return the value of the Name property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getName() { return name; }
+        /**
+        
+         * ID: GPU-CCM-004
+         * Requirement: Return the Type field value without side effects.
+         * Purpose: Return the value of the Type property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public EnvironmentType getType() { return type; }
+        /**
+        
+         * ID: GPU-CCM-005
+         * Requirement: Return the Properties field value without side effects.
+         * Purpose: Return the value of the Properties property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public Map<String, Object> getProperties() { return new HashMap<>(properties); }
+        /**
+        
+         * ID: GPU-CCM-006
+         * Requirement: Return the RequiredFeatures field value without side effects.
+         * Purpose: Return the value of the RequiredFeatures property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public List<String> getRequiredFeatures() { return new ArrayList<>(requiredFeatures); }
+        /**
+        
+         * ID: GPU-CCM-007
+         * Requirement: Evaluate and return the boolean result of isGpuRequired.
+         * Purpose: Return whether isGpuRequired condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean isGpuRequired() { return gpuRequired; }
+        /**
+        
+         * ID: GPU-CCM-008
+         * Requirement: Return the MinMemoryMB field value without side effects.
+         * Purpose: Return the value of the MinMemoryMB property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public int getMinMemoryMB() { return minMemoryMB; }
+        /**
+        
+         * ID: GPU-CCM-009
+         * Requirement: Return the MaxBatchSize field value without side effects.
+         * Purpose: Return the value of the MaxBatchSize property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public int getMaxBatchSize() { return maxBatchSize; }
         
         // Property management
+        /**
+        
+         * ID: GPU-CCM-010
+         * Requirement: Update the Property field to the supplied non-null value.
+         * Purpose: Set the Property property to the supplied value.
+         * Inputs: String key, Object value
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setProperty(String key, Object value) {
             properties.put(key, value);
         }
         
+        /**
+        
+         * ID: GPU-CCM-011
+         * Requirement: Return the Property field value without side effects.
+         * Purpose: Return the value of the Property property.
+         * Inputs: String key
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public Object getProperty(String key) {
             return properties.get(key);
         }
         
+        /**
+        
+         * ID: GPU-CCM-012
+         * Requirement: addRequiredFeature must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String feature
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addRequiredFeature(String feature) {
             if (!requiredFeatures.contains(feature)) {
                 requiredFeatures.add(feature);
@@ -134,6 +266,18 @@ public class CiCdManager {
         private final List<String> details;
         private final long executionTimeMs;
         
+        /**
+        
+         * ID: GPU-CCM-013
+         * Requirement: ValidationResult must execute correctly within the contract defined by this class.
+         * Purpose: Implement the ValidationResult operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public ValidationResult(boolean passed, String checkName, String message, 
                               List<String> details, long executionTimeMs) {
             this.passed = passed;
@@ -144,10 +288,70 @@ public class CiCdManager {
         }
         
         // Getters
+        /**
+        
+         * ID: GPU-CCM-014
+         * Requirement: Evaluate and return the boolean result of isPassed.
+         * Purpose: Return whether isPassed condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean isPassed() { return passed; }
+        /**
+        
+         * ID: GPU-CCM-015
+         * Requirement: Return the CheckName field value without side effects.
+         * Purpose: Return the value of the CheckName property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getCheckName() { return checkName; }
+        /**
+        
+         * ID: GPU-CCM-016
+         * Requirement: Return the Message field value without side effects.
+         * Purpose: Return the value of the Message property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getMessage() { return message; }
+        /**
+        
+         * ID: GPU-CCM-017
+         * Requirement: Return the Details field value without side effects.
+         * Purpose: Return the value of the Details property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public List<String> getDetails() { return new ArrayList<>(details); }
+        /**
+        
+         * ID: GPU-CCM-018
+         * Requirement: Return the ExecutionTimeMs field value without side effects.
+         * Purpose: Return the value of the ExecutionTimeMs property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public long getExecutionTimeMs() { return executionTimeMs; }
     }
     
@@ -163,6 +367,18 @@ public class CiCdManager {
         private final String buildVersion;
         private final long totalDeploymentTimeMs;
         
+        /**
+        
+         * ID: GPU-CCM-019
+         * Requirement: DeploymentReport must execute correctly within the contract defined by this class.
+         * Purpose: Implement the DeploymentReport operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public DeploymentReport(String environmentName, DeploymentState state,
                               List<ValidationResult> validationResults,
                               Map<String, Object> metrics, String buildVersion,
@@ -178,20 +394,128 @@ public class CiCdManager {
         }
         
         // Getters
+        /**
+        
+         * ID: GPU-CCM-020
+         * Requirement: Return the EnvironmentName field value without side effects.
+         * Purpose: Return the value of the EnvironmentName property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getEnvironmentName() { return environmentName; }
+        /**
+        
+         * ID: GPU-CCM-021
+         * Requirement: Return the State field value without side effects.
+         * Purpose: Return the value of the State property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public DeploymentState getState() { return state; }
+        /**
+        
+         * ID: GPU-CCM-022
+         * Requirement: Return the Timestamp field value without side effects.
+         * Purpose: Return the value of the Timestamp property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public LocalDateTime getTimestamp() { return timestamp; }
+        /**
+        
+         * ID: GPU-CCM-023
+         * Requirement: Return the ValidationResults field value without side effects.
+         * Purpose: Return the value of the ValidationResults property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public List<ValidationResult> getValidationResults() { return new ArrayList<>(validationResults); }
+        /**
+        
+         * ID: GPU-CCM-024
+         * Requirement: Return the Metrics field value without side effects.
+         * Purpose: Return the value of the Metrics property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public Map<String, Object> getMetrics() { return new HashMap<>(metrics); }
+        /**
+        
+         * ID: GPU-CCM-025
+         * Requirement: Return the BuildVersion field value without side effects.
+         * Purpose: Return the value of the BuildVersion property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getBuildVersion() { return buildVersion; }
+        /**
+        
+         * ID: GPU-CCM-026
+         * Requirement: Return the TotalDeploymentTimeMs field value without side effects.
+         * Purpose: Return the value of the TotalDeploymentTimeMs property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public long getTotalDeploymentTimeMs() { return totalDeploymentTimeMs; }
         
+        /**
+        
+         * ID: GPU-CCM-027
+         * Requirement: Evaluate and return the boolean result of isSuccessful.
+         * Purpose: Return whether isSuccessful condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean isSuccessful() {
             return state == DeploymentState.DEPLOYED && 
                    validationResults.stream().allMatch(ValidationResult::isPassed);
         }
     }
     
+    /**
+    
+     * ID: GPU-CCM-028
+     * Requirement: CiCdManager must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a CiCdManager instance.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public CiCdManager(GpuConfig config) {
         this.config = config;
         this.environments = new ConcurrentHashMap<>();
@@ -216,6 +540,18 @@ public class CiCdManager {
     
     /**
      * Initialize default environment configurations
+     */
+    /**
+    
+     * ID: GPU-CCM-029
+     * Requirement: initializeDefaultEnvironments must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void initializeDefaultEnvironments() {
         // Development environment
@@ -267,12 +603,48 @@ public class CiCdManager {
     /**
      * Register default validation checks
      */
+    /**
+    
+     * ID: GPU-CCM-030
+     * Requirement: registerDefaultValidationChecks must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void registerDefaultValidationChecks() {
         // GPU availability check
         validationChecks.add(new ValidationCheck() {
+            /**
+            
+             * ID: GPU-CCM-031
+             * Requirement: Return the Name field value without side effects.
+             * Purpose: Return the value of the Name property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public String getName() { return "GPU Availability"; }
             
+            /**
+            
+             * ID: GPU-CCM-032
+             * Requirement: validate must execute correctly within the contract defined by this class.
+             * Purpose: Validate preconditions for ate.
+             * Inputs: EnvironmentConfig environment, GpuConfig config
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public ValidationResult validate(EnvironmentConfig environment, GpuConfig config) {
                 long startTime = System.currentTimeMillis();
@@ -291,18 +663,66 @@ public class CiCdManager {
                 return new ValidationResult(passed, getName(), message, details, executionTime);
             }
             
+            /**
+            
+             * ID: GPU-CCM-033
+             * Requirement: Evaluate and return the boolean result of isRequired.
+             * Purpose: Return whether isRequired condition holds.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public boolean isRequired() { return true; }
             
+            /**
+            
+             * ID: GPU-CCM-034
+             * Requirement: Return the Priority field value without side effects.
+             * Purpose: Return the value of the Priority property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public int getPriority() { return 1; }
         });
         
         // Memory configuration check
         validationChecks.add(new ValidationCheck() {
+            /**
+            
+             * ID: GPU-CCM-035
+             * Requirement: Return the Name field value without side effects.
+             * Purpose: Return the value of the Name property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public String getName() { return "Memory Configuration"; }
             
+            /**
+            
+             * ID: GPU-CCM-036
+             * Requirement: validate must execute correctly within the contract defined by this class.
+             * Purpose: Validate preconditions for ate.
+             * Inputs: EnvironmentConfig environment, GpuConfig config
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public ValidationResult validate(EnvironmentConfig environment, GpuConfig config) {
                 long startTime = System.currentTimeMillis();
@@ -322,18 +742,66 @@ public class CiCdManager {
                 return new ValidationResult(passed, getName(), message, details, executionTime);
             }
             
+            /**
+            
+             * ID: GPU-CCM-037
+             * Requirement: Evaluate and return the boolean result of isRequired.
+             * Purpose: Return whether isRequired condition holds.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public boolean isRequired() { return true; }
             
+            /**
+            
+             * ID: GPU-CCM-038
+             * Requirement: Return the Priority field value without side effects.
+             * Purpose: Return the value of the Priority property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public int getPriority() { return 2; }
         });
         
         // Batch size configuration check
         validationChecks.add(new ValidationCheck() {
+            /**
+            
+             * ID: GPU-CCM-039
+             * Requirement: Return the Name field value without side effects.
+             * Purpose: Return the value of the Name property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public String getName() { return "Batch Size Configuration"; }
             
+            /**
+            
+             * ID: GPU-CCM-040
+             * Requirement: validate must execute correctly within the contract defined by this class.
+             * Purpose: Validate preconditions for ate.
+             * Inputs: EnvironmentConfig environment, GpuConfig config
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public ValidationResult validate(EnvironmentConfig environment, GpuConfig config) {
                 long startTime = System.currentTimeMillis();
@@ -353,18 +821,66 @@ public class CiCdManager {
                 return new ValidationResult(passed, getName(), message, details, executionTime);
             }
             
+            /**
+            
+             * ID: GPU-CCM-041
+             * Requirement: Evaluate and return the boolean result of isRequired.
+             * Purpose: Return whether isRequired condition holds.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public boolean isRequired() { return true; }
             
+            /**
+            
+             * ID: GPU-CCM-042
+             * Requirement: Return the Priority field value without side effects.
+             * Purpose: Return the value of the Priority property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public int getPriority() { return 3; }
         });
         
         // Feature availability check
         validationChecks.add(new ValidationCheck() {
+            /**
+            
+             * ID: GPU-CCM-043
+             * Requirement: Return the Name field value without side effects.
+             * Purpose: Return the value of the Name property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public String getName() { return "Feature Availability"; }
             
+            /**
+            
+             * ID: GPU-CCM-044
+             * Requirement: validate must execute correctly within the contract defined by this class.
+             * Purpose: Validate preconditions for ate.
+             * Inputs: EnvironmentConfig environment, GpuConfig config
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public ValidationResult validate(EnvironmentConfig environment, GpuConfig config) {
                 long startTime = System.currentTimeMillis();
@@ -388,9 +904,33 @@ public class CiCdManager {
                 return new ValidationResult(allFeaturesAvailable, getName(), message, details, executionTime);
             }
             
+            /**
+            
+             * ID: GPU-CCM-045
+             * Requirement: Evaluate and return the boolean result of isRequired.
+             * Purpose: Return whether isRequired condition holds.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public boolean isRequired() { return true; }
             
+            /**
+            
+             * ID: GPU-CCM-046
+             * Requirement: Return the Priority field value without side effects.
+             * Purpose: Return the value of the Priority property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public int getPriority() { return 4; }
         });
@@ -400,6 +940,18 @@ public class CiCdManager {
     
     /**
      * Check if a feature is available
+     */
+    /**
+    
+     * ID: GPU-CCM-047
+     * Requirement: Evaluate and return the boolean result of isFeatureAvailable.
+     * Purpose: Return whether isFeatureAvailable condition holds.
+     * Inputs: String feature, GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private boolean isFeatureAvailable(String feature, GpuConfig config) {
         switch (feature) {
@@ -422,6 +974,18 @@ public class CiCdManager {
     
     /**
      * Deploy to specified environment
+     */
+    /**
+    
+     * ID: GPU-CCM-048
+     * Requirement: deployToEnvironment must execute correctly within the contract defined by this class.
+     * Purpose: Implement the deployToEnvironment operation for this class.
+     * Inputs: String environmentName
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public DeploymentReport deployToEnvironment(String environmentName) {
         long deploymentStartTime = System.currentTimeMillis();
@@ -492,6 +1056,18 @@ public class CiCdManager {
     /**
      * Run all validation checks for an environment
      */
+    /**
+    
+     * ID: GPU-CCM-049
+     * Requirement: runValidationChecks must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runValidationChecks operation.
+     * Inputs: EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private List<ValidationResult> runValidationChecks(EnvironmentConfig environment) {
         logger.info("Running " + validationChecks.size() + " validation checks");
         
@@ -534,19 +1110,79 @@ public class CiCdManager {
     /**
      * Get validation check by name
      */
+    /**
+    
+     * ID: GPU-CCM-050
+     * Requirement: Return the ValidationCheck field value without side effects.
+     * Purpose: Return the value of the ValidationCheck property.
+     * Inputs: String name
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private ValidationCheck getValidationCheck(String name) {
         return validationChecks.stream()
             .filter(check -> check.getName().equals(name))
             .findFirst()
             .orElse(new ValidationCheck() {
+                /**
+                
+                 * ID: GPU-CCM-051
+                 * Requirement: Return the Name field value without side effects.
+                 * Purpose: Return the value of the Name property.
+                 * Inputs: None — no parameters.
+                 * Outputs: Return value or output parameter as described; void otherwise.
+                 * Postconditions: Return value or output parameter contains the computed result.
+                 * Side Effects: May modify instance state; see method body for details.
+                 * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+                 * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+                 */
                 @Override
                 public String getName() { return name; }
+                /**
+                
+                 * ID: GPU-CCM-052
+                 * Requirement: validate must execute correctly within the contract defined by this class.
+                 * Purpose: Validate preconditions for ate.
+                 * Inputs: EnvironmentConfig env, GpuConfig cfg
+                 * Outputs: Return value or output parameter as described; void otherwise.
+                 * Postconditions: Return value or output parameter contains the computed result.
+                 * Side Effects: May modify instance state; see method body for details.
+                 * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+                 * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+                 */
                 @Override
                 public ValidationResult validate(EnvironmentConfig env, GpuConfig cfg) {
                     return new ValidationResult(false, name, "Unknown check", new ArrayList<>(), 0);
                 }
+                /**
+                
+                 * ID: GPU-CCM-053
+                 * Requirement: Evaluate and return the boolean result of isRequired.
+                 * Purpose: Return whether isRequired condition holds.
+                 * Inputs: None — no parameters.
+                 * Outputs: Return value or output parameter as described; void otherwise.
+                 * Postconditions: Return value or output parameter contains the computed result.
+                 * Side Effects: May modify instance state; see method body for details.
+                 * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+                 * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+                 */
                 @Override
                 public boolean isRequired() { return false; }
+                /**
+                
+                 * ID: GPU-CCM-054
+                 * Requirement: Return the Priority field value without side effects.
+                 * Purpose: Return the value of the Priority property.
+                 * Inputs: None — no parameters.
+                 * Outputs: Return value or output parameter as described; void otherwise.
+                 * Postconditions: Return value or output parameter contains the computed result.
+                 * Side Effects: May modify instance state; see method body for details.
+                 * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+                 * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+                 */
                 @Override
                 public int getPriority() { return 999; }
             });
@@ -554,6 +1190,18 @@ public class CiCdManager {
     
     /**
      * Perform actual deployment steps
+     */
+    /**
+    
+     * ID: GPU-CCM-055
+     * Requirement: performDeployment must execute correctly within the contract defined by this class.
+     * Purpose: Execute the performDeployment operation.
+     * Inputs: EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private boolean performDeployment(EnvironmentConfig environment) {
         logger.info("Performing deployment for environment: " + environment.getName());
@@ -577,6 +1225,18 @@ public class CiCdManager {
     /**
      * Apply environment-specific configuration
      */
+    /**
+    
+     * ID: GPU-CCM-056
+     * Requirement: applyEnvironmentConfiguration must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyEnvironmentConfiguration operation for this class.
+     * Inputs: EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void applyEnvironmentConfiguration(EnvironmentConfig environment) {
         logger.info("Applying configuration for environment: " + environment.getName());
         
@@ -595,6 +1255,18 @@ public class CiCdManager {
     /**
      * Verify deployment success
      */
+    /**
+    
+     * ID: GPU-CCM-057
+     * Requirement: verifyDeployment must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for yDeployment.
+     * Inputs: EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean verifyDeployment(EnvironmentConfig environment) {
         logger.info("Verifying deployment for environment: " + environment.getName());
         
@@ -612,6 +1284,18 @@ public class CiCdManager {
     
     /**
      * Collect deployment metrics
+     */
+    /**
+    
+     * ID: GPU-CCM-058
+     * Requirement: collectDeploymentMetrics must execute correctly within the contract defined by this class.
+     * Purpose: Implement the collectDeploymentMetrics operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private Map<String, Object> collectDeploymentMetrics(EnvironmentConfig environment, 
                                                         List<ValidationResult> validationResults) {
@@ -641,6 +1325,18 @@ public class CiCdManager {
     /**
      * Start health monitoring for production environments
      */
+    /**
+    
+     * ID: GPU-CCM-059
+     * Requirement: startHealthMonitoring must execute correctly within the contract defined by this class.
+     * Purpose: Implement the startHealthMonitoring operation for this class.
+     * Inputs: EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void startHealthMonitoring(EnvironmentConfig environment) {
         logger.info("Starting health monitoring for environment: " + environment.getName());
         
@@ -656,6 +1352,18 @@ public class CiCdManager {
     
     /**
      * Perform health check
+     */
+    /**
+    
+     * ID: GPU-CCM-060
+     * Requirement: performHealthCheck must execute correctly within the contract defined by this class.
+     * Purpose: Execute the performHealthCheck operation.
+     * Inputs: EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void performHealthCheck(EnvironmentConfig environment) {
         logger.fine("Performing health check for environment: " + environment.getName());
@@ -675,12 +1383,36 @@ public class CiCdManager {
     /**
      * Get current deployment state
      */
+    /**
+    
+     * ID: GPU-CCM-061
+     * Requirement: Return the CurrentState field value without side effects.
+     * Purpose: Return the value of the CurrentState property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public DeploymentState getCurrentState() {
         return currentState.get();
     }
     
     /**
      * Get available environments
+     */
+    /**
+    
+     * ID: GPU-CCM-062
+     * Requirement: Return the AvailableEnvironments field value without side effects.
+     * Purpose: Return the value of the AvailableEnvironments property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Set<String> getAvailableEnvironments() {
         return new HashSet<>(environments.keySet());
@@ -689,12 +1421,36 @@ public class CiCdManager {
     /**
      * Get environment configuration
      */
+    /**
+    
+     * ID: GPU-CCM-063
+     * Requirement: Return the EnvironmentConfig field value without side effects.
+     * Purpose: Return the value of the EnvironmentConfig property.
+     * Inputs: String environmentName
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public EnvironmentConfig getEnvironmentConfig(String environmentName) {
         return environments.get(environmentName);
     }
     
     /**
      * Add custom environment
+     */
+    /**
+    
+     * ID: GPU-CCM-064
+     * Requirement: addEnvironment must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: String name, EnvironmentConfig environment
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void addEnvironment(String name, EnvironmentConfig environment) {
         environments.put(name, environment);
@@ -704,6 +1460,18 @@ public class CiCdManager {
     /**
      * Add custom validation check
      */
+    /**
+    
+     * ID: GPU-CCM-065
+     * Requirement: addValidationCheck must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: ValidationCheck check
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void addValidationCheck(ValidationCheck check) {
         validationChecks.add(check);
         logger.info("Added custom validation check: " + check.getName());
@@ -712,6 +1480,18 @@ public class CiCdManager {
     /**
      * Set deployment metadata
      */
+    /**
+    
+     * ID: GPU-CCM-066
+     * Requirement: Update the DeploymentMetadata field to the supplied non-null value.
+     * Purpose: Set the DeploymentMetadata property to the supplied value.
+     * Inputs: String key, String value
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void setDeploymentMetadata(String key, String value) {
         deploymentMetadata.put(key, value);
     }
@@ -719,12 +1499,36 @@ public class CiCdManager {
     /**
      * Get deployment metadata
      */
+    /**
+    
+     * ID: GPU-CCM-067
+     * Requirement: Return the DeploymentMetadata field value without side effects.
+     * Purpose: Return the value of the DeploymentMetadata property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Map<String, String> getDeploymentMetadata() {
         return new HashMap<>(deploymentMetadata);
     }
     
     /**
      * Get validation checks
+     */
+    /**
+    
+     * ID: GPU-CCM-068
+     * Requirement: Return the ValidationCheckNames field value without side effects.
+     * Purpose: Return the value of the ValidationCheckNames property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public List<String> getValidationCheckNames() {
         return validationChecks.stream()
@@ -734,6 +1538,18 @@ public class CiCdManager {
     
     /**
      * Shutdown CI/CD manager
+     */
+    /**
+    
+     * ID: GPU-CCM-069
+     * Requirement: shutdown must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shutdown operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void shutdown() {
         if (healthCheckScheduler != null && !healthCheckScheduler.isShutdown()) {

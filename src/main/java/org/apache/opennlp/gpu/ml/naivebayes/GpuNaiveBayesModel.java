@@ -57,6 +57,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
      * @param cpuModel The CPU-based Naive Bayes model to wrap
      * @param config GPU configuration
      */
+    /**
+    
+     * ID: GPU-GNBM-002
+     * Requirement: GpuNaiveBayesModel must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuNaiveBayesModel instance.
+     * Inputs: NaiveBayesModel cpuModel, GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public GpuNaiveBayesModel(NaiveBayesModel cpuModel, GpuConfig config) {
         this.cpuModel = cpuModel;
         this.config = config;
@@ -79,6 +91,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     /**
      * Creates matrix operation based on compute provider
      */
+    /**
+    
+     * ID: GPU-GNBM-003
+     * Requirement: createMatrixOperation must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new MatrixOperation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private MatrixOperation createMatrixOperation() {
         if (computeProvider.isGpuProvider()) {
             return new org.apache.opennlp.gpu.compute.GpuMatrixOperation(computeProvider, config);
@@ -89,6 +113,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * Extracts parameters from the CPU model for GPU computation
+     */
+    /**
+    
+     * ID: GPU-GNBM-004
+     * Requirement: extractModelParameters must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractModelParameters operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void extractModelParameters() {
         // Get outcomes from CPU model (similar to GpuMaxentModel approach)
@@ -117,6 +153,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
         logger.info("Extracted model parameters: " + outcomes.length + " outcomes");
     }
     
+    /**
+    
+     * ID: GPU-GNBM-005
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] context) {
         long startTime = System.nanoTime();
@@ -137,11 +185,35 @@ public class GpuNaiveBayesModel implements MaxentModel {
         return probabilities;
     }
     
+    /**
+    
+     * ID: GPU-GNBM-006
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] context, double[] outsums
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] context, double[] outsums) {
         return eval(context);
     }
     
+    /**
+    
+     * ID: GPU-GNBM-007
+     * Requirement: eval must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the eval result.
+     * Inputs: String[] context, float[] values
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public double[] eval(String[] context, float[] values) {
         return eval(context);
@@ -149,6 +221,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * CPU-based Naive Bayes evaluation
+     */
+    /**
+    
+     * ID: GPU-GNBM-008
+     * Requirement: evalWithCpu must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the evalWithCpu result.
+     * Inputs: String[] context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private double[] evalWithCpu(String[] context) {
         double[] logProbs = new double[outcomes.length];
@@ -173,6 +257,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * GPU-accelerated Naive Bayes evaluation for large feature sets
+     */
+    /**
+    
+     * ID: GPU-GNBM-009
+     * Requirement: evalWithGpu must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the evalWithGpu result.
+     * Inputs: String[] context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private double[] evalWithGpu(String[] context) {
         // For large feature vectors, use GPU matrix operations
@@ -214,6 +310,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     /**
      * Creates a binary feature vector from context
      */
+    /**
+    
+     * ID: GPU-GNBM-010
+     * Requirement: createFeatureVector must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new FeatureVector.
+     * Inputs: String[] context
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private float[] createFeatureVector(String[] context) {
         // Create a feature vector (this would be more sophisticated in practice)
         float[] vector = new float[Math.max(1000, context.length * 2)];
@@ -227,6 +335,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * Normalizes log probabilities to sum to 1.0
+     */
+    /**
+    
+     * ID: GPU-GNBM-011
+     * Requirement: normalizeLogProbabilities must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalizeLogProbabilities operation for this class.
+     * Inputs: double[] logProbs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private double[] normalizeLogProbabilities(double[] logProbs) {
         // Find max for numerical stability
@@ -252,6 +372,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     /**
      * Batch evaluation for multiple contexts
      */
+    /**
+    
+     * ID: GPU-GNBM-012
+     * Requirement: evalBatch must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the evalBatch result.
+     * Inputs: String[][] contexts
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public double[][] evalBatch(String[][] contexts) {
         double[][] results = new double[contexts.length][];
         
@@ -262,6 +394,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
         return results;
     }
     
+    /**
+    
+     * ID: GPU-GNBM-013
+     * Requirement: Return the BestOutcome field value without side effects.
+     * Purpose: Return the value of the BestOutcome property.
+     * Inputs: double[] outcomes
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getBestOutcome(double[] outcomes) {
         int bestIndex = 0;
@@ -277,6 +421,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
         return this.outcomes[bestIndex];
     }
     
+    /**
+    
+     * ID: GPU-GNBM-014
+     * Requirement: Return the AllOutcomes field value without side effects.
+     * Purpose: Return the value of the AllOutcomes property.
+     * Inputs: double[] outcomes
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getAllOutcomes(double[] outcomes) {
         StringBuilder sb = new StringBuilder();
@@ -287,16 +443,52 @@ public class GpuNaiveBayesModel implements MaxentModel {
         return sb.toString();
     }
     
+    /**
+    
+     * ID: GPU-GNBM-015
+     * Requirement: Return the Outcome field value without side effects.
+     * Purpose: Return the value of the Outcome property.
+     * Inputs: int i
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getOutcome(int i) {
         return outcomes[i];
     }
     
+    /**
+    
+     * ID: GPU-GNBM-016
+     * Requirement: Return the Index field value without side effects.
+     * Purpose: Return the value of the Index property.
+     * Inputs: String outcome
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getIndex(String outcome) {
         return outcomeIndexMap.getOrDefault(outcome, -1);
     }
     
+    /**
+    
+     * ID: GPU-GNBM-017
+     * Requirement: Return the NumOutcomes field value without side effects.
+     * Purpose: Return the value of the NumOutcomes property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getNumOutcomes() {
         return outcomes.length;
@@ -304,6 +496,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * Gets performance statistics
+     */
+    /**
+    
+     * ID: GPU-GNBM-018
+     * Requirement: Return the PerformanceStats field value without side effects.
+     * Purpose: Return the value of the PerformanceStats property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public String getPerformanceStats() {
         double avgTimeMs = totalEvaluations > 0 ? 
@@ -318,6 +522,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * Training method for demonstration (would be more sophisticated in practice)
+     */
+    /**
+    
+     * ID: GPU-GNBM-019
+     * Requirement: train must execute correctly within the contract defined by this class.
+     * Purpose: Train the model on the supplied data.
+     * Inputs: String[][] trainingData, String[] labels
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void train(String[][] trainingData, String[] labels) {
         logger.info("Training Naive Bayes model with " + trainingData.length + " samples");
@@ -365,6 +581,18 @@ public class GpuNaiveBayesModel implements MaxentModel {
     
     /**
      * Cleanup resources
+     */
+    /**
+    
+     * ID: GPU-GNBM-020
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void cleanup() {
         if (computeProvider != null) {

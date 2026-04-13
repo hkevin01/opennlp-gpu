@@ -31,6 +31,18 @@ import org.slf4j.LoggerFactory;
 public class GpuDemoMain {
     private static final Logger logger = LoggerFactory.getLogger(GpuDemoMain.class);
     
+    /**
+    
+     * ID: GPU-GDM-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         GpuDemoMain.logger.info("Starting OpenNLP GPU Demo");
         
@@ -50,6 +62,18 @@ public class GpuDemoMain {
     
     /**
      * Run a simple matrix multiplication demo.
+     */
+    /**
+    
+     * ID: GPU-GDM-003
+     * Requirement: demoMatrixOperations must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: ComputeProvider provider
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static void demoMatrixOperations(ComputeProvider provider) {
         // Create a matrix operation

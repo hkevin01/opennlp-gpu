@@ -234,14 +234,86 @@ public interface ComputeProvider {
         private int maxThreads = 1;
 
         /** Whether this provider supports concurrent operation execution. */
+        /**
+        
+         * ID: GPU-CP-021
+         * Requirement: supportsParallelComputation must execute correctly within the contract defined by this class.
+         * Purpose: Implement the supportsParallelComputation operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean supportsParallelComputation() { return supportsParallelComputation; }
         /** Whether hardware GPU acceleration is active. */
+        /**
+        
+         * ID: GPU-CP-022
+         * Requirement: supportsGpuAcceleration must execute correctly within the contract defined by this class.
+         * Purpose: Implement the supportsGpuAcceleration operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean supportsGpuAcceleration() { return supportsGpuAcceleration; }
         /** Maximum thread count used by this provider. */
+        /**
+        
+         * ID: GPU-CP-023
+         * Requirement: Return the MaxThreads field value without side effects.
+         * Purpose: Return the value of the MaxThreads property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public int getMaxThreads() { return maxThreads; }
 
+        /**
+        
+         * ID: GPU-CP-024
+         * Requirement: Update the SupportsParallelComputation field to the supplied non-null value.
+         * Purpose: Set the SupportsParallelComputation property to the supplied value.
+         * Inputs: boolean supports
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setSupportsParallelComputation(boolean supports) { this.supportsParallelComputation = supports; }
+        /**
+        
+         * ID: GPU-CP-025
+         * Requirement: Update the SupportsGpuAcceleration field to the supplied non-null value.
+         * Purpose: Set the SupportsGpuAcceleration property to the supplied value.
+         * Inputs: boolean supports
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setSupportsGpuAcceleration(boolean supports) { this.supportsGpuAcceleration = supports; }
+        /**
+        
+         * ID: GPU-CP-026
+         * Requirement: Update the MaxThreads field to the supplied non-null value.
+         * Purpose: Set the MaxThreads property to the supplied value.
+         * Inputs: int threads
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setMaxThreads(int threads) { this.maxThreads = threads; }
     }
 }

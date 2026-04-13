@@ -72,16 +72,52 @@ public class CpuMatrixOperation implements MatrixOperation {
 
     private final ComputeProvider provider;
 
+    /**
+    
+     * ID: GPU-CMO-002
+     * Requirement: CpuMatrixOperation must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a CpuMatrixOperation instance.
+     * Inputs: ComputeProvider provider
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public CpuMatrixOperation(ComputeProvider provider) {
         this.provider = provider;
         CpuMatrixOperation.logger.debug("Initialized CPU matrix operations");
     }
 
+    /**
+    
+     * ID: GPU-CMO-003
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public ComputeProvider getProvider() {
         return provider;
     }
 
+    /**
+    
+     * ID: GPU-CMO-004
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void release() {
         // No resources to release for CPU implementation
@@ -90,6 +126,18 @@ public class CpuMatrixOperation implements MatrixOperation {
 
     // Basic Matrix Operations
 
+    /**
+    
+     * ID: GPU-CMO-005
+     * Requirement: multiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the multiply operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int m, int n, int k
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void multiply(float[] a, float[] b, float[] result, int m, int n, int k) {
         if ((long) m * n * k >= PARALLEL_THRESHOLD) {
@@ -117,6 +165,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-006
+     * Requirement: transpose must execute correctly within the contract defined by this class.
+     * Purpose: Implement the transpose operation for this class.
+     * Inputs: float[] input, float[] output, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void transpose(float[] input, float[] output, int rows, int cols) {
         for (int i = 0; i < rows; i++) {
@@ -126,6 +186,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-007
+     * Requirement: scalarMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the scalarMultiply operation for this class.
+     * Inputs: float[] input, float[] output, float scalar, int length
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void scalarMultiply(float[] input, float[] output, float scalar, int length) {
         for (int i = 0; i < length; i++) {
@@ -133,6 +205,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-008
+     * Requirement: add must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: float[] a, float[] b, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void add(float[] a, float[] b, float[] result, int size) {
         for (int i = 0; i < size; i++) {
@@ -140,6 +224,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-009
+     * Requirement: subtract must execute correctly within the contract defined by this class.
+     * Purpose: Implement the subtract operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void subtract(float[] a, float[] b, float[] result, int size) {
         for (int i = 0; i < size; i++) {
@@ -149,6 +245,18 @@ public class CpuMatrixOperation implements MatrixOperation {
 
     // Advanced Matrix Operations
 
+    /**
+    
+     * ID: GPU-CMO-010
+     * Requirement: dotProduct must execute correctly within the contract defined by this class.
+     * Purpose: Implement the dotProduct operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int length
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void dotProduct(float[] a, float[] b, float[] result, int length) {
         float sum = 0.0f;
@@ -158,6 +266,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         result[0] = sum;
     }
 
+    /**
+    
+     * ID: GPU-CMO-011
+     * Requirement: vectorNorm must execute correctly within the contract defined by this class.
+     * Purpose: Implement the vectorNorm operation for this class.
+     * Inputs: float[] input, float[] result, int length
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void vectorNorm(float[] input, float[] result, int length) {
         float sumSquares = 0.0f;
@@ -167,6 +287,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         result[0] = (float) Math.sqrt(sumSquares);
     }
 
+    /**
+    
+     * ID: GPU-CMO-012
+     * Requirement: elementWiseMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the elementWiseMultiply operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
         for (int i = 0; i < size; i++) {
@@ -174,6 +306,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-013
+     * Requirement: matrixVectorMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixVectorMultiply operation for this class.
+     * Inputs: float[] matrix, float[] vector, float[] result, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
         for (int i = 0; i < rows; i++) {
@@ -187,6 +331,18 @@ public class CpuMatrixOperation implements MatrixOperation {
 
     // Activation Functions
 
+    /**
+    
+     * ID: GPU-CMO-014
+     * Requirement: sigmoid must execute correctly within the contract defined by this class.
+     * Purpose: Implement the sigmoid operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void sigmoid(float[] input, float[] result, int size) {
         for (int i = 0; i < size; i++) {
@@ -194,6 +350,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-015
+     * Requirement: tanh must execute correctly within the contract defined by this class.
+     * Purpose: Implement the tanh operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void tanh(float[] input, float[] result, int size) {
         for (int i = 0; i < size; i++) {
@@ -201,6 +369,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-016
+     * Requirement: relu must execute correctly within the contract defined by this class.
+     * Purpose: Implement the relu operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void relu(float[] input, float[] result, int size) {
         for (int i = 0; i < size; i++) {
@@ -208,6 +388,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-017
+     * Requirement: softmax must execute correctly within the contract defined by this class.
+     * Purpose: Implement the softmax operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void softmax(float[] input, float[] result, int size) {
         // Numerically stable softmax: subtract max before exponentiation
@@ -236,6 +428,18 @@ public class CpuMatrixOperation implements MatrixOperation {
 
     // Statistical Operations
 
+    /**
+    
+     * ID: GPU-CMO-018
+     * Requirement: mean must execute correctly within the contract defined by this class.
+     * Purpose: Implement the mean operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void mean(float[] input, float[] result, int size) {
         float sum = 0.0f;
@@ -245,6 +449,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         result[0] = sum / size;
     }
 
+    /**
+    
+     * ID: GPU-CMO-019
+     * Requirement: variance must execute correctly within the contract defined by this class.
+     * Purpose: Implement the variance operation for this class.
+     * Inputs: float[] input, float[] result, int size, float mean
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void variance(float[] input, float[] result, int size, float mean) {
         float sumSquaredDiffs = 0.0f;
@@ -255,6 +471,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         result[0] = sumSquaredDiffs / size;
     }
 
+    /**
+    
+     * ID: GPU-CMO-020
+     * Requirement: normalize must execute correctly within the contract defined by this class.
+     * Purpose: Implement the normalize operation for this class.
+     * Inputs: float[] input, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void normalize(float[] input, float[] result, int size) {
         // Calculate mean
@@ -275,11 +503,35 @@ public class CpuMatrixOperation implements MatrixOperation {
 
     // Utility Operations
 
+    /**
+    
+     * ID: GPU-CMO-021
+     * Requirement: copyArray must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyArray operation for this class.
+     * Inputs: float[] source, float[] destination, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void copyArray(float[] source, float[] destination, int size) {
         System.arraycopy(source, 0, destination, 0, size);
     }
 
+    /**
+    
+     * ID: GPU-CMO-022
+     * Requirement: fillArray must execute correctly within the contract defined by this class.
+     * Purpose: Implement the fillArray operation for this class.
+     * Inputs: float[] array, float value, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void fillArray(float[] array, float value, int size) {
         for (int i = 0; i < size; i++) {
@@ -287,6 +539,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         }
     }
 
+    /**
+    
+     * ID: GPU-CMO-023
+     * Requirement: findMax must execute correctly within the contract defined by this class.
+     * Purpose: Implement the findMax operation for this class.
+     * Inputs: float[] input, int[] maxIndex, float[] maxValue, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
         float max = input[0];
@@ -303,6 +567,18 @@ public class CpuMatrixOperation implements MatrixOperation {
         maxIndex[0] = maxIdx;
     }
 
+    /**
+    
+     * ID: GPU-CMO-024
+     * Requirement: findMin must execute correctly within the contract defined by this class.
+     * Purpose: Implement the findMin operation for this class.
+     * Inputs: float[] input, int[] minIndex, float[] minValue, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
         float min = input[0];

@@ -70,6 +70,18 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /** Returns true — this provider targets GPU hardware. */
+    /**
+    
+     * ID: GPU-GCP-016
+     * Requirement: Evaluate and return the boolean result of isGpuProvider.
+     * Purpose: Return whether isGpuProvider condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public boolean isGpuProvider() { return true; }
 
@@ -89,10 +101,34 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /** Returns "GPU Provider (OpenCL)". */
+    /**
+    
+     * ID: GPU-GCP-017
+     * Requirement: Return the Name field value without side effects.
+     * Purpose: Return the value of the Name property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getName() { return "GPU Provider (OpenCL)"; }
 
     /** Returns {@link Type#OPENCL} as the default GPU backend. */
+    /**
+    
+     * ID: GPU-GCP-018
+     * Requirement: Return the Type field value without side effects.
+     * Purpose: Return the value of the Type property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public Type getType() { return Type.OPENCL; }
 
@@ -126,6 +162,18 @@ public class GpuComputeProvider implements ComputeProvider {
     public long getCurrentMemoryUsageMB() { return 0L; }
 
     /** Returns the opaque resource manager handle, or null if not initialized. */
+    /**
+    
+     * ID: GPU-GCP-019
+     * Requirement: Return the ResourceManager field value without side effects.
+     * Purpose: Return the value of the ResourceManager property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public Object getResourceManager() { return resourceManager; }
 
@@ -206,6 +254,18 @@ public class GpuComputeProvider implements ComputeProvider {
     }
 
     /** Delegates to {@link #initialize()}, using config supplied at construction. */
+    /**
+    
+     * ID: GPU-GCP-020
+     * Requirement: initialize must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void initialize(GpuConfig config) {
         initialize();

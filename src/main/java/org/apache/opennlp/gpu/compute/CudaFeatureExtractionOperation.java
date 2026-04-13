@@ -33,20 +33,140 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     private int deviceId = 0;
     
     // JNI method declarations for CUDA feature extraction operations
+    /**
+    
+     * ID: GPU-CFEO-002
+     * Requirement: allocateDeviceMemory must execute correctly within the contract defined by this class.
+     * Purpose: Implement the allocateDeviceMemory operation for this class.
+     * Inputs: long size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native long allocateDeviceMemory(long size);
+    /**
+    
+     * ID: GPU-CFEO-003
+     * Requirement: freeDeviceMemory must execute correctly within the contract defined by this class.
+     * Purpose: Implement the freeDeviceMemory operation for this class.
+     * Inputs: long devicePtr
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void freeDeviceMemory(long devicePtr);
+    /**
+    
+     * ID: GPU-CFEO-004
+     * Requirement: copyIntHostToDevice must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyIntHostToDevice operation for this class.
+     * Inputs: int[] hostArray, long devicePtr, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyIntHostToDevice(int[] hostArray, long devicePtr, int size);
+    /**
+    
+     * ID: GPU-CFEO-005
+     * Requirement: copyIntDeviceToHost must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyIntDeviceToHost operation for this class.
+     * Inputs: long devicePtr, int[] hostArray, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyIntDeviceToHost(long devicePtr, int[] hostArray, int size);
+    /**
+    
+     * ID: GPU-CFEO-006
+     * Requirement: copyFloatHostToDevice must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyFloatHostToDevice operation for this class.
+     * Inputs: float[] hostArray, long devicePtr, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyFloatHostToDevice(float[] hostArray, long devicePtr, int size);
+    /**
+    
+     * ID: GPU-CFEO-007
+     * Requirement: copyFloatDeviceToHost must execute correctly within the contract defined by this class.
+     * Purpose: Implement the copyFloatDeviceToHost operation for this class.
+     * Inputs: long devicePtr, float[] hostArray, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void copyFloatDeviceToHost(long devicePtr, float[] hostArray, int size);
+    /**
+    
+     * ID: GPU-CFEO-008
+     * Requirement: cudaExtractNGrams must execute correctly within the contract defined by this class.
+     * Purpose: Implement the cudaExtractNGrams operation for this class.
+     * Inputs: long tokensPtr, int numTokens, int maxNGramLength, long featureMapPtr, int fe...
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native int cudaExtractNGrams(long tokensPtr, int numTokens, int maxNGramLength, long featureMapPtr, int featureMapSize);
+    /**
+    
+     * ID: GPU-CFEO-009
+     * Requirement: cudaComputeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Implement the cudaComputeTfIdf operation for this class.
+     * Inputs: long termFreqPtr, long docFreqPtr, int numDocs, long tfidfPtr, int numTerms
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void cudaComputeTfIdf(long termFreqPtr, long docFreqPtr, int numDocs, long tfidfPtr, int numTerms);
+    /**
+    
+     * ID: GPU-CFEO-010
+     * Requirement: cudaComputeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Implement the cudaComputeCosineSimilarity operation for this class.
+     * Inputs: long docVectorsPtr, int numDocs, int vectorSize, long similaritiesPtr
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Native operation complete; result stored in output parameter.
+     * Side Effects: JNI call to native library.
+     * Failure Modes: UnsatisfiedLinkError at runtime if native library not loaded.
+     * Error Handling: Native link failure propagates as UnsatisfiedLinkError.
+     */
     private native void cudaComputeCosineSimilarity(long docVectorsPtr, int numDocs, int vectorSize, long similaritiesPtr);
     
     /**
      * Creates a new CUDA feature extraction operation with the specified provider.
      *
      * @param provider the compute provider to use
+     */
+    /**
+    
+     * ID: GPU-CFEO-011
+     * Requirement: CudaFeatureExtractionOperation must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a CudaFeatureExtractionOperation instance.
+     * Inputs: ComputeProvider provider
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public CudaFeatureExtractionOperation(ComputeProvider provider) {
         this.provider = provider;
@@ -69,6 +189,18 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     
     // Existing method without @Override
+    /**
+    
+     * ID: GPU-CFEO-012
+     * Requirement: extractNGrams must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractNGrams operation for this class.
+     * Inputs: int[] tokens, int numTokens, int maxNGramLength, int[] featureMap
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int extractNGrams(int[] tokens, int numTokens, int maxNGramLength, int[] featureMap) {
         if (!initialized) {
             throw new IllegalStateException("CUDA feature extraction operations not initialized");
@@ -99,6 +231,18 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     
     // Existing method without @Override
+    /**
+    
+     * ID: GPU-CFEO-013
+     * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeTfIdf result.
+     * Inputs: float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void computeTfIdf(float[] termFreq, float[] docFreq, int numDocs, float[] tfidf, int numTerms) {
         if (!initialized) {
             throw new IllegalStateException("CUDA feature extraction operations not initialized");
@@ -130,6 +274,18 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     
     // Existing method without @Override
+    /**
+    
+     * ID: GPU-CFEO-014
+     * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeCosineSimilarity result.
+     * Inputs: float[] docVectors, int numDocs, int vectorSize, float[] similarities
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void computeCosineSimilarity(float[] docVectors, int numDocs, int vectorSize, float[] similarities) {
         if (!initialized) {
             throw new IllegalStateException("CUDA feature extraction operations not initialized");
@@ -158,6 +314,18 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     
     // Add missing interface method implementation
+    /**
+    
+     * ID: GPU-CFEO-015
+     * Requirement: extractFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractFeatures operation for this class.
+     * Inputs: String[] tokens
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public float[] extractFeatures(String[] tokens) {
         logger.debug("Extracting features from {} tokens using CUDA", tokens.length);
@@ -182,6 +350,18 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     
     // Add missing interface method implementation
+    /**
+    
+     * ID: GPU-CFEO-016
+     * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeTfIdf result.
+     * Inputs: String[] documents
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public float[] computeTfIdf(String[] documents) {
         logger.debug("Computing TF-IDF for {} documents using CUDA", documents.length);
@@ -207,11 +387,35 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
         return tfidf;
     }
     
+    /**
+    
+     * ID: GPU-CFEO-017
+     * Requirement: Return the Provider field value without side effects.
+     * Purpose: Return the value of the Provider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public ComputeProvider getProvider() {
         return provider;
     }
     
+    /**
+    
+     * ID: GPU-CFEO-018
+     * Requirement: release must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void release() {
         logger.info("Releasing CUDA feature extraction resources");
@@ -220,6 +424,18 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
     }
 
     // Implement the missing computeCosineSimilarity method with the correct signature
+    /**
+    
+     * ID: GPU-CFEO-019
+     * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeCosineSimilarity result.
+     * Inputs: float[] vector1, float[] vector2
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public float computeCosineSimilarity(float[] vector1, float[] vector2) {
         logger.debug("Computing cosine similarity between vectors of length {} and {}", 

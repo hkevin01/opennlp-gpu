@@ -61,6 +61,18 @@ public final class CloudAcceleratorFactory {
     private static volatile List<ComputeProvider> availableProviders = null;
     private static volatile ComputeProvider bestProvider = null;
 
+    /**
+    
+     * ID: GPU-CAF-002
+     * Requirement: CloudAcceleratorFactory must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a CloudAcceleratorFactory instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private CloudAcceleratorFactory() {
         // Utility class
     }
@@ -68,6 +80,18 @@ public final class CloudAcceleratorFactory {
     /**
      * Get the best available compute provider based on performance characteristics
      * @return The highest-performance available compute provider
+     */
+    /**
+    
+     * ID: GPU-CAF-003
+     * Requirement: Return the BestProvider field value without side effects.
+     * Purpose: Return the value of the BestProvider property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static ComputeProvider getBestProvider() {
         if (bestProvider == null) {
@@ -80,6 +104,18 @@ public final class CloudAcceleratorFactory {
      * Get all available compute providers
      * @return List of all detected compute providers
      */
+    /**
+    
+     * ID: GPU-CAF-004
+     * Requirement: Return the AvailableProviders field value without side effects.
+     * Purpose: Return the value of the AvailableProviders property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static List<ComputeProvider> getAvailableProviders() {
         if (availableProviders == null) {
             availableProviders = detectAvailableProviders();
@@ -91,6 +127,18 @@ public final class CloudAcceleratorFactory {
      * Create a specific provider by type
      * @param providerType The type of provider to create
      * @return The requested compute provider, or null if not available
+     */
+    /**
+    
+     * ID: GPU-CAF-005
+     * Requirement: createProvider must execute correctly within the contract defined by this class.
+     * Purpose: Create and return a new Provider.
+     * Inputs: String providerType
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static ComputeProvider createProvider(String providerType) {
         switch (providerType.toLowerCase()) {
@@ -114,6 +162,18 @@ public final class CloudAcceleratorFactory {
      * Check if cloud accelerators are available
      * @return true if AWS Inferentia or Google TPU are detected
      */
+    /**
+    
+     * ID: GPU-CAF-006
+     * Requirement: Evaluate and return the boolean result of hasCloudAccelerators.
+     * Purpose: Return whether hasCloudAccelerators condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static boolean hasCloudAccelerators() {
         List<ComputeProvider> providers = getAvailableProviders();
         for (ComputeProvider provider : providers) {
@@ -128,6 +188,18 @@ public final class CloudAcceleratorFactory {
     /**
      * Get cloud accelerator capabilities summary
      * @return Map containing cloud accelerator information
+     */
+    /**
+    
+     * ID: GPU-CAF-007
+     * Requirement: Return the CloudCapabilities field value without side effects.
+     * Purpose: Return the value of the CloudCapabilities property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public static Map<String, Object> getCloudCapabilities() {
         Map<String, Object> capabilities = new java.util.HashMap<>();
@@ -153,6 +225,18 @@ public final class CloudAcceleratorFactory {
     /**
      * Reset factory state (useful for testing)
      */
+    /**
+    
+     * ID: GPU-CAF-008
+     * Requirement: reset must execute correctly within the contract defined by this class.
+     * Purpose: Implement the reset operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void reset() {
         availableProviders = null;
         bestProvider = null;
@@ -160,6 +244,18 @@ public final class CloudAcceleratorFactory {
 
     /**
      * Detect the best available compute provider
+     */
+    /**
+    
+     * ID: GPU-CAF-009
+     * Requirement: detectBestProvider must execute correctly within the contract defined by this class.
+     * Purpose: Implement the detectBestProvider operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static ComputeProvider detectBestProvider() {
         List<ComputeProvider> providers = detectAvailableProviders();
@@ -193,6 +289,18 @@ public final class CloudAcceleratorFactory {
 
     /**
      * Detect all available compute providers
+     */
+    /**
+    
+     * ID: GPU-CAF-010
+     * Requirement: detectAvailableProviders must execute correctly within the contract defined by this class.
+     * Purpose: Implement the detectAvailableProviders operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static List<ComputeProvider> detectAvailableProviders() {
         List<ComputeProvider> providers = new ArrayList<>();

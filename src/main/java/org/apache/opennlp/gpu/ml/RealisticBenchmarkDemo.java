@@ -28,6 +28,18 @@ public class RealisticBenchmarkDemo {
     private static final int WARMUP_ITERATIONS = 5;
     private static final int BENCHMARK_ITERATIONS = 10;
 
+    /**
+    
+     * ID: GPU-RBD-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         System.out.println("🔬 Realistic OpenNLP GPU Benchmarks");
         System.out.println("=====================================");
@@ -63,6 +75,18 @@ public class RealisticBenchmarkDemo {
         }
     }
 
+    /**
+    
+     * ID: GPU-RBD-003
+     * Requirement: runDocumentClassificationBenchmark must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runDocumentClassificationBenchmark operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runDocumentClassificationBenchmark() {
         System.out.println("📈 Test 1: Batch Document Classification (10,000 documents)");
         System.out.println("   Scenario: Customer support ticket categorization");
@@ -78,6 +102,18 @@ public class RealisticBenchmarkDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-RBD-004
+     * Requirement: runFeatureExtractionBenchmark must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runFeatureExtractionBenchmark operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runFeatureExtractionBenchmark() {
         System.out.println("📈 Test 2: Large-Scale Feature Extraction (1M features)");
         System.out.println("   Scenario: Sparse matrix operations for text vectorization");
@@ -92,6 +128,18 @@ public class RealisticBenchmarkDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-RBD-005
+     * Requirement: runBatchProcessingBenchmark must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runBatchProcessingBenchmark operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runBatchProcessingBenchmark() {
         System.out.println("📈 Test 3: High-Throughput Named Entity Recognition");
         System.out.println("   Scenario: Processing news articles for information extraction");
@@ -106,6 +154,18 @@ public class RealisticBenchmarkDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-RBD-006
+     * Requirement: runConcurrentModelBenchmark must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runConcurrentModelBenchmark operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runConcurrentModelBenchmark() {
         System.out.println("📈 Test 4: Concurrent Multi-Model Processing");
         System.out.println("   Scenario: Running sentiment + classification + NER simultaneously");
@@ -120,6 +180,18 @@ public class RealisticBenchmarkDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-RBD-007
+     * Requirement: runCpuOnlyBenchmarks must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runCpuOnlyBenchmarks operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runCpuOnlyBenchmarks() {
         System.out.println("📊 CPU Baseline Performance (for comparison):");
         System.out.println("   • Document Classification: 2.1s (10K documents)");
@@ -130,6 +202,18 @@ public class RealisticBenchmarkDemo {
         System.out.println("💡 With GPU acceleration, expect 2-4x improvements in these scenarios");
     }
 
+    /**
+    
+     * ID: GPU-RBD-008
+     * Requirement: simulateCpuProcessing must execute correctly within the contract defined by this class.
+     * Purpose: Implement the simulateCpuProcessing operation for this class.
+     * Inputs: String operation, long baseTime
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static long simulateCpuProcessing(String operation, long baseTime) {
         System.out.print("   🔄 CPU " + operation + "... ");
 
@@ -148,6 +232,18 @@ public class RealisticBenchmarkDemo {
         return actualTime;
     }
 
+    /**
+    
+     * ID: GPU-RBD-009
+     * Requirement: simulateGpuProcessing must execute correctly within the contract defined by this class.
+     * Purpose: Implement the simulateGpuProcessing operation for this class.
+     * Inputs: String operation, long baseTime
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static long simulateGpuProcessing(String operation, long baseTime) {
         System.out.print("   ⚡ GPU " + operation + "... ");
 

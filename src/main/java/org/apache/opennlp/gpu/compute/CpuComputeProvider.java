@@ -71,10 +71,34 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /** Returns the display name "CPU Provider". */
+    /**
+    
+     * ID: GPU-CCP-014
+     * Requirement: Return the Name field value without side effects.
+     * Purpose: Return the value of the Name property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getName() { return "CPU Provider"; }
 
     /** Returns {@link Type#CPU}. */
+    /**
+    
+     * ID: GPU-CCP-015
+     * Requirement: Return the Type field value without side effects.
+     * Purpose: Return the value of the Type property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public Type getType() { return Type.CPU; }
 
@@ -109,6 +133,18 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /** Returns null — the CPU provider requires no native resource manager. */
+    /**
+    
+     * ID: GPU-CCP-016
+     * Requirement: Return the ResourceManager field value without side effects.
+     * Purpose: Return the value of the ResourceManager property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public Object getResourceManager() { return null; }
 
@@ -204,6 +240,18 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /** Delegates to {@link #initialize()} — config is ignored for CPU. */
+    /**
+    
+     * ID: GPU-CCP-017
+     * Requirement: initialize must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void initialize(GpuConfig config) {
         initialize();

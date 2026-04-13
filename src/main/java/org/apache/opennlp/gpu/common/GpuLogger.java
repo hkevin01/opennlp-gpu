@@ -23,34 +23,130 @@ public class GpuLogger {
     
     private final String className;
     
+    /**
+    
+     * ID: GPU-GL-002
+     * Requirement: GpuLogger must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a GpuLogger instance.
+     * Inputs: String className
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private GpuLogger(String className) {
         this.className = className;
     }
     
+    /**
+    
+     * ID: GPU-GL-003
+     * Requirement: Return the Logger field value without side effects.
+     * Purpose: Return the value of the Logger property.
+     * Inputs: Class<?> clazz
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static GpuLogger getLogger(Class<?> clazz) {
         return new GpuLogger(clazz.getSimpleName());
     }
     
+    /**
+    
+     * ID: GPU-GL-004
+     * Requirement: info must execute correctly within the contract defined by this class.
+     * Purpose: Implement the info operation for this class.
+     * Inputs: String message
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void info(String message) {
         System.out.println("[INFO] " + className + ": " + message);
     }
     
+    /**
+    
+     * ID: GPU-GL-005
+     * Requirement: info must execute correctly within the contract defined by this class.
+     * Purpose: Implement the info operation for this class.
+     * Inputs: String message, Object... params
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void info(String message, Object... params) {
         System.out.println("[INFO] " + className + ": " + formatMessage(message, params));
     }
     
+    /**
+    
+     * ID: GPU-GL-006
+     * Requirement: warn must execute correctly within the contract defined by this class.
+     * Purpose: Implement the warn operation for this class.
+     * Inputs: String message
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void warn(String message) {
         System.out.println("[WARN] " + className + ": " + message);
     }
     
+    /**
+    
+     * ID: GPU-GL-007
+     * Requirement: warn must execute correctly within the contract defined by this class.
+     * Purpose: Implement the warn operation for this class.
+     * Inputs: String message, Object... params
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void warn(String message, Object... params) {
         System.out.println("[WARN] " + className + ": " + formatMessage(message, params));
     }
     
+    /**
+    
+     * ID: GPU-GL-008
+     * Requirement: error must execute correctly within the contract defined by this class.
+     * Purpose: Implement the error operation for this class.
+     * Inputs: String message
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void error(String message) {
         System.err.println("[ERROR] " + className + ": " + message);
     }
     
+    /**
+    
+     * ID: GPU-GL-009
+     * Requirement: error must execute correctly within the contract defined by this class.
+     * Purpose: Implement the error operation for this class.
+     * Inputs: String message, Exception e
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void error(String message, Exception e) {
         System.err.println("[ERROR] " + className + ": " + message);
         if (e != null) {
@@ -58,10 +154,34 @@ public class GpuLogger {
         }
     }
     
+    /**
+    
+     * ID: GPU-GL-010
+     * Requirement: error must execute correctly within the contract defined by this class.
+     * Purpose: Implement the error operation for this class.
+     * Inputs: String message, Object... params
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void error(String message, Object... params) {
         System.err.println("[ERROR] " + className + ": " + formatMessage(message, params));
     }
     
+    /**
+    
+     * ID: GPU-GL-011
+     * Requirement: debug must execute correctly within the contract defined by this class.
+     * Purpose: Implement the debug operation for this class.
+     * Inputs: String message
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void debug(String message) {
         // Only print debug messages if debug mode is enabled
         String debugMode = System.getProperty("gpu.debug", "false");
@@ -70,6 +190,18 @@ public class GpuLogger {
         }
     }
     
+    /**
+    
+     * ID: GPU-GL-012
+     * Requirement: debug must execute correctly within the contract defined by this class.
+     * Purpose: Implement the debug operation for this class.
+     * Inputs: String message, Object... params
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void debug(String message, Object... params) {
         String debugMode = System.getProperty("gpu.debug", "false");
         if ("true".equalsIgnoreCase(debugMode)) {
@@ -77,6 +209,18 @@ public class GpuLogger {
         }
     }
     
+    /**
+    
+     * ID: GPU-GL-013
+     * Requirement: formatMessage must execute correctly within the contract defined by this class.
+     * Purpose: Implement the formatMessage operation for this class.
+     * Inputs: String message, Object... params
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private String formatMessage(String message, Object... params) {
         if (params == null || params.length == 0) {
             return message;

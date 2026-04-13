@@ -142,22 +142,82 @@ public class GpuMaxentModel implements MaxentModel {
     }
 
     /** Delegates to baseModel. Returns the name of the highest-probability outcome. */
+    /**
+    
+     * ID: GPU-GMM-011
+     * Requirement: Return the BestOutcome field value without side effects.
+     * Purpose: Return the value of the BestOutcome property.
+     * Inputs: double[] ocs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getBestOutcome(double[] ocs) { return baseModel.getBestOutcome(ocs); }
 
     /** Delegates to baseModel. Returns all outcomes and their probabilities as a string. */
+    /**
+    
+     * ID: GPU-GMM-012
+     * Requirement: Return the AllOutcomes field value without side effects.
+     * Purpose: Return the value of the AllOutcomes property.
+     * Inputs: double[] ocs
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getAllOutcomes(double[] ocs) { return baseModel.getAllOutcomes(ocs); }
 
     /** Delegates to baseModel. Returns the outcome label at index i. */
+    /**
+    
+     * ID: GPU-GMM-013
+     * Requirement: Return the Outcome field value without side effects.
+     * Purpose: Return the value of the Outcome property.
+     * Inputs: int i
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getOutcome(int i) { return baseModel.getOutcome(i); }
 
     /** Delegates to baseModel. Returns the outcome index for the given label. */
+    /**
+    
+     * ID: GPU-GMM-014
+     * Requirement: Return the Index field value without side effects.
+     * Purpose: Return the value of the Index property.
+     * Inputs: String outcome
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getIndex(String outcome) { return baseModel.getIndex(outcome); }
 
     /** Delegates to baseModel. Returns the number of outcome classes. */
+    /**
+    
+     * ID: GPU-GMM-015
+     * Requirement: Return the NumOutcomes field value without side effects.
+     * Purpose: Return the value of the NumOutcomes property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public int getNumOutcomes() { return baseModel.getNumOutcomes(); }
 

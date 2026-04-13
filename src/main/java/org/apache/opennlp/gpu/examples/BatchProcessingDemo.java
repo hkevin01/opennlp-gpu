@@ -23,6 +23,18 @@ import org.apache.opennlp.gpu.common.GpuConfig;
  */
 public class BatchProcessingDemo {
 
+    /**
+    
+     * ID: GPU-BPD-002
+     * Requirement: main must execute correctly within the contract defined by this class.
+     * Purpose: Entry point: parse arguments and start the application.
+     * Inputs: String[] args
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public static void main(String[] args) {
         System.out.println("📊 Batch Processing & Streaming NLP Demo");
         System.out.println("=========================================");
@@ -50,6 +62,18 @@ public class BatchProcessingDemo {
         }
     }
 
+    /**
+    
+     * ID: GPU-BPD-003
+     * Requirement: runBatchDocumentProcessing must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runBatchDocumentProcessing operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runBatchDocumentProcessing() {
         System.out.println("📦 High-Volume Batch Document Processing");
         System.out.println("=========================================");
@@ -91,6 +115,18 @@ public class BatchProcessingDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-BPD-004
+     * Requirement: runStreamingPipeline must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runStreamingPipeline operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runStreamingPipeline() {
         System.out.println("🌊 Real-Time Streaming Pipeline");
         System.out.println("===============================");
@@ -124,6 +160,18 @@ public class BatchProcessingDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-BPD-005
+     * Requirement: runConcurrentModelExecution must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runConcurrentModelExecution operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runConcurrentModelExecution() {
         System.out.println("🔀 Concurrent Multi-Model Execution");
         System.out.println("====================================");
@@ -158,6 +206,18 @@ public class BatchProcessingDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-BPD-006
+     * Requirement: runMemoryEfficientProcessing must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runMemoryEfficientProcessing operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void runMemoryEfficientProcessing() {
         System.out.println("🧠 Memory-Efficient Large Dataset Processing");
         System.out.println("============================================");
@@ -187,6 +247,18 @@ public class BatchProcessingDemo {
         System.out.println();
     }
 
+    /**
+    
+     * ID: GPU-BPD-007
+     * Requirement: showCpuBaselineMetrics must execute correctly within the contract defined by this class.
+     * Purpose: Output a demonstration or diagnostic result.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private static void showCpuBaselineMetrics() {
         System.out.println("📊 CPU Baseline Performance Metrics:");
         System.out.println();

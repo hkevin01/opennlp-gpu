@@ -24,15 +24,51 @@ public class CudaComputeProvider implements ComputeProvider {
     private final ResourceManager resourceManager;
     private boolean initialized = false;
     
+    /**
+    
+     * ID: GPU-CCP-002
+     * Requirement: CudaComputeProvider must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a CudaComputeProvider instance.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public CudaComputeProvider() {
         this.resourceManager = new ResourceManager();
     }
     
+    /**
+    
+     * ID: GPU-CCP-003
+     * Requirement: Evaluate and return the boolean result of isGpuProvider.
+     * Purpose: Return whether isGpuProvider condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public boolean isGpuProvider() {
         return true;
     }
     
+    /**
+    
+     * ID: GPU-CCP-004
+     * Requirement: cleanup must execute correctly within the contract defined by this class.
+     * Purpose: Release all held resources and reset internal state.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void cleanup() {
         if (resourceManager != null) {
@@ -41,27 +77,87 @@ public class CudaComputeProvider implements ComputeProvider {
         initialized = false;
     }
     
+    /**
+    
+     * ID: GPU-CCP-005
+     * Requirement: Return the Name field value without side effects.
+     * Purpose: Return the value of the Name property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public String getName() {
         return "CUDA Provider";
     }
     
+    /**
+    
+     * ID: GPU-CCP-006
+     * Requirement: Return the Type field value without side effects.
+     * Purpose: Return the value of the Type property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public Type getType() {
         return Type.CUDA;
     }
     
+    /**
+    
+     * ID: GPU-CCP-007
+     * Requirement: Evaluate and return the boolean result of isAvailable.
+     * Purpose: Return whether isAvailable condition holds.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public boolean isAvailable() {
         // TODO: Check if CUDA is available
         return false; // Stub implementation
     }
     
+    /**
+    
+     * ID: GPU-CCP-008
+     * Requirement: Return the ResourceManager field value without side effects.
+     * Purpose: Return the value of the ResourceManager property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public Object getResourceManager() {
         return resourceManager;
     }
     
+    /**
+    
+     * ID: GPU-CCP-009
+     * Requirement: matrixMultiply must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixMultiply operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int m, int n, int k
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k) {
         // TODO: Implement CUDA matrix multiplication
@@ -70,6 +166,18 @@ public class CudaComputeProvider implements ComputeProvider {
         cpu.matrixMultiply(a, b, result, m, n, k);
     }
     
+    /**
+    
+     * ID: GPU-CCP-010
+     * Requirement: matrixAdd must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixAdd operation for this class.
+     * Inputs: float[] a, float[] b, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void matrixAdd(float[] a, float[] b, float[] result, int size) {
         // TODO: Implement CUDA matrix addition
@@ -77,6 +185,18 @@ public class CudaComputeProvider implements ComputeProvider {
         cpu.matrixAdd(a, b, result, size);
     }
     
+    /**
+    
+     * ID: GPU-CCP-011
+     * Requirement: matrixTranspose must execute correctly within the contract defined by this class.
+     * Purpose: Implement the matrixTranspose operation for this class.
+     * Inputs: float[] input, float[] output, int rows, int cols
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void matrixTranspose(float[] input, float[] output, int rows, int cols) {
         // TODO: Implement CUDA matrix transpose
@@ -84,6 +204,18 @@ public class CudaComputeProvider implements ComputeProvider {
         cpu.matrixTranspose(input, output, rows, cols);
     }
     
+    /**
+    
+     * ID: GPU-CCP-012
+     * Requirement: extractFeatures must execute correctly within the contract defined by this class.
+     * Purpose: Implement the extractFeatures operation for this class.
+     * Inputs: String[] text, float[] features
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void extractFeatures(String[] text, float[] features) {
         // TODO: Implement CUDA feature extraction
@@ -91,6 +223,18 @@ public class CudaComputeProvider implements ComputeProvider {
         cpu.extractFeatures(text, features);
     }
     
+    /**
+    
+     * ID: GPU-CCP-013
+     * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
+     * Purpose: Compute and return the computeTfIdf result.
+     * Inputs: float[] termFreq, float[] docFreq, float[] result, int size
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void computeTfIdf(float[] termFreq, float[] docFreq, float[] result, int size) {
         // TODO: Implement CUDA TF-IDF computation
@@ -98,27 +242,87 @@ public class CudaComputeProvider implements ComputeProvider {
         cpu.computeTfIdf(termFreq, docFreq, result, size);
     }
     
+    /**
+    
+     * ID: GPU-CCP-014
+     * Requirement: initialize must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void initialize() {
         // TODO: Initialize CUDA context
         initialized = true;
     }
     
+    /**
+    
+     * ID: GPU-CCP-015
+     * Requirement: supportsOperation must execute correctly within the contract defined by this class.
+     * Purpose: Implement the supportsOperation operation for this class.
+     * Inputs: String operationType
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public boolean supportsOperation(String operationType) {
         return initialized; // Only support operations if initialized
     }
 
+    /**
+    
+     * ID: GPU-CCP-016
+     * Requirement: Return the MaxMemoryMB field value without side effects.
+     * Purpose: Return the value of the MaxMemoryMB property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public long getMaxMemoryMB() {
         return 4096; // Stub implementation
     }
     
+    /**
+    
+     * ID: GPU-CCP-017
+     * Requirement: Return the CurrentMemoryUsageMB field value without side effects.
+     * Purpose: Return the value of the CurrentMemoryUsageMB property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public long getCurrentMemoryUsageMB() {
         return 0; // Stub implementation
     }
 
+    /**
+    
+     * ID: GPU-CCP-018
+     * Requirement: initialize must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: GpuConfig config
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     @Override
     public void initialize(GpuConfig config) {
         initialize();

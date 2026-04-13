@@ -133,6 +133,18 @@ public class GpuDiagnostics {
         return report;
     }
 
+    /**
+    
+     * ID: GPU-GD-004
+     * Requirement: gatherSystemInfo must execute correctly within the contract defined by this class.
+     * Purpose: Implement the gatherSystemInfo operation for this class.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void gatherSystemInfo(DiagnosticReport report) {
         report.addSection("System Information");
         report.addInfo("OS", System.getProperty("os.name") + " " + System.getProperty("os.version"));
@@ -146,6 +158,18 @@ public class GpuDiagnostics {
         report.addInfo("Max JVM Memory", String.format("%.1f GB", maxMemory / (1024.0 * 1024.0 * 1024.0)));
     }
 
+    /**
+    
+     * ID: GPU-GD-005
+     * Requirement: checkJavaEnvironment must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for JavaEnvironment.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkJavaEnvironment(DiagnosticReport report) {
         report.addSection("Java Environment");
 
@@ -171,6 +195,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-006
+     * Requirement: detectGpuHardware must execute correctly within the contract defined by this class.
+     * Purpose: Implement the detectGpuHardware operation for this class.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void detectGpuHardware(DiagnosticReport report) {
         report.addSection("GPU Hardware Detection");
 
@@ -184,6 +220,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-007
+     * Requirement: detectLinuxGpuHardware must execute correctly within the contract defined by this class.
+     * Purpose: Implement the detectLinuxGpuHardware operation for this class.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void detectLinuxGpuHardware(DiagnosticReport report) {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"/usr/bin/bash", "-c", "lspci | grep -i vga"});
@@ -229,6 +277,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-008
+     * Requirement: detectWindowsGpuHardware must execute correctly within the contract defined by this class.
+     * Purpose: Implement the detectWindowsGpuHardware operation for this class.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void detectWindowsGpuHardware(DiagnosticReport report) {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"wmic", "path", "win32_VideoController", "get", "name"});
@@ -267,6 +327,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-009
+     * Requirement: detectMacGpuHardware must execute correctly within the contract defined by this class.
+     * Purpose: Implement the detectMacGpuHardware operation for this class.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void detectMacGpuHardware(DiagnosticReport report) {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"system_profiler", "SPDisplaysDataType"});
@@ -297,6 +369,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-010
+     * Requirement: checkNvidiaDrivers must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for NvidiaDrivers.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkNvidiaDrivers(DiagnosticReport report) {
         if (!report.hasNvidiaGpu()) {
             return;
@@ -335,6 +419,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-011
+     * Requirement: checkAmdDrivers must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for AmdDrivers.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkAmdDrivers(DiagnosticReport report) {
         if (!report.hasAmdGpu()) {
             return;
@@ -383,6 +479,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-012
+     * Requirement: checkIntelDrivers must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for IntelDrivers.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkIntelDrivers(DiagnosticReport report) {
         if (!report.hasIntelGpu()) {
             return;
@@ -405,6 +513,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-013
+     * Requirement: checkCudaRuntime must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for CudaRuntime.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkCudaRuntime(DiagnosticReport report) {
         if (!report.hasNvidiaGpu()) {
             return;
@@ -454,6 +574,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-014
+     * Requirement: checkRocmRuntime must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for RocmRuntime.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkRocmRuntime(DiagnosticReport report) {
         if (!report.hasAmdGpu()) {
             return;
@@ -497,6 +629,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-015
+     * Requirement: checkOpenClRuntime must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for OpenClRuntime.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkOpenClRuntime(DiagnosticReport report) {
         report.addSection("OpenCL Runtime");
 
@@ -537,6 +681,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-016
+     * Requirement: checkOpenNlpGpuIntegration must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for OpenNlpGpuIntegration.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkOpenNlpGpuIntegration(DiagnosticReport report) {
         report.addSection("OpenNLP GPU Integration");
 
@@ -554,6 +710,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-017
+     * Requirement: checkCloudAccelerators must execute correctly within the contract defined by this class.
+     * Purpose: Validate preconditions for CloudAccelerators.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void checkCloudAccelerators(DiagnosticReport report) {
         report.addSection("Cloud Accelerators");
 
@@ -612,6 +780,18 @@ public class GpuDiagnostics {
         }
     }
 
+    /**
+    
+     * ID: GPU-GD-018
+     * Requirement: runBasicPerformanceTest must execute correctly within the contract defined by this class.
+     * Purpose: Execute the runBasicPerformanceTest operation.
+     * Inputs: DiagnosticReport report
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void runBasicPerformanceTest(DiagnosticReport report) {
         report.addSection("Basic Performance Test");
 
@@ -647,44 +827,224 @@ public class GpuDiagnostics {
         private boolean hasAppleGpu = false;
         private String currentSection = "";
 
+        /**
+        
+         * ID: GPU-GD-019
+         * Requirement: addSection must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String section
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addSection(String section) {
             this.currentSection = section;
             sections.putIfAbsent(section, new ArrayList<>());
         }
 
+        /**
+        
+         * ID: GPU-GD-020
+         * Requirement: addSuccess must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String item, String message
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addSuccess(String item, String message) {
             sections.get(currentSection).add("✅ " + item + ": " + message);
         }
 
+        /**
+        
+         * ID: GPU-GD-021
+         * Requirement: addWarning must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String item, String message
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addWarning(String item, String message) {
             sections.get(currentSection).add("⚠️ " + item + ": " + message);
         }
 
+        /**
+        
+         * ID: GPU-GD-022
+         * Requirement: addError must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String item, String message
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addError(String item, String message) {
             sections.get(currentSection).add("❌ " + item + ": " + message);
         }
 
+        /**
+        
+         * ID: GPU-GD-023
+         * Requirement: addInfo must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String item, String message
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addInfo(String item, String message) {
             sections.get(currentSection).add("ℹ️ " + item + ": " + message);
         }
 
+        /**
+        
+         * ID: GPU-GD-024
+         * Requirement: addRecommendation must execute correctly within the contract defined by this class.
+         * Purpose: Register or add an entry to the managed collection.
+         * Inputs: String recommendation
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void addRecommendation(String recommendation) {
             recommendations.add(recommendation);
         }
 
         // Getters and setters for GPU types
+        /**
+        
+         * ID: GPU-GD-025
+         * Requirement: Evaluate and return the boolean result of hasNvidiaGpu.
+         * Purpose: Return whether hasNvidiaGpu condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean hasNvidiaGpu() { return hasNvidiaGpu; }
+        /**
+        
+         * ID: GPU-GD-026
+         * Requirement: Update the HasNvidiaGpu field to the supplied non-null value.
+         * Purpose: Set the HasNvidiaGpu property to the supplied value.
+         * Inputs: boolean hasNvidiaGpu
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setHasNvidiaGpu(boolean hasNvidiaGpu) { this.hasNvidiaGpu = hasNvidiaGpu; }
 
+        /**
+        
+         * ID: GPU-GD-027
+         * Requirement: Evaluate and return the boolean result of hasAmdGpu.
+         * Purpose: Return whether hasAmdGpu condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean hasAmdGpu() { return hasAmdGpu; }
+        /**
+        
+         * ID: GPU-GD-028
+         * Requirement: Update the HasAmdGpu field to the supplied non-null value.
+         * Purpose: Set the HasAmdGpu property to the supplied value.
+         * Inputs: boolean hasAmdGpu
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setHasAmdGpu(boolean hasAmdGpu) { this.hasAmdGpu = hasAmdGpu; }
 
+        /**
+        
+         * ID: GPU-GD-029
+         * Requirement: Evaluate and return the boolean result of hasIntelGpu.
+         * Purpose: Return whether hasIntelGpu condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean hasIntelGpu() { return hasIntelGpu; }
+        /**
+        
+         * ID: GPU-GD-030
+         * Requirement: Update the HasIntelGpu field to the supplied non-null value.
+         * Purpose: Set the HasIntelGpu property to the supplied value.
+         * Inputs: boolean hasIntelGpu
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setHasIntelGpu(boolean hasIntelGpu) { this.hasIntelGpu = hasIntelGpu; }
 
+        /**
+        
+         * ID: GPU-GD-031
+         * Requirement: Evaluate and return the boolean result of hasAppleGpu.
+         * Purpose: Return whether hasAppleGpu condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean hasAppleGpu() { return hasAppleGpu; }
+        /**
+        
+         * ID: GPU-GD-032
+         * Requirement: Update the HasAppleGpu field to the supplied non-null value.
+         * Purpose: Set the HasAppleGpu property to the supplied value.
+         * Inputs: boolean hasAppleGpu
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void setHasAppleGpu(boolean hasAppleGpu) { this.hasAppleGpu = hasAppleGpu; }
 
+        /**
+        
+         * ID: GPU-GD-033
+         * Requirement: Evaluate and return the boolean result of isGpuReady.
+         * Purpose: Return whether isGpuReady condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean isGpuReady() {
             // Check if we have GPU hardware and OpenCL runtime is working
             boolean hasGpu = hasNvidiaGpu || hasAmdGpu || hasIntelGpu || hasAppleGpu;
@@ -702,6 +1062,18 @@ public class GpuDiagnostics {
             return hasGpu && openclAvailable && !hasCriticalErrors;
         }
 
+        /**
+        
+         * ID: GPU-GD-034
+         * Requirement: printReport must execute correctly within the contract defined by this class.
+         * Purpose: Output a demonstration or diagnostic result.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public void printReport() {
             System.out.println("\n=================================================================================");
             System.out.println("🔍 GPU DIAGNOSTICS REPORT");

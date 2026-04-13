@@ -64,6 +64,18 @@ public class ProductionOptimizer {
     private final Queue<PerformanceSnapshot> performanceHistory;
     private final Map<String, OptimizationStrategy> activeStrategies;
     
+    /**
+    
+     * ID: GPU-PO-002
+     * Requirement: ProductionOptimizer must be fully initialised with valid parameters.
+     * Purpose: Construct and initialise a ProductionOptimizer instance.
+     * Inputs: GpuConfig config, GpuPerformanceMonitor performanceMonitor
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public ProductionOptimizer(GpuConfig config, GpuPerformanceMonitor performanceMonitor) {
         this.config = config;
         this.performanceMonitor = performanceMonitor;
@@ -111,6 +123,18 @@ public class ProductionOptimizer {
         private final int batchSize;
         private final double performanceScore;
         
+        /**
+        
+         * ID: GPU-PO-003
+         * Requirement: PerformanceSnapshot must execute correctly within the contract defined by this class.
+         * Purpose: Implement the PerformanceSnapshot operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public PerformanceSnapshot(double gpuUtilization, double memoryUsage, 
                                  long averageLatency, double throughput, 
                                  int batchSize, double performanceScore) {
@@ -124,12 +148,96 @@ public class ProductionOptimizer {
         }
         
         // Getters
+        /**
+        
+         * ID: GPU-PO-004
+         * Requirement: Return the Timestamp field value without side effects.
+         * Purpose: Return the value of the Timestamp property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public LocalDateTime getTimestamp() { return timestamp; }
+        /**
+        
+         * ID: GPU-PO-005
+         * Requirement: Return the GpuUtilization field value without side effects.
+         * Purpose: Return the value of the GpuUtilization property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getGpuUtilization() { return gpuUtilization; }
+        /**
+        
+         * ID: GPU-PO-006
+         * Requirement: Return the MemoryUsage field value without side effects.
+         * Purpose: Return the value of the MemoryUsage property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getMemoryUsage() { return memoryUsage; }
+        /**
+        
+         * ID: GPU-PO-007
+         * Requirement: Return the AverageLatency field value without side effects.
+         * Purpose: Return the value of the AverageLatency property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public long getAverageLatency() { return averageLatency; }
+        /**
+        
+         * ID: GPU-PO-008
+         * Requirement: Return the Throughput field value without side effects.
+         * Purpose: Return the value of the Throughput property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getThroughput() { return throughput; }
+        /**
+        
+         * ID: GPU-PO-009
+         * Requirement: Return the BatchSize field value without side effects.
+         * Purpose: Return the value of the BatchSize property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public int getBatchSize() { return batchSize; }
+        /**
+        
+         * ID: GPU-PO-010
+         * Requirement: Return the PerformanceScore field value without side effects.
+         * Purpose: Return the value of the PerformanceScore property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getPerformanceScore() { return performanceScore; }
     }
     
@@ -152,6 +260,18 @@ public class ProductionOptimizer {
         private final double performanceGain;
         private final String details;
         
+        /**
+        
+         * ID: GPU-PO-011
+         * Requirement: OptimizationResult must execute correctly within the contract defined by this class.
+         * Purpose: Implement the OptimizationResult operation for this class.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public OptimizationResult(boolean success, String strategy, 
                                 double performanceGain, String details) {
             this.success = success;
@@ -161,14 +281,74 @@ public class ProductionOptimizer {
         }
         
         // Getters
+        /**
+        
+         * ID: GPU-PO-012
+         * Requirement: Evaluate and return the boolean result of isSuccess.
+         * Purpose: Return whether isSuccess condition holds.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public boolean isSuccess() { return success; }
+        /**
+        
+         * ID: GPU-PO-013
+         * Requirement: Return the Strategy field value without side effects.
+         * Purpose: Return the value of the Strategy property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getStrategy() { return strategy; }
+        /**
+        
+         * ID: GPU-PO-014
+         * Requirement: Return the PerformanceGain field value without side effects.
+         * Purpose: Return the value of the PerformanceGain property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public double getPerformanceGain() { return performanceGain; }
+        /**
+        
+         * ID: GPU-PO-015
+         * Requirement: Return the Details field value without side effects.
+         * Purpose: Return the value of the Details property.
+         * Inputs: None — no parameters.
+         * Outputs: Return value or output parameter as described; void otherwise.
+         * Postconditions: Return value or output parameter contains the computed result.
+         * Side Effects: May modify instance state; see method body for details.
+         * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+         * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+         */
         public String getDetails() { return details; }
     }
     
     /**
      * Start continuous optimization monitoring
+     */
+    /**
+    
+     * ID: GPU-PO-016
+     * Requirement: startOptimizationMonitoring must execute correctly within the contract defined by this class.
+     * Purpose: Implement the startOptimizationMonitoring operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void startOptimizationMonitoring() {
         // Main optimization loop - runs every 30 seconds
@@ -186,18 +366,66 @@ public class ProductionOptimizer {
     /**
      * Initialize built-in optimization strategies
      */
+    /**
+    
+     * ID: GPU-PO-017
+     * Requirement: initializeOptimizationStrategies must execute correctly within the contract defined by this class.
+     * Purpose: Initialise internal state and allocate required resources.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void initializeOptimizationStrategies() {
         // Batch size optimization strategy
         activeStrategies.put("BatchSizeOptimization", new OptimizationStrategy() {
+            /**
+            
+             * ID: GPU-PO-018
+             * Requirement: Return the Name field value without side effects.
+             * Purpose: Return the value of the Name property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public String getName() { return "BatchSizeOptimization"; }
             
+            /**
+            
+             * ID: GPU-PO-019
+             * Requirement: shouldApply must execute correctly within the contract defined by this class.
+             * Purpose: Implement the shouldApply operation for this class.
+             * Inputs: PerformanceSnapshot current, Queue<PerformanceSnapshot> history
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public boolean shouldApply(PerformanceSnapshot current, Queue<PerformanceSnapshot> history) {
                 return current.getThroughput() < THROUGHPUT_MIN_OPS_PER_SEC ||
                        current.getAverageLatency() > LATENCY_THRESHOLD_MS;
             }
             
+            /**
+            
+             * ID: GPU-PO-020
+             * Requirement: apply must execute correctly within the contract defined by this class.
+             * Purpose: Implement the apply operation for this class.
+             * Inputs: GpuConfig config
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public OptimizationResult apply(GpuConfig config) {
                 int currentBatch = config.getBatchSize();
@@ -215,21 +443,69 @@ public class ProductionOptimizer {
                 return new OptimizationResult(false, "BatchSizeOptimization", 0.0, "No adjustment needed");
             }
             
+            /**
+            
+             * ID: GPU-PO-021
+             * Requirement: Return the ExpectedImprovement field value without side effects.
+             * Purpose: Return the value of the ExpectedImprovement property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public double getExpectedImprovement() { return 0.15; }
         });
         
         // Memory pool optimization strategy
         activeStrategies.put("MemoryPoolOptimization", new OptimizationStrategy() {
+            /**
+            
+             * ID: GPU-PO-022
+             * Requirement: Return the Name field value without side effects.
+             * Purpose: Return the value of the Name property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public String getName() { return "MemoryPoolOptimization"; }
             
+            /**
+            
+             * ID: GPU-PO-023
+             * Requirement: shouldApply must execute correctly within the contract defined by this class.
+             * Purpose: Implement the shouldApply operation for this class.
+             * Inputs: PerformanceSnapshot current, Queue<PerformanceSnapshot> history
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public boolean shouldApply(PerformanceSnapshot current, Queue<PerformanceSnapshot> history) {
                 return current.getMemoryUsage() > MEMORY_USAGE_THRESHOLD ||
                        current.getMemoryUsage() < 0.5; // Under-utilization
             }
             
+            /**
+            
+             * ID: GPU-PO-024
+             * Requirement: apply must execute correctly within the contract defined by this class.
+             * Purpose: Implement the apply operation for this class.
+             * Inputs: GpuConfig config
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public OptimizationResult apply(GpuConfig config) {
                 int currentPool = config.getMemoryPoolSizeMB();
@@ -247,6 +523,18 @@ public class ProductionOptimizer {
                 return new OptimizationResult(false, "MemoryPoolOptimization", 0.0, "No adjustment needed");
             }
             
+            /**
+            
+             * ID: GPU-PO-025
+             * Requirement: Return the ExpectedImprovement field value without side effects.
+             * Purpose: Return the value of the ExpectedImprovement property.
+             * Inputs: None — no parameters.
+             * Outputs: Return value or output parameter as described; void otherwise.
+             * Postconditions: Return value or output parameter contains the computed result.
+             * Side Effects: May modify instance state; see method body for details.
+             * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+             * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+             */
             @Override
             public double getExpectedImprovement() { return 0.10; }
         });
@@ -256,6 +544,18 @@ public class ProductionOptimizer {
     
     /**
      * Perform one optimization cycle
+     */
+    /**
+    
+     * ID: GPU-PO-026
+     * Requirement: performOptimizationCycle must execute correctly within the contract defined by this class.
+     * Purpose: Execute the performOptimizationCycle operation.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void performOptimizationCycle() {
         if (!optimizationEnabled.get()) {
@@ -296,6 +596,18 @@ public class ProductionOptimizer {
     /**
      * Collect current performance snapshot
      */
+    /**
+    
+     * ID: GPU-PO-027
+     * Requirement: collectPerformanceSnapshot must execute correctly within the contract defined by this class.
+     * Purpose: Implement the collectPerformanceSnapshot operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void collectPerformanceSnapshot() {
         try {
             PerformanceSnapshot snapshot = getCurrentPerformanceSnapshot();
@@ -314,6 +626,18 @@ public class ProductionOptimizer {
     
     /**
      * Get current performance snapshot from monitor
+     */
+    /**
+    
+     * ID: GPU-PO-028
+     * Requirement: Return the CurrentPerformanceSnapshot field value without side effects.
+     * Purpose: Return the value of the CurrentPerformanceSnapshot property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private PerformanceSnapshot getCurrentPerformanceSnapshot() {
         try {
@@ -338,6 +662,18 @@ public class ProductionOptimizer {
     
     /**
      * Analyze performance trends to determine state
+     */
+    /**
+    
+     * ID: GPU-PO-029
+     * Requirement: analyzePerformanceTrends must execute correctly within the contract defined by this class.
+     * Purpose: Implement the analyzePerformanceTrends operation for this class.
+     * Inputs: PerformanceSnapshot current
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private OptimizationState analyzePerformanceTrends(PerformanceSnapshot current) {
         // Check for emergency conditions
@@ -377,6 +713,18 @@ public class ProductionOptimizer {
     /**
      * Check if performance is declining over recent snapshots
      */
+    /**
+    
+     * ID: GPU-PO-030
+     * Requirement: Evaluate and return the boolean result of isPerformanceDeclining.
+     * Purpose: Return whether isPerformanceDeclining condition holds.
+     * Inputs: List<PerformanceSnapshot> recent
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private boolean isPerformanceDeclining(List<PerformanceSnapshot> recent) {
         if (recent.size() < 3) return false;
         
@@ -395,6 +743,18 @@ public class ProductionOptimizer {
     
     /**
      * Apply optimization strategies
+     */
+    /**
+    
+     * ID: GPU-PO-031
+     * Requirement: applyOptimizations must execute correctly within the contract defined by this class.
+     * Purpose: Implement the applyOptimizations operation for this class.
+     * Inputs: PerformanceSnapshot current
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void applyOptimizations(PerformanceSnapshot current) {
         currentState.set(OptimizationState.OPTIMIZING);
@@ -431,6 +791,18 @@ public class ProductionOptimizer {
     /**
      * Optimize batch size based on current performance
      */
+    /**
+    
+     * ID: GPU-PO-032
+     * Requirement: optimizeBatchSize must execute correctly within the contract defined by this class.
+     * Purpose: Implement the optimizeBatchSize operation for this class.
+     * Inputs: int currentBatch
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private int optimizeBatchSize(int currentBatch) {
         if (performanceHistory.size() < 3) {
             return currentBatch; // Not enough data
@@ -455,6 +827,18 @@ public class ProductionOptimizer {
     
     /**
      * Optimize memory pool size based on usage patterns
+     */
+    /**
+    
+     * ID: GPU-PO-033
+     * Requirement: optimizeMemoryPoolSize must execute correctly within the contract defined by this class.
+     * Purpose: Implement the optimizeMemoryPoolSize operation for this class.
+     * Inputs: int currentPool
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private int optimizeMemoryPoolSize(int currentPool) {
         if (performanceHistory.size() < 3) {
@@ -483,6 +867,18 @@ public class ProductionOptimizer {
     /**
      * Update overall performance score
      */
+    /**
+    
+     * ID: GPU-PO-034
+     * Requirement: updatePerformanceScore must execute correctly within the contract defined by this class.
+     * Purpose: Implement the updatePerformanceScore operation for this class.
+     * Inputs: PerformanceSnapshot current
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     private void updatePerformanceScore(PerformanceSnapshot current) {
         // Calculate weighted performance score (0.0 to 1.0)
         double latencyScore = Math.max(0.0, 1.0 - (current.getAverageLatency() / (double) LATENCY_THRESHOLD_MS));
@@ -500,12 +896,36 @@ public class ProductionOptimizer {
     /**
      * Get current optimization state
      */
+    /**
+    
+     * ID: GPU-PO-035
+     * Requirement: Return the CurrentState field value without side effects.
+     * Purpose: Return the value of the CurrentState property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public OptimizationState getCurrentState() {
         return currentState.get();
     }
     
     /**
      * Get current performance score
+     */
+    /**
+    
+     * ID: GPU-PO-036
+     * Requirement: Return the PerformanceScore field value without side effects.
+     * Purpose: Return the value of the PerformanceScore property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public double getPerformanceScore() {
         return performanceScore;
@@ -514,6 +934,18 @@ public class ProductionOptimizer {
     /**
      * Get optimal batch size
      */
+    /**
+    
+     * ID: GPU-PO-037
+     * Requirement: Return the OptimalBatchSize field value without side effects.
+     * Purpose: Return the value of the OptimalBatchSize property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getOptimalBatchSize() {
         return optimalBatchSize;
     }
@@ -521,12 +953,36 @@ public class ProductionOptimizer {
     /**
      * Get optimal memory pool size
      */
+    /**
+    
+     * ID: GPU-PO-038
+     * Requirement: Return the OptimalMemoryPoolSize field value without side effects.
+     * Purpose: Return the value of the OptimalMemoryPoolSize property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public int getOptimalMemoryPoolSize() {
         return optimalMemoryPoolSize;
     }
     
     /**
      * Enable or disable optimization
+     */
+    /**
+    
+     * ID: GPU-PO-039
+     * Requirement: Update the OptimizationEnabled field to the supplied non-null value.
+     * Purpose: Set the OptimizationEnabled property to the supplied value.
+     * Inputs: boolean enabled
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void setOptimizationEnabled(boolean enabled) {
         optimizationEnabled.set(enabled);
@@ -536,6 +992,18 @@ public class ProductionOptimizer {
     /**
      * Force immediate optimization cycle
      */
+    /**
+    
+     * ID: GPU-PO-040
+     * Requirement: forceOptimization must execute correctly within the contract defined by this class.
+     * Purpose: Implement the forceOptimization operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void forceOptimization() {
         logger.info("Forcing immediate optimization cycle");
         performOptimizationCycle();
@@ -544,6 +1012,18 @@ public class ProductionOptimizer {
     /**
      * Get performance history
      */
+    /**
+    
+     * ID: GPU-PO-041
+     * Requirement: Return the PerformanceHistory field value without side effects.
+     * Purpose: Return the value of the PerformanceHistory property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public List<PerformanceSnapshot> getPerformanceHistory() {
         return new ArrayList<>(performanceHistory);
     }
@@ -551,12 +1031,36 @@ public class ProductionOptimizer {
     /**
      * Get active optimization strategies
      */
+    /**
+    
+     * ID: GPU-PO-042
+     * Requirement: Return the ActiveStrategies field value without side effects.
+     * Purpose: Return the value of the ActiveStrategies property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public Set<String> getActiveStrategies() {
         return new HashSet<>(activeStrategies.keySet());
     }
     
     /**
      * Add custom optimization strategy
+     */
+    /**
+    
+     * ID: GPU-PO-043
+     * Requirement: addOptimizationStrategy must execute correctly within the contract defined by this class.
+     * Purpose: Register or add an entry to the managed collection.
+     * Inputs: String name, OptimizationStrategy strategy
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void addOptimizationStrategy(String name, OptimizationStrategy strategy) {
         activeStrategies.put(name, strategy);
@@ -566,6 +1070,18 @@ public class ProductionOptimizer {
     /**
      * Remove optimization strategy
      */
+    /**
+    
+     * ID: GPU-PO-044
+     * Requirement: removeOptimizationStrategy must execute correctly within the contract defined by this class.
+     * Purpose: Remove the specified entry from the managed collection.
+     * Inputs: String name
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
+     */
     public void removeOptimizationStrategy(String name) {
         if (activeStrategies.remove(name) != null) {
             logger.info("Removed optimization strategy: " + name);
@@ -574,6 +1090,18 @@ public class ProductionOptimizer {
     
     /**
      * Get optimization statistics
+     */
+    /**
+    
+     * ID: GPU-PO-045
+     * Requirement: Return the OptimizationStats field value without side effects.
+     * Purpose: Return the value of the OptimizationStats property.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Map<String, Object> getOptimizationStats() {
         Map<String, Object> stats = new HashMap<>();
@@ -602,6 +1130,18 @@ public class ProductionOptimizer {
     
     /**
      * Shutdown optimizer
+     */
+    /**
+    
+     * ID: GPU-PO-046
+     * Requirement: shutdown must execute correctly within the contract defined by this class.
+     * Purpose: Implement the shutdown operation for this class.
+     * Inputs: None — no parameters.
+     * Outputs: Return value or output parameter as described; void otherwise.
+     * Postconditions: Return value or output parameter contains the computed result.
+     * Side Effects: May modify instance state; see method body for details.
+     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
+     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void shutdown() {
         optimizationEnabled.set(false);
