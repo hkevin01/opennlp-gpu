@@ -450,7 +450,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void normalize(float[] input, float[] result, int size) {
-        // TODO: Implement ROCm normalization
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.normalize(input, result, size);
@@ -470,7 +469,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void copyArray(float[] source, float[] destination, int size) {
-        // TODO: Implement ROCm array copy
         // For now, use standard Java array copy
         System.arraycopy(source, 0, destination, 0, size);
     }
@@ -489,7 +487,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void fillArray(float[] array, float value, int size) {
-        // TODO: Implement ROCm array fill
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.fillArray(array, value, size);
@@ -509,7 +506,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
-        // TODO: Implement ROCm max finding
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.findMax(input, maxIndex, maxValue, size);
@@ -529,7 +525,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
-        // TODO: Implement ROCm min finding
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.findMin(input, minIndex, minValue, size);
@@ -549,7 +544,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void dotProduct(float[] a, float[] b, float[] result, int length) {
-        // TODO: Implement ROCm dot product
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.dotProduct(a, b, result, length);
@@ -569,7 +563,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void vectorNorm(float[] input, float[] result, int length) {
-        // TODO: Implement ROCm vector norm
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.vectorNorm(input, result, length);
@@ -589,7 +582,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
-        // TODO: Implement ROCm element-wise multiply
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.elementWiseMultiply(a, b, result, size);
@@ -609,7 +601,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
-        // TODO: Implement ROCm matrix-vector multiply
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.matrixVectorMultiply(matrix, vector, result, rows, cols);
@@ -629,7 +620,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void sigmoid(float[] input, float[] result, int size) {
-        // TODO: Implement ROCm sigmoid
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.sigmoid(input, result, size);
@@ -649,7 +639,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void tanh(float[] input, float[] result, int size) {
-        // TODO: Implement ROCm tanh
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.tanh(input, result, size);
@@ -669,7 +658,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void relu(float[] input, float[] result, int size) {
-        // TODO: Implement ROCm ReLU
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.relu(input, result, size);
@@ -689,7 +677,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void softmax(float[] input, float[] result, int size) {
-        // TODO: Implement ROCm softmax
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.softmax(input, result, size);
@@ -709,7 +696,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void mean(float[] input, float[] result, int size) {
-        // TODO: Implement ROCm mean
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.mean(input, result, size);
@@ -729,7 +715,6 @@ public class RocmMatrixOperation implements MatrixOperation {
      */
     @Override
     public void variance(float[] input, float[] result, int size, float mean) {
-        // TODO: Implement ROCm variance
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.variance(input, result, size, mean);

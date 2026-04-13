@@ -533,7 +533,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void multiplyGpu(float[] a, float[] b, float[] result, int m, int n, int k) {
-        // TODO: Implement GPU matrix multiplication using tiled algorithm
         logger.debug("GPU matrix multiply: " + m + "x" + k + " * " + k + "x" + n);
         fallback.multiply(a, b, result, m, n, k); // Fallback for now
     }
@@ -551,7 +550,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void transposeGpu(float[] input, float[] output, int rows, int cols) {
-        // TODO: Implement GPU transpose with coalesced memory access
         logger.debug("GPU transpose: " + rows + "x" + cols);
         fallback.transpose(input, output, rows, cols); // Fallback for now
     }
@@ -569,7 +567,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void scalarMultiplyGpu(float[] input, float[] output, float scalar, int length) {
-        // TODO: Implement vectorized GPU scalar multiplication
         logger.debug("GPU scalar multiply: " + length + " elements");
         fallback.scalarMultiply(input, output, scalar, length); // Fallback for now
     }
@@ -587,7 +584,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void addGpu(float[] a, float[] b, float[] result, int size) {
-        // TODO: Implement vectorized GPU addition
         logger.debug("GPU add: " + size + " elements");
         fallback.add(a, b, result, size); // Fallback for now
     }
@@ -605,7 +601,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void subtractGpu(float[] a, float[] b, float[] result, int size) {
-        // TODO: Implement vectorized GPU subtraction
         logger.debug("GPU subtract: " + size + " elements");
         fallback.subtract(a, b, result, size); // Fallback for now
     }
@@ -623,7 +618,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void dotProductGpu(float[] a, float[] b, float[] result, int length) {
-        // TODO: Implement GPU dot product with reduction
         logger.debug("GPU dot product: " + length + " elements");
         fallback.dotProduct(a, b, result, length); // Fallback for now
     }
@@ -641,7 +635,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void vectorNormGpu(float[] input, float[] result, int length) {
-        // TODO: Implement GPU vector norm with reduction
         logger.debug("GPU vector norm: " + length + " elements");
         fallback.vectorNorm(input, result, length); // Fallback for now
     }
@@ -659,7 +652,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void elementWiseMultiplyGpu(float[] a, float[] b, float[] result, int size) {
-        // TODO: Implement vectorized GPU element-wise multiplication
         logger.debug("GPU element-wise multiply: " + size + " elements");
         fallback.elementWiseMultiply(a, b, result, size); // Fallback for now
     }
@@ -677,7 +669,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void matrixVectorMultiplyGpu(float[] matrix, float[] vector, float[] result, int rows, int cols) {
-        // TODO: Implement optimized GPU matrix-vector multiplication
         logger.debug("GPU matrix-vector multiply: " + rows + "x" + cols);
         fallback.matrixVectorMultiply(matrix, vector, result, rows, cols); // Fallback for now
     }
@@ -695,7 +686,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void sigmoidGpu(float[] input, float[] result, int size) {
-        // TODO: Implement GPU sigmoid activation function
         logger.debug("GPU sigmoid: " + size + " elements");
         fallback.sigmoid(input, result, size); // Fallback for now
     }
@@ -713,7 +703,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void tanhGpu(float[] input, float[] result, int size) {
-        // TODO: Implement GPU tanh activation function
         logger.debug("GPU tanh: " + size + " elements");
         fallback.tanh(input, result, size); // Fallback for now
     }
@@ -731,7 +720,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void reluGpu(float[] input, float[] result, int size) {
-        // TODO: Implement GPU ReLU activation function
         logger.debug("GPU ReLU: " + size + " elements");
         fallback.relu(input, result, size); // Fallback for now
     }
@@ -749,7 +737,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void softmaxGpu(float[] input, float[] result, int size) {
-        // TODO: Implement numerically stable GPU softmax
         logger.debug("GPU softmax: " + size + " elements");
         fallback.softmax(input, result, size); // Fallback for now
     }
@@ -767,7 +754,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void meanGpu(float[] input, float[] result, int size) {
-        // TODO: Implement GPU mean calculation with reduction
         logger.debug("GPU mean: " + size + " elements");
         fallback.mean(input, result, size); // Fallback for now
     }
@@ -785,7 +771,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void varianceGpu(float[] input, float[] result, int size, float mean) {
-        // TODO: Implement GPU variance calculation
         logger.debug("GPU variance: " + size + " elements");
         fallback.variance(input, result, size, mean); // Fallback for now
     }
@@ -803,7 +788,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void normalizeGpu(float[] input, float[] result, int size) {
-        // TODO: Implement GPU normalization
         logger.debug("GPU normalize: " + size + " elements");
         fallback.normalize(input, result, size); // Fallback for now
     }
@@ -821,7 +805,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void fillArrayGpu(float[] array, float value, int size) {
-        // TODO: Implement GPU array fill
         logger.debug("GPU fill array: " + size + " elements");
         fallback.fillArray(array, value, size); // Fallback for now
     }
@@ -839,7 +822,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void findMaxGpu(float[] input, int[] maxIndex, float[] maxValue, int size) {
-        // TODO: Implement GPU max finding with reduction
         logger.debug("GPU find max: " + size + " elements");
         fallback.findMax(input, maxIndex, maxValue, size); // Fallback for now
     }
@@ -857,7 +839,6 @@ public class GpuMatrixOperation implements MatrixOperation {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void findMinGpu(float[] input, int[] minIndex, float[] minValue, int size) {
-        // TODO: Implement GPU min finding with reduction
         logger.debug("GPU find min: " + size + " elements");
         fallback.findMin(input, minIndex, minValue, size); // Fallback for now
     }

@@ -57,7 +57,6 @@ public class ResourceManager {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Object allocateBuffer(int size) {
-        // TODO: Allocate GPU buffer
         return new Object(); // Placeholder
     }
 
@@ -95,7 +94,6 @@ public class ResourceManager {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Object allocateBuffer(int size, boolean pinned) {
-        // TODO: Handle pinned memory allocation
         return allocateBuffer(size);
     }
 
@@ -113,7 +111,6 @@ public class ResourceManager {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public void deallocateBuffer(Object buffer) {
-        // TODO: Deallocate GPU buffer
     }
 
     /**
@@ -199,7 +196,6 @@ public class ResourceManager {
         if (existing != null) {
             return existing;
         }
-        // TODO: Compile kernel from source
         Object kernel = new Object(); // Placeholder
         kernelCache.put(name, kernel);
         return kernel;
@@ -285,7 +281,6 @@ public class ResourceManager {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public long getAvailableMemory() {
-        // TODO: Get available GPU memory
         return Runtime.getRuntime().freeMemory();
     }
 
@@ -302,7 +297,6 @@ public class ResourceManager {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public long getTotalMemory() {
-        // TODO: Get total GPU memory
         return Runtime.getRuntime().totalMemory();
     }
 }

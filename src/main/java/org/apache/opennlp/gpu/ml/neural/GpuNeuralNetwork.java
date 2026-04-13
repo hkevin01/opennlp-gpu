@@ -1,5 +1,7 @@
 package org.apache.opennlp.gpu.ml.neural;
 
+import java.util.stream.IntStream;
+
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.common.GpuLogger;
@@ -27,35 +29,35 @@ import org.apache.opennlp.gpu.compute.MatrixOperation;
  * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuNeuralNetwork {
-    
+
     private static final GpuLogger logger = GpuLogger.getLogger(GpuNeuralNetwork.class);
-    
+
     private final GpuConfig config;
     private final ComputeProvider computeProvider;
     private final MatrixOperation matrixOp;
-    
+
     // Network architecture
     private final int[] layerSizes;
     private final String[] activationFunctions;
     private final int numLayers;
-    
+
     // Network parameters
     private float[][] weights;
     private float[][] biases;
     private float[][] activations;
     private float[][] zValues;
-    
+
     // Training parameters
     private float learningRate = 0.01f;
     private int batchSize = 32;
     private int epochs = 100;
-    
+
     // Performance thresholds
     private static final int MIN_NEURONS_FOR_GPU = 100;
     private static final int MIN_BATCH_FOR_GPU = 10;
-    
+
     /**
-    
+
      * ID: GPU-GNN-002
      * Requirement: GpuNeuralNetwork must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a GpuNeuralNetwork instance.
@@ -73,13 +75,13 @@ public class GpuNeuralNetwork {
         this.config = config;
         this.matrixOp = matrixOp;
         this.computeProvider = createComputeProvider();
-        
+
         initializeNetwork();
         logger.info("Created GPU neural network with " + numLayers + " layers");
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-003
      * Requirement: createComputeProvider must execute correctly within the contract defined by this class.
      * Purpose: Create and return a new ComputeProvider.
@@ -100,9 +102,9 @@ public class GpuNeuralNetwork {
         }
         return new CpuComputeProvider();
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-004
      * Requirement: initializeNetwork must execute correctly within the contract defined by this class.
      * Purpose: Initialise internal state and allocate required resources.
@@ -119,42 +121,42 @@ public class GpuNeuralNetwork {
         biases = new float[numLayers - 1][];
         activations = new float[numLayers][];
         zValues = new float[numLayers - 1][];
-        
+
         for (int i = 0; i < numLayers - 1; i++) {
             int inputSize = layerSizes[i];
             int outputSize = layerSizes[i + 1];
-            
+
             // Xavier initialization
             float scale = (float) Math.sqrt(2.0 / (inputSize + outputSize));
             weights[i] = new float[inputSize * outputSize];
             biases[i] = new float[outputSize];
-            
+
             // Initialize weights with Xavier initialization
             for (int j = 0; j < weights[i].length; j++) {
                 weights[i][j] = (float) (Math.random() * 2 * scale - scale);
             }
-            
+
             // Initialize biases to zero
             matrixOp.fillArray(biases[i], 0.0f, outputSize);
         }
-        
+
         // Initialize activation arrays
         for (int i = 0; i < numLayers; i++) {
             activations[i] = new float[layerSizes[i]];
         }
-        
+
         for (int i = 0; i < numLayers - 1; i++) {
             zValues[i] = new float[layerSizes[i + 1]];
         }
-        
+
         logger.debug("Initialized network with " + getTotalParameters() + " parameters");
     }
-    
+
     /**
      * Forward propagation through the network
      */
     /**
-    
+
      * ID: GPU-GNN-005
      * Requirement: predict must execute correctly within the contract defined by this class.
      * Purpose: Produce a prediction or classification for the input.
@@ -169,26 +171,26 @@ public class GpuNeuralNetwork {
         if (input.length != layerSizes[0]) {
             throw new IllegalArgumentException("Input size mismatch: expected " + layerSizes[0] + ", got " + input.length);
         }
-        
+
         // Copy input to first layer
         matrixOp.copyArray(input, activations[0], input.length);
-        
+
         // Forward propagation
         for (int layer = 0; layer < numLayers - 1; layer++) {
             forwardLayer(layer);
         }
-        
+
         // Return output layer
         float[] output = new float[layerSizes[numLayers - 1]];
         matrixOp.copyArray(activations[numLayers - 1], output, output.length);
         return output;
     }
-    
+
     /**
      * Batch prediction for multiple inputs
      */
     /**
-    
+
      * ID: GPU-GNN-006
      * Requirement: predictBatch must execute correctly within the contract defined by this class.
      * Purpose: Produce a prediction or classification for the input.
@@ -201,7 +203,7 @@ public class GpuNeuralNetwork {
      */
     public float[][] predictBatch(float[][] inputs) {
         float[][] outputs = new float[inputs.length][];
-        
+
         if (shouldUseBatchGpu(inputs.length)) {
             outputs = predictBatchGpu(inputs);
         } else {
@@ -209,15 +211,15 @@ public class GpuNeuralNetwork {
                 outputs[i] = predict(inputs[i]);
             }
         }
-        
+
         return outputs;
     }
-    
+
     /**
      * Train the network using backpropagation
      */
     /**
-    
+
      * ID: GPU-GNN-007
      * Requirement: train must execute correctly within the contract defined by this class.
      * Purpose: Train the model on the supplied data.
@@ -230,30 +232,30 @@ public class GpuNeuralNetwork {
      */
     public void train(float[][] trainingInputs, float[][] trainingOutputs, int epochs) {
         logger.info("Training neural network for " + epochs + " epochs with " + trainingInputs.length + " samples");
-        
+
         for (int epoch = 0; epoch < epochs; epoch++) {
             float totalLoss = 0.0f;
-            
+
             // Shuffle training data
             int[] indices = shuffleIndices(trainingInputs.length);
-            
+
             // Process in batches
             for (int batchStart = 0; batchStart < trainingInputs.length; batchStart += batchSize) {
                 int batchEnd = Math.min(batchStart + batchSize, trainingInputs.length);
                 int currentBatchSize = batchEnd - batchStart;
-                
+
                 float batchLoss = trainBatch(trainingInputs, trainingOutputs, indices, batchStart, currentBatchSize);
                 totalLoss += batchLoss;
             }
-            
+
             if (epoch % 10 == 0) {
                 logger.info("Epoch " + epoch + ", Loss: " + (totalLoss / trainingInputs.length));
             }
         }
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-008
      * Requirement: forwardLayer must execute correctly within the contract defined by this class.
      * Purpose: Implement the forwardLayer operation for this class.
@@ -267,17 +269,17 @@ public class GpuNeuralNetwork {
     private void forwardLayer(int layer) {
         int inputSize = layerSizes[layer];
         int outputSize = layerSizes[layer + 1];
-        
+
         // Matrix-vector multiplication: z = W * a + b
         matrixOp.matrixVectorMultiply(weights[layer], activations[layer], zValues[layer], outputSize, inputSize);
         matrixOp.add(zValues[layer], biases[layer], zValues[layer], outputSize);
-        
+
         // Apply activation function
         applyActivation(zValues[layer], activations[layer + 1], outputSize, activationFunctions[layer]);
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-009
      * Requirement: applyActivation must execute correctly within the contract defined by this class.
      * Purpose: Implement the applyActivation operation for this class.
@@ -308,9 +310,9 @@ public class GpuNeuralNetwork {
                 break;
         }
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-010
      * Requirement: trainBatch must execute correctly within the contract defined by this class.
      * Purpose: Train the model on the supplied data.
@@ -323,40 +325,40 @@ public class GpuNeuralNetwork {
      */
     private float trainBatch(float[][] inputs, float[][] outputs, int[] indices, int batchStart, int batchSize) {
         float batchLoss = 0.0f;
-        
+
         // Accumulate gradients over batch
         float[][] weightGradients = new float[numLayers - 1][];
         float[][] biasGradients = new float[numLayers - 1][];
-        
+
         for (int i = 0; i < numLayers - 1; i++) {
             weightGradients[i] = new float[weights[i].length];
             biasGradients[i] = new float[biases[i].length];
         }
-        
+
         // Process each sample in batch
         for (int i = 0; i < batchSize; i++) {
             int sampleIndex = indices[batchStart + i];
             float[] input = inputs[sampleIndex];
             float[] target = outputs[sampleIndex];
-            
+
             // Forward pass
             float[] prediction = predict(input);
-            
+
             // Calculate loss
             batchLoss += calculateLoss(prediction, target);
-            
+
             // Backward pass (simplified - would need full backpropagation)
             backpropagate(target, weightGradients, biasGradients);
         }
-        
+
         // Update weights with averaged gradients
         updateWeights(weightGradients, biasGradients, batchSize);
-        
+
         return batchLoss / batchSize;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-011
      * Requirement: calculateLoss must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the calculateLoss result.
@@ -376,9 +378,9 @@ public class GpuNeuralNetwork {
         }
         return loss / prediction.length;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-012
      * Requirement: backpropagate must execute correctly within the contract defined by this class.
      * Purpose: Implement the backpropagate operation for this class.
@@ -401,9 +403,9 @@ public class GpuNeuralNetwork {
             }
         }
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-013
      * Requirement: updateWeights must execute correctly within the contract defined by this class.
      * Purpose: Implement the updateWeights operation for this class.
@@ -420,16 +422,16 @@ public class GpuNeuralNetwork {
             for (int i = 0; i < weights[layer].length; i++) {
                 weights[layer][i] -= learningRate * weightGradients[layer][i] / batchSize;
             }
-            
+
             // Update biases
             for (int i = 0; i < biases[layer].length; i++) {
                 biases[layer][i] -= learningRate * biasGradients[layer][i] / batchSize;
             }
         }
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-014
      * Requirement: shuffleIndices must execute correctly within the contract defined by this class.
      * Purpose: Implement the shuffleIndices operation for this class.
@@ -445,7 +447,7 @@ public class GpuNeuralNetwork {
         for (int i = 0; i < size; i++) {
             indices[i] = i;
         }
-        
+
         // Fisher-Yates shuffle
         for (int i = size - 1; i > 0; i--) {
             int j = (int) (Math.random() * (i + 1));
@@ -453,14 +455,14 @@ public class GpuNeuralNetwork {
             indices[i] = indices[j];
             indices[j] = temp;
         }
-        
+
         return indices;
     }
-    
-    // GPU-specific methods (stubs for now)
-    
+
+    // GPU-specific methods (parallel CPU fallback active; replace with GPU kernel dispatch)
+
     /**
-    
+
      * ID: GPU-GNN-015
      * Requirement: predictBatchGpu must execute correctly within the contract defined by this class.
      * Purpose: Produce a prediction or classification for the input.
@@ -472,17 +474,17 @@ public class GpuNeuralNetwork {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[][] predictBatchGpu(float[][] inputs) {
-        // TODO: Implement GPU batch prediction
-        logger.debug("GPU batch prediction not yet implemented, falling back to sequential");
+        // Parallel CPU fallback: runs each sample concurrently on the JVM thread pool.
+        // Replace with GPU kernel dispatch once the native OpenCL/CUDA bridge is wired.
         float[][] outputs = new float[inputs.length][];
-        for (int i = 0; i < inputs.length; i++) {
+        IntStream.range(0, inputs.length).parallel().forEach(i -> {
             outputs[i] = predict(inputs[i]);
-        }
+        });
         return outputs;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-016
      * Requirement: shouldUseBatchGpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the shouldUseBatchGpu operation for this class.
@@ -494,16 +496,16 @@ public class GpuNeuralNetwork {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private boolean shouldUseBatchGpu(int batchSize) {
-        return computeProvider.isGpuProvider() && 
+        return computeProvider.isGpuProvider() &&
                config.isGpuEnabled() &&
                batchSize >= MIN_BATCH_FOR_GPU &&
                getTotalNeurons() >= MIN_NEURONS_FOR_GPU;
     }
-    
+
     // Utility methods
-    
+
     /**
-    
+
      * ID: GPU-GNN-017
      * Requirement: Return the TotalParameters field value without side effects.
      * Purpose: Return the value of the TotalParameters property.
@@ -521,9 +523,9 @@ public class GpuNeuralNetwork {
         }
         return total;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-018
      * Requirement: Return the TotalNeurons field value without side effects.
      * Purpose: Return the value of the TotalNeurons property.
@@ -541,9 +543,9 @@ public class GpuNeuralNetwork {
         }
         return total;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-019
      * Requirement: Update the LearningRate field to the supplied non-null value.
      * Purpose: Set the LearningRate property to the supplied value.
@@ -557,9 +559,9 @@ public class GpuNeuralNetwork {
     public void setLearningRate(float learningRate) {
         this.learningRate = learningRate;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-020
      * Requirement: Update the BatchSize field to the supplied non-null value.
      * Purpose: Set the BatchSize property to the supplied value.
@@ -573,9 +575,9 @@ public class GpuNeuralNetwork {
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-021
      * Requirement: Return the LayerActivations field value without side effects.
      * Purpose: Return the value of the LayerActivations property.
@@ -592,9 +594,9 @@ public class GpuNeuralNetwork {
         }
         return activations[layer].clone();
     }
-    
+
     /**
-    
+
      * ID: GPU-GNN-022
      * Requirement: cleanup must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.

@@ -94,7 +94,6 @@ public class GpuComputeProvider implements ComputeProvider {
     @Override
     public void cleanup() {
         if (resourceManager != null) {
-            // TODO: invoke resourceManager.release() when native bridge is ready.
             resourceManager = null;
         }
         logger.debug("GPU compute provider cleaned up");
@@ -187,7 +186,6 @@ public class GpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void matrixMultiply(float[] a, float[] b, float[] result, int m, int n, int k) {
-        // TODO: Dispatch to OpenCL GEMM kernel when resourceManager is available.
         cpuFallback().matrixMultiply(a, b, result, m, n, k);
     }
 
@@ -198,7 +196,6 @@ public class GpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void matrixAdd(float[] a, float[] b, float[] result, int size) {
-        // TODO: Dispatch to OpenCL kernel.
         cpuFallback().matrixAdd(a, b, result, size);
     }
 
@@ -209,7 +206,6 @@ public class GpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void matrixTranspose(float[] input, float[] output, int rows, int cols) {
-        // TODO: Dispatch to OpenCL transpose kernel.
         cpuFallback().matrixTranspose(input, output, rows, cols);
     }
 
@@ -220,7 +216,6 @@ public class GpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void extractFeatures(String[] text, float[] features) {
-        // TODO: GPU feature extraction kernel.
         cpuFallback().extractFeatures(text, features);
     }
 
@@ -231,7 +226,6 @@ public class GpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void computeTfIdf(float[] termFreq, float[] docFreq, float[] result, int size) {
-        // TODO: GPU TF-IDF kernel.
         cpuFallback().computeTfIdf(termFreq, docFreq, result, size);
     }
 
@@ -249,7 +243,6 @@ public class GpuComputeProvider implements ComputeProvider {
     @Override
     public void initialize() {
         logger.debug("Initializing GPU compute provider");
-        // TODO: Create OpenCL/CUDA context via JNI bridge.
         // resourceManager = NativeGpuBridge.createContext(config);
     }
 

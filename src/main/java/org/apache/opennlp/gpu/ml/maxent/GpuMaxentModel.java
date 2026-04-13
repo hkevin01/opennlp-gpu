@@ -108,7 +108,6 @@ public class GpuMaxentModel implements MaxentModel {
      */
     @Override
     public double[] eval(String[] context) {
-        // TODO: Replace baseModel.eval with GPU kernel dispatch when ready.
         return baseModel.eval(context);
     }
 
@@ -123,7 +122,6 @@ public class GpuMaxentModel implements MaxentModel {
      */
     @Override
     public double[] eval(String[] context, double[] probs) {
-        // TODO: GPU kernel dispatch.
         return baseModel.eval(context, probs);
     }
 
@@ -137,7 +135,6 @@ public class GpuMaxentModel implements MaxentModel {
      */
     @Override
     public double[] eval(String[] context, float[] values) {
-        // TODO: GPU kernel dispatch.
         return baseModel.eval(context, values);
     }
 

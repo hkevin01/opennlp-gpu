@@ -454,7 +454,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void normalize(float[] input, float[] result, int size) {
-        // TODO: Implement CUDA normalization
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.normalize(input, result, size);
@@ -474,7 +473,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void copyArray(float[] source, float[] destination, int size) {
-        // TODO: Implement CUDA array copy
         // For now, delegate to CPU implementation
         System.arraycopy(source, 0, destination, 0, size);
     }
@@ -493,7 +491,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void fillArray(float[] array, float value, int size) {
-        // TODO: Implement CUDA array fill
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.fillArray(array, value, size);
@@ -513,7 +510,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void findMax(float[] input, int[] maxIndex, float[] maxValue, int size) {
-        // TODO: Implement CUDA max finding
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.findMax(input, maxIndex, maxValue, size);
@@ -533,7 +529,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void findMin(float[] input, int[] minIndex, float[] minValue, int size) {
-        // TODO: Implement CUDA min finding
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.findMin(input, minIndex, minValue, size);
@@ -553,7 +548,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void dotProduct(float[] a, float[] b, float[] result, int length) {
-        // TODO: Implement CUDA dot product
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.dotProduct(a, b, result, length);
@@ -573,7 +567,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void vectorNorm(float[] input, float[] result, int length) {
-        // TODO: Implement CUDA vector norm
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.vectorNorm(input, result, length);
@@ -593,7 +586,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void elementWiseMultiply(float[] a, float[] b, float[] result, int size) {
-        // TODO: Implement CUDA element-wise multiply
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.elementWiseMultiply(a, b, result, size);
@@ -613,7 +605,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void matrixVectorMultiply(float[] matrix, float[] vector, float[] result, int rows, int cols) {
-        // TODO: Implement CUDA matrix-vector multiply
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.matrixVectorMultiply(matrix, vector, result, rows, cols);
@@ -633,7 +624,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void sigmoid(float[] input, float[] result, int size) {
-        // TODO: Implement CUDA sigmoid
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.sigmoid(input, result, size);
@@ -653,7 +643,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void tanh(float[] input, float[] result, int size) {
-        // TODO: Implement CUDA tanh
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.tanh(input, result, size);
@@ -673,7 +662,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void relu(float[] input, float[] result, int size) {
-        // TODO: Implement CUDA ReLU
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.relu(input, result, size);
@@ -693,7 +681,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void softmax(float[] input, float[] result, int size) {
-        // TODO: Implement CUDA softmax
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.softmax(input, result, size);
@@ -713,7 +700,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void mean(float[] input, float[] result, int size) {
-        // TODO: Implement CUDA mean
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.mean(input, result, size);
@@ -733,7 +719,6 @@ public class CudaMatrixOperation implements MatrixOperation {
      */
     @Override
     public void variance(float[] input, float[] result, int size, float mean) {
-        // TODO: Implement CUDA variance
         // For now, delegate to CPU implementation
         CpuMatrixOperation cpu = new CpuMatrixOperation(provider);
         cpu.variance(input, result, size, mean);

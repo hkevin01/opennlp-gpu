@@ -134,7 +134,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-004
      * Requirement: gatherSystemInfo must execute correctly within the contract defined by this class.
      * Purpose: Implement the gatherSystemInfo operation for this class.
@@ -159,7 +159,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-005
      * Requirement: checkJavaEnvironment must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for JavaEnvironment.
@@ -196,7 +196,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-006
      * Requirement: detectGpuHardware must execute correctly within the contract defined by this class.
      * Purpose: Implement the detectGpuHardware operation for this class.
@@ -221,7 +221,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-007
      * Requirement: detectLinuxGpuHardware must execute correctly within the contract defined by this class.
      * Purpose: Implement the detectLinuxGpuHardware operation for this class.
@@ -278,7 +278,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-008
      * Requirement: detectWindowsGpuHardware must execute correctly within the contract defined by this class.
      * Purpose: Implement the detectWindowsGpuHardware operation for this class.
@@ -328,7 +328,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-009
      * Requirement: detectMacGpuHardware must execute correctly within the contract defined by this class.
      * Purpose: Implement the detectMacGpuHardware operation for this class.
@@ -370,7 +370,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-010
      * Requirement: checkNvidiaDrivers must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for NvidiaDrivers.
@@ -420,7 +420,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-011
      * Requirement: checkAmdDrivers must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for AmdDrivers.
@@ -480,7 +480,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-012
      * Requirement: checkIntelDrivers must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for IntelDrivers.
@@ -514,7 +514,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-013
      * Requirement: checkCudaRuntime must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for CudaRuntime.
@@ -575,7 +575,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-014
      * Requirement: checkRocmRuntime must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for RocmRuntime.
@@ -630,7 +630,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-015
      * Requirement: checkOpenClRuntime must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for OpenClRuntime.
@@ -682,7 +682,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-016
      * Requirement: checkOpenNlpGpuIntegration must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for OpenNlpGpuIntegration.
@@ -711,7 +711,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-017
      * Requirement: checkCloudAccelerators must execute correctly within the contract defined by this class.
      * Purpose: Validate preconditions for CloudAccelerators.
@@ -781,7 +781,7 @@ public class GpuDiagnostics {
     }
 
     /**
-    
+
      * ID: GPU-GD-018
      * Requirement: runBasicPerformanceTest must execute correctly within the contract defined by this class.
      * Purpose: Execute the runBasicPerformanceTest operation.
@@ -808,7 +808,22 @@ public class GpuDiagnostics {
             long duration = System.currentTimeMillis() - startTime;
             report.addSuccess("CPU Performance", "✅ Basic test completed in " + duration + "ms");
 
-            // TODO: Add actual GPU performance test when GPU is available
+            // Matrix multiplication performance test (always available via CPU fallback)
+            int size = 128;
+            float[] a = new float[size * size];
+            float[] b = new float[size * size];
+            float[] c = new float[size * size];
+            for (int i = 0; i < a.length; i++) { a[i] = (float) Math.random(); b[i] = (float) Math.random(); }
+            long matStart = System.currentTimeMillis();
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    float sum = 0.0f;
+                    for (int k = 0; k < size; k++) sum += a[i * size + k] * b[k * size + j];
+                    c[i * size + j] = sum;
+                }
+            }
+            long matDuration = System.currentTimeMillis() - matStart;
+            report.addSuccess("Matrix Performance", "✅ 128×128 matrix multiply in " + matDuration + "ms (CPU fallback active)");
 
         } catch (Exception e) {
             report.addWarning("Performance Test", "⚠️ Performance test failed: " + e.getMessage());
@@ -828,7 +843,7 @@ public class GpuDiagnostics {
         private String currentSection = "";
 
         /**
-        
+
          * ID: GPU-GD-019
          * Requirement: addSection must execute correctly within the contract defined by this class.
          * Purpose: Register or add an entry to the managed collection.
@@ -845,7 +860,7 @@ public class GpuDiagnostics {
         }
 
         /**
-        
+
          * ID: GPU-GD-020
          * Requirement: addSuccess must execute correctly within the contract defined by this class.
          * Purpose: Register or add an entry to the managed collection.
@@ -861,7 +876,7 @@ public class GpuDiagnostics {
         }
 
         /**
-        
+
          * ID: GPU-GD-021
          * Requirement: addWarning must execute correctly within the contract defined by this class.
          * Purpose: Register or add an entry to the managed collection.
@@ -877,7 +892,7 @@ public class GpuDiagnostics {
         }
 
         /**
-        
+
          * ID: GPU-GD-022
          * Requirement: addError must execute correctly within the contract defined by this class.
          * Purpose: Register or add an entry to the managed collection.
@@ -893,7 +908,7 @@ public class GpuDiagnostics {
         }
 
         /**
-        
+
          * ID: GPU-GD-023
          * Requirement: addInfo must execute correctly within the contract defined by this class.
          * Purpose: Register or add an entry to the managed collection.
@@ -909,7 +924,7 @@ public class GpuDiagnostics {
         }
 
         /**
-        
+
          * ID: GPU-GD-024
          * Requirement: addRecommendation must execute correctly within the contract defined by this class.
          * Purpose: Register or add an entry to the managed collection.
@@ -926,7 +941,7 @@ public class GpuDiagnostics {
 
         // Getters and setters for GPU types
         /**
-        
+
          * ID: GPU-GD-025
          * Requirement: Evaluate and return the boolean result of hasNvidiaGpu.
          * Purpose: Return whether hasNvidiaGpu condition holds.
@@ -939,7 +954,7 @@ public class GpuDiagnostics {
          */
         public boolean hasNvidiaGpu() { return hasNvidiaGpu; }
         /**
-        
+
          * ID: GPU-GD-026
          * Requirement: Update the HasNvidiaGpu field to the supplied non-null value.
          * Purpose: Set the HasNvidiaGpu property to the supplied value.
@@ -953,7 +968,7 @@ public class GpuDiagnostics {
         public void setHasNvidiaGpu(boolean hasNvidiaGpu) { this.hasNvidiaGpu = hasNvidiaGpu; }
 
         /**
-        
+
          * ID: GPU-GD-027
          * Requirement: Evaluate and return the boolean result of hasAmdGpu.
          * Purpose: Return whether hasAmdGpu condition holds.
@@ -966,7 +981,7 @@ public class GpuDiagnostics {
          */
         public boolean hasAmdGpu() { return hasAmdGpu; }
         /**
-        
+
          * ID: GPU-GD-028
          * Requirement: Update the HasAmdGpu field to the supplied non-null value.
          * Purpose: Set the HasAmdGpu property to the supplied value.
@@ -980,7 +995,7 @@ public class GpuDiagnostics {
         public void setHasAmdGpu(boolean hasAmdGpu) { this.hasAmdGpu = hasAmdGpu; }
 
         /**
-        
+
          * ID: GPU-GD-029
          * Requirement: Evaluate and return the boolean result of hasIntelGpu.
          * Purpose: Return whether hasIntelGpu condition holds.
@@ -993,7 +1008,7 @@ public class GpuDiagnostics {
          */
         public boolean hasIntelGpu() { return hasIntelGpu; }
         /**
-        
+
          * ID: GPU-GD-030
          * Requirement: Update the HasIntelGpu field to the supplied non-null value.
          * Purpose: Set the HasIntelGpu property to the supplied value.
@@ -1007,7 +1022,7 @@ public class GpuDiagnostics {
         public void setHasIntelGpu(boolean hasIntelGpu) { this.hasIntelGpu = hasIntelGpu; }
 
         /**
-        
+
          * ID: GPU-GD-031
          * Requirement: Evaluate and return the boolean result of hasAppleGpu.
          * Purpose: Return whether hasAppleGpu condition holds.
@@ -1020,7 +1035,7 @@ public class GpuDiagnostics {
          */
         public boolean hasAppleGpu() { return hasAppleGpu; }
         /**
-        
+
          * ID: GPU-GD-032
          * Requirement: Update the HasAppleGpu field to the supplied non-null value.
          * Purpose: Set the HasAppleGpu property to the supplied value.
@@ -1034,7 +1049,7 @@ public class GpuDiagnostics {
         public void setHasAppleGpu(boolean hasAppleGpu) { this.hasAppleGpu = hasAppleGpu; }
 
         /**
-        
+
          * ID: GPU-GD-033
          * Requirement: Evaluate and return the boolean result of isGpuReady.
          * Purpose: Return whether isGpuReady condition holds.
@@ -1063,7 +1078,7 @@ public class GpuDiagnostics {
         }
 
         /**
-        
+
          * ID: GPU-GD-034
          * Requirement: printReport must execute correctly within the contract defined by this class.
          * Purpose: Output a demonstration or diagnostic result.

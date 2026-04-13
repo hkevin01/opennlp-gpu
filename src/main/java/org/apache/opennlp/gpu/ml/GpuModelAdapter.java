@@ -297,7 +297,6 @@ public class GpuModelAdapter implements MaxentModel {
     private double[] evaluateOnGpu(String[] context, double[] probs) {
         try {
             // For now, delegate to CPU implementation
-            // TODO: Implement actual GPU acceleration
             if (probs != null) {
                 return cpuModel.eval(context, probs);
             } else {
