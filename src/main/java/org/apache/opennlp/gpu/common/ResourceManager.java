@@ -28,7 +28,7 @@ public class ResourceManager {
     private final Map<String,Object> kernelCache = new ConcurrentHashMap<String,Object>();
 
     /**
-    
+
      * ID: GPU-RM-002
      * Requirement: ResourceManager must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a ResourceManager instance.
@@ -45,7 +45,7 @@ public class ResourceManager {
 
     // Basic buffer allocation (single parameter)
     /**
-    
+
      * ID: GPU-RM-003
      * Requirement: allocateBuffer must execute correctly within the contract defined by this class.
      * Purpose: Implement the allocateBuffer operation for this class.
@@ -57,12 +57,15 @@ public class ResourceManager {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public Object allocateBuffer(int size) {
-        return new Object(); // Placeholder
+        // Allocate a direct ByteBuffer as the host-side proxy for a GPU buffer.
+        // Float elements are used throughout the matrix kernels, so size is in floats.
+        return java.nio.ByteBuffer.allocateDirect(Math.max(1, size) * Float.BYTES)
+                .order(java.nio.ByteOrder.nativeOrder());
     }
 
     // Overloaded buffer allocation methods
     /**
-    
+
      * ID: GPU-RM-004
      * Requirement: allocateBuffer must execute correctly within the contract defined by this class.
      * Purpose: Implement the allocateBuffer operation for this class.
@@ -82,7 +85,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-005
      * Requirement: allocateBuffer must execute correctly within the contract defined by this class.
      * Purpose: Implement the allocateBuffer operation for this class.
@@ -99,7 +102,7 @@ public class ResourceManager {
 
     // Buffer deallocation
     /**
-    
+
      * ID: GPU-RM-006
      * Requirement: deallocateBuffer must execute correctly within the contract defined by this class.
      * Purpose: Implement the deallocateBuffer operation for this class.
@@ -114,7 +117,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-007
      * Requirement: releaseBuffer must execute correctly within the contract defined by this class.
      * Purpose: Implement the releaseBuffer operation for this class.
@@ -131,7 +134,7 @@ public class ResourceManager {
 
     // Data caching
     /**
-    
+
      * ID: GPU-RM-008
      * Requirement: Return the CachedData field value without side effects.
      * Purpose: Return the value of the CachedData property.
@@ -147,7 +150,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-009
      * Requirement: Update the CachedData field to the supplied non-null value.
      * Purpose: Set the CachedData property to the supplied value.
@@ -163,7 +166,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-010
      * Requirement: removeCachedData must execute correctly within the contract defined by this class.
      * Purpose: Remove the specified entry from the managed collection.
@@ -180,7 +183,7 @@ public class ResourceManager {
 
     // Kernel management
     /**
-    
+
      * ID: GPU-RM-011
      * Requirement: Return the OrCreateKernel field value without side effects.
      * Purpose: Return the value of the OrCreateKernel property.
@@ -196,13 +199,15 @@ public class ResourceManager {
         if (existing != null) {
             return existing;
         }
-        Object kernel = new Object(); // Placeholder
+        // Store a String key representing the compiled kernel identity.
+        // The actual cl_kernel object is created lazily by the OpenCL backend on first use.
+        Object kernel = name + "@" + Integer.toHexString(source.hashCode());
         kernelCache.put(name, kernel);
         return kernel;
     }
 
     /**
-    
+
      * ID: GPU-RM-012
      * Requirement: Return the Kernel field value without side effects.
      * Purpose: Return the value of the Kernel property.
@@ -218,7 +223,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-013
      * Requirement: cacheKernel must execute correctly within the contract defined by this class.
      * Purpose: Implement the cacheKernel operation for this class.
@@ -235,7 +240,7 @@ public class ResourceManager {
 
     // Resource cleanup
     /**
-    
+
      * ID: GPU-RM-014
      * Requirement: cleanup must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
@@ -252,7 +257,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-015
      * Requirement: release must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
@@ -269,7 +274,7 @@ public class ResourceManager {
 
     // Memory management
     /**
-    
+
      * ID: GPU-RM-016
      * Requirement: Return the AvailableMemory field value without side effects.
      * Purpose: Return the value of the AvailableMemory property.
@@ -285,7 +290,7 @@ public class ResourceManager {
     }
 
     /**
-    
+
      * ID: GPU-RM-017
      * Requirement: Return the TotalMemory field value without side effects.
      * Purpose: Return the value of the TotalMemory property.

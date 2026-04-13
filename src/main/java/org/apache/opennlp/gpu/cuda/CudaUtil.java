@@ -179,9 +179,22 @@ public class CudaUtil {
         }
         
         try {
-            // Implementation would call native CUDA methods
-            // This is a placeholder that should be replaced with actual CUDA calls
-            return 1; // Placeholder for actual device count
+            // Use JOCL/OpenCL to enumerate GPU devices. On CUDA-capable machines
+            // each GPU shows up as a CL_DEVICE_TYPE_GPU entry.
+            int[] numPlatformsArr = new int[1];
+            CL.clGetPlatformIDs(0, null, numPlatformsArr);
+            if (numPlatformsArr[0] == 0) return 0;
+            org.jocl.cl_platform_id[] platforms = new org.jocl.cl_platform_id[numPlatformsArr[0]];
+            CL.clGetPlatformIDs(numPlatformsArr[0], platforms, null);
+            int gpuCount = 0;
+            for (org.jocl.cl_platform_id p : platforms) {
+                int[] nd = new int[1];
+                try {
+                    CL.clGetDeviceIDs(p, CL.CL_DEVICE_TYPE_GPU, 0, null, nd);
+                    gpuCount += nd[0];
+                } catch (Exception ignored) { /* skip platforms without GPUs */ }
+            }
+            return gpuCount;
         } catch (Exception e) {
             logger.error("Failed to get CUDA device count: {}", e.getMessage());
             return 0;

@@ -28,7 +28,7 @@ public class CpuComputeProvider implements ComputeProvider {
     private final ResourceManager resourceManager;
 
     /**
-    
+
      * ID: GPU-CCP-002
      * Requirement: CpuComputeProvider must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a CpuComputeProvider instance.
@@ -44,7 +44,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-003
      * Requirement: Evaluate and return the boolean result of isGpuProvider.
      * Purpose: Return whether isGpuProvider condition holds.
@@ -61,7 +61,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-004
      * Requirement: cleanup must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
@@ -80,7 +80,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-005
      * Requirement: Return the Name field value without side effects.
      * Purpose: Return the value of the Name property.
@@ -97,7 +97,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-006
      * Requirement: Return the Type field value without side effects.
      * Purpose: Return the value of the Type property.
@@ -114,7 +114,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-007
      * Requirement: Evaluate and return the boolean result of isAvailable.
      * Purpose: Return whether isAvailable condition holds.
@@ -131,7 +131,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-008
      * Requirement: Return the MaxMemoryMB field value without side effects.
      * Purpose: Return the value of the MaxMemoryMB property.
@@ -148,7 +148,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-009
      * Requirement: Return the CurrentMemoryUsageMB field value without side effects.
      * Purpose: Return the value of the CurrentMemoryUsageMB property.
@@ -165,7 +165,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-010
      * Requirement: Return the ResourceManager field value without side effects.
      * Purpose: Return the value of the ResourceManager property.
@@ -182,7 +182,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-011
      * Requirement: matrixMultiply must execute correctly within the contract defined by this class.
      * Purpose: Implement the matrixMultiply operation for this class.
@@ -208,7 +208,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-012
      * Requirement: matrixAdd must execute correctly within the contract defined by this class.
      * Purpose: Implement the matrixAdd operation for this class.
@@ -227,7 +227,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-013
      * Requirement: matrixTranspose must execute correctly within the contract defined by this class.
      * Purpose: Implement the matrixTranspose operation for this class.
@@ -248,7 +248,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-014
      * Requirement: extractFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractFeatures operation for this class.
@@ -261,14 +261,15 @@ public class CpuComputeProvider implements ComputeProvider {
      */
     @Override
     public void extractFeatures(String[] text, float[] features) {
-        // Simple feature extraction placeholder
+        // CPU feature extraction: maps each token to its character-count as a lightweight
+        // BOW-style numeric feature.  GPU providers use kernel-based vectorizers instead.
         for (int i = 0; i < features.length && i < text.length; i++) {
-            features[i] = text[i].length(); // Use text length as simple feature
+            features[i] = text[i].length();
         }
     }
 
     /**
-    
+
      * ID: GPU-CCP-015
      * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the computeTfIdf result.
@@ -287,7 +288,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-016
      * Requirement: initialize must execute correctly within the contract defined by this class.
      * Purpose: Initialise internal state and allocate required resources.
@@ -304,7 +305,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-017
      * Requirement: initialize must execute correctly within the contract defined by this class.
      * Purpose: Initialise internal state and allocate required resources.
@@ -322,7 +323,7 @@ public class CpuComputeProvider implements ComputeProvider {
     }
 
     /**
-    
+
      * ID: GPU-CCP-018
      * Requirement: supportsOperation must execute correctly within the contract defined by this class.
      * Purpose: Implement the supportsOperation operation for this class.

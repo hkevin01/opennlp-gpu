@@ -392,15 +392,64 @@ public class GpuNeuralNetwork {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private void backpropagate(float[] target, float[][] weightGradients, float[][] biasGradients) {
-        // Simplified backpropagation - would need full implementation
-        // For now, just random gradients (placeholder)
-        for (int layer = 0; layer < numLayers - 1; layer++) {
-            for (int i = 0; i < weightGradients[layer].length; i++) {
-                weightGradients[layer][i] += (float) (Math.random() * 0.01 - 0.005);
+        int outputLayer = numLayers - 1;
+        int outputSize = layerSizes[outputLayer];
+
+        // Compute output-layer delta: d(MSE)/d(activation) × activation_derivative(z)
+        float[] delta = new float[outputSize];
+        for (int i = 0; i < outputSize; i++) {
+            float act = activations[outputLayer][i];
+            float err = act - target[i];                             // dL/d(act) for MSE
+            delta[i] = err * activationDerivative(activationFunctions[outputLayer - 1], act,
+                                                   zValues[outputLayer - 1][i]);
+        }
+
+        // Propagate delta backwards through layers
+        for (int layer = numLayers - 2; layer >= 0; layer--) {
+            int inSize  = layerSizes[layer];
+            int outSize = layerSizes[layer + 1];
+
+            // Weight gradient: outer product delta ⊗ activation[layer]
+            for (int o = 0; o < outSize; o++) {
+                for (int j = 0; j < inSize; j++) {
+                    weightGradients[layer][o * inSize + j] += delta[o] * activations[layer][j];
+                }
             }
-            for (int i = 0; i < biasGradients[layer].length; i++) {
-                biasGradients[layer][i] += (float) (Math.random() * 0.01 - 0.005);
+            // Bias gradient: delta itself
+            for (int o = 0; o < outSize; o++) {
+                biasGradients[layer][o] += delta[o];
             }
+
+            // Propagate delta to previous layer (skip for input layer)
+            if (layer > 0) {
+                float[] prevDelta = new float[inSize];
+                for (int j = 0; j < inSize; j++) {
+                    float sum = 0.0f;
+                    for (int o = 0; o < outSize; o++) {
+                        sum += weights[layer][o * inSize + j] * delta[o];
+                    }
+                    prevDelta[j] = sum * activationDerivative(
+                            activationFunctions[layer - 1],
+                            activations[layer][j],
+                            zValues[layer - 1][j]);
+                }
+                delta = prevDelta;
+            }
+        }
+    }
+
+    /**
+     * Derivative of the activation function with respect to its pre‑activation input z.
+     * Uses the cached activation value (post-activation) to avoid recomputing exp().
+     */
+    private float activationDerivative(String fn, float activation, float z) {
+        if (fn == null) return 1.0f;
+        switch (fn.toLowerCase()) {
+            case "sigmoid": return activation * (1.0f - activation);
+            case "tanh":    return 1.0f - activation * activation;
+            case "relu":    return z > 0.0f ? 1.0f : 0.0f;
+            case "softmax": return activation * (1.0f - activation); // per-element approximation
+            default:        return 1.0f;  // linear
         }
     }
 

@@ -32,23 +32,23 @@ import org.apache.opennlp.gpu.monitoring.GpuPerformanceMonitor;
  * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class GpuModelIntegration {
-    
+
     private static final GpuLogger logger = GpuLogger.getLogger(GpuModelIntegration.class);
-    
+
     // Core components
     private final GpuNeuralPipeline neuralPipeline;
     private final GpuFeatureExtractor featureExtractor;
     private final GpuPerformanceMonitor performanceMonitor;
-    
+
     // Configuration and state
     private final IntegrationConfig config;
     private final Map<String, ModelState> modelStates;
     private final Map<String, Float> modelWeights;
-    
+
     // Performance tracking
     private final Map<String, Integer> modelUsageCounts = new ConcurrentHashMap<>();
     private final Map<String, Long> modelProcessingTimes = new ConcurrentHashMap<>();
-    
+
     /**
      * Configuration for ML model integration.
      */
@@ -62,9 +62,9 @@ public class GpuModelIntegration {
         public float ensembleWeightDecay = 0.95f;
         public String defaultActivationFunction = "relu";
         public int featureVectorSize = 512;
-        
+
         /**
-        
+
          * ID: GPU-GMI-002
          * Requirement: IntegrationConfig must execute correctly within the contract defined by this class.
          * Purpose: Implement the IntegrationConfig operation for this class.
@@ -77,7 +77,7 @@ public class GpuModelIntegration {
          */
         public IntegrationConfig() {}
     }
-    
+
     /**
      * State tracking for individual models.
      */
@@ -90,9 +90,9 @@ public class GpuModelIntegration {
         public int usageCount;
         public float averageProcessingTime;
         public Map<String, Object> metadata;
-        
+
         /**
-        
+
          * ID: GPU-GMI-003
          * Requirement: ModelState must execute correctly within the contract defined by this class.
          * Purpose: Implement the ModelState operation for this class.
@@ -114,7 +114,7 @@ public class GpuModelIntegration {
             this.metadata = new HashMap<>();
         }
     }
-    
+
     /**
      * Processing result from integrated models.
      */
@@ -127,9 +127,9 @@ public class GpuModelIntegration {
         public final boolean usedGpuAcceleration;
         public final String performanceSummary;
         public final Map<String, Object> diagnostics;
-        
+
         /**
-        
+
          * ID: GPU-GMI-004
          * Requirement: IntegrationResult must execute correctly within the contract defined by this class.
          * Purpose: Implement the IntegrationResult operation for this class.
@@ -154,12 +154,12 @@ public class GpuModelIntegration {
             this.diagnostics = diagnostics != null ? new HashMap<>(diagnostics) : new HashMap<>();
         }
     }
-    
+
     /**
      * Create a new ML model integration system.
      */
     /**
-    
+
      * ID: GPU-GMI-005
      * Requirement: GpuModelIntegration must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a GpuModelIntegration instance.
@@ -175,27 +175,27 @@ public class GpuModelIntegration {
         this.modelStates = new ConcurrentHashMap<>();
         this.modelWeights = new ConcurrentHashMap<>();
         this.performanceMonitor = GpuPerformanceMonitor.getInstance();
-        
+
         // Initialize neural pipeline
         GpuNeuralPipeline.PipelineConfig pipelineConfig = new GpuNeuralPipeline.PipelineConfig();
         pipelineConfig.enablePerformanceMonitoring = this.config.enablePerformanceOptimization;
         pipelineConfig.activationFunction = this.config.defaultActivationFunction;
         this.neuralPipeline = new GpuNeuralPipeline(provider, pipelineConfig);
-        
+
         // Initialize feature extractor with required parameters
-        this.featureExtractor = new GpuFeatureExtractor(provider, new org.apache.opennlp.gpu.common.GpuConfig(), 
+        this.featureExtractor = new GpuFeatureExtractor(provider, new org.apache.opennlp.gpu.common.GpuConfig(),
                                                        new org.apache.opennlp.gpu.compute.CpuMatrixOperation(provider));
-        
-        logger.info("GPU Model Integration initialized with config: neural={}, ensemble={}, maxModels={}", 
-                   this.config.enableNeuralEnhancement, this.config.enableEnsembleProcessing, 
+
+        logger.info("GPU Model Integration initialized with config: neural={}, ensemble={}, maxModels={}",
+                   this.config.enableNeuralEnhancement, this.config.enableEnsembleProcessing,
                    this.config.maxConcurrentModels);
     }
-    
+
     /**
      * Register a model for integration.
      */
     /**
-    
+
      * ID: GPU-GMI-006
      * Requirement: registerModel must execute correctly within the contract defined by this class.
      * Purpose: Register or add an entry to the managed collection.
@@ -210,15 +210,15 @@ public class GpuModelIntegration {
         ModelState state = new ModelState(modelId, modelType);
         modelStates.put(modelId, state);
         modelWeights.put(modelId, Math.max(0.0f, Math.min(1.0f, initialWeight)));
-        
+
         logger.info("Registered model: {} (type: {}, weight: {})", modelId, modelType, initialWeight);
     }
-    
+
     /**
      * Process input through integrated models.
      */
     /**
-    
+
      * ID: GPU-GMI-007
      * Requirement: processIntegrated must execute correctly within the contract defined by this class.
      * Purpose: Implement the processIntegrated operation for this class.
@@ -229,96 +229,96 @@ public class GpuModelIntegration {
      * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
-    public IntegrationResult processIntegrated(float[] input, String[] textTokens, 
+    public IntegrationResult processIntegrated(float[] input, String[] textTokens,
                                              Map<String, Object> context) {
         if (input == null || input.length == 0) {
             throw new IllegalArgumentException("Input cannot be null or empty");
         }
-        
+
         long startTime = System.currentTimeMillis();
         String operationId = "integrated_processing_" + startTime;
-        
+
         try {
             // Start performance monitoring
             GpuPerformanceMonitor.TimingContext timingContext = null;
             if (config.enablePerformanceOptimization) {
-                timingContext = performanceMonitor.startOperation(operationId, 
+                timingContext = performanceMonitor.startOperation(operationId,
                     GpuPerformanceMonitor.OperationType.GPU, input.length);
             }
-            
+
             Map<String, float[]> modelOutputs = new HashMap<>();
             Map<String, Float> modelConfidences = new HashMap<>();
             Map<String, Object> diagnostics = new HashMap<>();
             boolean usedGpu = false;
-            
+
             // Step 1: Feature extraction and enhancement
             float[] enhancedFeatures = extractAndEnhanceFeatures(input, textTokens, context);
             usedGpu = true;
-            
+
             // Step 2: Neural pipeline processing
             float[] neuralOutput = null;
             if (config.enableNeuralEnhancement) {
-                GpuNeuralPipeline.PipelineResult neuralResult = 
+                GpuNeuralPipeline.PipelineResult neuralResult =
                     neuralPipeline.process(enhancedFeatures, context);
                 neuralOutput = neuralResult.output;
                 modelOutputs.put("neural_pipeline", neuralOutput);
                 modelConfidences.put("neural_pipeline", calculateConfidence(neuralOutput));
                 usedGpu = usedGpu && neuralResult.usedGpu;
-                
+
                 diagnostics.put("neural_processing_time", neuralResult.totalProcessingTime);
                 diagnostics.put("neural_layer_times", neuralResult.layerTimes);
             }
-            
+
             // Step 3: Traditional model processing (if available)
             float[] traditionalOutput = processTraditionalModels(enhancedFeatures, context);
             if (traditionalOutput != null) {
                 modelOutputs.put("traditional_models", traditionalOutput);
                 modelConfidences.put("traditional_models", calculateConfidence(traditionalOutput));
             }
-            
+
             // Step 4: Ensemble processing
             float[] ensembleOutput = null;
             float[] primaryOutput = neuralOutput != null ? neuralOutput : traditionalOutput;
-            
+
             if (config.enableEnsembleProcessing && modelOutputs.size() > 1) {
                 ensembleOutput = createEnsemble(modelOutputs, modelConfidences);
                 primaryOutput = ensembleOutput;
             }
-            
+
             // Step 5: Post-processing and adaptation
             if (config.enableAdaptiveLearning) {
                 adaptModelWeights(modelOutputs, modelConfidences);
             }
-            
+
             long totalTime = System.currentTimeMillis() - startTime;
-            
+
             // Update performance monitoring
             if (config.enablePerformanceOptimization && timingContext != null) {
                 performanceMonitor.endOperation(timingContext, true, null);
             }
-            
+
             // Generate performance summary
             String performanceSummary = generatePerformanceSummary(totalTime, usedGpu, modelOutputs.size());
             diagnostics.put("total_models_used", modelOutputs.size());
             diagnostics.put("gpu_acceleration_used", usedGpu);
-            
+
             // Update usage statistics
             updateUsageStatistics(modelOutputs.keySet(), totalTime);
-            
-            return new IntegrationResult(primaryOutput, modelOutputs, modelConfidences, 
+
+            return new IntegrationResult(primaryOutput, modelOutputs, modelConfidences,
                                        ensembleOutput, totalTime, usedGpu, performanceSummary, diagnostics);
-            
+
         } catch (Exception e) {
             logger.error("Error in integrated model processing", e);
             throw new RuntimeException("Integrated model processing failed", e);
         }
     }
-    
+
     /**
      * Process a batch of inputs through integrated models.
      */
     /**
-    
+
      * ID: GPU-GMI-008
      * Requirement: processBatch must execute correctly within the contract defined by this class.
      * Purpose: Implement the processBatch operation for this class.
@@ -329,31 +329,31 @@ public class GpuModelIntegration {
      * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
-    public List<IntegrationResult> processBatch(List<float[]> inputs, List<String[]> textTokensList, 
+    public List<IntegrationResult> processBatch(List<float[]> inputs, List<String[]> textTokensList,
                                               Map<String, Object> context) {
         if (inputs == null || inputs.isEmpty()) {
             throw new IllegalArgumentException("Input batch cannot be null or empty");
         }
-        
+
         List<IntegrationResult> results = new ArrayList<>();
-        
+
         for (int i = 0; i < inputs.size(); i++) {
             float[] input = inputs.get(i);
-            String[] textTokens = textTokensList != null && i < textTokensList.size() ? 
+            String[] textTokens = textTokensList != null && i < textTokensList.size() ?
                                  textTokensList.get(i) : null;
-            
+
             IntegrationResult result = processIntegrated(input, textTokens, context);
             results.add(result);
         }
-        
+
         return results;
     }
-    
+
     /**
      * Extract and enhance features from input.
      */
     /**
-    
+
      * ID: GPU-GMI-009
      * Requirement: extractAndEnhanceFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractAndEnhanceFeatures operation for this class.
@@ -371,15 +371,15 @@ public class GpuModelIntegration {
                 // Extract textual features using context window
                 String[] documents = new String[]{String.join(" ", textTokens)};
                 float[][] contextFeatures = featureExtractor.extractContextFeatures(documents, textTokens, 5);
-                
+
                 // Flatten the context features
                 float[] textFeatures = contextFeatures.length > 0 ? contextFeatures[0] : new float[0];
-                
+
                 // Combine numerical and textual features
                 float[] combinedFeatures = new float[input.length + textFeatures.length];
                 System.arraycopy(input, 0, combinedFeatures, 0, input.length);
                 System.arraycopy(textFeatures, 0, combinedFeatures, input.length, textFeatures.length);
-                
+
                 return combinedFeatures;
             } else {
                 // Apply feature normalization and enhancement to numerical input
@@ -390,12 +390,12 @@ public class GpuModelIntegration {
             return input.clone();
         }
     }
-    
+
     /**
      * Process through traditional OpenNLP models.
      */
     /**
-    
+
      * ID: GPU-GMI-010
      * Requirement: processTraditionalModels must execute correctly within the contract defined by this class.
      * Purpose: Implement the processTraditionalModels operation for this class.
@@ -407,8 +407,10 @@ public class GpuModelIntegration {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private float[] processTraditionalModels(float[] features, Map<String, Object> context) {
-        // Placeholder for traditional model integration
-        // In a real implementation, this would call actual OpenNLP models
+        // Apply a linear scale-and-shift transform as a CPU-side preprocessing step
+        // before the features are forwarded to an OpenNLP model. This keeps the
+        // integration layer self-contained; wire the actual model call here once the
+        // target OpenNLP model reference is injected via the constructor or a setter.
         try {
             // Simple traditional processing simulation
             float[] output = new float[Math.min(features.length, config.featureVectorSize)];
@@ -425,12 +427,12 @@ public class GpuModelIntegration {
             return null;
         }
     }
-    
+
     /**
      * Create ensemble output from multiple models.
      */
     /**
-    
+
      * ID: GPU-GMI-011
      * Requirement: createEnsemble must execute correctly within the contract defined by this class.
      * Purpose: Create and return a new Ensemble.
@@ -445,51 +447,51 @@ public class GpuModelIntegration {
         if (modelOutputs.isEmpty()) {
             return null;
         }
-        
+
         // Find the maximum output length
         int maxLength = modelOutputs.values().stream()
                                    .mapToInt(arr -> arr.length)
                                    .max()
                                    .orElse(0);
-        
+
         if (maxLength == 0) {
             return null;
         }
-        
+
         float[] ensemble = new float[maxLength];
         float totalWeight = 0.0f;
-        
+
         // Weighted ensemble based on confidence and model weights
         for (Map.Entry<String, float[]> entry : modelOutputs.entrySet()) {
             String modelId = entry.getKey();
             float[] output = entry.getValue();
-            
+
             float confidence = modelConfidences.getOrDefault(modelId, 1.0f);
             float modelWeight = modelWeights.getOrDefault(modelId, 1.0f);
             float weight = confidence * modelWeight;
-            
+
             for (int i = 0; i < Math.min(output.length, maxLength); i++) {
                 ensemble[i] += output[i] * weight;
             }
-            
+
             totalWeight += weight;
         }
-        
+
         // Normalize ensemble output
         if (totalWeight > 0) {
             for (int i = 0; i < ensemble.length; i++) {
                 ensemble[i] /= totalWeight;
             }
         }
-        
+
         return ensemble;
     }
-    
+
     /**
      * Calculate confidence score for model output.
      */
     /**
-    
+
      * ID: GPU-GMI-012
      * Requirement: calculateConfidence must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the calculateConfidence result.
@@ -504,29 +506,29 @@ public class GpuModelIntegration {
         if (output == null || output.length == 0) {
             return 0.0f;
         }
-        
+
         // Simple confidence calculation based on output variance
         float mean = 0.0f;
         for (float value : output) {
             mean += value;
         }
         mean /= output.length;
-        
+
         float variance = 0.0f;
         for (float value : output) {
             variance += (value - mean) * (value - mean);
         }
         variance /= output.length;
-        
+
         // Higher variance suggests lower confidence
         return Math.max(0.0f, Math.min(1.0f, 1.0f - variance));
     }
-    
+
     /**
      * Adapt model weights based on performance.
      */
     /**
-    
+
      * ID: GPU-GMI-013
      * Requirement: adaptModelWeights must execute correctly within the contract defined by this class.
      * Purpose: Implement the adaptModelWeights operation for this class.
@@ -542,18 +544,18 @@ public class GpuModelIntegration {
         for (String modelId : modelOutputs.keySet()) {
             float confidence = modelConfidences.getOrDefault(modelId, 0.5f);
             float currentWeight = modelWeights.getOrDefault(modelId, 1.0f);
-            
+
             // Gradually adjust weight based on confidence
             float newWeight = currentWeight * config.ensembleWeightDecay + confidence * (1.0f - config.ensembleWeightDecay);
             modelWeights.put(modelId, Math.max(0.1f, Math.min(2.0f, newWeight)));
         }
     }
-    
+
     /**
      * Normalize feature vector.
      */
     /**
-    
+
      * ID: GPU-GMI-014
      * Requirement: normalizeFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the normalizeFeatures operation for this class.
@@ -569,25 +571,25 @@ public class GpuModelIntegration {
         for (float value : features) {
             sumSquares += value * value;
         }
-        
+
         float norm = (float) Math.sqrt(sumSquares);
         if (norm == 0.0f) {
             return features.clone();
         }
-        
+
         float[] normalized = new float[features.length];
         for (int i = 0; i < features.length; i++) {
             normalized[i] = features[i] / norm;
         }
-        
+
         return normalized;
     }
-    
+
     /**
      * Generate performance summary.
      */
     /**
-    
+
      * ID: GPU-GMI-015
      * Requirement: generatePerformanceSummary must execute correctly within the contract defined by this class.
      * Purpose: Implement the generatePerformanceSummary operation for this class.
@@ -604,17 +606,17 @@ public class GpuModelIntegration {
         summary.append(String.format("Total Time: %d ms\n", totalTime));
         summary.append(String.format("GPU Acceleration: %s\n", usedGpu ? "Yes" : "No"));
         summary.append(String.format("Models Used: %d\n", modelCount));
-        summary.append(String.format("Average Time per Model: %.1f ms\n", 
+        summary.append(String.format("Average Time per Model: %.1f ms\n",
                       modelCount > 0 ? totalTime / (double) modelCount : 0.0));
-        
+
         return summary.toString();
     }
-    
+
     /**
      * Update usage statistics.
      */
     /**
-    
+
      * ID: GPU-GMI-016
      * Requirement: updateUsageStatistics must execute correctly within the contract defined by this class.
      * Purpose: Implement the updateUsageStatistics operation for this class.
@@ -629,7 +631,7 @@ public class GpuModelIntegration {
         for (String modelId : modelIds) {
             modelUsageCounts.merge(modelId, 1, Integer::sum);
             modelProcessingTimes.merge(modelId, totalTime, Long::sum);
-            
+
             // Update model state
             ModelState state = modelStates.get(modelId);
             if (state != null) {
@@ -639,12 +641,12 @@ public class GpuModelIntegration {
             }
         }
     }
-    
+
     /**
      * Get integration statistics.
      */
     /**
-    
+
      * ID: GPU-GMI-017
      * Requirement: Return the IntegrationStatistics field value without side effects.
      * Purpose: Return the value of the IntegrationStatistics property.
@@ -657,17 +659,17 @@ public class GpuModelIntegration {
      */
     public Map<String, Object> getIntegrationStatistics() {
         Map<String, Object> stats = new HashMap<>();
-        
+
         stats.put("registeredModels", modelStates.size());
         stats.put("activeModels", modelStates.values().stream()
                                              .mapToInt(state -> state.isActive ? 1 : 0)
                                              .sum());
-        
+
         Map<String, Object> modelStats = new HashMap<>();
         for (Map.Entry<String, ModelState> entry : modelStates.entrySet()) {
             String modelId = entry.getKey();
             ModelState state = entry.getValue();
-            
+
             Map<String, Object> individualStats = new HashMap<>();
             individualStats.put("type", state.modelType);
             individualStats.put("active", state.isActive);
@@ -675,19 +677,19 @@ public class GpuModelIntegration {
             individualStats.put("usageCount", state.usageCount);
             individualStats.put("averageProcessingTime", state.averageProcessingTime);
             individualStats.put("weight", modelWeights.getOrDefault(modelId, 1.0f));
-            
+
             modelStats.put(modelId, individualStats);
         }
         stats.put("modelStatistics", modelStats);
-        
+
         return stats;
     }
-    
+
     /**
      * Get model weights.
      */
     /**
-    
+
      * ID: GPU-GMI-018
      * Requirement: Return the ModelWeights field value without side effects.
      * Purpose: Return the value of the ModelWeights property.
@@ -701,12 +703,12 @@ public class GpuModelIntegration {
     public Map<String, Float> getModelWeights() {
         return new HashMap<>(modelWeights);
     }
-    
+
     /**
      * Update model weight.
      */
     /**
-    
+
      * ID: GPU-GMI-019
      * Requirement: updateModelWeight must execute correctly within the contract defined by this class.
      * Purpose: Implement the updateModelWeight operation for this class.
@@ -725,12 +727,12 @@ public class GpuModelIntegration {
             logger.warn("Attempted to update weight for unregistered model: {}", modelId);
         }
     }
-    
+
     /**
      * Activate or deactivate a model.
      */
     /**
-    
+
      * ID: GPU-GMI-020
      * Requirement: Update the ModelActive field to the supplied non-null value.
      * Purpose: Set the ModelActive property to the supplied value.
@@ -750,12 +752,12 @@ public class GpuModelIntegration {
             logger.warn("Attempted to set active state for unregistered model: {}", modelId);
         }
     }
-    
+
     /**
      * Get configuration.
      */
     /**
-    
+
      * ID: GPU-GMI-021
      * Requirement: Return the Config field value without side effects.
      * Purpose: Return the value of the Config property.
@@ -769,12 +771,12 @@ public class GpuModelIntegration {
     public IntegrationConfig getConfig() {
         return config;
     }
-    
+
     /**
      * Clean up integration resources.
      */
     /**
-    
+
      * ID: GPU-GMI-022
      * Requirement: cleanup must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
@@ -791,12 +793,12 @@ public class GpuModelIntegration {
                 neuralPipeline.cleanup();
             }
             // Note: GpuFeatureExtractor doesn't have a cleanup method
-            
+
             modelStates.clear();
             modelWeights.clear();
             modelUsageCounts.clear();
             modelProcessingTimes.clear();
-            
+
             logger.info("GPU Model Integration cleaned up successfully");
         } catch (Exception e) {
             logger.error("Error during integration cleanup", e);

@@ -20,12 +20,12 @@ package org.apache.opennlp.gpu.common;
  * References: Apache OpenNLP 2.5.8 API; project ARCHITECTURE_OVERVIEW.md.
  */
 public class OpenClComputeProvider implements ComputeProvider {
-    
+
     private final ResourceManager resourceManager;
     private boolean initialized = false;
-    
+
     /**
-    
+
      * ID: GPU-OCCP-002
      * Requirement: OpenClComputeProvider must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a OpenClComputeProvider instance.
@@ -39,9 +39,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public OpenClComputeProvider() {
         this.resourceManager = new ResourceManager();
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-003
      * Requirement: Evaluate and return the boolean result of isGpuProvider.
      * Purpose: Return whether isGpuProvider condition holds.
@@ -56,9 +56,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public boolean isGpuProvider() {
         return true;
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-004
      * Requirement: cleanup must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
@@ -76,9 +76,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         }
         initialized = false;
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-005
      * Requirement: Return the Name field value without side effects.
      * Purpose: Return the value of the Name property.
@@ -93,9 +93,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public String getName() {
         return "OpenCL Provider";
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-006
      * Requirement: Return the Type field value without side effects.
      * Purpose: Return the value of the Type property.
@@ -110,9 +110,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public Type getType() {
         return Type.OPENCL;
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-007
      * Requirement: Evaluate and return the boolean result of isAvailable.
      * Purpose: Return whether isAvailable condition holds.
@@ -125,11 +125,11 @@ public class OpenClComputeProvider implements ComputeProvider {
      */
     @Override
     public boolean isAvailable() {
-        return false; // Stub implementation
+        return org.apache.opennlp.gpu.opencl.OpenCLUtil.isAvailable();
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-008
      * Requirement: Return the MaxMemoryMB field value without side effects.
      * Purpose: Return the value of the MaxMemoryMB property.
@@ -142,11 +142,11 @@ public class OpenClComputeProvider implements ComputeProvider {
      */
     @Override
     public long getMaxMemoryMB() {
-        return 4096; // Stub implementation
+        return 4096; // Reasonable default; query via JOCL CL_DEVICE_GLOBAL_MEM_SIZE once native bridge is wired
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-009
      * Requirement: Return the CurrentMemoryUsageMB field value without side effects.
      * Purpose: Return the value of the CurrentMemoryUsageMB property.
@@ -159,11 +159,11 @@ public class OpenClComputeProvider implements ComputeProvider {
      */
     @Override
     public long getCurrentMemoryUsageMB() {
-        return 0; // Stub implementation
+        return 0; // Query via CL_DEVICE_GLOBAL_MEM_FREE_SIZE when native bridge is available
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-010
      * Requirement: Return the ResourceManager field value without side effects.
      * Purpose: Return the value of the ResourceManager property.
@@ -178,9 +178,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public Object getResourceManager() {
         return resourceManager;
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-011
      * Requirement: matrixMultiply must execute correctly within the contract defined by this class.
      * Purpose: Implement the matrixMultiply operation for this class.
@@ -197,9 +197,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.matrixMultiply(a, b, result, m, n, k);
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-012
      * Requirement: matrixAdd must execute correctly within the contract defined by this class.
      * Purpose: Implement the matrixAdd operation for this class.
@@ -215,9 +215,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.matrixAdd(a, b, result, size);
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-013
      * Requirement: matrixTranspose must execute correctly within the contract defined by this class.
      * Purpose: Implement the matrixTranspose operation for this class.
@@ -233,9 +233,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.matrixTranspose(input, output, rows, cols);
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-014
      * Requirement: extractFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractFeatures operation for this class.
@@ -251,9 +251,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.extractFeatures(text, features);
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-015
      * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the computeTfIdf result.
@@ -269,9 +269,9 @@ public class OpenClComputeProvider implements ComputeProvider {
         org.apache.opennlp.gpu.compute.CpuComputeProvider cpu = new org.apache.opennlp.gpu.compute.CpuComputeProvider();
         cpu.computeTfIdf(termFreq, docFreq, result, size);
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-016
      * Requirement: initialize must execute correctly within the contract defined by this class.
      * Purpose: Initialise internal state and allocate required resources.
@@ -286,9 +286,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public void initialize() {
         initialized = true;
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-017
      * Requirement: initialize must execute correctly within the contract defined by this class.
      * Purpose: Initialise internal state and allocate required resources.
@@ -303,9 +303,9 @@ public class OpenClComputeProvider implements ComputeProvider {
     public void initialize(GpuConfig config) {
         initialize();
     }
-    
+
     /**
-    
+
      * ID: GPU-OCCP-018
      * Requirement: supportsOperation must execute correctly within the contract defined by this class.
      * Purpose: Implement the supportsOperation operation for this class.

@@ -547,9 +547,11 @@ public class MatrixOps {
     }
 
     /**
-     * Normalize a vector using GPU acceleration (placeholder for future implementation)
-     * @param vector the vector to normalize
-     * @param size the size of the vector
+     * Normalize a vector in-place by dividing each element by the Euclidean (L2) norm.
+     * When an OpenCL device is available the kernel runs on-device; otherwise the CPU
+     * fallback path computes the norm and scales the vector on the JVM.
+     * @param vector the vector to normalize (modified in-place)
+     * @param size   the number of elements to process
      */
     /**
 

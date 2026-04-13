@@ -1,5 +1,11 @@
 package org.apache.opennlp.gpu.opencl;
 
+import org.jocl.CL;
+import org.jocl.cl_device_id;
+import org.jocl.cl_platform_id;
+import org.jocl.CL;
+import org.jocl.cl_device_id;
+import org.jocl.cl_platform_id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,8 +134,27 @@ public class OpenCLUtil {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private static int countDevices() {
-        // Native implementation would go here
-        // For now, return 0 as a placeholder
-        return 0;
+        try {
+            int[] numPlatformsArr = new int[1];
+            CL.clGetPlatformIDs(0, null, numPlatformsArr);
+            int numPlatforms = numPlatformsArr[0];
+            if (numPlatforms == 0) return 0;
+
+            cl_platform_id[] platforms = new cl_platform_id[numPlatforms];
+            CL.clGetPlatformIDs(numPlatforms, platforms, null);
+
+            int total = 0;
+            for (cl_platform_id platform : platforms) {
+                int[] nd = new int[1];
+                try {
+                    CL.clGetDeviceIDs(platform, CL.CL_DEVICE_TYPE_ALL, 0, null, nd);
+                    total += nd[0];
+                } catch (Exception ignored) { /* platform may have no devices */ }
+            }
+            return total;
+        } catch (Exception e) {
+            logger.warn("OpenCL device enumeration failed: {}", e.getMessage());
+            return 0;
+        }
     }
 }
