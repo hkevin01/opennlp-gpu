@@ -15,20 +15,20 @@ This example demonstrates high-speed language identification using GPU accelerat
 
 ## Supported Languages
 
-| Language   | Code | Script     | Characteristics                    |
+| <sub>Language</sub> | <sub>Code</sub> | <sub>Script</sub> | <sub>Characteristics</sub> |
 | ---------- | ---- | ---------- | ---------------------------------- |
-| English    | en   | Latin      | High frequency of "th", "he", "in" |
-| Spanish    | es   | Latin      | High frequency of "es", "de", "en" |
-| French     | fr   | Latin      | High frequency of "es", "de", "le" |
-| German     | de   | Latin      | High frequency of "er", "en", "ch" |
-| Italian    | it   | Latin      | High frequency of "re", "er", "ar" |
-| Portuguese | pt   | Latin      | High frequency of "de", "ar", "er" |
-| Dutch      | nl   | Latin      | High frequency of "en", "de", "er" |
-| Russian    | ru   | Cyrillic   | High frequency of "то", "не", "на" |
-| Chinese    | zh   | Chinese    | Logographic characters             |
-| Japanese   | ja   | Mixed      | Hiragana, Katakana, Kanji          |
-| Arabic     | ar   | Arabic     | Right-to-left script               |
-| Hindi      | hi   | Devanagari | Complex script system              |
+| <sub>English</sub> | <sub>en</sub> | <sub>Latin</sub> | <sub>High frequency of "th", "he", "in"</sub> |
+| <sub>Spanish</sub> | <sub>es</sub> | <sub>Latin</sub> | <sub>High frequency of "es", "de", "en"</sub> |
+| <sub>French</sub> | <sub>fr</sub> | <sub>Latin</sub> | <sub>High frequency of "es", "de", "le"</sub> |
+| <sub>German</sub> | <sub>de</sub> | <sub>Latin</sub> | <sub>High frequency of "er", "en", "ch"</sub> |
+| <sub>Italian</sub> | <sub>it</sub> | <sub>Latin</sub> | <sub>High frequency of "re", "er", "ar"</sub> |
+| <sub>Portuguese</sub> | <sub>pt</sub> | <sub>Latin</sub> | <sub>High frequency of "de", "ar", "er"</sub> |
+| <sub>Dutch</sub> | <sub>nl</sub> | <sub>Latin</sub> | <sub>High frequency of "en", "de", "er"</sub> |
+| <sub>Russian</sub> | <sub>ru</sub> | <sub>Cyrillic</sub> | <sub>High frequency of "то", "не", "на"</sub> |
+| <sub>Chinese</sub> | <sub>zh</sub> | <sub>Chinese</sub> | <sub>Logographic characters</sub> |
+| <sub>Japanese</sub> | <sub>ja</sub> | <sub>Mixed</sub> | <sub>Hiragana, Katakana, Kanji</sub> |
+| <sub>Arabic</sub> | <sub>ar</sub> | <sub>Arabic</sub> | <sub>Right-to-left script</sub> |
+| <sub>Hindi</sub> | <sub>hi</sub> | <sub>Devanagari</sub> | <sub>Complex script system</sub> |
 
 ## How It Works
 
