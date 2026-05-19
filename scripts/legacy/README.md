@@ -16,4 +16,3 @@ These scripts solved build system conflicts during the early project development
 
 ### Original Problem (2023)
 The project initially attempted to use Gradle for building both Java GPU acceleration code and native C++/CUDA kernels in a single build system. This created complex plugin conflicts:
-
