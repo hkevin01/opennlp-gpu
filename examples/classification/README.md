@@ -16,15 +16,15 @@ This example demonstrates high-speed document classification using GPU accelerat
 
 ## Supported Categories
 
-| Category      | Keywords                                | Common Topics                         |
+| <sub>Category</sub> | <sub>Keywords</sub> | <sub>Common Topics</sub> |
 | ------------- | --------------------------------------- | ------------------------------------- |
-| Technology    | AI, software, computer, tech            | Programming, gadgets, innovation      |
-| Business      | market, finance, economy, company       | Economics, corporate news, startups   |
-| Science       | research, study, discovery, scientist   | Medical breakthroughs, space, physics |
-| Sports        | game, team, player, championship        | Football, basketball, Olympics        |
-| Entertainment | movie, music, celebrity, film           | Hollywood, concerts, TV shows         |
-| Politics      | government, election, policy, president | Elections, legislation, diplomacy     |
-| Health        | medical, doctor, patient, treatment     | Medicine, wellness, healthcare        |
+| <sub>Technology</sub> | <sub>AI, software, computer, tech</sub> | <sub>Programming, gadgets, innovation</sub> |
+| <sub>Business</sub> | <sub>market, finance, economy, company</sub> | <sub>Economics, corporate news, startups</sub> |
+| <sub>Science</sub> | <sub>research, study, discovery, scientist</sub> | <sub>Medical breakthroughs, space, physics</sub> |
+| <sub>Sports</sub> | <sub>game, team, player, championship</sub> | <sub>Football, basketball, Olympics</sub> |
+| <sub>Entertainment</sub> | <sub>movie, music, celebrity, film</sub> | <sub>Hollywood, concerts, TV shows</sub> |
+| <sub>Politics</sub> | <sub>government, election, policy, president</sub> | <sub>Elections, legislation, diplomacy</sub> |
+| <sub>Health</sub> | <sub>medical, doctor, patient, treatment</sub> | <sub>Medicine, wellness, healthcare</sub> |
 
 ## How It Works
 
