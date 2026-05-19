@@ -4,15 +4,15 @@ This directory contains Docker configurations for testing the OpenNLP GPU projec
 
 ## Supported Test Environments
 
-| Environment     | Base Image                      | Package Manager | Description          |
+| <sub>Environment</sub> | <sub>Base Image</sub> | <sub>Package Manager</sub> | <sub>Description</sub> |
 | --------------- | ------------------------------- | --------------- | -------------------- |
-| Ubuntu 22.04    | `ubuntu:22.04`                  | apt             | Latest Ubuntu LTS    |
-| Ubuntu 20.04    | `ubuntu:20.04`                  | apt             | Previous Ubuntu LTS  |
-| CentOS 8 Stream | `quay.io/centos/centos:stream8` | dnf             | Enterprise Linux     |
-| Fedora 38       | `fedora:38`                     | dnf             | Latest Fedora        |
-| Alpine Linux    | `alpine:3.18`                   | apk             | Minimal container OS |
-| Amazon Linux 2  | `amazonlinux:2`                 | yum             | AWS optimized        |
-| Debian 11       | `debian:11`                     | apt             | Stable Debian        |
+| <sub>Ubuntu 22.04</sub> | <sub>`ubuntu:22.04`</sub> | <sub>apt</sub> | <sub>Latest Ubuntu LTS</sub> |
+| <sub>Ubuntu 20.04</sub> | <sub>`ubuntu:20.04`</sub> | <sub>apt</sub> | <sub>Previous Ubuntu LTS</sub> |
+| <sub>CentOS 8 Stream</sub> | <sub>`quay.io/centos/centos:stream8`</sub> | <sub>dnf</sub> | <sub>Enterprise Linux</sub> |
+| <sub>Fedora 38</sub> | <sub>`fedora:38`</sub> | <sub>dnf</sub> | <sub>Latest Fedora</sub> |
+| <sub>Alpine Linux</sub> | <sub>`alpine:3.18`</sub> | <sub>apk</sub> | <sub>Minimal container OS</sub> |
+| <sub>Amazon Linux 2</sub> | <sub>`amazonlinux:2`</sub> | <sub>yum</sub> | <sub>AWS optimized</sub> |
+| <sub>Debian 11</sub> | <sub>`debian:11`</sub> | <sub>apt</sub> | <sub>Stable Debian</sub> |
 
 ## Quick Start
 
