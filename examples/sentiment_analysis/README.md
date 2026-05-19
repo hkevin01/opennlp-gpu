@@ -102,11 +102,11 @@ POSITIVE   (0.92) | P:0.92 N:0.05 U:0.03 | OMG this is the best thing ever! So h
 
 ### Benchmarks
 
-| Dataset Size | CPU Time | GPU Time | Speedup |
+| <sub>Dataset Size</sub> | <sub>CPU Time</sub> | <sub>GPU Time</sub> | <sub>Speedup</sub> |
 | ------------ | -------- | -------- | ------- |
-| 100 posts    | 0.8s     | 0.2s     | 4x      |
-| 1,000 posts  | 7.2s     | 1.1s     | 6.5x    |
-| 10,000 posts | 68s      | 8.5s     | 8x      |
+| <sub>100 posts</sub> | <sub>0.8s</sub> | <sub>0.2s</sub> | <sub>4x</sub> |
+| <sub>1,000 posts</sub> | <sub>7.2s</sub> | <sub>1.1s</sub> | <sub>6.5x</sub> |
+| <sub>10,000 posts</sub> | <sub>68s</sub> | <sub>8.5s</sub> | <sub>8x</sub> |
 
 ### Optimization Tips
 
