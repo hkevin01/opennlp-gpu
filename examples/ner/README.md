@@ -16,14 +16,14 @@ This example demonstrates high-speed entity extraction using GPU acceleration to
 
 ## Supported Entity Types
 
-| Entity Type  | Description             | Examples                                        |
+| <sub>Entity Type</sub> | <sub>Description</sub> | <sub>Examples</sub> |
 | ------------ | ----------------------- | ----------------------------------------------- |
-| PERSON       | People's names          | "John Smith", "Dr. Jane Doe", "President Obama" |
-| ORGANIZATION | Companies, institutions | "Google", "Harvard University", "NATO"          |
-| LOCATION     | Places, addresses       | "New York", "Pacific Ocean", "123 Main St"      |
-| DATE         | Temporal expressions    | "January 2023", "yesterday", "next week"        |
-| MONEY        | Monetary amounts        | "$100", "€50", "5 million dollars"              |
-| MISC         | Other entities          | "iPhone", "Java", "Nobel Prize"                 |
+| <sub>PERSON</sub> | <sub>People's names</sub> | <sub>"John Smith", "Dr. Jane Doe", "President Obama"</sub> |
+| <sub>ORGANIZATION</sub> | <sub>Companies, institutions</sub> | <sub>"Google", "Harvard University", "NATO"</sub> |
+| <sub>LOCATION</sub> | <sub>Places, addresses</sub> | <sub>"New York", "Pacific Ocean", "123 Main St"</sub> |
+| <sub>DATE</sub> | <sub>Temporal expressions</sub> | <sub>"January 2023", "yesterday", "next week"</sub> |
+| <sub>MONEY</sub> | <sub>Monetary amounts</sub> | <sub>"$100", "€50", "5 million dollars"</sub> |
+| <sub>MISC</sub> | <sub>Other entities</sub> | <sub>"iPhone", "Java", "Nobel Prize"</sub> |
 
 ## How It Works
 
