@@ -58,14 +58,14 @@ The extension operates as a **drop-in decorator** around existing OpenNLP models
 
 Apache OpenNLP is the dominant production-grade NLP framework in the Java/JVM ecosystem. Enterprises standardized on Java cannot easily switch to Python-native frameworks like spaCy or Hugging Face without introducing cross-language inter-process calls, retraining costs, and operational complexity. OpenNLP was specifically chosen as the GPU acceleration target because:
 
-| Reason | Detail |
+| <sub>Reason</sub> | <sub>Detail</sub> |
 |--------|--------|
-| **Java-native** | Integrates directly into Spring Boot, Jakarta EE, and enterprise JVM stacks without subprocess overhead |
-| **Stable API contracts** | `MaxentModel`, `TokenizerModel`, and `NameFinderME` interfaces are stable across releases; the decorator pattern is reliable |
-| **Apache governance** | Apache License 2.0; Apache Software Foundation oversight ensures long-term stability and commercial compatibility |
-| **Lightweight models** | Serialized `.bin` model files are compact, versioned, and deployable without a framework runtime on the target server |
-| **Extensibility** | Interface-based design means `GpuMaxentModel implements MaxentModel` with no changes to model loading or application logic |
-| **Active maintenance** | OpenNLP 2.5.8 fixes SentenceDetector abbreviation handling (OPENNLP-1809/1810/1811) and updates ONNX Runtime to 1.24.3 |
+| <sub>**Java-native**</sub> | <sub>Integrates directly into Spring Boot, Jakarta EE, and enterprise JVM stacks without subprocess overhead</sub> |
+| <sub>**Stable API contracts**</sub> | <sub>`MaxentModel`, `TokenizerModel`, and `NameFinderME` interfaces are stable across releases; the decorator pattern is reliable</sub> |
+| <sub>**Apache governance**</sub> | <sub>Apache License 2.0; Apache Software Foundation oversight ensures long-term stability and commercial compatibility</sub> |
+| <sub>**Lightweight models**</sub> | <sub>Serialized `.bin` model files are compact, versioned, and deployable without a framework runtime on the target server</sub> |
+| <sub>**Extensibility**</sub> | <sub>Interface-based design means `GpuMaxentModel implements MaxentModel` with no changes to model loading or application logic</sub> |
+| <sub>**Active maintenance**</sub> | <sub>OpenNLP 2.5.8 fixes SentenceDetector abbreviation handling (OPENNLP-1809/1810/1811) and updates ONNX Runtime to 1.24.3</sub> |
 
 ### Why GPU Acceleration for NLP?
 
@@ -90,16 +90,16 @@ GPUs execute thousands of these operations simultaneously. A modern GPU with 10,
 
 ## ✨ Key Features
 
-| Icon | Feature | Description | Impact | Status |
+| <sub>Icon</sub> | <sub>Feature</sub> | <sub>Description</sub> | <sub>Impact</sub> | <sub>Status</sub> |
 |------|---------|-------------|--------|--------|
-| ⚡ | **GPU-Accelerated Matrix Ops** | GEMM, transpose, and activation functions dispatched to GPU kernels | 2–5× throughput | ✅ Stable |
-| 🔄 | **Auto CPU Fallback** | Silent, transparent fallback to pure-Java when GPU unavailable | Zero downtime | ✅ Stable |
-| 🎯 | **Drop-in API Compatibility** | `GpuMaxentModel` implements OpenNLP `MaxentModel` interface exactly | No code changes | ✅ Stable |
-| 🖥️ | **Multi-Backend** | CUDA 11+, ROCm 5+, OpenCL 1.2+, CPU (runtime-selected) | Broad hardware support | 🔄 In Progress |
-| ☁️ | **Cloud Accelerators** | AWS Inferentia and Google TPU providers with CPU fallback; Neuron/XLA bridges planned | Cloud-native NLP | 🔄 In Progress |
-| 📊 | **Performance Monitor** | Real-time thread-safe metrics, latency alerts, memory tracking | Operational observability | ✅ Stable |
-| 🔍 | **GPU Diagnostics CLI** | Standalone tool to probe drivers, SDKs, and runtime environment | DevOps-friendly | ✅ Stable |
-| 🧪 | **Extensive Test Suite** | 30+ test classes: unit, integration, stress, compatibility, benchmark | High confidence | ✅ Stable |
+| <sub>⚡</sub> | <sub>**GPU-Accelerated Matrix Ops**</sub> | <sub>GEMM, transpose, and activation functions dispatched to GPU kernels</sub> | <sub>2–5× throughput</sub> | <sub>✅ Stable</sub> |
+| <sub>🔄</sub> | <sub>**Auto CPU Fallback**</sub> | <sub>Silent, transparent fallback to pure-Java when GPU unavailable</sub> | <sub>Zero downtime</sub> | <sub>✅ Stable</sub> |
+| <sub>🎯</sub> | <sub>**Drop-in API Compatibility**</sub> | <sub>`GpuMaxentModel` implements OpenNLP `MaxentModel` interface exactly</sub> | <sub>No code changes</sub> | <sub>✅ Stable</sub> |
+| <sub>🖥️</sub> | <sub>**Multi-Backend**</sub> | <sub>CUDA 11+, ROCm 5+, OpenCL 1.2+, CPU (runtime-selected)</sub> | <sub>Broad hardware support</sub> | <sub>🔄 In Progress</sub> |
+| <sub>☁️</sub> | <sub>**Cloud Accelerators**</sub> | <sub>AWS Inferentia and Google TPU providers with CPU fallback; Neuron/XLA bridges planned</sub> | <sub>Cloud-native NLP</sub> | <sub>🔄 In Progress</sub> |
+| <sub>📊</sub> | <sub>**Performance Monitor**</sub> | <sub>Real-time thread-safe metrics, latency alerts, memory tracking</sub> | <sub>Operational observability</sub> | <sub>✅ Stable</sub> |
+| <sub>🔍</sub> | <sub>**GPU Diagnostics CLI**</sub> | <sub>Standalone tool to probe drivers, SDKs, and runtime environment</sub> | <sub>DevOps-friendly</sub> | <sub>✅ Stable</sub> |
+| <sub>🧪</sub> | <sub>**Extensive Test Suite**</sub> | <sub>30+ test classes: unit, integration, stress, compatibility, benchmark</sub> | <sub>High confidence</sub> | <sub>✅ Stable</sub> |
 
 **Highlights:**
 - **115 Java source files** covering ML models (MaxEnt, Perceptron, Naive Bayes, Neural), GPU backends, monitoring, and tooling
@@ -156,16 +156,16 @@ Teams on GPU cloud instances can:
 
 ### Platform Use Case Matrix
 
-| Industry | Workload | OpenNLP Component | GPU Benefit |
+| <sub>Industry</sub> | <sub>Workload</sub> | <sub>OpenNLP Component</sub> | <sub>GPU Benefit</sub> |
 |----------|----------|-------------------|-------------|
-| Legal | Contract entity extraction | `GpuNerModel` | Batch throughput on large corpora |
-| Finance | Earnings call sentiment | `GpuMaxentModel` | Sub-100ms per-document scoring |
-| Healthcare | Clinical concept extraction | Custom MaxEnt | Privacy-safe on-prem GPU inference |
-| E-commerce | Query intent classification | `GpuMaxentModel` | Low-latency real-time API |
-| Media | Article topic classification | MaxEnt ensemble | GPU batch for trending topic detection |
-| HR / Recruitment | Resume skill extraction | `GpuNerModel` | High-volume batch processing |
-| Compliance | Document classification audit | `GpuPerceptronModel` | Reproducible GPU-verified results |
-| News / Search | Multilingual document dedup | TF-IDF + cosine similarity | O(N²) → GPU-parallel similarity |
+| <sub>Legal</sub> | <sub>Contract entity extraction</sub> | <sub>`GpuNerModel`</sub> | <sub>Batch throughput on large corpora</sub> |
+| <sub>Finance</sub> | <sub>Earnings call sentiment</sub> | <sub>`GpuMaxentModel`</sub> | <sub>Sub-100ms per-document scoring</sub> |
+| <sub>Healthcare</sub> | <sub>Clinical concept extraction</sub> | <sub>Custom MaxEnt</sub> | <sub>Privacy-safe on-prem GPU inference</sub> |
+| <sub>E-commerce</sub> | <sub>Query intent classification</sub> | <sub>`GpuMaxentModel`</sub> | <sub>Low-latency real-time API</sub> |
+| <sub>Media</sub> | <sub>Article topic classification</sub> | <sub>MaxEnt ensemble</sub> | <sub>GPU batch for trending topic detection</sub> |
+| <sub>HR / Recruitment</sub> | <sub>Resume skill extraction</sub> | <sub>`GpuNerModel`</sub> | <sub>High-volume batch processing</sub> |
+| <sub>Compliance</sub> | <sub>Document classification audit</sub> | <sub>`GpuPerceptronModel`</sub> | <sub>Reproducible GPU-verified results</sub> |
+| <sub>News / Search</sub> | <sub>Multilingual document dedup</sub> | <sub>TF-IDF + cosine similarity</sub> | <sub>O(N²) → GPU-parallel similarity</sub> |
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -192,17 +192,17 @@ flowchart TD
 
 **Component responsibilities:**
 
-| Component | Package | Role |
+| <sub>Component</sub> | <sub>Package</sub> | <sub>Role</sub> |
 |-----------|---------|------|
-| `OpenNlpGpuAdapter` | `integration` | Entry point; selects provider; wraps OpenNLP models |
-| `ComputeProvider` | `common` | Hardware-agnostic interface for all compute backends |
-| `GpuConfig` | `common` | Configuration value object (GPU flag, pool size, batch size) |
-| `CpuComputeProvider` | `compute` | Pure-Java reference implementation; always available |
-| `GpuComputeProvider` | `compute` | OpenCL-backed provider with CPU fallback delegation |
-| `OperationFactory` | `compute` | Factory for selecting concrete `MatrixOperation` implementations |
-| `GpuMaxentModel` | `ml.maxent` | Drop-in MaxentModel decorator with GPU dispatch |
-| `GpuPerformanceMonitor` | `monitoring` | Thread-safe singleton metrics and alerting |
-| `GpuDiagnostics` | `tools` | CLI tool for environment pre-flight checks |
+| <sub>`OpenNlpGpuAdapter`</sub> | <sub>`integration`</sub> | <sub>Entry point; selects provider; wraps OpenNLP models</sub> |
+| <sub>`ComputeProvider`</sub> | <sub>`common`</sub> | <sub>Hardware-agnostic interface for all compute backends</sub> |
+| <sub>`GpuConfig`</sub> | <sub>`common`</sub> | <sub>Configuration value object (GPU flag, pool size, batch size)</sub> |
+| <sub>`CpuComputeProvider`</sub> | <sub>`compute`</sub> | <sub>Pure-Java reference implementation; always available</sub> |
+| <sub>`GpuComputeProvider`</sub> | <sub>`compute`</sub> | <sub>OpenCL-backed provider with CPU fallback delegation</sub> |
+| <sub>`OperationFactory`</sub> | <sub>`compute`</sub> | <sub>Factory for selecting concrete `MatrixOperation` implementations</sub> |
+| <sub>`GpuMaxentModel`</sub> | <sub>`ml.maxent`</sub> | <sub>Drop-in MaxentModel decorator with GPU dispatch</sub> |
+| <sub>`GpuPerformanceMonitor`</sub> | <sub>`monitoring`</sub> | <sub>Thread-safe singleton metrics and alerting</sub> |
+| <sub>`GpuDiagnostics`</sub> | <sub>`tools`</sub> | <sub>CLI tool for environment pre-flight checks</sub> |
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -256,15 +256,15 @@ mvn test -Dtest=GpuTestSuite
 
 ## 🛠️ Technology Stack
 
-| Technology | Version | Purpose | Why Chosen | Alternative |
+| <sub>Technology</sub> | <sub>Version</sub> | <sub>Purpose</sub> | <sub>Why Chosen</sub> | <sub>Alternative</sub> |
 |------------|---------|---------|------------|-------------|
-| **Apache OpenNLP** | 2.5.8 | NLP model API contract | Industry-standard Java NLP; stable API | Stanford NLP, spaCy |
-| **Java** | 21 LTS | Runtime and implementation | LTS stability; virtual threads; modern records | Kotlin, Scala |
-| **JOCL** | 2.0.6 | OpenCL Java bindings | Cross-vendor GPU without native CUDA lock-in | LWJGL, pure JNA |
-| **SLF4J** | 2.0.17 | Logging facade | Framework-neutral; no log framework lock-in | Log4j2, java.util.logging |
-| **JUnit 5** | 5.13.1 | Testing framework | Parameterized tests; extension model; parallel execution | TestNG |
-| **CMake** | 4+ | Native library build | Cross-platform C++/CUDA build system | Makefile, Meson |
-| **Maven** | 3.9+ | Build and dependency management | Industry standard; reproducible builds | Gradle |
+| <sub>**Apache OpenNLP**</sub> | <sub>2.5.8</sub> | <sub>NLP model API contract</sub> | <sub>Industry-standard Java NLP; stable API</sub> | <sub>Stanford NLP, spaCy</sub> |
+| <sub>**Java**</sub> | <sub>21 LTS</sub> | <sub>Runtime and implementation</sub> | <sub>LTS stability; virtual threads; modern records</sub> | <sub>Kotlin, Scala</sub> |
+| <sub>**JOCL**</sub> | <sub>2.0.6</sub> | <sub>OpenCL Java bindings</sub> | <sub>Cross-vendor GPU without native CUDA lock-in</sub> | <sub>LWJGL, pure JNA</sub> |
+| <sub>**SLF4J**</sub> | <sub>2.0.17</sub> | <sub>Logging facade</sub> | <sub>Framework-neutral; no log framework lock-in</sub> | <sub>Log4j2, java.util.logging</sub> |
+| <sub>**JUnit 5**</sub> | <sub>5.13.1</sub> | <sub>Testing framework</sub> | <sub>Parameterized tests; extension model; parallel execution</sub> | <sub>TestNG</sub> |
+| <sub>**CMake**</sub> | <sub>4+</sub> | <sub>Native library build</sub> | <sub>Cross-platform C++/CUDA build system</sub> | <sub>Makefile, Meson</sub> |
+| <sub>**Maven**</sub> | <sub>3.9+</sub> | <sub>Build and dependency management</sub> | <sub>Industry standard; reproducible builds</sub> | <sub>Gradle</sub> |
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -274,63 +274,63 @@ mvn test -Dtest=GpuTestSuite
 
 ### GPU Architecture Support
 
-| GPU Family | Architecture | Min Compute / Version | OpenCL Level | Backend |
+| <sub>GPU Family</sub> | <sub>Architecture</sub> | <sub>Min Compute / Version</sub> | <sub>OpenCL Level</sub> | <sub>Backend</sub> |
 |-----------|-------------|----------------------|-------------|--------|
-| NVIDIA Turing (RTX 20xx, T4) | sm_75 | CUDA 11+ | 3.0 | CUDA + OpenCL |
-| NVIDIA Ampere (RTX 30xx, A100) | sm_80 | CUDA 11+ | 3.0 | CUDA + OpenCL |
-| NVIDIA Ada Lovelace (RTX 40xx) | sm_89 | CUDA 12+ | 3.0 | CUDA + OpenCL |
-| NVIDIA Hopper (H100, H200) | sm_90 | CUDA 12+ | 3.0 | CUDA + OpenCL |
-| AMD RDNA2 (RX 6000 series) | GFX1030 | ROCm 5.0+ | 2.0 | ROCm / HIP |
-| AMD RDNA3 (RX 7000 series) | GFX1100 | ROCm 5.5+ | 2.0 | ROCm / HIP |
-| Intel Arc (A-series) | Xe-HPG | N/A | 3.0 | OpenCL via JOCL |
-| Any OpenCL 1.2+ device | N/A | N/A | 1.2 | JOCL cross-vendor |
+| <sub>NVIDIA Turing (RTX 20xx, T4)</sub> | <sub>sm_75</sub> | <sub>CUDA 11+</sub> | <sub>3.0</sub> | <sub>CUDA + OpenCL</sub> |
+| <sub>NVIDIA Ampere (RTX 30xx, A100)</sub> | <sub>sm_80</sub> | <sub>CUDA 11+</sub> | <sub>3.0</sub> | <sub>CUDA + OpenCL</sub> |
+| <sub>NVIDIA Ada Lovelace (RTX 40xx)</sub> | <sub>sm_89</sub> | <sub>CUDA 12+</sub> | <sub>3.0</sub> | <sub>CUDA + OpenCL</sub> |
+| <sub>NVIDIA Hopper (H100, H200)</sub> | <sub>sm_90</sub> | <sub>CUDA 12+</sub> | <sub>3.0</sub> | <sub>CUDA + OpenCL</sub> |
+| <sub>AMD RDNA2 (RX 6000 series)</sub> | <sub>GFX1030</sub> | <sub>ROCm 5.0+</sub> | <sub>2.0</sub> | <sub>ROCm / HIP</sub> |
+| <sub>AMD RDNA3 (RX 7000 series)</sub> | <sub>GFX1100</sub> | <sub>ROCm 5.5+</sub> | <sub>2.0</sub> | <sub>ROCm / HIP</sub> |
+| <sub>Intel Arc (A-series)</sub> | <sub>Xe-HPG</sub> | <sub>N/A</sub> | <sub>3.0</sub> | <sub>OpenCL via JOCL</sub> |
+| <sub>Any OpenCL 1.2+ device</sub> | <sub>N/A</sub> | <sub>N/A</sub> | <sub>1.2</sub> | <sub>JOCL cross-vendor</sub> |
 
 ### System Requirements
 
-| Component | Minimum | Recommended |
+| <sub>Component</sub> | <sub>Minimum</sub> | <sub>Recommended</sub> |
 |-----------|---------|-------------|
-| Java JDK | 21 LTS | 21 LTS or 26 |
-| Maven | 3.9 | 3.9+ |
-| GPU VRAM | 2 GB | 8 GB+ |
-| JVM Heap | 512 MB | 2–4 GB |
-| NVIDIA Driver | 520.x | 535.x+ |
-| CUDA Toolkit | 11.0 | 12.0+ |
-| ROCm | 5.0 | 5.5+ |
-| OpenCL ICD | 1.2 | 3.0 |
-| CMake (native build only) | 3.16 | 4.x |
+| <sub>Java JDK</sub> | <sub>21 LTS</sub> | <sub>21 LTS or 26</sub> |
+| <sub>Maven</sub> | <sub>3.9</sub> | <sub>3.9+</sub> |
+| <sub>GPU VRAM</sub> | <sub>2 GB</sub> | <sub>8 GB+</sub> |
+| <sub>JVM Heap</sub> | <sub>512 MB</sub> | <sub>2–4 GB</sub> |
+| <sub>NVIDIA Driver</sub> | <sub>520.x</sub> | <sub>535.x+</sub> |
+| <sub>CUDA Toolkit</sub> | <sub>11.0</sub> | <sub>12.0+</sub> |
+| <sub>ROCm</sub> | <sub>5.0</sub> | <sub>5.5+</sub> |
+| <sub>OpenCL ICD</sub> | <sub>1.2</sub> | <sub>3.0</sub> |
+| <sub>CMake (native build only)</sub> | <sub>3.16</sub> | <sub>4.x</sub> |
 
 ### GPU Kernel Inventory
 
 All kernels are implemented in CUDA C++ (`kernels.cu`), HIP/ROCm (`kernels.cpp`), and have equivalent pure-Java CPU reference implementations validated for numerical correctness to ≤1e-5 tolerance:
 
-| Kernel | Dimensions | Block / Tile Size | Algorithm |
+| <sub>Kernel</sub> | <sub>Dimensions</sub> | <sub>Block / Tile Size</sub> | <sub>Algorithm</sub> |
 |--------|-----------|------------------|-----------|
-| `matMulKernel` | M×K · K×N → M×N | 16×16 shared-mem tiles | Tiled SGEMM |
-| `softmaxKernel` | N-element vector | 256 threads/block | Numerically stable (subtract max) |
-| `tfidfKernel` | N docs × M terms | 32×32 | TF × log(N/df) |
-| `cosineSimilarityKernel` | N pairs × D dims | 256 threads | L2-normalized dot product |
-| `ngramExtractKernel` | N tokens × L window | 128 threads/block | Sliding-window n-gram |
+| <sub>`matMulKernel`</sub> | <sub>M×K · K×N → M×N</sub> | <sub>16×16 shared-mem tiles</sub> | <sub>Tiled SGEMM</sub> |
+| <sub>`softmaxKernel`</sub> | <sub>N-element vector</sub> | <sub>256 threads/block</sub> | <sub>Numerically stable (subtract max)</sub> |
+| <sub>`tfidfKernel`</sub> | <sub>N docs × M terms</sub> | <sub>32×32</sub> | <sub>TF × log(N/df)</sub> |
+| <sub>`cosineSimilarityKernel`</sub> | <sub>N pairs × D dims</sub> | <sub>256 threads</sub> | <sub>L2-normalized dot product</sub> |
+| <sub>`ngramExtractKernel`</sub> | <sub>N tokens × L window</sub> | <sub>128 threads/block</sub> | <sub>Sliding-window n-gram</sub> |
 
 ### Performance Targets (FP32, Batch = 64)
 
 > Reference measurements on NVIDIA RTX 3080 (10 GB VRAM). Actual performance varies by GPU model, driver version, batch size, and input dimensions. CPU fallback is always available and numerically identical.
 
-| Operation | CPU Reference (ms) | GPU Target (ms) | Target Speedup |
+| <sub>Operation</sub> | <sub>CPU Reference (ms)</sub> | <sub>GPU Target (ms)</sub> | <sub>Target Speedup</sub> |
 |-----------|------------------|-----------------|-----------------|
-| MaxEnt eval: 1K features, 100 outcomes | ~12 | ~3 | 4× |
-| Matrix multiply: 512×512 FP32 | ~19 | ~4 | 5× |
-| Softmax: 10K elements | ~2 | <1 | 3× |
-| TF-IDF: 10K docs × 5K terms | ~900 | ~190 | 4.7× |
-| Cosine similarity: 1K pairs × 512 dims | ~24 | ~6 | 4× |
+| <sub>MaxEnt eval: 1K features, 100 outcomes</sub> | <sub>~12</sub> | <sub>~3</sub> | <sub>4×</sub> |
+| <sub>Matrix multiply: 512×512 FP32</sub> | <sub>~19</sub> | <sub>~4</sub> | <sub>5×</sub> |
+| <sub>Softmax: 10K elements</sub> | <sub>~2</sub> | <sub><1</sub> | <sub>3×</sub> |
+| <sub>TF-IDF: 10K docs × 5K terms</sub> | <sub>~900</sub> | <sub>~190</sub> | <sub>4.7×</sub> |
+| <sub>Cosine similarity: 1K pairs × 512 dims</sub> | <sub>~24</sub> | <sub>~6</sub> | <sub>4×</sub> |
 
 ### Build Variants
 
-| Maven Profile | Command | Artifacts | Hardware Required |
+| <sub>Maven Profile</sub> | <sub>Command</sub> | <sub>Artifacts</sub> | <sub>Hardware Required</sub> |
 |--------------|---------|-----------|------------------|
-| Default (Java-only) | `mvn clean package` | JAR + CPU fallback | None |
-| Native CUDA | `mvn clean package -Pnative` | JAR + CUDA `.so` kernels | CUDA Toolkit 11+ |
-| Native ROCm | `mvn clean package -Pnative -Drocm=true` | JAR + HIP `.so` kernels | ROCm 5.0+ |
-| Test suite (CPU mode) | `mvn test -Dtest=GpuTestSuite` | Test results | None |
+| <sub>Default (Java-only)</sub> | <sub>`mvn clean package`</sub> | <sub>JAR + CPU fallback</sub> | <sub>None</sub> |
+| <sub>Native CUDA</sub> | <sub>`mvn clean package -Pnative`</sub> | <sub>JAR + CUDA `.so` kernels</sub> | <sub>CUDA Toolkit 11+</sub> |
+| <sub>Native ROCm</sub> | <sub>`mvn clean package -Pnative -Drocm=true`</sub> | <sub>JAR + HIP `.so` kernels</sub> | <sub>ROCm 5.0+</sub> |
+| <sub>Test suite (CPU mode)</sub> | <sub>`mvn test -Dtest=GpuTestSuite`</sub> | <sub>Test results</sub> | <sub>None</sub> |
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -346,14 +346,14 @@ pie title GPU Backend Support Coverage
     "Cloud (Inferentia + TPU)" : 10
 ```
 
-| Backend | Vendor | Status | Requirement |
+| <sub>Backend</sub> | <sub>Vendor</sub> | <sub>Status</sub> | <sub>Requirement</sub> |
 |---------|--------|--------|-------------|
-| OpenCL via JOCL | Any (NVIDIA, AMD, Intel) | 🔄 JNI bridge in progress | OpenCL 1.2+ ICD |
-| CUDA via JNI | NVIDIA | 🔄 Native kernels in progress | CUDA Toolkit 11+, driver |
-| ROCm / HIP | AMD | 🔄 JOCL enumeration complete; HIP native kernels planned | ROCm 5.0+, compatible GPU |
-| AWS Inferentia | Amazon | 🔄 CPU fallback active; AWS Neuron SDK bridge planned | Neuron SDK on inf1/inf2 |
-| Google TPU | Google | 🔄 CPU fallback active; XLA bridge planned | TPU v3/v4 on GCP |
-| CPU Fallback | Any | ✅ Production ready | JVM only |
+| <sub>OpenCL via JOCL</sub> | <sub>Any (NVIDIA, AMD, Intel)</sub> | <sub>🔄 JNI bridge in progress</sub> | <sub>OpenCL 1.2+ ICD</sub> |
+| <sub>CUDA via JNI</sub> | <sub>NVIDIA</sub> | <sub>🔄 Native kernels in progress</sub> | <sub>CUDA Toolkit 11+, driver</sub> |
+| <sub>ROCm / HIP</sub> | <sub>AMD</sub> | <sub>🔄 JOCL enumeration complete; HIP native kernels planned</sub> | <sub>ROCm 5.0+, compatible GPU</sub> |
+| <sub>AWS Inferentia</sub> | <sub>Amazon</sub> | <sub>🔄 CPU fallback active; AWS Neuron SDK bridge planned</sub> | <sub>Neuron SDK on inf1/inf2</sub> |
+| <sub>Google TPU</sub> | <sub>Google</sub> | <sub>🔄 CPU fallback active; XLA bridge planned</sub> | <sub>TPU v3/v4 on GCP</sub> |
+| <sub>CPU Fallback</sub> | <sub>Any</sub> | <sub>✅ Production ready</sub> | <sub>JVM only</sub> |
 
 > [!NOTE]
 > The CPU fallback (`CpuComputeProvider`) is fully production-ready and used as the numerical reference for all GPU kernel correctness tests. GPU backends are progressively integrated as the JNI bridge matures.
@@ -366,12 +366,12 @@ pie title GPU Backend Support Coverage
 
 ### Prerequisites
 
-| Requirement | Minimum | Recommended |
+| <sub>Requirement</sub> | <sub>Minimum</sub> | <sub>Recommended</sub> |
 |-------------|---------|-------------|
-| Java JDK | 21 | 21 LTS or 26 |
-| Maven | 3.9 | 3.9+ |
-| GPU (optional) | OpenCL 1.2+ | CUDA 11+ or ROCm 5+ |
-| CMake (optional) | 3.16 | 4.x (for native build) |
+| <sub>Java JDK</sub> | <sub>21</sub> | <sub>21 LTS or 26</sub> |
+| <sub>Maven</sub> | <sub>3.9</sub> | <sub>3.9+</sub> |
+| <sub>GPU (optional)</sub> | <sub>OpenCL 1.2+</sub> | <sub>CUDA 11+ or ROCm 5+</sub> |
+| <sub>CMake (optional)</sub> | <sub>3.16</sub> | <sub>4.x (for native build)</sub> |
 
 ### Clone & Build
 
@@ -502,13 +502,13 @@ gpuModel.cleanup(); // Release GPU resources
 
 The `MatrixOperation` interface provides 20+ operations:
 
-| Category | Methods | Backend |
+| <sub>Category</sub> | <sub>Methods</sub> | <sub>Backend</sub> |
 |----------|---------|---------|
-| BLAS-style | `multiply`, `add`, `subtract`, `transpose`, `scalarMultiply` | CPU ✅ / GPU 🔄 |
-| ML-specific | `dotProduct`, `vectorNorm`, `elementWiseMultiply`, `matrixVectorMultiply` | CPU ✅ / GPU 🔄 |
-| Activations | `sigmoid`, `tanh`, `relu`, `softmax` (numerically stable) | CPU ✅ / GPU 🔄 |
-| Statistics | `mean`, `variance`, `normalize` | CPU ✅ / GPU 🔄 |
-| Utility | `copyArray`, `fillArray`, `findMax`, `findMin` | CPU ✅ / GPU 🔄 |
+| <sub>BLAS-style</sub> | <sub>`multiply`, `add`, `subtract`, `transpose`, `scalarMultiply`</sub> | <sub>CPU ✅ / GPU 🔄</sub> |
+| <sub>ML-specific</sub> | <sub>`dotProduct`, `vectorNorm`, `elementWiseMultiply`, `matrixVectorMultiply`</sub> | <sub>CPU ✅ / GPU 🔄</sub> |
+| <sub>Activations</sub> | <sub>`sigmoid`, `tanh`, `relu`, `softmax` (numerically stable)</sub> | <sub>CPU ✅ / GPU 🔄</sub> |
+| <sub>Statistics</sub> | <sub>`mean`, `variance`, `normalize`</sub> | <sub>CPU ✅ / GPU 🔄</sub> |
+| <sub>Utility</sub> | <sub>`copyArray`, `fillArray`, `findMax`, `findMin`</sub> | <sub>CPU ✅ / GPU 🔄</sub> |
 
 > [!NOTE]
 > `DummyMatrixOperation` (CPU) implements every method with correct algorithms, including numerically-stable softmax with `exp(x - max(x))` and epsilon-guarded normalization. All GPU backends are validated against it.
@@ -518,15 +518,15 @@ The `MatrixOperation` interface provides 20+ operations:
 <details>
 <summary>📋 Supported OpenNLP Model Types</summary>
 
-| Model Type | GPU Wrapper Class | OpenNLP Interface |
+| <sub>Model Type</sub> | <sub>GPU Wrapper Class</sub> | <sub>OpenNLP Interface</sub> |
 |-----------|------------------|-------------------|
-| Maximum Entropy | `GpuMaxentModel` | `MaxentModel` |
-| Perceptron | `GpuPerceptronModel` | `MaxentModel` |
-| Naive Bayes | `GpuNaiveBayesModel` | `MaxentModel` |
-| Neural Network | `GpuNeuralNetworkModel` | Custom |
-| Attention Layer | `GpuAttentionLayer` | Custom |
-| Advanced Neural | `AdvancedGpuNeuralNetwork` | Custom |
-| MaxEnt Trainer | `GpuMaxentTrainer` | `EventTrainer` |
+| <sub>Maximum Entropy</sub> | <sub>`GpuMaxentModel`</sub> | <sub>`MaxentModel`</sub> |
+| <sub>Perceptron</sub> | <sub>`GpuPerceptronModel`</sub> | <sub>`MaxentModel`</sub> |
+| <sub>Naive Bayes</sub> | <sub>`GpuNaiveBayesModel`</sub> | <sub>`MaxentModel`</sub> |
+| <sub>Neural Network</sub> | <sub>`GpuNeuralNetworkModel`</sub> | <sub>Custom</sub> |
+| <sub>Attention Layer</sub> | <sub>`GpuAttentionLayer`</sub> | <sub>Custom</sub> |
+| <sub>Advanced Neural</sub> | <sub>`AdvancedGpuNeuralNetwork`</sub> | <sub>Custom</sub> |
+| <sub>MaxEnt Trainer</sub> | <sub>`GpuMaxentTrainer`</sub> | <sub>`EventTrainer`</sub> |
 
 All wrappers follow the same decorator pattern: accept the base OpenNLP object, add GPU dispatch, and fall back to the base when GPU is unavailable.
 
@@ -553,24 +553,24 @@ System.out.println("Avg latency: " + metrics.getAverageLatencyMs() + "ms");
 
 All settings are controlled via `GpuConfig` (a plain Java value object):
 
-| Property | Default | Description |
+| <sub>Property</sub> | <sub>Default</sub> | <sub>Description</sub> |
 |----------|---------|-------------|
-| `gpuEnabled` | `false` | Master GPU switch |
-| `memoryPoolSizeMB` | `256` | Pre-allocated GPU memory pool size (MB) |
-| `batchSize` | `32` | Samples per GPU kernel launch |
-| `maxMemoryUsageMB` | `1024` | Hard memory cap per provider (MB) |
-| `debugMode` | `false` | Verbose diagnostic output |
+| <sub>`gpuEnabled`</sub> | <sub>`false`</sub> | <sub>Master GPU switch</sub> |
+| <sub>`memoryPoolSizeMB`</sub> | <sub>`256`</sub> | <sub>Pre-allocated GPU memory pool size (MB)</sub> |
+| <sub>`batchSize`</sub> | <sub>`32`</sub> | <sub>Samples per GPU kernel launch</sub> |
+| <sub>`maxMemoryUsageMB`</sub> | <sub>`1024`</sub> | <sub>Hard memory cap per provider (MB)</sub> |
+| <sub>`debugMode`</sub> | <sub>`false`</sub> | <sub>Verbose diagnostic output</sub> |
 
 **System properties** (read at runtime):
 
-| Property | Example | Description |
+| <sub>Property</sub> | <sub>Example</sub> | <sub>Description</sub> |
 |----------|---------|-------------|
-| `gpu.available` | `true` | Master GPU presence flag |
-| `gpu.vendor` | `NVIDIA` | Reported vendor name |
-| `gpu.device` | `RTX 4090` | Device display name |
-| `gpu.driver` | `535.0` | Driver version string |
-| `gpu.memory.total` | `24576` | Total VRAM in MB |
-| `gpu.speedup.factor` | `3.5` | Reported speedup for stats reporting |
+| <sub>`gpu.available`</sub> | <sub>`true`</sub> | <sub>Master GPU presence flag</sub> |
+| <sub>`gpu.vendor`</sub> | <sub>`NVIDIA`</sub> | <sub>Reported vendor name</sub> |
+| <sub>`gpu.device`</sub> | <sub>`RTX 4090`</sub> | <sub>Device display name</sub> |
+| <sub>`gpu.driver`</sub> | <sub>`535.0`</sub> | <sub>Driver version string</sub> |
+| <sub>`gpu.memory.total`</sub> | <sub>`24576`</sub> | <sub>Total VRAM in MB</sub> |
+| <sub>`gpu.speedup.factor`</sub> | <sub>`3.5`</sub> | <sub>Reported speedup for stats reporting</sub> |
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -634,12 +634,12 @@ gantt
         Maven Central Release              :         p4c, 2026-10-01, 2026-12-01
 ```
 
-| Phase | Goals | Target | Status |
+| <sub>Phase</sub> | <sub>Goals</sub> | <sub>Target</sub> | <sub>Status</sub> |
 |-------|-------|--------|--------|
-| Phase 1 | Core interfaces, CPU fallback, monitoring | Q1-Q2 2025 | ✅ Complete |
-| Phase 2 | ML model wrappers, diagnostics, test suite | Q2-Q3 2025 | ✅ Complete |
-| Phase 3 | OpenCL + CUDA JNI kernels, ROCm integration | Q4 2025–Q3 2026 | 🔄 Active |
-| Phase 4 | Cloud accelerators, Maven Central, production hardening | Q4 2026 | ⭕ Planned |
+| <sub>Phase 1</sub> | <sub>Core interfaces, CPU fallback, monitoring</sub> | <sub>Q1-Q2 2025</sub> | <sub>✅ Complete</sub> |
+| <sub>Phase 2</sub> | <sub>ML model wrappers, diagnostics, test suite</sub> | <sub>Q2-Q3 2025</sub> | <sub>✅ Complete</sub> |
+| <sub>Phase 3</sub> | <sub>OpenCL + CUDA JNI kernels, ROCm integration</sub> | <sub>Q4 2025–Q3 2026</sub> | <sub>🔄 Active</sub> |
+| <sub>Phase 4</sub> | <sub>Cloud accelerators, Maven Central, production hardening</sub> | <sub>Q4 2026</sub> | <sub>⭕ Planned</sub> |
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -659,9 +659,9 @@ pie title Component Readiness (% complete)
     "Native GPU Kernels — JNI Bridge (25%)" : 25
 ```
 
-| Version | Phase | Stability | Java | OpenNLP | Key Limitation |
+| <sub>Version</sub> | <sub>Phase</sub> | <sub>Stability</sub> | <sub>Java</sub> | <sub>OpenNLP</sub> | <sub>Key Limitation</sub> |
 |---------|-------|-----------|------|---------|----------------|
-| 1.0.0 | Phase 1-2 | Beta | 21 | 2.5.8 | Hardware GPU kernel execution requires native JNI bridge (CPU fallback active) |
+| <sub>1.0.0</sub> | <sub>Phase 1-2</sub> | <sub>Beta</sub> | <sub>21</sub> | <sub>2.5.8</sub> | <sub>Hardware GPU kernel execution requires native JNI bridge (CPU fallback active)</sub> |
 
 > [!WARNING]
 > **Hardware GPU kernel execution** (`isAvailable() == true` + real device dispatch) requires the in-progress JNI bridge to be compiled with `-Pnative` **and** a compatible driver stack verified by the `GpuDiagnostics` tool. JOCL-based provider detection (`CudaUtil.isAvailable()`, `OpenCLUtil.isAvailable()`, `RocmUtil.isAvailable()`) is fully implemented and returns real hardware results. Until the native kernel bridge is wired, all matrix compute routes silently through `CpuComputeProvider`.
@@ -715,11 +715,11 @@ git push origin feature/my-improvement
 
 This project extends [Apache OpenNLP](https://opennlp.apache.org/) but is **not** part of the Apache Software Foundation.
 
-| Component | Owner | License |
+| <sub>Component</sub> | <sub>Owner</sub> | <sub>License</sub> |
 |-----------|-------|---------|
-| Apache OpenNLP (`opennlp-tools`) | Apache Software Foundation | Apache License 2.0 |
-| JOCL | Marco Hutter / jocl.org | MIT License |
-| This GPU Extension | OpenNLP GPU Extension Contributors | Apache License 2.0 |
+| <sub>Apache OpenNLP (`opennlp-tools`)</sub> | <sub>Apache Software Foundation</sub> | <sub>Apache License 2.0</sub> |
+| <sub>JOCL</sub> | <sub>Marco Hutter / jocl.org</sub> | <sub>MIT License</sub> |
+| <sub>This GPU Extension</sub> | <sub>OpenNLP GPU Extension Contributors</sub> | <sub>Apache License 2.0</sub> |
 
 ```
 OpenNLP GPU Extension
