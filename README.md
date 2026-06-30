@@ -115,7 +115,7 @@ GPUs execute thousands of these operations simultaneously. A modern GPU with 10,
 
 ---
 
-## � Use Cases & Applications
+## 💡 Use Cases & Applications
 
 ### Real-World Application Scenarios
 
@@ -172,7 +172,7 @@ Teams on GPU cloud instances can:
 
 ---
 
-## �🏗️ Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart TD
@@ -271,7 +271,7 @@ mvn test -Dtest=GpuTestSuite
 
 ---
 
-## � Technical Specifications
+## 📐 Technical Specifications
 
 ### GPU Architecture Support
 
@@ -337,7 +337,7 @@ All kernels are implemented in CUDA C++ (`kernels.cu`), HIP/ROCm (`kernels.cpp`)
 
 ---
 
-## �📊 GPU Backend Distribution
+## 📊 GPU Backend Distribution
 
 ```mermaid
 pie title GPU Backend Support Coverage
@@ -589,6 +589,51 @@ The project now uses a single, shared TF-IDF engine (`TfIdfAlgorithms`) across C
 - **Smaller artifacts**: float16/int8 persistence lowers disk and memory pressure for cached vectors.
 - **Safer backend evolution**: parity + latency guardrails detect regressions earlier.
 
+### API quick example
+
+```java
+import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
+import org.apache.opennlp.gpu.features.TfIdfAlgorithms;
+
+// extractor created as usual
+GpuFeatureExtractor extractor = new GpuFeatureExtractor(provider, config, matrixOp);
+
+// 1) Tune feature-engineering behavior
+extractor.setNGramBlendOptions(TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.7, 0.3));
+extractor.setFeatureSelectionMethod(TfIdfAlgorithms.FeatureSelectionMethod.CHI_SQUARE);
+extractor.setClassBalanceOptions(new TfIdfAlgorithms.ClassBalanceOptions(true, true)); // macro + prior weighting
+extractor.setIdfSmoothingStrategy(TfIdfAlgorithms.IDFSmoothingStrategy.PROBABILISTIC_IDF);
+extractor.setDocumentFrequencyCutoffs(2, Integer.MAX_VALUE);
+
+// 2) Train-time vectorization with labels (for discriminative selection)
+TfIdfAlgorithms.VectorizationResult train = extractor.extractTfIdfVectors(
+    trainDocs,
+    50000,
+    TfIdfAlgorithms.WeightingScheme.BM25,
+    trainLabels
+);
+
+// 3) Persist vocabulary state for reproducible inference
+extractor.saveVocabularyState(java.nio.file.Path.of("tfidf-vocab-state.bin"));
+
+// 4) Inference-time loading and vectorization with the same vocabulary/DF settings
+extractor.loadVocabularyState(java.nio.file.Path.of("tfidf-vocab-state.bin"));
+TfIdfAlgorithms.VectorizationResult infer = extractor.extractTfIdfVectorsWithLoadedVocabulary(
+    incomingDocs,
+    TfIdfAlgorithms.WeightingScheme.BM25
+);
+
+float[][] denseVectors = infer.getDenseVectors();
+```
+
+### Persisted-state migration policy
+
+| State version | Read support | Behavior |
+|---|---|---|
+| `V2` (current) | ✅ | Loads full metadata (vocabulary, DF, blend weights, smoothing, DF cutoffs). |
+| `V1` (legacy) | ✅ | Auto-migrates with safe defaults (`STANDARD_SMOOTH`, `minDf=1`, `maxDf=Integer.MAX_VALUE`). |
+| Unknown/future | ❌ | Fails fast with clear error to avoid silent incompatibility. |
+
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
 ---
@@ -668,6 +713,14 @@ gantt
         MaxEnt / Perceptron / Naive Bayes  :done,    p2a, 2025-04-01, 2025-07-01
         Neural Network & Attention         :done,    p2b, 2025-05-01, 2025-08-01
         GPU Diagnostics Tool               :done,    p2c, 2025-06-01, 2025-08-01
+    section Phase 2.5: Feature Engineering Hardening
+        Unified TF-IDF engine across backends            :done, p25a, 2026-05-01, 2026-06-30
+        N-gram blending + BM25/sublinear weighting       :done, p25b, 2026-05-10, 2026-06-30
+        Class-balanced scoring (IG/Chi-square options)   :done, p25c, 2026-05-15, 2026-06-30
+        IDF smoothing + min/max DF controls              :done, p25d, 2026-05-20, 2026-06-30
+        VocabularyState versioning + V1→V2 migration     :done, p25e, 2026-05-25, 2026-06-30
+        Dense vector quantization (FLOAT16/INT8)         :done, p25f, 2026-06-01, 2026-06-30
+        Cross-backend parity + latency guardrail tests   :done, p25g, 2026-06-05, 2026-06-30
     section Phase 3 - Native GPU (Active)
         OpenCL JNI Bridge                  :active,  p3a, 2025-09-01, 2026-06-01
         CUDA Kernel Integration            :active,  p3b, 2025-10-01, 2026-07-01
@@ -682,6 +735,7 @@ gantt
 |-------|-------|--------|--------|
 | <sub>Phase 1</sub> | <sub>Core interfaces, CPU fallback, monitoring</sub> | <sub>Q1-Q2 2025</sub> | <sub>✅ Complete</sub> |
 | <sub>Phase 2</sub> | <sub>ML model wrappers, diagnostics, test suite</sub> | <sub>Q2-Q3 2025</sub> | <sub>✅ Complete</sub> |
+| <sub>Phase 2.5</sub> | <sub>TF-IDF/feature-engineering hardening (blending, balancing, smoothing, migration, quantization, guardrails)</sub> | <sub>Q2 2026</sub> | <sub>✅ Complete</sub> |
 | <sub>Phase 3</sub> | <sub>OpenCL + CUDA JNI kernels, ROCm integration</sub> | <sub>Q4 2025–Q3 2026</sub> | <sub>🔄 Active</sub> |
 | <sub>Phase 4</sub> | <sub>Cloud accelerators, Maven Central, production hardening</sub> | <sub>Q4 2026</sub> | <sub>⭕ Planned</sub> |
 
