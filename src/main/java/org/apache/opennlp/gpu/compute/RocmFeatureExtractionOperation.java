@@ -1,6 +1,7 @@
 package org.apache.opennlp.gpu.compute;
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
+import org.apache.opennlp.gpu.features.TfIdfAlgorithms;
 import org.apache.opennlp.gpu.rocm.RocmUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     private int deviceId = 0;
     // JNI method declarations for ROCm feature extraction operations
     /**
-    
+
      * ID: GPU-RFEO-002
      * Requirement: allocateDeviceMemory must execute correctly within the contract defined by this class.
      * Purpose: Implement the allocateDeviceMemory operation for this class.
@@ -43,7 +44,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native long allocateDeviceMemory(long size);
     /**
-    
+
      * ID: GPU-RFEO-003
      * Requirement: freeDeviceMemory must execute correctly within the contract defined by this class.
      * Purpose: Implement the freeDeviceMemory operation for this class.
@@ -56,7 +57,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native void freeDeviceMemory(long devicePtr);
     /**
-    
+
      * ID: GPU-RFEO-004
      * Requirement: copyIntHostToDevice must execute correctly within the contract defined by this class.
      * Purpose: Implement the copyIntHostToDevice operation for this class.
@@ -69,7 +70,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native void copyIntHostToDevice(int[] hostArray, long devicePtr, int size);
     /**
-    
+
      * ID: GPU-RFEO-005
      * Requirement: copyIntDeviceToHost must execute correctly within the contract defined by this class.
      * Purpose: Implement the copyIntDeviceToHost operation for this class.
@@ -82,7 +83,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native void copyIntDeviceToHost(long devicePtr, int[] hostArray, int size);
     /**
-    
+
      * ID: GPU-RFEO-006
      * Requirement: copyFloatHostToDevice must execute correctly within the contract defined by this class.
      * Purpose: Implement the copyFloatHostToDevice operation for this class.
@@ -95,7 +96,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native void copyFloatHostToDevice(float[] hostArray, long devicePtr, int size);
     /**
-    
+
      * ID: GPU-RFEO-007
      * Requirement: copyFloatDeviceToHost must execute correctly within the contract defined by this class.
      * Purpose: Implement the copyFloatDeviceToHost operation for this class.
@@ -108,7 +109,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native void copyFloatDeviceToHost(long devicePtr, float[] hostArray, int size);
     /**
-    
+
      * ID: GPU-RFEO-008
      * Requirement: rocmExtractNGrams must execute correctly within the contract defined by this class.
      * Purpose: Implement the rocmExtractNGrams operation for this class.
@@ -121,7 +122,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native int rocmExtractNGrams(long tokensPtr, int numTokens, int maxNGramLength, long featureMapPtr, int featureMapSize);
     /**
-    
+
      * ID: GPU-RFEO-009
      * Requirement: rocmComputeTfIdf must execute correctly within the contract defined by this class.
      * Purpose: Implement the rocmComputeTfIdf operation for this class.
@@ -134,7 +135,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      */
     private native void rocmComputeTfIdf(long termFreqPtr, long docFreqPtr, int numDocs, long tfidfPtr, int numTerms);
     /**
-    
+
      * ID: GPU-RFEO-010
      * Requirement: rocmComputeCosineSimilarity must execute correctly within the contract defined by this class.
      * Purpose: Implement the rocmComputeCosineSimilarity operation for this class.
@@ -152,7 +153,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      * @param provider the compute provider to use
      */
     /**
-    
+
      * ID: GPU-RFEO-011
      * Requirement: RocmFeatureExtractionOperation must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a RocmFeatureExtractionOperation instance.
@@ -182,7 +183,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     // Remove @Override annotation
     /**
-    
+
      * ID: GPU-RFEO-012
      * Requirement: extractNGrams must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractNGrams operation for this class.
@@ -217,7 +218,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     // Remove @Override annotation
     /**
-    
+
      * ID: GPU-RFEO-013
      * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the computeTfIdf result.
@@ -254,7 +255,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     // Remove @Override annotation
     /**
-    
+
      * ID: GPU-RFEO-014
      * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the computeCosineSimilarity result.
@@ -288,7 +289,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     // Add missing interface method implementation
     /**
-    
+
      * ID: GPU-RFEO-015
      * Requirement: extractFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractFeatures operation for this class.
@@ -320,7 +321,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     }
     // Add missing interface method implementation
     /**
-    
+
      * ID: GPU-RFEO-016
      * Requirement: computeTfIdf must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the computeTfIdf result.
@@ -334,27 +335,11 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
     @Override
     public float[] computeTfIdf(String[] documents) {
         logger.debug("Computing TF-IDF for {} documents", documents.length);
-        // Simplified implementation - convert to term frequency and document frequency
-        int estimatedTerms = 1000;
-        float[] termFreq = new float[estimatedTerms];
-        float[] docFreq = new float[estimatedTerms];
-        // Very simple term counting
-        for (String doc : documents) {
-            String[] terms = doc.split("\\s+");
-            for (String term : terms) {
-                int termId = Math.abs(term.hashCode() % estimatedTerms);
-                termFreq[termId]++;
-                docFreq[termId] = 1.0f; // Simplified - just mark as present
-            }
-        }
-        // Compute TF-IDF
-        float[] tfidf = new float[estimatedTerms];
-        computeTfIdf(termFreq, docFreq, documents.length, tfidf, estimatedTerms);
-        return tfidf;
+        return TfIdfAlgorithms.computeDocumentScores(documents);
     }
     // Existing method stays to provide implementation detail
     /**
-    
+
      * ID: GPU-RFEO-017
      * Requirement: computeCosineSimilarity must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the computeCosineSimilarity result.
@@ -383,7 +368,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
         return dotProduct / (float) Math.sqrt(norm1 * norm2);
     }
     /**
-    
+
      * ID: GPU-RFEO-018
      * Requirement: release must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
@@ -405,7 +390,7 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      * @return the compute provider
      */
     /**
-    
+
      * ID: GPU-RFEO-019
      * Requirement: Return the Provider field value without side effects.
      * Purpose: Return the value of the Provider property.

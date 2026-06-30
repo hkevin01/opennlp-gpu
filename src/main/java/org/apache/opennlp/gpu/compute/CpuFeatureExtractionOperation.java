@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
+import org.apache.opennlp.gpu.features.TfIdfAlgorithms;
 
 /**
 
@@ -109,19 +110,7 @@ public class CpuFeatureExtractionOperation implements FeatureExtractionOperation
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public float[] computeTfIdf(String[] documents) {
-        // Compute a single normalised term-frequency score per document:
-        // the frequency of the most common token divided by total token count.
-        if (documents == null || documents.length == 0) return new float[0];
-        float[] result = new float[documents.length];
-        for (int di = 0; di < documents.length; di++) {
-            String[] words = documents[di].split("\\s+");
-            if (words.length == 0) { result[di] = 0f; continue; }
-            java.util.Map<String, Integer> freq = new java.util.HashMap<>();
-            for (String w : words) freq.merge(w.toLowerCase(), 1, Integer::sum);
-            int maxFreq = freq.values().stream().mapToInt(Integer::intValue).max().orElse(1);
-            result[di] = (float) maxFreq / words.length;
-        }
-        return result;
+        return TfIdfAlgorithms.computeDocumentScores(documents);
     }
 
     /**

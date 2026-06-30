@@ -2,6 +2,7 @@ package org.apache.opennlp.gpu.compute;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
 import org.apache.opennlp.gpu.common.FeatureExtractionOperation;
+import org.apache.opennlp.gpu.features.TfIdfAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,19 +175,7 @@ public class OpenClFeatureExtractionOperation implements FeatureExtractionOperat
      */
     public float[] computeTfIdf(String[] documents) {
         logger.info("Computing TF-IDF for {} documents using OpenCL", documents.length);
-        // Compute normalised term-frequency per document (same CPU-fallback algorithm
-        // used while the OpenCL kernel bridge is in development).
-        if (documents == null || documents.length == 0) return new float[0];
-        float[] result = new float[documents.length];
-        for (int di = 0; di < documents.length; di++) {
-            String[] words = documents[di].split("\\s+");
-            if (words.length == 0) { result[di] = 0f; continue; }
-            java.util.Map<String, Integer> freq = new java.util.HashMap<>();
-            for (String w : words) freq.merge(w.toLowerCase(), 1, Integer::sum);
-            int maxFreq = freq.values().stream().mapToInt(Integer::intValue).max().orElse(1);
-            result[di] = (float) maxFreq / words.length;
-        }
-        return result;
+        return TfIdfAlgorithms.computeDocumentScores(documents);
     }
 
     /**
