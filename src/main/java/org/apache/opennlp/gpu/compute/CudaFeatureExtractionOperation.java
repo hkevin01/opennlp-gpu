@@ -170,7 +170,15 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public CudaFeatureExtractionOperation(ComputeProvider provider) {
+        this(provider, false);
+    }
+
+    private CudaFeatureExtractionOperation(ComputeProvider provider, boolean skipNativeInitialization) {
         this.provider = provider;
+        if (skipNativeInitialization) {
+            logger.info("Initializing CUDA feature extraction in parity-test mode (native init skipped)");
+            return;
+        }
         logger.info("Initializing CUDA feature extraction with provider: {}", provider.getName());
 
         // Initialize CUDA
@@ -187,6 +195,13 @@ public class CudaFeatureExtractionOperation implements FeatureExtractionOperatio
             logger.error("Failed to load CUDA feature extraction library", e);
             throw new RuntimeException("Failed to initialize CUDA feature extraction operations", e);
         }
+    }
+
+    /**
+     * Factory for test parity harnesses where native CUDA libraries are not available.
+     */
+    public static CudaFeatureExtractionOperation createParityTestInstance(ComputeProvider provider) {
+        return new CudaFeatureExtractionOperation(provider, true);
     }
 
     // Existing method without @Override

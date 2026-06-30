@@ -165,7 +165,15 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     public RocmFeatureExtractionOperation(ComputeProvider provider) {
+        this(provider, false);
+    }
+
+    private RocmFeatureExtractionOperation(ComputeProvider provider, boolean skipNativeInitialization) {
         this.provider = provider;
+        if (skipNativeInitialization) {
+            logger.info("Initializing ROCm feature extraction in parity-test mode (native init skipped)");
+            return;
+        }
         logger.info("Initializing ROCm feature extraction with provider: {}", provider.getName());
         // Initialize ROCm
         if (!RocmUtil.isAvailable()) {
@@ -180,6 +188,13 @@ public class RocmFeatureExtractionOperation implements FeatureExtractionOperatio
             logger.error("Failed to load ROCm feature extraction library", e);
             throw new RuntimeException("Failed to initialize ROCm feature extraction operations", e);
         }
+    }
+
+    /**
+     * Factory for test parity harnesses where native ROCm libraries are not available.
+     */
+    public static RocmFeatureExtractionOperation createParityTestInstance(ComputeProvider provider) {
+        return new RocmFeatureExtractionOperation(provider, true);
     }
     // Remove @Override annotation
     /**

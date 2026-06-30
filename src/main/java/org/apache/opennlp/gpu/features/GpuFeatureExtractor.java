@@ -42,6 +42,7 @@ public class GpuFeatureExtractor {
     // Feature extraction parameters
     private final Map<String, Integer> vocabulary = new HashMap<String, Integer>();
     private final Map<String, Float> idfScores = new HashMap<String, Float>();
+    private TfIdfAlgorithms.NormalizationOptions normalizationOptions = TfIdfAlgorithms.NormalizationOptions.defaultOptions();
     private int vocabularySize = 0;
 
     // Performance thresholds
@@ -49,7 +50,7 @@ public class GpuFeatureExtractor {
     private static final int MIN_FEATURES_FOR_GPU = 1000;
 
     /**
-    
+
      * ID: GPU-GFE-002
      * Requirement: GpuFeatureExtractor must be fully initialised with valid parameters.
      * Purpose: Construct and initialise a GpuFeatureExtractor instance.
@@ -71,7 +72,7 @@ public class GpuFeatureExtractor {
      * Extract n-gram features from text documents
      */
     /**
-    
+
      * ID: GPU-GFE-003
      * Requirement: extractNGramFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractNGramFeatures operation for this class.
@@ -108,7 +109,7 @@ public class GpuFeatureExtractor {
      * Extract TF-IDF features from text documents
      */
     /**
-    
+
      * ID: GPU-GFE-004
      * Requirement: extractTfIdfFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractTfIdfFeatures operation for this class.
@@ -125,30 +126,65 @@ public class GpuFeatureExtractor {
         if (maxFeatures < 1) throw new IllegalArgumentException("maxFeatures must be >= 1, got: " + maxFeatures);
         if (documents.length == 0) return new float[0][0];
         logger.debug("Extracting TF-IDF features from " + documents.length + " documents");
+        return extractTfIdfVectors(documents, ngramSize, maxFeatures,
+                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF).getDenseVectors();
+    }
 
-        // First extract n-gram features
-        float[][] tfFeatures = extractNGramFeatures(documents, ngramSize, maxFeatures);
+    /**
+     * Extract N-gram-aware TF-IDF vectors aligned with vocabulary indices.
+     * The result includes both dense and sparse representations.
+     */
+    public TfIdfAlgorithms.VectorizationResult extractTfIdfVectors(String[] documents,
+                                                                   int ngramSize,
+                                                                   int maxFeatures) {
+        return extractTfIdfVectors(documents, ngramSize, maxFeatures,
+                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF);
+    }
 
-        // Calculate IDF scores
-        calculateIdfScores(documents, ngramSize);
-
-        // Apply TF-IDF transformation
-        float[][] tfidfFeatures = new float[documents.length][vocabularySize];
-
-        if (shouldUseGpu(documents.length, vocabularySize)) {
-            applyTfIdfTransformationGpu(tfFeatures, tfidfFeatures);
-        } else {
-            applyTfIdfTransformationCpu(tfFeatures, tfidfFeatures);
+    /**
+     * Extract N-gram-aware TF-IDF vectors using the selected weighting scheme.
+     */
+    public TfIdfAlgorithms.VectorizationResult extractTfIdfVectors(String[] documents,
+                                                                   int ngramSize,
+                                                                   int maxFeatures,
+                                                                   TfIdfAlgorithms.WeightingScheme scheme) {
+        Objects.requireNonNull(documents, "documents must not be null");
+        if (ngramSize < 1) throw new IllegalArgumentException("ngramSize must be >= 1, got: " + ngramSize);
+        if (maxFeatures < 1) throw new IllegalArgumentException("maxFeatures must be >= 1, got: " + maxFeatures);
+        if (documents.length == 0) {
+            return new TfIdfAlgorithms.VectorizationResult(new HashMap<String, Integer>(), new float[0][0],
+                    new TfIdfAlgorithms.SparseVector[0], scheme);
         }
 
-        return tfidfFeatures;
+        TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(
+                documents,
+                ngramSize,
+                maxFeatures,
+                scheme,
+                normalizationOptions,
+                true
+        );
+
+        // Keep existing extractor state aligned with the vectorizer output.
+        vocabulary.clear();
+        vocabulary.putAll(result.getVocabulary());
+        vocabularySize = vocabulary.size();
+
+        return result;
+    }
+
+    /**
+     * Configure centralized token normalization for all feature extraction paths.
+     */
+    public void setNormalizationOptions(TfIdfAlgorithms.NormalizationOptions normalizationOptions) {
+        this.normalizationOptions = Objects.requireNonNull(normalizationOptions, "normalizationOptions must not be null");
     }
 
     /**
      * Extract context window features around target words
      */
     /**
-    
+
      * ID: GPU-GFE-005
      * Requirement: extractContextFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractContextFeatures operation for this class.
@@ -184,7 +220,7 @@ public class GpuFeatureExtractor {
      * Apply feature normalization
      */
     /**
-    
+
      * ID: GPU-GFE-006
      * Requirement: normalizeFeatures must execute correctly within the contract defined by this class.
      * Purpose: Implement the normalizeFeatures operation for this class.
@@ -213,7 +249,7 @@ public class GpuFeatureExtractor {
     // Private helper methods
 
     /**
-    
+
      * ID: GPU-GFE-007
      * Requirement: buildVocabulary must execute correctly within the contract defined by this class.
      * Purpose: Create and return a new ocabulary.
@@ -252,7 +288,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-008
      * Requirement: calculateIdfScores must execute correctly within the contract defined by this class.
      * Purpose: Compute and return the calculateIdfScores result.
@@ -295,7 +331,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-009
      * Requirement: tokenize must execute correctly within the contract defined by this class.
      * Purpose: Implement the tokenize operation for this class.
@@ -307,12 +343,11 @@ public class GpuFeatureExtractor {
      * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
      */
     private String[] tokenize(String text) {
-        // Simple whitespace tokenization (can be enhanced)
-        return text.toLowerCase().split("\\s+");
+        return TfIdfAlgorithms.tokenizeNormalized(text, normalizationOptions);
     }
 
     /**
-    
+
      * ID: GPU-GFE-010
      * Requirement: generateNGrams must execute correctly within the contract defined by this class.
      * Purpose: Implement the generateNGrams operation for this class.
@@ -339,7 +374,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-011
      * Requirement: extractContextWindow must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractContextWindow operation for this class.
@@ -371,7 +406,7 @@ public class GpuFeatureExtractor {
     // CPU implementations
 
     /**
-    
+
      * ID: GPU-GFE-012
      * Requirement: extractNGramFeaturesCpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractNGramFeaturesCpu operation for this class.
@@ -398,7 +433,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-013
      * Requirement: applyTfIdfTransformationCpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the applyTfIdfTransformationCpu operation for this class.
@@ -423,7 +458,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-014
      * Requirement: normalizeFeaturesCpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the normalizeFeaturesCpu operation for this class.
@@ -460,7 +495,7 @@ public class GpuFeatureExtractor {
     // (provides real multi-core speedup without requiring GPU hardware)
 
     /**
-    
+
      * ID: GPU-GFE-015
      * Requirement: extractNGramFeaturesGpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the extractNGramFeaturesGpu operation for this class.
@@ -494,7 +529,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-016
      * Requirement: applyTfIdfTransformationGpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the applyTfIdfTransformationGpu operation for this class.
@@ -518,7 +553,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-017
      * Requirement: normalizeFeaturesGpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the normalizeFeaturesGpu operation for this class.
@@ -550,7 +585,7 @@ public class GpuFeatureExtractor {
     // Helper methods
 
     /**
-    
+
      * ID: GPU-GFE-018
      * Requirement: shouldUseGpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the shouldUseGpu operation for this class.
@@ -569,7 +604,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-019
      * Requirement: Return the VocabularySize field value without side effects.
      * Purpose: Return the value of the VocabularySize property.
@@ -585,7 +620,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-020
      * Requirement: Return the Vocabulary field value without side effects.
      * Purpose: Return the value of the Vocabulary property.
@@ -601,7 +636,7 @@ public class GpuFeatureExtractor {
     }
 
     /**
-    
+
      * ID: GPU-GFE-021
      * Requirement: release must execute correctly within the contract defined by this class.
      * Purpose: Release all held resources and reset internal state.
