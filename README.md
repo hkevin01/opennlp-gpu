@@ -213,12 +213,12 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant App as NLP Application
-    participant Adapter as OpenNlpGpuAdapter
-    participant Factory as ComputeProviderFactory
-    participant GPU as GpuComputeProvider
-    participant Model as GpuMaxentModel
-    participant Monitor as GpuPerformanceMonitor
+    participant App as "NLP Application"
+    participant Adapter as "OpenNlpGpuAdapter"
+    participant Factory as "ComputeProviderFactory"
+    participant GPU as "GpuComputeProvider"
+    participant Model as "GpuMaxentModel"
+    participant Monitor as "GpuPerformanceMonitor"
 
     App->>Adapter: new OpenNlpGpuAdapter()
     Adapter->>Factory: selectProvider(GpuConfig)
@@ -714,13 +714,13 @@ gantt
         Neural Network & Attention         :done,    p2b, 2025-05-01, 2025-08-01
         GPU Diagnostics Tool               :done,    p2c, 2025-06-01, 2025-08-01
     section Phase 2.5: Feature Engineering Hardening
-        Unified TF-IDF engine across backends            :done, p25a, 2026-05-01, 2026-06-30
-        N-gram blending + BM25/sublinear weighting       :done, p25b, 2026-05-10, 2026-06-30
-        Class-balanced scoring (IG/Chi-square options)   :done, p25c, 2026-05-15, 2026-06-30
-        IDF smoothing + min/max DF controls              :done, p25d, 2026-05-20, 2026-06-30
-        VocabularyState versioning + V1→V2 migration     :done, p25e, 2026-05-25, 2026-06-30
-        Dense vector quantization (FLOAT16/INT8)         :done, p25f, 2026-06-01, 2026-06-30
-        Cross-backend parity + latency guardrail tests   :done, p25g, 2026-06-05, 2026-06-30
+        Unified TF IDF engine across backends            :done, p25a, 2026-05-01, 2026-06-30
+        N gram blending and BM25 sublinear weighting     :done, p25b, 2026-05-10, 2026-06-30
+        Class balanced scoring IG and Chi square          :done, p25c, 2026-05-15, 2026-06-30
+        IDF smoothing and min max DF controls             :done, p25d, 2026-05-20, 2026-06-30
+        VocabularyState versioning and V1 to V2 migration :done, p25e, 2026-05-25, 2026-06-30
+        Dense vector quantization FLOAT16 and INT8        :done, p25f, 2026-06-01, 2026-06-30
+        Cross backend parity and latency guardrails       :done, p25g, 2026-06-05, 2026-06-30
     section Phase 3 - Native GPU (Active)
         OpenCL JNI Bridge                  :active,  p3a, 2025-09-01, 2026-06-01
         CUDA Kernel Integration            :active,  p3b, 2025-10-01, 2026-07-01
