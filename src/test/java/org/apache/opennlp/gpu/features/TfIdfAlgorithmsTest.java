@@ -6,6 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.opennlp.gpu.compute.CpuFeatureExtractionOperation;
 import org.apache.opennlp.gpu.compute.OpenClFeatureExtractionOperation;
@@ -196,4 +200,173 @@ class TfIdfAlgorithmsTest {
         assertTrue(afterFirst >= 1);
         assertEquals(afterFirst, afterSecond, "Second run should reuse cached corpus statistics");
     }
+
+        @Test
+        @DisplayName("Weighted n-gram blending includes bigram/trigram features in vocabulary")
+        void weightedNgramBlendingAddsPhraseFeatures() {
+                String[] docs = {
+                                "new york city skyline",
+                                "new york subway",
+                                "city skyline view"
+                };
+
+                TfIdfAlgorithms.VectorizationOptions unigramOptions = new TfIdfAlgorithms.VectorizationOptions(
+                                32,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                null,
+                                false
+                );
+                TfIdfAlgorithms.VectorizationOptions mixedOptions = new TfIdfAlgorithms.VectorizationOptions(
+                                64,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.8, 0.6),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                null,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult unigram = TfIdfAlgorithms.vectorizeDocuments(docs, unigramOptions);
+                TfIdfAlgorithms.VectorizationResult mixed = TfIdfAlgorithms.vectorizeDocuments(docs, mixedOptions);
+
+                assertFalse(unigram.getVocabulary().containsKey("new_york"));
+                assertTrue(mixed.getVocabulary().containsKey("new_york"));
+        }
+
+        @Test
+        @DisplayName("Vocabulary persistence roundtrip keeps vocabulary/df consistent")
+        void vocabularyPersistenceRoundtrip() throws Exception {
+                String[] docs = {
+                                "apache opennlp gpu",
+                                "gpu tf idf",
+                                "apache tf"
+                };
+
+                TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                                32,
+                                TfIdfAlgorithms.WeightingScheme.SUBLINEAR_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.5, 0.0),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                null,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult first = TfIdfAlgorithms.vectorizeDocuments(docs, options);
+                Path tmp = Files.createTempFile("tfidf-vocab", ".bin");
+                try {
+                        TfIdfAlgorithms.saveVocabularyState(first.getVocabularyState(), tmp);
+                        TfIdfAlgorithms.VocabularyState loaded = TfIdfAlgorithms.loadVocabularyState(tmp);
+
+                        TfIdfAlgorithms.VectorizationResult second = TfIdfAlgorithms.vectorizeDocumentsWithVocabulary(
+                                        docs,
+                                        loaded,
+                                        TfIdfAlgorithms.WeightingScheme.SUBLINEAR_TF_IDF,
+                                        TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                        false
+                        );
+
+                        assertEquals(first.getVocabulary().size(), second.getVocabulary().size());
+                        for (int i = 0; i < first.getDenseVectors().length; i++) {
+                                assertEquals(first.getDenseVectors()[i].length, second.getDenseVectors()[i].length);
+                                for (int j = 0; j < first.getDenseVectors()[i].length; j++) {
+                                        assertEquals(first.getDenseVectors()[i][j], second.getDenseVectors()[i][j], EPS);
+                                }
+                        }
+                } finally {
+                        Files.deleteIfExists(tmp);
+                }
+        }
+
+        @Test
+        @DisplayName("Top-k discriminative pruning with chi-square selects class-indicative features")
+        void chiSquareFeatureSelectionFindsDiscriminativeTerms() {
+                String[] docs = {
+                                "alpha alpha shared",
+                                "alpha shared",
+                                "beta beta shared",
+                                "beta shared"
+                };
+                String[] labels = {"A", "A", "B", "B"};
+
+                TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                                1,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.CHI_SQUARE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(docs, options);
+                Map<String, Integer> vocab = result.getVocabulary();
+                assertEquals(1, vocab.size());
+                String selected = vocab.keySet().iterator().next();
+                assertTrue(selected.equals("alpha") || selected.equals("beta"));
+        }
+
+        @Test
+        @DisplayName("LRU cache eviction is deterministic and evicts oldest corpus first")
+        void deterministicLruEviction() {
+                TfIdfAlgorithms.clearCache();
+                TfIdfAlgorithms.VectorizationOptions options = TfIdfAlgorithms.VectorizationOptions.defaultForMaxFeatures(8);
+
+                for (int i = 0; i < 32; i++) {
+                        String[] docs = {"doc" + i + " token" + i};
+                        TfIdfAlgorithms.vectorizeDocuments(docs, options);
+                }
+                List<String> fingerprintsBefore = TfIdfAlgorithms.getCachedCorpusFingerprints();
+                assertEquals(32, fingerprintsBefore.size());
+                String eldestFingerprint = fingerprintsBefore.get(0);
+
+                TfIdfAlgorithms.vectorizeDocuments(new String[]{"new corpus for eviction"}, options);
+                List<String> fingerprintsAfter = TfIdfAlgorithms.getCachedCorpusFingerprints();
+                assertEquals(32, fingerprintsAfter.size());
+                assertFalse(fingerprintsAfter.contains(eldestFingerprint));
+        }
+
+        @Test
+        @DisplayName("Numerical stability holds for long, sparse, and unicode-heavy corpora across schemes")
+        void numericalStabilityStressAcrossSchemes() {
+                StringBuilder longDocBuilder = new StringBuilder();
+                for (int i = 0; i < 15000; i++) {
+                        longDocBuilder.append("token").append(i % 17).append(' ');
+                }
+                String[] docs = {
+                                longDocBuilder.toString(),
+                                "x", // sparse
+                                "Café naïve résumé coöperate — 東京 — 😀😀😀 repeated unicode"
+                };
+
+                for (TfIdfAlgorithms.WeightingScheme scheme : TfIdfAlgorithms.WeightingScheme.values()) {
+                        TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                                        256,
+                                        scheme,
+                                        TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                        TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.7, 0.3),
+                                        TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                        null,
+                                        false
+                        );
+
+                        TfIdfAlgorithms.VectorizationResult r1 = TfIdfAlgorithms.vectorizeDocuments(docs, options);
+                        TfIdfAlgorithms.VectorizationResult r2 = TfIdfAlgorithms.vectorizeDocuments(docs, options);
+
+                        assertEquals(r1.getDenseVectors().length, r2.getDenseVectors().length);
+                        for (int i = 0; i < r1.getDenseVectors().length; i++) {
+                                assertEquals(r1.getDenseVectors()[i].length, r2.getDenseVectors()[i].length);
+                                for (int j = 0; j < r1.getDenseVectors()[i].length; j++) {
+                                        float v1 = r1.getDenseVectors()[i][j];
+                                        float v2 = r2.getDenseVectors()[i][j];
+                                        assertTrue(Float.isFinite(v1));
+                                        assertTrue(Float.isFinite(v2));
+                                        assertEquals(v1, v2, 1e-5f);
+                                }
+                        }
+                }
+        }
 }

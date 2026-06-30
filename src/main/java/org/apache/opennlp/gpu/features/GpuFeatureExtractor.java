@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.nio.file.Path;
+import java.io.IOException;
 import java.util.stream.IntStream;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
@@ -42,6 +44,9 @@ public class GpuFeatureExtractor {
     // Feature extraction parameters
     private final Map<String, Integer> vocabulary = new HashMap<String, Integer>();
     private TfIdfAlgorithms.NormalizationOptions normalizationOptions = TfIdfAlgorithms.NormalizationOptions.defaultOptions();
+    private TfIdfAlgorithms.NGramBlendOptions nGramBlendOptions = TfIdfAlgorithms.NGramBlendOptions.unigramOnly();
+    private TfIdfAlgorithms.FeatureSelectionMethod featureSelectionMethod = TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY;
+    private TfIdfAlgorithms.VocabularyState vocabularyState;
     private int vocabularySize = 0;
 
     // Performance thresholds
@@ -152,22 +157,63 @@ public class GpuFeatureExtractor {
         if (maxFeatures < 1) throw new IllegalArgumentException("maxFeatures must be >= 1, got: " + maxFeatures);
         if (documents.length == 0) {
             return new TfIdfAlgorithms.VectorizationResult(new HashMap<String, Integer>(), new float[0][0],
-                    new TfIdfAlgorithms.SparseVector[0], scheme);
+                    new TfIdfAlgorithms.SparseVector[0], scheme,
+                    new TfIdfAlgorithms.VocabularyState(new HashMap<String, Integer>(), new HashMap<String, Integer>(),
+                            0, 0.0, TfIdfAlgorithms.NGramBlendOptions.singleN(ngramSize)));
         }
 
-        TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(
-                documents,
-                ngramSize,
+        TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
                 maxFeatures,
                 scheme,
                 normalizationOptions,
+                TfIdfAlgorithms.NGramBlendOptions.singleN(ngramSize),
+                featureSelectionMethod,
+                null,
                 true
         );
+
+        TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(documents, options);
+
+        vocabulary.clear();
+        vocabulary.putAll(result.getVocabulary());
+        vocabularySize = vocabulary.size();
+        vocabularyState = result.getVocabularyState();
+        return result;
+    }
+
+    /**
+     * Extract TF-IDF vectors with blend/selection configuration and optional labels.
+     */
+    public TfIdfAlgorithms.VectorizationResult extractTfIdfVectors(String[] documents,
+                                                                   int maxFeatures,
+                                                                   TfIdfAlgorithms.WeightingScheme scheme,
+                                                                   String[] labels) {
+        Objects.requireNonNull(documents, "documents must not be null");
+        if (maxFeatures < 1) throw new IllegalArgumentException("maxFeatures must be >= 1, got: " + maxFeatures);
+        if (documents.length == 0) {
+            return new TfIdfAlgorithms.VectorizationResult(new HashMap<String, Integer>(), new float[0][0],
+                    new TfIdfAlgorithms.SparseVector[0], scheme,
+                    new TfIdfAlgorithms.VocabularyState(new HashMap<String, Integer>(), new HashMap<String, Integer>(),
+                            0, 0.0, nGramBlendOptions));
+        }
+
+        TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                maxFeatures,
+                scheme,
+                normalizationOptions,
+                nGramBlendOptions,
+                featureSelectionMethod,
+                labels,
+                true
+        );
+
+        TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(documents, options);
 
         // Keep existing extractor state aligned with the vectorizer output.
         vocabulary.clear();
         vocabulary.putAll(result.getVocabulary());
         vocabularySize = vocabulary.size();
+        vocabularyState = result.getVocabularyState();
 
         return result;
     }
@@ -177,6 +223,58 @@ public class GpuFeatureExtractor {
      */
     public void setNormalizationOptions(TfIdfAlgorithms.NormalizationOptions normalizationOptions) {
         this.normalizationOptions = Objects.requireNonNull(normalizationOptions, "normalizationOptions must not be null");
+    }
+
+    /**
+     * Configure linear blending for unigram/bigram/trigram features.
+     */
+    public void setNGramBlendOptions(TfIdfAlgorithms.NGramBlendOptions nGramBlendOptions) {
+        this.nGramBlendOptions = Objects.requireNonNull(nGramBlendOptions, "nGramBlendOptions must not be null");
+    }
+
+    /**
+     * Configure vocabulary feature pruning strategy.
+     */
+    public void setFeatureSelectionMethod(TfIdfAlgorithms.FeatureSelectionMethod featureSelectionMethod) {
+        this.featureSelectionMethod = Objects.requireNonNull(featureSelectionMethod, "featureSelectionMethod must not be null");
+    }
+
+    /**
+     * Persist the latest vocabulary/df state for reproducible inference.
+     */
+    public void saveVocabularyState(Path path) throws IOException {
+        if (vocabularyState == null) {
+            throw new IllegalStateException("No vocabulary state available. Run extractTfIdfVectors first.");
+        }
+        TfIdfAlgorithms.saveVocabularyState(vocabularyState, path);
+    }
+
+    /**
+     * Load a persisted vocabulary state and update in-memory extractor state.
+     */
+    public void loadVocabularyState(Path path) throws IOException {
+        vocabularyState = TfIdfAlgorithms.loadVocabularyState(path);
+        vocabulary.clear();
+        vocabulary.putAll(vocabularyState.getVocabulary());
+        vocabularySize = vocabulary.size();
+        nGramBlendOptions = vocabularyState.getNgramBlendOptions();
+    }
+
+    /**
+     * Vectorize using a previously loaded/persisted vocabulary state.
+     */
+    public TfIdfAlgorithms.VectorizationResult extractTfIdfVectorsWithLoadedVocabulary(String[] documents,
+                                                                                        TfIdfAlgorithms.WeightingScheme scheme) {
+        if (vocabularyState == null) {
+            throw new IllegalStateException("No vocabulary state loaded. Call loadVocabularyState first.");
+        }
+        return TfIdfAlgorithms.vectorizeDocumentsWithVocabulary(
+                documents,
+                vocabularyState,
+                scheme,
+                normalizationOptions,
+                true
+        );
     }
 
     /**
@@ -556,6 +654,7 @@ public class GpuFeatureExtractor {
      */
     public void release() {
         vocabulary.clear();
+        vocabularyState = null;
         vocabularySize = 0;
         logger.debug("Released feature extractor resources");
     }
