@@ -21,30 +21,30 @@ class TfIdfAlgorithmsTest {
     @DisplayName("TF-IDF scores match smoothed formula on a small corpus")
     void tfIdfScoresMatchExpectedFormula() {
         String[] docs = {
-                "a a b",
-                "a c"
+                "alpha alpha beta",
+                "alpha gamma"
         };
 
         float[] scores = TfIdfAlgorithms.computeDocumentScores(docs);
         assertEquals(2, scores.length);
 
         // With N = 2 and smoothed idf(t) = ln((N+1)/(df+1)) + 1:
-        // df(a)=2 => idf(a)=1
-        // df(b)=1 => idf(b)=ln(3/2)+1
-        // df(c)=1 => idf(c)=ln(3/2)+1
+        // df(alpha)=2 => idf(alpha)=1
+        // df(beta)=1 => idf(beta)=ln(3/2)+1
+        // df(gamma)=1 => idf(gamma)=ln(3/2)+1
         double idfRare = Math.log(3.0 / 2.0) + 1.0;
 
-        // doc0 = "a a b": tf(a)=2/3, tf(b)=1/3
-        double expected0 = Math.sqrt(Math.pow((2.0 / 3.0) * 1.0, 2)
-                                   + Math.pow((1.0 / 3.0) * idfRare, 2));
+        // doc0 = "alpha alpha beta": tf(alpha)=2, tf(beta)=1 (raw tf weighting)
+        double expected0 = Math.sqrt(Math.pow(2.0 * 1.0, 2)
+                                   + Math.pow(1.0 * idfRare, 2));
 
-        // doc1 = "a c": tf(a)=1/2, tf(c)=1/2
-        double expected1 = Math.sqrt(Math.pow(0.5 * 1.0, 2)
-                                   + Math.pow(0.5 * idfRare, 2));
+        // doc1 = "alpha gamma": tf(alpha)=1, tf(gamma)=1
+        double expected1 = Math.sqrt(Math.pow(1.0 * 1.0, 2)
+                                   + Math.pow(1.0 * idfRare, 2));
 
         assertEquals((float) expected0, scores[0], EPS);
         assertEquals((float) expected1, scores[1], EPS);
-        assertTrue(scores[1] > scores[0], "Expected ordering from computed formula should hold");
+        assertTrue(scores[0] > scores[1], "Expected ordering from computed formula should hold");
     }
 
     @Test

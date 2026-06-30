@@ -41,7 +41,6 @@ public class GpuFeatureExtractor {
 
     // Feature extraction parameters
     private final Map<String, Integer> vocabulary = new HashMap<String, Integer>();
-    private final Map<String, Float> idfScores = new HashMap<String, Float>();
     private TfIdfAlgorithms.NormalizationOptions normalizationOptions = TfIdfAlgorithms.NormalizationOptions.defaultOptions();
     private int vocabularySize = 0;
 
@@ -289,49 +288,6 @@ public class GpuFeatureExtractor {
 
     /**
 
-     * ID: GPU-GFE-008
-     * Requirement: calculateIdfScores must execute correctly within the contract defined by this class.
-     * Purpose: Compute and return the calculateIdfScores result.
-     * Inputs: String[] documents, int ngramSize
-     * Outputs: Return value or output parameter as described; void otherwise.
-     * Postconditions: Return value or output parameter contains the computed result.
-     * Side Effects: May modify instance state; see method body for details.
-     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
-     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
-     */
-    private void calculateIdfScores(String[] documents, int ngramSize) {
-        Map<String, Integer> documentFrequency = new HashMap<String, Integer>();
-
-        // Count document frequency for each n-gram
-        for (String document : documents) {
-            String[] tokens = tokenize(document);
-            List<String> ngrams = generateNGrams(tokens, ngramSize);
-
-            Map<String, Boolean> seenInDoc = new HashMap<String, Boolean>();
-            for (String ngram : ngrams) {
-                if (!seenInDoc.containsKey(ngram) && vocabulary.containsKey(ngram)) {
-                    documentFrequency.put(ngram, documentFrequency.getOrDefault(ngram, 0) + 1);
-                    seenInDoc.put(ngram, true);
-                }
-            }
-        }
-
-        // Calculate IDF scores
-        idfScores.clear();
-        int totalDocs = documents.length;
-
-        for (Map.Entry<String, Integer> entry : vocabulary.entrySet()) {
-            String ngram = entry.getKey();
-            int df = documentFrequency.getOrDefault(ngram, 1);
-            float idf = (float) Math.log((double) totalDocs / df);
-            idfScores.put(ngram, idf);
-        }
-
-        logger.debug("Calculated IDF scores for " + idfScores.size() + " features");
-    }
-
-    /**
-
      * ID: GPU-GFE-009
      * Requirement: tokenize must execute correctly within the contract defined by this class.
      * Purpose: Implement the tokenize operation for this class.
@@ -434,31 +390,6 @@ public class GpuFeatureExtractor {
 
     /**
 
-     * ID: GPU-GFE-013
-     * Requirement: applyTfIdfTransformationCpu must execute correctly within the contract defined by this class.
-     * Purpose: Implement the applyTfIdfTransformationCpu operation for this class.
-     * Inputs: float[][] tfFeatures, float[][] tfidfFeatures
-     * Outputs: Return value or output parameter as described; void otherwise.
-     * Postconditions: Return value or output parameter contains the computed result.
-     * Side Effects: May modify instance state; see method body for details.
-     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
-     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
-     */
-    private void applyTfIdfTransformationCpu(float[][] tfFeatures, float[][] tfidfFeatures) {
-        for (int docIndex = 0; docIndex < tfFeatures.length; docIndex++) {
-            for (Map.Entry<String, Integer> entry : vocabulary.entrySet()) {
-                String ngram = entry.getKey();
-                int featureIndex = entry.getValue();
-
-                float tf = tfFeatures[docIndex][featureIndex];
-                float idf = idfScores.getOrDefault(ngram, 0.0f);
-                tfidfFeatures[docIndex][featureIndex] = tf * idf;
-            }
-        }
-    }
-
-    /**
-
      * ID: GPU-GFE-014
      * Requirement: normalizeFeaturesCpu must execute correctly within the contract defined by this class.
      * Purpose: Implement the normalizeFeaturesCpu operation for this class.
@@ -524,30 +455,6 @@ public class GpuFeatureExtractor {
                 for (int i = 0; i < features[docIndex].length; i++) {
                     features[docIndex][i] /= tokenCount;
                 }
-            }
-        });
-    }
-
-    /**
-
-     * ID: GPU-GFE-016
-     * Requirement: applyTfIdfTransformationGpu must execute correctly within the contract defined by this class.
-     * Purpose: Implement the applyTfIdfTransformationGpu operation for this class.
-     * Inputs: float[][] tfFeatures, float[][] tfidfFeatures
-     * Outputs: Return value or output parameter as described; void otherwise.
-     * Postconditions: Return value or output parameter contains the computed result.
-     * Side Effects: May modify instance state; see method body for details.
-     * Failure Modes: IllegalArgumentException on invalid inputs; see method body.
-     * Error Handling: Invalid inputs throw IllegalArgumentException or return safe defaults.
-     */
-    private void applyTfIdfTransformationGpu(float[][] tfFeatures, float[][] tfidfFeatures) {
-        logger.debug("Parallel TF-IDF transformation for " + tfFeatures.length + " documents");
-        // Each document row is independent — safe to parallelise
-        IntStream.range(0, tfFeatures.length).parallel().forEach(docIndex -> {
-            for (Map.Entry<String, Integer> entry : vocabulary.entrySet()) {
-                int featureIndex = entry.getValue();
-                float idf = idfScores.getOrDefault(entry.getKey(), 0.0f);
-                tfidfFeatures[docIndex][featureIndex] = tfFeatures[docIndex][featureIndex] * idf;
             }
         });
     }
@@ -649,7 +556,6 @@ public class GpuFeatureExtractor {
      */
     public void release() {
         vocabulary.clear();
-        idfScores.clear();
         vocabularySize = 0;
         logger.debug("Released feature extractor resources");
     }

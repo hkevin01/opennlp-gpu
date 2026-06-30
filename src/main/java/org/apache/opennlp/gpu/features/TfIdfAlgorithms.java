@@ -232,7 +232,7 @@ public final class TfIdfAlgorithms {
         normalized = normalized.toLowerCase();
 
         if (effectiveOptions.stripPunctuation) {
-            normalized = normalized.replaceAll("[\\p{Punct}\\p{IsSymbol}]", " ");
+            normalized = normalized.replaceAll("[\\p{Punct}\\p{S}]", " ");
         }
 
         normalized = normalized.replaceAll("\\s+", " ").trim();
