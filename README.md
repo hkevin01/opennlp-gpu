@@ -802,7 +802,7 @@ This section explains **what algorithms were selected**, **what they do**, and *
 flowchart TD
     A[Tokenized Documents] --> B{Weighting Scheme}
     B -->|Raw| C[Raw TF IDF]
-    B -->|Sublinear| D[log(1+TF) IDF]
+    B -->|Sublinear| D[Sublinear TF IDF]
     B -->|BM25| E[BM25 TF and IDF]
     C --> F{Feature Selection}
     D --> F
