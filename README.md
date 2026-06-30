@@ -15,6 +15,10 @@
 [![OpenNLP](https://img.shields.io/badge/OpenNLP-2.5.8-green?style=flat-square)](https://opennlp.apache.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.9%2B-red?style=flat-square&logo=apache-maven)](https://maven.apache.org/)
 [![JitPack](https://jitpack.io/v/hkevin01/opennlp-gpu.svg)](https://jitpack.io/#hkevin01/opennlp-gpu)
+[![Build](https://img.shields.io/github/actions/workflow/status/hkevin01/opennlp-gpu/ci.yml?style=flat-square&label=CI)](https://github.com/hkevin01/opennlp-gpu/actions)
+[![Code Size](https://img.shields.io/github/languages/code-size/hkevin01/opennlp-gpu?style=flat-square)](https://github.com/hkevin01/opennlp-gpu)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/hkevin01/opennlp-gpu/pulls)
+[![Docs](https://img.shields.io/badge/docs-README-blue?style=flat-square)](README.md)
 
 </div>
 
@@ -28,7 +32,9 @@
 - [Overview](#-overview)
 - [Use Cases & Applications](#-use-cases--applications)
 - [Key Features](#-key-features)
+- [Decision Matrix (When to Use / Not Use)](#-decision-matrix-when-to-use--not-use)
 - [Architecture](#-architecture)
+- [How the System Works Internally](#-how-the-system-works-internally)
 - [Usage Flow](#-usage-flow)
 - [Technology Stack](#-technology-stack)
 - [Technical Specifications](#-technical-specifications)
@@ -37,11 +43,14 @@
 - [Quick Start](#-quick-start)
 - [Core Capabilities](#-core-capabilities)
 - [Advanced TF-IDF Vectorization](#-advanced-tf-idf-vectorization)
+- [Algorithms & Formula Choices](#-algorithms--formula-choices)
+- [Collapsible API Reference](#-collapsible-api-reference)
 - [Configuration](#-configuration)
 - [Diagnostics](#-diagnostics)
 - [Project Roadmap](#-project-roadmap)
 - [Development Status](#-development-status)
 - [Contributing](#-contributing)
+- [Further Reading & Research References](#-further-reading--research-references)
 - [Attribution](#-attribution)
 - [License](#-license)
 
@@ -110,6 +119,69 @@ GPUs execute thousands of these operations simultaneously. A modern GPU with 10,
 - **JOCL-based hardware detection**: `CudaUtil.isAvailable()`, `OpenCLUtil.isAvailable()`, and `RocmUtil.isAvailable()` all enumerate real devices via JOCL with no placeholder returns
 - **Zero stub methods**: all public API methods have production implementations or documented CPU-fallback paths; no `return new Object()` or `return false // Stub` remain
 - Benchmarks against `CpuComputeProvider` reference implementation to validate numerical correctness
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## 🧭 Decision Matrix (When to Use / Not Use)
+
+This section is intentionally practical: if you only read one part before rollout, read this one. It tells you where the extension shines, where it does not, and why.
+
+> [!TIP]
+> If your workload is mostly **batch inference** or **high-concurrency scoring**, start with GPU enabled and benchmark. If your workload is tiny or latency-insensitive, keep CPU fallback as default and enable GPU only where it proves value.
+
+### Quick chooser by workload type
+
+| Workload pattern | Recommended mode | Why this mode works | When to avoid |
+|---|---|---|---|
+| 10K+ docs per hour, repeated model eval | GPU primary + CPU fallback | Kernel launch overhead is amortized; high parallelism wins | If GPU memory is too small for your batch profile |
+| Low-volume internal API, predictable load | CPU default, GPU optional | Simpler operations, less tuning overhead | If strict p95 latency target is difficult to meet on CPU |
+| Spiky traffic (bursts) | GPU with bounded batch size | Handles sudden parallel work better | If queueing delay from oversized batches hurts latency |
+| On-prem regulated workloads | GPU on local servers | No external inference calls required | If operational team cannot support GPU driver lifecycle |
+| Cost-focused cloud workload | Mixed mode by endpoint | Use GPU for heavy endpoints only | If constant GPU idle time dominates bill |
+
+### Backend comparison (what each one does differently)
+
+| Backend | Strengths | Trade-offs | Best for | Not ideal for |
+|---|---|---|---|---|
+| CPU fallback | Most portable, easiest debugging, deterministic baseline | Lower throughput at scale | Local dev, CI, small workloads | Large corpus scoring at tight SLAs |
+| OpenCL | Vendor-agnostic path across NVIDIA/AMD/Intel | Capability can vary by driver stack | Mixed hardware fleets | Teams expecting one-click homogeneous behavior |
+| CUDA | Strong tooling/perf ecosystem on NVIDIA | Vendor lock-in | NVIDIA-heavy production | Cross-vendor portability requirements |
+| ROCm/HIP | Native AMD acceleration path | Stack maturity varies by distro/GPU | AMD-centric environments | Teams without ROCm ops experience |
+| Cloud accelerators | Elastic infrastructure options | Runtime integration complexity | Managed cloud NLP pipelines | Strictly offline/on-prem environments |
+
+### Selection logic in one diagram
+
+```mermaid
+flowchart TD
+    A[Start Deployment Plan] --> B{Batch or Concurrency Heavy?}
+    B -->|Yes| C[Enable GPU Path]
+    B -->|No| D[Use CPU Fallback First]
+    C --> E{Hardware Vendor Mix?}
+    E -->|Mixed| F[Prefer OpenCL-first Strategy]
+    E -->|Mostly NVIDIA| G[Prefer CUDA-first Strategy]
+    E -->|Mostly AMD| H[Prefer ROCm-first Strategy]
+    F --> I[Benchmark and tune batch size]
+    G --> I
+    H --> I
+    D --> J[Track latency and throughput baseline]
+    J --> K{SLA pressure?}
+    K -->|Yes| C
+    K -->|No| L[Stay CPU default]
+```
+
+### Rollout checklist by stage
+
+| Stage | Goal | Concrete checks | Exit criteria |
+|---|---|---|---|
+| Baseline | Understand current CPU behavior | Measure throughput, p95 latency, memory | Stable baseline report captured |
+| Enablement | Turn on GPU path safely | `GpuDiagnostics` pass, fallback enabled | No functional regressions |
+| Optimization | Increase efficiency | Tune batch size, memory pool, warm-up | Throughput and/or p95 improved |
+| Guardrails | Prevent silent drift | Parity tests and latency thresholds | CI catches regression before release |
+
+> [!IMPORTANT]
+> Always keep CPU fallback enabled in production. This gives you graceful degradation instead of incident-level outages when hardware, drivers, or native dependencies change.
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -204,6 +276,53 @@ flowchart TD
 | <sub>`GpuMaxentModel`</sub> | <sub>`ml.maxent`</sub> | <sub>Drop-in MaxentModel decorator with GPU dispatch</sub> |
 | <sub>`GpuPerformanceMonitor`</sub> | <sub>`monitoring`</sub> | <sub>Thread-safe singleton metrics and alerting</sub> |
 | <sub>`GpuDiagnostics`</sub> | <sub>`tools`</sub> | <sub>CLI tool for environment pre-flight checks</sub> |
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## ⚙️ How the System Works Internally
+
+At a high level, the extension acts as a scheduler and adapter. It does not replace OpenNLP models; it wraps them and routes expensive numeric operations to the most appropriate compute path.
+
+### Request lifecycle (runtime path)
+
+```mermaid
+flowchart LR
+    A[Input Text / Context Features] --> B[OpenNLP Wrapper Model]
+    B --> C[Feature Extraction Layer]
+    C --> D[Compute Provider Selector]
+    D --> E[GPU Backend Operation]
+    D --> F[CPU Fallback Operation]
+    E --> G[Result Aggregation]
+    F --> G
+    G --> H[Outcome Probabilities / Labels]
+```
+
+### TF-IDF state lifecycle (train to inference)
+
+```mermaid
+stateDiagram-v2
+    [*] --> BuildVocabulary
+    BuildVocabulary --> ComputeDF
+    ComputeDF --> ScoreTerms
+    ScoreTerms --> PersistVocabularyState
+    PersistVocabularyState --> LoadAtInference
+    LoadAtInference --> VectorizeIncomingDocs
+    VectorizeIncomingDocs --> [*]
+```
+
+### Data contract boundaries
+
+| Layer | Input | Output | Why this boundary exists |
+|---|---|---|---|
+| OpenNLP wrapper | token/context arrays | model-ready numeric features | Preserve OpenNLP API compatibility |
+| Feature extraction | text or token stream | sparse/dense vectors | Keep algorithm changes isolated |
+| Compute provider | matrices/vectors | transformed matrices/probabilities | Swap hardware path without app changes |
+| Monitoring | operation timings/counters | metrics and alerts | Operational visibility and regression detection |
+
+> [!NOTE]
+> This separation is why the project can evolve algorithms (e.g., smoothing, DF cutoffs, BM25) without forcing application-level refactors.
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
@@ -634,6 +753,129 @@ float[][] denseVectors = infer.getDenseVectors();
 | `V1` (legacy) | ✅ | Auto-migrates with safe defaults (`STANDARD_SMOOTH`, `minDf=1`, `maxDf=Integer.MAX_VALUE`). |
 | Unknown/future | ❌ | Fails fast with clear error to avoid silent incompatibility. |
 
+### Dense vector compression formats
+
+| Format | Storage behavior | Precision profile | Best use case | Caution |
+|---|---|---|---|---|
+| `FLOAT32` | Full precision | Highest numeric fidelity | Research baselines, strict parity | Largest footprint |
+| `FLOAT16` | Half-precision | Good practical trade-off | Large-scale caching with moderate tolerance | Minor quantization noise |
+| `INT8` | 8-bit + per-row scale | Aggressive compression | Very large inference stores | Greater reconstruction error |
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## 🧮 Algorithms & Formula Choices
+
+This section explains **what algorithms were selected**, **what they do**, and **why they were favored over alternatives**. The wording is intentionally between layman and technical depth.
+
+### TF-IDF family choices
+
+| Method | Formula intuition | Why chosen | Common alternative | Why not default alternative |
+|---|---|---|---|---|
+| Raw TF-IDF | count in doc × rarity in corpus | Strong baseline, easy to reason about | Binary term presence | Loses useful repetition signal |
+| Sublinear TF-IDF | $\log(1+tf)$ dampens repetition | Reduces over-weighting repeated tokens | Raw TF-only | Too sensitive to term burstiness |
+| BM25 | Saturating TF + length normalization | Better retrieval-style ranking quality | Plain TF-IDF | Less robust for varying doc lengths |
+
+### Smoothing and DF controls
+
+| Option | What it does | Why needed in production |
+|---|---|---|
+| `STANDARD_SMOOTH` | Adds stability to IDF denominator and offset | Prevents extreme values for small corpora |
+| `PROBABILISTIC_IDF` | Uses odds-style rarity signal | Useful when term discrimination needs stronger contrast |
+| `BM25_IDF` | BM25-compatible rarity scaling | Keeps weighting family internally consistent |
+| `minDocumentFrequency` | Drops very rare terms | Reduces noise and overfitting risk |
+| `maxDocumentFrequency` | Drops overly common terms | Removes low-information global terms |
+
+### Class-balanced scoring rationale
+
+| Strategy | What it means | Why it matters |
+|---|---|---|
+| Macro averaging | Treat each class with equal weight in score aggregation | Prevents majority classes from dominating selection |
+| Class-prior weighting | Up-weights minority class evidence | Helps retain minority-class signal in top-k feature pruning |
+| Chi-square | Measures dependence between term and class | Works well for discriminative vocabulary selection |
+| Information gain | Measures entropy reduction from term presence | Strong general-purpose class relevance signal |
+
+### Formula selection pipeline
+
+```mermaid
+flowchart TD
+    A[Tokenized Documents] --> B{Weighting Scheme}
+    B -->|Raw| C[Raw TF IDF]
+    B -->|Sublinear| D[log(1+TF) IDF]
+    B -->|BM25| E[BM25 TF and IDF]
+    C --> F{Feature Selection}
+    D --> F
+    E --> F
+    F -->|Frequency| G[Top by corpus stats]
+    F -->|Chi square| H[Class dependence ranking]
+    F -->|Information gain| I[Entropy reduction ranking]
+    G --> J[Final Vocabulary]
+    H --> J
+    I --> J
+```
+
+### Why these choices vs end-to-end neural embeddings?
+
+| Dimension | This project approach | End-to-end neural embedding stack |
+|---|---|---|
+| Integration effort | Drop-in for existing OpenNLP apps | Usually requires pipeline redesign |
+| Explainability | High (interpretable term-level features) | Lower by default |
+| Ops complexity | Moderate (drivers + runtime checks) | Higher (model serving infra + retraining lifecycle) |
+| Cold start cost | Low | Higher |
+| Best for | Classical NLP modernization | Greenfield neural-first architectures |
+
+> [!TIP]
+> The design goal here is not “replace all neural NLP.” It is “give existing OpenNLP systems a performance and feature-quality upgrade with low migration risk.”
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## 📚 Collapsible API Reference
+
+<details>
+<summary><strong>GpuFeatureExtractor (high-level feature APIs)</strong></summary>
+
+| API | Purpose | Typical use |
+|---|---|---|
+| `extractNGramFeatures(...)` | Build n-gram count/frequency vectors | Fast lexical baselines |
+| `extractTfIdfFeatures(...)` | Dense TF-IDF features for corpus | Classification/retrieval inputs |
+| `extractTfIdfVectors(...)` | Rich vectorization result (dense+sparse+state) | Advanced tuning and persistence |
+| `setNGramBlendOptions(...)` | Blend uni/bi/tri-grams | Phrase sensitivity tuning |
+| `setFeatureSelectionMethod(...)` | Frequency/IG/Chi-square feature pruning | Controlled vocabulary size |
+| `setClassBalanceOptions(...)` | Macro/prior weighting behavior | Imbalanced dataset handling |
+| `setIdfSmoothingStrategy(...)` | Choose IDF smoothing family | Stability vs discrimination tuning |
+| `setDocumentFrequencyCutoffs(...)` | Min/max DF filtering | Noise and stop-term reduction |
+| `saveVocabularyState(...)` / `loadVocabularyState(...)` | Persist/reload feature-state metadata | Reproducible train/infer alignment |
+
+</details>
+
+<details>
+<summary><strong>TfIdfAlgorithms (shared algorithm core)</strong></summary>
+
+| API group | Key methods | Why it exists |
+|---|---|---|
+| Vectorization | `vectorizeDocuments(...)`, `vectorizeDocumentsWithVocabulary(...)` | Single-source behavior across backends |
+| State persistence | `saveVocabularyState(...)`, `loadVocabularyState(...)` | Versioned reproducibility |
+| Dense persistence | `saveDenseVectors(...)`, `loadDenseVectors(...)` | Storage/memory optimization paths |
+| Token normalization | `tokenizeNormalized(...)` | Centralized text normalization policy |
+| Cache controls | `clearCache()`, `getCacheSize()` | Repeat-run speed and deterministic testing |
+
+</details>
+
+<details>
+<summary><strong>Operational toggles and guardrails</strong></summary>
+
+| Concern | Mechanism | Recommendation |
+|---|---|---|
+| Runtime safety | CPU fallback paths | Keep enabled in all environments |
+| Regression detection | Backend parity + latency guardrail tests | Run in CI before release |
+| Explainability | Term-level vectorization + DF metadata | Persist state for audits |
+| Performance stability | Batch size + memory pool tuning | Tune per deployment profile |
+
+</details>
+
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
 ---
@@ -763,6 +1005,25 @@ pie title Component Readiness (% complete)
 
 > [!WARNING]
 > **Hardware GPU kernel execution** (`isAvailable() == true` + real device dispatch) requires the in-progress JNI bridge to be compiled with `-Pnative` **and** a compatible driver stack verified by the `GpuDiagnostics` tool. JOCL-based provider detection (`CudaUtil.isAvailable()`, `OpenCLUtil.isAvailable()`, `RocmUtil.isAvailable()`) is fully implemented and returns real hardware results. Until the native kernel bridge is wired, all matrix compute routes silently through `CpuComputeProvider`.
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## 🔬 Further Reading & Research References
+
+The implementation choices here are practical engineering adaptations of widely used IR/NLP methods. If you want the deeper theoretical background, these are strong references:
+
+| Topic | Reference | Why it is relevant |
+|---|---|---|
+| BM25 foundations | Robertson, S. and Zaragoza, H. (2009), *The Probabilistic Relevance Framework: BM25 and Beyond* | Canonical explanation of BM25 behavior and ranking trade-offs |
+| Information Retrieval fundamentals | Manning, C. D., Raghavan, P., Schütze, H. (2008), *Introduction to Information Retrieval* | Core TF-IDF, DF, and retrieval math intuition |
+| Feature selection (text classification) | Yang, Y. and Pedersen, J. O. (1997), *A Comparative Study on Feature Selection in Text Categorization* | Practical comparison of IG/Chi-square for text features |
+| Neural attention context | Vaswani et al. (2017), *Attention Is All You Need* ([arXiv:1706.03762](https://arxiv.org/abs/1706.03762)) | Useful contrast point versus classical feature-engineered pipelines |
+| Compression/quantization context | Dettmers et al. (2022), *LLM.int8()* ([arXiv:2208.07339](https://arxiv.org/abs/2208.07339)) | Modern perspective on low-bit numeric compression trade-offs |
+
+> [!NOTE]
+> This project intentionally emphasizes compatibility and explainability for existing OpenNLP systems. The references above include both classical IR and modern deep-learning context to clarify why these choices were made.
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
