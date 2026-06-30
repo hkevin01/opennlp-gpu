@@ -88,6 +88,31 @@ Traditional NLP workloads are dominated by dense matrix operations that run sequ
 
 GPUs execute thousands of these operations simultaneously. A modern GPU with 10,000+ CUDA cores processes a 512×512 matrix multiplication as a single parallel batch that would require thousands of sequential CPU instructions. The result: the same per-document accuracy at a fraction of the wall-clock time, directly translating to smaller SLA requirements or larger processing windows under the same compute budget.
 
+### How this helps (practical + technical)
+
+Think of CPU vs GPU like this: a CPU is a small team of expert workers that are great at varied tasks and branch-heavy logic, while a GPU is a very large team that performs the *same* numeric operation on many values at once. NLP feature and scoring pipelines contain many repeatable numeric operations (dot products, matrix multiplications, normalization), so they map naturally to GPU execution.
+
+Concretely, acceleration comes from three things:
+
+1. **Data parallelism**: many tokens/documents are processed at the same time.
+2. **Operation parallelism**: many multiply-add operations of the same formula run concurrently.
+3. **Higher arithmetic throughput**: GPUs are built to sustain very high floating-point throughput for vector/matrix math.
+
+| Work item | CPU-style execution | GPU-style execution | Why GPU usually wins here |
+|---|---|---|---|
+| Dot products for MaxEnt outcomes | Iterate outcome-by-outcome, feature-by-feature | Thousands of multiply-add lanes run in parallel | Same arithmetic pattern repeated across large vectors |
+| NER token window scoring | Sequence loop over tokens/windows | Multiple token windows scored concurrently | Independent token-window math can be batched |
+| TF-IDF matrix construction | Build term weights mostly row-by-row | Batch rows/blocks and compute vectorized weights | Regular memory access + repeated formulas |
+| Cosine similarity over corpus | Pairwise loops become expensive quickly | Parallel pair blocks computed together | Large $O(N^2)$ pair sets are highly parallelizable |
+
+> [!NOTE]
+> GPU does not make algorithms “more accurate”; it makes the *same algorithm* run faster when the workload is parallelizable.
+
+What GPU is doing that CPU *typically* cannot do as efficiently is not “new math,” but **massively concurrent execution density** for identical operations. CPU cores are fewer and optimized for general-purpose control flow; GPU cores are far more numerous and optimized for throughput on homogeneous numeric kernels.
+
+> [!TIP]
+> Parallelization helps most when you have enough work per launch (batches, larger matrices, many documents). Very tiny workloads may see little gain because dispatch/transfer overhead can dominate.
+
 **Who this is for:**
 - Java NLP engineers processing high-volume batch workloads (10K+ documents/hour) who need lower latency without framework migration
 - MLOps teams deploying OpenNLP on GPU-enabled cloud instances (AWS `g4dn`/`p3`, GCP `a2`, Azure `NCv3`)
