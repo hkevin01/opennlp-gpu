@@ -36,6 +36,7 @@
 - [Setup & Installation](#-setup--installation)
 - [Quick Start](#-quick-start)
 - [Core Capabilities](#-core-capabilities)
+- [Advanced TF-IDF Vectorization](#-advanced-tf-idf-vectorization)
 - [Configuration](#-configuration)
 - [Diagnostics](#-diagnostics)
 - [Project Roadmap](#-project-roadmap)
@@ -544,6 +545,49 @@ monitor.setMaxHistorySize(5000);           // Keep last 5000 records/op
 OperationMetrics metrics = monitor.getMetrics("matrixMultiply");
 System.out.println("Avg latency: " + metrics.getAverageLatencyMs() + "ms");
 ```
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## 🧠 Advanced TF-IDF Vectorization
+
+The project now uses a single, shared TF-IDF engine (`TfIdfAlgorithms`) across CPU/OpenCL/CUDA/ROCm wrappers to eliminate backend drift and keep scoring deterministic.
+
+### What changed
+
+- **N-gram blend vectors**: combine unigram/bigram/trigram terms in one feature space with configurable linear weights.
+- **Weighting schemes**: raw TF-IDF, sublinear TF-IDF, and BM25.
+- **Smoothing and pruning**:
+    - IDF smoothing strategies: `STANDARD_SMOOTH`, `PROBABILISTIC_IDF`, `BM25_IDF`
+    - Document-frequency controls: `minDocumentFrequency` / `maxDocumentFrequency`
+- **Class-balanced feature scoring**:
+    - Information Gain and Chi-square feature selection
+    - Macro-averaging support
+    - Optional class-prior weighting for imbalanced datasets
+- **Persistent reproducibility state**:
+    - `VocabularyState` persists vocabulary, DF statistics, blend weights, smoothing strategy, and DF cutoffs.
+    - Versioned format with explicit migration policy (V1 → V2 fallback defaults).
+- **Compressed dense vectors**:
+    - Persist dense vectors as `FLOAT32`, `FLOAT16`, or `INT8` with load-time reconstruction.
+- **Guardrail benchmark assertions**:
+    - Cross-backend parity assertions plus bounded latency-drift checks in tests.
+
+### Why it was added
+
+- Reduce algorithm divergence across backend wrappers.
+- Improve feature quality on heterogeneous text (phrases + tokens).
+- Make ranking behavior tunable for IR-style and classification-style workloads.
+- Improve reproducibility for train/infer pipelines through persisted vectorizer state.
+- Reduce storage/memory overhead when persisting large dense corpora.
+
+### Practical benefits
+
+- **Better relevance**: phrase-aware vectors and BM25-style weighting improve retrieval fidelity.
+- **Fairer selection under imbalance**: class-prior-aware scoring helps minority-class signal survive top-k pruning.
+- **More stable production behavior**: explicit smoothing/DF controls reduce noisy rare-term effects.
+- **Smaller artifacts**: float16/int8 persistence lowers disk and memory pressure for cached vectors.
+- **Safer backend evolution**: parity + latency guardrails detect regressions earlier.
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 

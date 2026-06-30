@@ -46,6 +46,10 @@ public class GpuFeatureExtractor {
     private TfIdfAlgorithms.NormalizationOptions normalizationOptions = TfIdfAlgorithms.NormalizationOptions.defaultOptions();
     private TfIdfAlgorithms.NGramBlendOptions nGramBlendOptions = TfIdfAlgorithms.NGramBlendOptions.unigramOnly();
     private TfIdfAlgorithms.FeatureSelectionMethod featureSelectionMethod = TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY;
+    private TfIdfAlgorithms.ClassBalanceOptions classBalanceOptions = TfIdfAlgorithms.ClassBalanceOptions.defaultOptions();
+    private TfIdfAlgorithms.IDFSmoothingStrategy idfSmoothingStrategy = TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH;
+    private int minDocumentFrequency = 1;
+    private int maxDocumentFrequency = Integer.MAX_VALUE;
     private TfIdfAlgorithms.VocabularyState vocabularyState;
     private int vocabularySize = 0;
 
@@ -168,6 +172,10 @@ public class GpuFeatureExtractor {
                 normalizationOptions,
                 TfIdfAlgorithms.NGramBlendOptions.singleN(ngramSize),
                 featureSelectionMethod,
+            classBalanceOptions,
+            idfSmoothingStrategy,
+            minDocumentFrequency,
+            maxDocumentFrequency,
                 null,
                 true
         );
@@ -203,6 +211,10 @@ public class GpuFeatureExtractor {
                 normalizationOptions,
                 nGramBlendOptions,
                 featureSelectionMethod,
+            classBalanceOptions,
+            idfSmoothingStrategy,
+            minDocumentFrequency,
+            maxDocumentFrequency,
                 labels,
                 true
         );
@@ -240,6 +252,34 @@ public class GpuFeatureExtractor {
     }
 
     /**
+     * Configure class-balance behavior for discriminative feature scoring.
+     */
+    public void setClassBalanceOptions(TfIdfAlgorithms.ClassBalanceOptions classBalanceOptions) {
+        this.classBalanceOptions = Objects.requireNonNull(classBalanceOptions, "classBalanceOptions must not be null");
+    }
+
+    /**
+     * Configure IDF smoothing strategy.
+     */
+    public void setIdfSmoothingStrategy(TfIdfAlgorithms.IDFSmoothingStrategy idfSmoothingStrategy) {
+        this.idfSmoothingStrategy = Objects.requireNonNull(idfSmoothingStrategy, "idfSmoothingStrategy must not be null");
+    }
+
+    /**
+     * Configure min/max document-frequency cutoffs used during vocabulary selection.
+     */
+    public void setDocumentFrequencyCutoffs(int minDocumentFrequency, int maxDocumentFrequency) {
+        if (minDocumentFrequency < 1) {
+            throw new IllegalArgumentException("minDocumentFrequency must be >= 1, got: " + minDocumentFrequency);
+        }
+        if (maxDocumentFrequency < minDocumentFrequency) {
+            throw new IllegalArgumentException("maxDocumentFrequency must be >= minDocumentFrequency");
+        }
+        this.minDocumentFrequency = minDocumentFrequency;
+        this.maxDocumentFrequency = maxDocumentFrequency;
+    }
+
+    /**
      * Persist the latest vocabulary/df state for reproducible inference.
      */
     public void saveVocabularyState(Path path) throws IOException {
@@ -258,6 +298,9 @@ public class GpuFeatureExtractor {
         vocabulary.putAll(vocabularyState.getVocabulary());
         vocabularySize = vocabulary.size();
         nGramBlendOptions = vocabularyState.getNgramBlendOptions();
+        idfSmoothingStrategy = vocabularyState.getIdfSmoothingStrategy();
+        minDocumentFrequency = vocabularyState.getMinDocumentFrequency();
+        maxDocumentFrequency = vocabularyState.getMaxDocumentFrequency();
     }
 
     /**

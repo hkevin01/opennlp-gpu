@@ -216,6 +216,10 @@ class TfIdfAlgorithmsTest {
                                 TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
                                 TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
                                 TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
                                 null,
                                 false
                 );
@@ -225,6 +229,10 @@ class TfIdfAlgorithmsTest {
                                 TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
                                 TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.8, 0.6),
                                 TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
                                 null,
                                 false
                 );
@@ -251,6 +259,10 @@ class TfIdfAlgorithmsTest {
                                 TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
                                 TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.5, 0.0),
                                 TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
                                 null,
                                 false
                 );
@@ -298,6 +310,10 @@ class TfIdfAlgorithmsTest {
                                 TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
                                 TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
                                 TfIdfAlgorithms.FeatureSelectionMethod.CHI_SQUARE,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
                                 labels,
                                 false
                 );
@@ -349,6 +365,10 @@ class TfIdfAlgorithmsTest {
                                         TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
                                         TfIdfAlgorithms.NGramBlendOptions.linearMix(1.0, 0.7, 0.3),
                                         TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                        TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                        TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                        1,
+                                        Integer.MAX_VALUE,
                                         null,
                                         false
                         );
@@ -367,6 +387,142 @@ class TfIdfAlgorithmsTest {
                                         assertEquals(v1, v2, 1e-5f);
                                 }
                         }
+                }
+        }
+
+        @Test
+        @DisplayName("IDF smoothing strategy and DF cutoffs are applied during vectorization")
+        void smoothingAndDfCutoffsAffectVocabularyAndWeights() {
+                String[] docs = {
+                                "common common rare1",
+                                "common common rare2",
+                                "common common rare3"
+                };
+
+                TfIdfAlgorithms.VectorizationOptions baseline = new TfIdfAlgorithms.VectorizationOptions(
+                                16,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                null,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationOptions cutoffAndProbIdf = new TfIdfAlgorithms.VectorizationOptions(
+                                16,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.PROBABILISTIC_IDF,
+                                2,
+                                Integer.MAX_VALUE,
+                                null,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult baselineResult = TfIdfAlgorithms.vectorizeDocuments(docs, baseline);
+                TfIdfAlgorithms.VectorizationResult cutoffResult = TfIdfAlgorithms.vectorizeDocuments(docs, cutoffAndProbIdf);
+
+                assertTrue(baselineResult.getVocabulary().containsKey("rare1"));
+                assertFalse(cutoffResult.getVocabulary().containsKey("rare1"), "minDf=2 should prune singleton terms");
+                assertTrue(cutoffResult.getVocabulary().containsKey("common"));
+        }
+
+        @Test
+        @DisplayName("Class-prior weighting with macro-average modifies discriminative scoring")
+        void classPriorWeightingInfluencesSelection() {
+                String[] docs = {
+                                "major major signal",
+                                "major context",
+                                "major context",
+                                "minor rareminor"
+                };
+                String[] labels = {"MAJ", "MAJ", "MAJ", "MIN"};
+
+                TfIdfAlgorithms.VectorizationOptions unweighted = new TfIdfAlgorithms.VectorizationOptions(
+                                1,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.CHI_SQUARE,
+                                new TfIdfAlgorithms.ClassBalanceOptions(true, false),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationOptions weighted = new TfIdfAlgorithms.VectorizationOptions(
+                                1,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.CHI_SQUARE,
+                                new TfIdfAlgorithms.ClassBalanceOptions(true, true),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                String selectedUnweighted = TfIdfAlgorithms.vectorizeDocuments(docs, unweighted)
+                                .getVocabulary().keySet().iterator().next();
+                String selectedWeighted = TfIdfAlgorithms.vectorizeDocuments(docs, weighted)
+                                .getVocabulary().keySet().iterator().next();
+
+                assertTrue(selectedUnweighted.equals("major") || selectedUnweighted.equals("rareminor"));
+                assertTrue(selectedWeighted.equals("major") || selectedWeighted.equals("rareminor"));
+        }
+
+        @Test
+        @DisplayName("Dense vector quantization round-trip remains numerically bounded")
+        void denseVectorQuantizationRoundtrip() throws Exception {
+                String[] docs = {
+                                "quantization test vector one",
+                                "quantization test vector two"
+                };
+
+                TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(
+                                docs,
+                                1,
+                                32,
+                                TfIdfAlgorithms.WeightingScheme.SUBLINEAR_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                false
+                );
+
+                Path float16Path = Files.createTempFile("tfidf-dense", "-f16.bin");
+                Path int8Path = Files.createTempFile("tfidf-dense", "-i8.bin");
+                try {
+                        TfIdfAlgorithms.saveDenseVectors(result.getDenseVectors(), float16Path,
+                                        TfIdfAlgorithms.DenseVectorQuantization.FLOAT16);
+                        TfIdfAlgorithms.saveDenseVectors(result.getDenseVectors(), int8Path,
+                                        TfIdfAlgorithms.DenseVectorQuantization.INT8);
+
+                        TfIdfAlgorithms.LoadedDenseVectors loaded16 = TfIdfAlgorithms.loadDenseVectors(float16Path);
+                        TfIdfAlgorithms.LoadedDenseVectors loaded8 = TfIdfAlgorithms.loadDenseVectors(int8Path);
+
+                        assertEquals(TfIdfAlgorithms.DenseVectorQuantization.FLOAT16, loaded16.getQuantization());
+                        assertEquals(TfIdfAlgorithms.DenseVectorQuantization.INT8, loaded8.getQuantization());
+
+                        for (int i = 0; i < result.getDenseVectors().length; i++) {
+                                for (int j = 0; j < result.getDenseVectors()[i].length; j++) {
+                                        assertEquals(result.getDenseVectors()[i][j], loaded16.getDenseVectors()[i][j], 2e-2f);
+                                        assertEquals(result.getDenseVectors()[i][j], loaded8.getDenseVectors()[i][j], 1e-1f);
+                                }
+                        }
+                } finally {
+                        Files.deleteIfExists(float16Path);
+                        Files.deleteIfExists(int8Path);
                 }
         }
 }
