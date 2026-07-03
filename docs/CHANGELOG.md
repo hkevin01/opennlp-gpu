@@ -26,6 +26,12 @@
 - Quality and benchmark guardrails:
 	- Added cross-backend parity + latency guardrail assertions for TF-IDF benchmark tests.
 	- Expanded TF-IDF unit coverage for smoothing, DF cutoffs, class balancing behavior, cache determinism, persistence roundtrip, quantization roundtrip, and numerical stability stress.
+- Documentation and developer experience improvements:
+	- Expanded `README.md` with explicit "what changed / why / benefits" coverage for new TF-IDF and vectorization capabilities.
+	- Added richer operational guidance: workload decision matrix, backend trade-off tables, rollout checklist, and clearer CPU-vs-GPU parallelization explanation.
+	- Added deeper technical sections on architecture internals, algorithm/formula rationale, and collapsible API reference blocks.
+	- Added additional Mermaid visuals and compatibility-safe label updates to improve GitHub renderer reliability.
+	- Updated roadmap to explicitly mark recently delivered feature-engineering hardening milestones as complete.
 
 ## [2.0.0] - 2025-06-26
 - Upgrade to OpenNLP 2.5.4

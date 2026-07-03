@@ -30,6 +30,7 @@
 ## Table of Contents
 
 - [Overview](#-overview)
+- [Recent Updates (What Changed, Why, Benefits)](#-recent-updates-what-changed-why-benefits)
 - [Use Cases & Applications](#-use-cases--applications)
 - [Key Features](#-key-features)
 - [Decision Matrix (When to Use / Not Use)](#-decision-matrix-when-to-use--not-use)
@@ -118,6 +119,47 @@ What GPU is doing that CPU *typically* cannot do as efficiently is not “new ma
 - MLOps teams deploying OpenNLP on GPU-enabled cloud instances (AWS `g4dn`/`p3`, GCP `a2`, Azure `NCv3`)
 - Researchers benchmarking GPU acceleration for classical NLP algorithms
 - Organizations with existing OpenNLP deployments who need GPU benefits without retraining models or changing application code
+
+<p align="right">(<a href="#top">back to top ↑</a>)</p>
+
+---
+
+## 🆕 Recent Updates (What Changed, Why, Benefits)
+
+This section summarizes the latest implementation and documentation changes so contributors and adopters can quickly understand what is new and why it matters.
+
+### What was added
+
+| Change | What it is |
+|---|---|
+| Unified TF-IDF core | A single `TfIdfAlgorithms` path now drives CPU/OpenCL/CUDA/ROCm TF-IDF behavior. |
+| Advanced vectorization controls | N-gram blending, BM25/sublinear weighting, smoothing strategies, DF cutoffs, and class-balanced scoring options. |
+| Persisted reproducibility state | Versioned `VocabularyState` with explicit compatibility policy (V2 current + V1 migration defaults). |
+| Dense vector compression | Optional `FLOAT16` and `INT8` persistence paths (with load-time reconstruction). |
+| Guardrail tests | Cross-backend parity plus latency-bound assertions to detect regressions early. |
+| Expanded documentation | Decision matrix, algorithm/formula rationale, collapsible API reference, additional Mermaid diagrams, and research references. |
+| Mermaid hardening | Diagram labels were adjusted to parser-safe text to improve GitHub rendering reliability. |
+
+### Why these were added
+
+- To reduce drift between backend implementations and keep feature behavior deterministic.
+- To improve retrieval/classification quality for real-world corpora with mixed term distributions.
+- To make training/inference pipelines reproducible and auditable through versioned state.
+- To lower storage and memory pressure in production vector caches.
+- To give operators practical rollout guidance (when to use GPU, when not to, and how to validate safely).
+
+### Practical benefits
+
+| Benefit area | Outcome |
+|---|---|
+| Quality | Better relevance and class-sensitive feature retention through richer scoring options. |
+| Reliability | Deterministic shared logic + benchmark guardrails reduce backend regression risk. |
+| Reproducibility | Versioned vocabulary/DF metadata keeps inference aligned with training assumptions. |
+| Efficiency | Compression options reduce artifact size and memory footprint at scale. |
+| Adoption speed | Richer README guidance reduces onboarding time and misconfiguration risk. |
+
+> [!IMPORTANT]
+> These updates focus on making existing OpenNLP pipelines faster and safer to operate, without forcing framework migration or model-format changes.
 
 <p align="right">(<a href="#top">back to top ↑</a>)</p>
 
