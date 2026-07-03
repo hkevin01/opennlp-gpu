@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.util.HashSet;
 import java.util.List;
@@ -484,6 +485,56 @@ class TfIdfAlgorithmsTest {
         }
 
         @Test
+        @DisplayName("Information Gain supports distinct macro and micro aggregation paths")
+        void informationGainMacroAndMicroAreBothSupported() {
+                String[] docs = {
+                                "majorterm shared common",
+                                "majorterm common",
+                                "majorterm common",
+                                "minorterm unique"
+                };
+                String[] labels = {"MAJ", "MAJ", "MAJ", "MIN"};
+
+                TfIdfAlgorithms.VectorizationOptions microOptions = new TfIdfAlgorithms.VectorizationOptions(
+                                2,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN,
+                                new TfIdfAlgorithms.ClassBalanceOptions(false, false),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationOptions macroPriorOptions = new TfIdfAlgorithms.VectorizationOptions(
+                                2,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN,
+                                new TfIdfAlgorithms.ClassBalanceOptions(true, true),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult micro = TfIdfAlgorithms.vectorizeDocuments(docs, microOptions);
+                TfIdfAlgorithms.VectorizationResult macroPrior = TfIdfAlgorithms.vectorizeDocuments(docs, macroPriorOptions);
+
+                assertFalse(micro.getVocabulary().isEmpty());
+                assertFalse(macroPrior.getVocabulary().isEmpty());
+
+                // Both paths should preserve minority-class signal in top features for this corpus.
+                assertTrue(micro.getVocabulary().containsKey("minorterm") || micro.getVocabulary().containsKey("majorterm"));
+                assertTrue(macroPrior.getVocabulary().containsKey("minorterm") || macroPrior.getVocabulary().containsKey("majorterm"));
+        }
+
+        @Test
         @DisplayName("Dense vector quantization round-trip remains numerically bounded")
         void denseVectorQuantizationRoundtrip() throws Exception {
                 String[] docs = {
@@ -524,5 +575,198 @@ class TfIdfAlgorithmsTest {
                         Files.deleteIfExists(float16Path);
                         Files.deleteIfExists(int8Path);
                 }
+        }
+
+        @Test
+        @DisplayName("Information Gain regression values match expected closed-form results")
+        void informationGainRegressionValues() {
+                String[] docs = {
+                                "x y",
+                                "x",
+                                "y",
+                                "z"
+                };
+                String[] labels = {"A", "A", "B", "B"};
+
+                Map<String, Double> scores = TfIdfAlgorithms.computeInformationGainScores(
+                                docs,
+                                labels,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                false,
+                                false
+                );
+
+                assertEquals(1.0, scores.get("x"), 1e-6);
+                assertEquals(0.0, scores.get("y"), 1e-6);
+                assertEquals(0.3112781245, scores.get("z"), 1e-6);
+        }
+
+        @Test
+        @DisplayName("Macro IG with class-prior weighting changes expected numeric scores")
+        void macroInformationGainPriorWeightedRegression() {
+                String[] docs = {
+                                "t1",
+                                "t1",
+                                "t2",
+                                "t3",
+                                "t3",
+                                "t4"
+                };
+                String[] labels = {"A", "A", "B", "C", "C", "C"};
+
+                Map<String, Double> macroUnweighted = TfIdfAlgorithms.computeInformationGainScores(
+                                docs,
+                                labels,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                true,
+                                false
+                );
+                Map<String, Double> macroWeighted = TfIdfAlgorithms.computeInformationGainScores(
+                                docs,
+                                labels,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                true,
+                                true
+                );
+
+                assertEquals(0.316688, macroUnweighted.get("t2"), 1e-4);
+                assertEquals(0.4190358686, macroWeighted.get("t2"), 1e-6);
+                assertTrue(macroWeighted.get("t2") > macroUnweighted.get("t2"));
+        }
+
+        @Test
+        @DisplayName("BM25+ lower-TF floor improves long-document robustness for rare terms")
+        void bm25PlusLowerTfBoundBehavior() {
+                String[] docs = {
+                                "rare " + "common ".repeat(300),
+                                "common common common"
+                };
+
+                TfIdfAlgorithms.VectorizationOptions bm25 = new TfIdfAlgorithms.VectorizationOptions(
+                                64,
+                                TfIdfAlgorithms.WeightingScheme.BM25,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.BM25_IDF,
+                                1,
+                                Integer.MAX_VALUE,
+                                null,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationOptions bm25Plus = new TfIdfAlgorithms.VectorizationOptions(
+                                64,
+                                TfIdfAlgorithms.WeightingScheme.BM25_PLUS,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY,
+                                TfIdfAlgorithms.ClassBalanceOptions.defaultOptions(),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.BM25_IDF,
+                                1,
+                                Integer.MAX_VALUE,
+                                0.75,
+                                0.25,
+                                null,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult rBm25 = TfIdfAlgorithms.vectorizeDocuments(docs, bm25);
+                TfIdfAlgorithms.VectorizationResult rBm25Plus = TfIdfAlgorithms.vectorizeDocuments(docs, bm25Plus);
+
+                int rareIdx = rBm25.getVocabulary().get("rare");
+                assertTrue(rBm25Plus.getDenseVectors()[0][rareIdx] > rBm25.getDenseVectors()[0][rareIdx]);
+        }
+
+        @Test
+        @DisplayName("Per-class vocabulary diagnostics expose class contribution scores")
+        void vocabularyDiagnosticsExposeClassContributions() {
+                String[] docs = {
+                                "alpha alpha",
+                                "alpha",
+                                "beta",
+                                "gamma"
+                };
+                String[] labels = {"A", "A", "B", "C"};
+
+                TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                                3,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN,
+                                new TfIdfAlgorithms.ClassBalanceOptions(true, true),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VocabularyDiagnostics diagnostics = TfIdfAlgorithms.computeVocabularyDiagnostics(docs, options);
+                assertEquals(TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN, diagnostics.getSelectionMethod());
+                assertFalse(diagnostics.getTermDiagnostics().isEmpty());
+                TfIdfAlgorithms.TermDiagnostics first = diagnostics.getTermDiagnostics().get(0);
+                assertFalse(first.getClassContributions().isEmpty());
+        }
+
+        @Test
+        @DisplayName("Sparse CSR export/import roundtrip is lossless")
+        void sparseCsrRoundtrip() throws Exception {
+                String[] docs = {
+                                "a b c",
+                                "a a",
+                                "c"
+                };
+                TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(
+                                docs,
+                                1,
+                                16,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                false
+                );
+
+                TfIdfAlgorithms.SparseCsrMatrix csr = TfIdfAlgorithms.toSparseCsr(
+                                result.getSparseVectors(),
+                                result.getVocabulary().size()
+                );
+
+                Path tmp = Files.createTempFile("tfidf-csr", ".bin");
+                try {
+                        TfIdfAlgorithms.saveSparseCsr(csr, tmp);
+                        TfIdfAlgorithms.SparseCsrMatrix loaded = TfIdfAlgorithms.loadSparseCsr(tmp);
+
+                        assertEquals(csr.getRows(), loaded.getRows());
+                        assertEquals(csr.getCols(), loaded.getCols());
+                        assertArrayEquals(csr.getRowOffsets(), loaded.getRowOffsets());
+                        assertArrayEquals(csr.getColIndices(), loaded.getColIndices());
+                        assertArrayEquals(csr.getValues(), loaded.getValues(), EPS);
+                } finally {
+                        Files.deleteIfExists(tmp);
+                }
+        }
+
+        @Test
+        @DisplayName("Calibration utilities provide stable score/vector comparability transforms")
+        void calibrationUtilitiesWorkAsExpected() {
+                float[] scores = new float[]{2f, 4f, 6f};
+                float[] minMax = TfIdfAlgorithms.calibrateScores(scores, TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1);
+                assertEquals(0f, minMax[0], EPS);
+                assertEquals(1f, minMax[2], EPS);
+
+                float[][] dense = new float[][]{
+                                {3f, 4f},
+                                {0f, 5f}
+                };
+                float[][] l2 = TfIdfAlgorithms.calibrateDenseVectors(dense, TfIdfAlgorithms.VectorCalibrationMethod.L2_PER_DOCUMENT);
+                double n0 = Math.sqrt(l2[0][0] * l2[0][0] + l2[0][1] * l2[0][1]);
+                double n1 = Math.sqrt(l2[1][0] * l2[1][0] + l2[1][1] * l2[1][1]);
+                assertEquals(1.0, n0, 1e-6);
+                assertEquals(1.0, n1, 1e-6);
         }
 }

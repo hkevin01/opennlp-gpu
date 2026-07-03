@@ -5,8 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -29,7 +27,8 @@ public final class TfIdfAlgorithms {
     public enum WeightingScheme {
         RAW_TF_IDF,
         SUBLINEAR_TF_IDF,
-        BM25
+        BM25,
+        BM25_PLUS
     }
 
     public enum FeatureSelectionMethod {
@@ -48,6 +47,19 @@ public final class TfIdfAlgorithms {
         FLOAT32,
         FLOAT16,
         INT8
+    }
+
+    public enum VectorCalibrationMethod {
+        NONE,
+        L2_PER_DOCUMENT,
+        Z_SCORE_PER_FEATURE,
+        MAX_ABS_PER_FEATURE
+    }
+
+    public enum ScoreCalibrationMethod {
+        NONE,
+        Z_SCORE,
+        MIN_MAX_0_1
     }
 
     public static final class ClassBalanceOptions {
@@ -141,6 +153,8 @@ public final class TfIdfAlgorithms {
         public final IDFSmoothingStrategy idfSmoothingStrategy;
         public final int minDocumentFrequency;
         public final int maxDocumentFrequency;
+        public final double bm25PlusDelta;
+        public final double bm25LowerTfBound;
         public final String[] labels;
         public final boolean useCache;
 
@@ -155,6 +169,34 @@ public final class TfIdfAlgorithms {
                                     int maxDocumentFrequency,
                                     String[] labels,
                                     boolean useCache) {
+            this(maxFeatures,
+                    weightingScheme,
+                    normalizationOptions,
+                    ngramBlendOptions,
+                    featureSelectionMethod,
+                    classBalanceOptions,
+                    idfSmoothingStrategy,
+                    minDocumentFrequency,
+                    maxDocumentFrequency,
+                    1.0,
+                    0.0,
+                    labels,
+                    useCache);
+        }
+
+        public VectorizationOptions(int maxFeatures,
+                                    WeightingScheme weightingScheme,
+                                    NormalizationOptions normalizationOptions,
+                                    NGramBlendOptions ngramBlendOptions,
+                                    FeatureSelectionMethod featureSelectionMethod,
+                                    ClassBalanceOptions classBalanceOptions,
+                                    IDFSmoothingStrategy idfSmoothingStrategy,
+                                    int minDocumentFrequency,
+                                    int maxDocumentFrequency,
+                                    double bm25PlusDelta,
+                                    double bm25LowerTfBound,
+                                    String[] labels,
+                                    boolean useCache) {
             this.maxFeatures = maxFeatures;
             this.weightingScheme = weightingScheme == null ? WeightingScheme.RAW_TF_IDF : weightingScheme;
             this.normalizationOptions = normalizationOptions == null ? NormalizationOptions.defaultOptions() : normalizationOptions;
@@ -164,6 +206,8 @@ public final class TfIdfAlgorithms {
             this.idfSmoothingStrategy = idfSmoothingStrategy == null ? IDFSmoothingStrategy.STANDARD_SMOOTH : idfSmoothingStrategy;
             this.minDocumentFrequency = Math.max(1, minDocumentFrequency);
             this.maxDocumentFrequency = maxDocumentFrequency <= 0 ? Integer.MAX_VALUE : maxDocumentFrequency;
+            this.bm25PlusDelta = Math.max(0.0, bm25PlusDelta);
+            this.bm25LowerTfBound = Math.max(0.0, bm25LowerTfBound);
             this.labels = labels;
             this.useCache = useCache;
         }
@@ -334,6 +378,112 @@ public final class TfIdfAlgorithms {
         }
     }
 
+    public static final class TermDiagnostics {
+        private final String term;
+        private final int featureIndex;
+        private final int documentFrequency;
+        private final double globalScore;
+        private final Map<String, Double> classContributions;
+
+        public TermDiagnostics(String term,
+                               int featureIndex,
+                               int documentFrequency,
+                               double globalScore,
+                               Map<String, Double> classContributions) {
+            this.term = term;
+            this.featureIndex = featureIndex;
+            this.documentFrequency = documentFrequency;
+            this.globalScore = globalScore;
+            this.classContributions = Collections.unmodifiableMap(new HashMap<>(classContributions));
+        }
+
+        public String getTerm() {
+            return term;
+        }
+
+        public int getFeatureIndex() {
+            return featureIndex;
+        }
+
+        public int getDocumentFrequency() {
+            return documentFrequency;
+        }
+
+        public double getGlobalScore() {
+            return globalScore;
+        }
+
+        public Map<String, Double> getClassContributions() {
+            return classContributions;
+        }
+    }
+
+    public static final class VocabularyDiagnostics {
+        private final FeatureSelectionMethod selectionMethod;
+        private final List<TermDiagnostics> termDiagnostics;
+
+        public VocabularyDiagnostics(FeatureSelectionMethod selectionMethod,
+                                     List<TermDiagnostics> termDiagnostics) {
+            this.selectionMethod = selectionMethod;
+            this.termDiagnostics = Collections.unmodifiableList(new ArrayList<>(termDiagnostics));
+        }
+
+        public FeatureSelectionMethod getSelectionMethod() {
+            return selectionMethod;
+        }
+
+        public List<TermDiagnostics> getTermDiagnostics() {
+            return termDiagnostics;
+        }
+    }
+
+    public static final class SparseCsrMatrix {
+        private final int rows;
+        private final int cols;
+        private final int[] rowOffsets;
+        private final int[] colIndices;
+        private final float[] values;
+
+        public SparseCsrMatrix(int rows, int cols, int[] rowOffsets, int[] colIndices, float[] values) {
+            this.rows = rows;
+            this.cols = cols;
+            this.rowOffsets = rowOffsets;
+            this.colIndices = colIndices;
+            this.values = values;
+        }
+
+        public int getRows() {
+            return rows;
+        }
+
+        public int getCols() {
+            return cols;
+        }
+
+        public int[] getRowOffsets() {
+            return rowOffsets;
+        }
+
+        public int[] getColIndices() {
+            return colIndices;
+        }
+
+        public float[] getValues() {
+            return values;
+        }
+    }
+
+    private static final class FeatureScoreBreakdown {
+        private final Map<String, Double> globalScores;
+        private final Map<String, Map<String, Double>> classScores;
+
+        private FeatureScoreBreakdown(Map<String, Double> globalScores,
+                                      Map<String, Map<String, Double>> classScores) {
+            this.globalScores = globalScores;
+            this.classScores = classScores;
+        }
+    }
+
     private static final class CorpusCacheEntry {
         private final String corpusFingerprint;
         private final long createdAtNanos;
@@ -363,6 +513,7 @@ public final class TfIdfAlgorithms {
     private static final int CACHE_FORMAT_V1 = 1;
     private static final int CACHE_FORMAT_V2 = 2;
     private static final int DENSE_VECTOR_FORMAT_VERSION = 1;
+    private static final int SPARSE_CSR_FORMAT_VERSION = 1;
     private static final int MAX_CACHE_ENTRIES = 32;
     private static final double BM25_K1 = 1.2;
     private static final double BM25_B = 0.75;
@@ -475,7 +626,9 @@ public final class TfIdfAlgorithms {
                 selectedDf,
                 documents.length,
                 options.weightingScheme,
-                options.idfSmoothingStrategy
+            options.idfSmoothingStrategy,
+            options.bm25PlusDelta,
+            options.bm25LowerTfBound
         );
 
         SparseVector[] sparse = new SparseVector[dense.length];
@@ -541,7 +694,7 @@ public final class TfIdfAlgorithms {
         Map<String, Integer> df = state.getDocumentFrequency();
 
         float[][] dense = buildDenseVectors(cacheEntry, vocabulary, df, Math.max(1, state.getTotalDocuments()),
-                scheme, state.getIdfSmoothingStrategy());
+            scheme, state.getIdfSmoothingStrategy(), 1.0, 0.0);
         SparseVector[] sparse = new SparseVector[dense.length];
         for (int i = 0; i < dense.length; i++) {
             sparse[i] = toSparse(dense[i]);
@@ -751,6 +904,245 @@ public final class TfIdfAlgorithms {
         }
     }
 
+    /**
+     * Compute explicit Information Gain term scores for regression and diagnostics.
+     */
+    public static Map<String, Double> computeInformationGainScores(String[] documents,
+                                                                    String[] labels,
+                                                                    NormalizationOptions normalizationOptions,
+                                                                    NGramBlendOptions nGramBlendOptions,
+                                                                    boolean macroAverage,
+                                                                    boolean useClassPriorWeighting) {
+        if (documents == null || labels == null || documents.length != labels.length) {
+            throw new IllegalArgumentException("documents and labels must be non-null and have equal length");
+        }
+        VectorizationOptions options = new VectorizationOptions(
+                Integer.MAX_VALUE,
+                WeightingScheme.RAW_TF_IDF,
+                normalizationOptions,
+                nGramBlendOptions,
+                FeatureSelectionMethod.INFORMATION_GAIN,
+                new ClassBalanceOptions(macroAverage, useClassPriorWeighting),
+                IDFSmoothingStrategy.STANDARD_SMOOTH,
+                1,
+                Integer.MAX_VALUE,
+                labels,
+                false
+        );
+        CorpusCacheEntry entry = buildCorpusEntry(documents,
+                options.ngramBlendOptions,
+                options.normalizationOptions);
+        return scoreTermsByInformationGain(entry, labels, options.classBalanceOptions).globalScores;
+    }
+
+    /**
+     * Build diagnostics for selected vocabulary with per-class contribution scores.
+     */
+    public static VocabularyDiagnostics computeVocabularyDiagnostics(String[] documents,
+                                                                     VectorizationOptions options) {
+        Objects.requireNonNull(options, "options must not be null");
+        if (documents == null || documents.length == 0) {
+            return new VocabularyDiagnostics(options.featureSelectionMethod, Collections.emptyList());
+        }
+
+        CorpusCacheEntry entry = getOrBuildCorpusEntry(documents, options);
+        FeatureScoreBreakdown breakdown = computeFeatureScoreBreakdown(entry,
+                options.featureSelectionMethod,
+                options.classBalanceOptions,
+                options.labels);
+
+        Map<String, Integer> vocab = selectVocabulary(
+                entry,
+                options.maxFeatures,
+                options.featureSelectionMethod,
+                options.classBalanceOptions,
+                options.labels,
+                options.minDocumentFrequency,
+                options.maxDocumentFrequency
+        );
+
+        List<TermDiagnostics> diagnostics = new ArrayList<>();
+        for (Map.Entry<String, Integer> e : vocab.entrySet()) {
+            String term = e.getKey();
+            int idx = e.getValue();
+            int df = entry.corpusDocumentFrequency.getOrDefault(term, 0);
+            double global = breakdown.globalScores.getOrDefault(term, 0.0);
+            Map<String, Double> classContrib = breakdown.classScores.getOrDefault(term, Collections.emptyMap());
+            diagnostics.add(new TermDiagnostics(term, idx, df, global, classContrib));
+        }
+        diagnostics.sort((a, b) -> Integer.compare(a.getFeatureIndex(), b.getFeatureIndex()));
+        return new VocabularyDiagnostics(options.featureSelectionMethod, diagnostics);
+    }
+
+    public static SparseCsrMatrix toSparseCsr(SparseVector[] sparseVectors, int cols) {
+        if (sparseVectors == null) {
+            return new SparseCsrMatrix(0, Math.max(0, cols), new int[]{0}, new int[0], new float[0]);
+        }
+        int rows = sparseVectors.length;
+        int nnz = 0;
+        for (SparseVector sv : sparseVectors) {
+            if (sv != null && sv.getIndices() != null) {
+                nnz += sv.getIndices().length;
+            }
+        }
+
+        int[] rowOffsets = new int[rows + 1];
+        int[] colIndices = new int[nnz];
+        float[] values = new float[nnz];
+
+        int p = 0;
+        for (int r = 0; r < rows; r++) {
+            rowOffsets[r] = p;
+            SparseVector sv = sparseVectors[r];
+            if (sv == null) {
+                continue;
+            }
+            int[] idx = sv.getIndices();
+            float[] val = sv.getValues();
+            for (int i = 0; i < idx.length; i++) {
+                colIndices[p] = idx[i];
+                values[p] = val[i];
+                p++;
+            }
+        }
+        rowOffsets[rows] = p;
+        return new SparseCsrMatrix(rows, Math.max(0, cols), rowOffsets, colIndices, values);
+    }
+
+    public static void saveSparseCsr(SparseCsrMatrix matrix, Path path) throws IOException {
+        Objects.requireNonNull(matrix, "matrix must not be null");
+        Objects.requireNonNull(path, "path must not be null");
+        try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))) {
+            out.writeInt(SPARSE_CSR_FORMAT_VERSION);
+            out.writeInt(matrix.rows);
+            out.writeInt(matrix.cols);
+            out.writeInt(matrix.rowOffsets.length);
+            for (int v : matrix.rowOffsets) out.writeInt(v);
+            out.writeInt(matrix.colIndices.length);
+            for (int v : matrix.colIndices) out.writeInt(v);
+            out.writeInt(matrix.values.length);
+            for (float v : matrix.values) out.writeFloat(v);
+        }
+    }
+
+    public static SparseCsrMatrix loadSparseCsr(Path path) throws IOException {
+        Objects.requireNonNull(path, "path must not be null");
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
+            int version = in.readInt();
+            if (version != SPARSE_CSR_FORMAT_VERSION) {
+                throw new IOException("Unsupported sparse CSR format version: " + version);
+            }
+            int rows = in.readInt();
+            int cols = in.readInt();
+            int rowLen = in.readInt();
+            int[] rowOffsets = new int[rowLen];
+            for (int i = 0; i < rowLen; i++) rowOffsets[i] = in.readInt();
+            int colLen = in.readInt();
+            int[] colIndices = new int[colLen];
+            for (int i = 0; i < colLen; i++) colIndices[i] = in.readInt();
+            int valLen = in.readInt();
+            float[] values = new float[valLen];
+            for (int i = 0; i < valLen; i++) values[i] = in.readFloat();
+            return new SparseCsrMatrix(rows, cols, rowOffsets, colIndices, values);
+        }
+    }
+
+    public static float[][] calibrateDenseVectors(float[][] denseVectors, VectorCalibrationMethod method) {
+        VectorCalibrationMethod m = method == null ? VectorCalibrationMethod.NONE : method;
+        if (denseVectors == null || denseVectors.length == 0 || m == VectorCalibrationMethod.NONE) {
+            return denseVectors;
+        }
+        float[][] out = new float[denseVectors.length][denseVectors[0].length];
+        for (int i = 0; i < denseVectors.length; i++) {
+            out[i] = Arrays.copyOf(denseVectors[i], denseVectors[i].length);
+        }
+
+        switch (m) {
+            case L2_PER_DOCUMENT:
+                for (int r = 0; r < out.length; r++) {
+                    double norm = 0.0;
+                    for (float v : out[r]) norm += v * v;
+                    norm = Math.sqrt(norm);
+                    if (norm > EPS) {
+                        float inv = (float) (1.0 / norm);
+                        for (int c = 0; c < out[r].length; c++) out[r][c] *= inv;
+                    }
+                }
+                break;
+            case Z_SCORE_PER_FEATURE:
+                int cols = out[0].length;
+                for (int c = 0; c < cols; c++) {
+                    double mean = 0.0;
+                    for (float[] row : out) mean += row[c];
+                    mean /= out.length;
+                    double var = 0.0;
+                    for (float[] row : out) {
+                        double d = row[c] - mean;
+                        var += d * d;
+                    }
+                    double std = Math.sqrt(var / Math.max(1, out.length));
+                    if (std > EPS) {
+                        for (float[] row : out) row[c] = (float) ((row[c] - mean) / std);
+                    }
+                }
+                break;
+            case MAX_ABS_PER_FEATURE:
+                int width = out[0].length;
+                for (int c = 0; c < width; c++) {
+                    float maxAbs = 0f;
+                    for (float[] row : out) maxAbs = Math.max(maxAbs, Math.abs(row[c]));
+                    if (maxAbs > EPS) {
+                        float inv = 1f / maxAbs;
+                        for (float[] row : out) row[c] *= inv;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return out;
+    }
+
+    public static float[] calibrateScores(float[] scores, ScoreCalibrationMethod method) {
+        ScoreCalibrationMethod m = method == null ? ScoreCalibrationMethod.NONE : method;
+        if (scores == null || scores.length == 0 || m == ScoreCalibrationMethod.NONE) {
+            return scores;
+        }
+        float[] out = Arrays.copyOf(scores, scores.length);
+        switch (m) {
+            case Z_SCORE:
+                double mean = 0.0;
+                for (float v : out) mean += v;
+                mean /= out.length;
+                double var = 0.0;
+                for (float v : out) {
+                    double d = v - mean;
+                    var += d * d;
+                }
+                double std = Math.sqrt(var / Math.max(1, out.length));
+                if (std > EPS) {
+                    for (int i = 0; i < out.length; i++) out[i] = (float) ((out[i] - mean) / std);
+                }
+                break;
+            case MIN_MAX_0_1:
+                float min = Float.POSITIVE_INFINITY;
+                float max = Float.NEGATIVE_INFINITY;
+                for (float v : out) {
+                    min = Math.min(min, v);
+                    max = Math.max(max, v);
+                }
+                float range = max - min;
+                if (range > EPS) {
+                    for (int i = 0; i < out.length; i++) out[i] = (out[i] - min) / range;
+                }
+                break;
+            default:
+                break;
+        }
+        return out;
+    }
+
     private static VocabularyState readVocabularyStateV2(DataInputStream in) throws IOException {
         int totalDocuments = in.readInt();
         double averageDocumentLength = in.readDouble();
@@ -903,14 +1295,12 @@ public final class TfIdfAlgorithms {
                                                          String[] labels,
                                                          int minDf,
                                                          int maxDf) {
-        Map<String, Double> termScores;
-        if (selectionMethod == FeatureSelectionMethod.CHI_SQUARE && isLabelSetValid(labels, entry.docTermWeights.size())) {
-            termScores = scoreTermsByChiSquare(entry, labels, balanceOptions);
-        } else if (selectionMethod == FeatureSelectionMethod.INFORMATION_GAIN && isLabelSetValid(labels, entry.docTermWeights.size())) {
-            termScores = scoreTermsByInformationGain(entry, labels, balanceOptions);
-        } else {
-            termScores = new HashMap<>(entry.corpusFrequency);
-        }
+        Map<String, Double> termScores = computeFeatureScoreBreakdown(
+                entry,
+                selectionMethod,
+                balanceOptions,
+                labels
+        ).globalScores;
 
         List<Map.Entry<String, Double>> sorted = new ArrayList<>();
         for (Map.Entry<String, Double> e : termScores.entrySet()) {
@@ -938,7 +1328,9 @@ public final class TfIdfAlgorithms {
                                                Map<String, Integer> documentFrequency,
                                                int totalDocsForIdf,
                                                WeightingScheme scheme,
-                                               IDFSmoothingStrategy smoothingStrategy) {
+                                               IDFSmoothingStrategy smoothingStrategy,
+                                               double bm25PlusDelta,
+                                               double bm25LowerTfBound) {
         int numDocs = cacheEntry.docTermWeights.size();
         int vocabSize = vocabulary.size();
         float[][] dense = new float[numDocs][vocabSize];
@@ -955,10 +1347,18 @@ public final class TfIdfAlgorithms {
                 double tf = termEntry.getValue();
                 int df = Math.max(1, documentFrequency.getOrDefault(term, 1));
                 double value;
-                if (scheme == WeightingScheme.BM25) {
-                    value = computeBm25Weight(tf, df, totalDocsForIdf, docLength, cacheEntry.avgDocLength);
-                } else {
-                    value = computeTfIdfWeight(tf, df, totalDocsForIdf, scheme, smoothingStrategy);
+                switch (scheme) {
+                    case BM25:
+                        value = computeBm25Weight(tf, df, totalDocsForIdf, docLength, cacheEntry.avgDocLength, 0.0, bm25LowerTfBound);
+                        break;
+                    case BM25_PLUS:
+                        value = computeBm25Weight(tf, df, totalDocsForIdf, docLength, cacheEntry.avgDocLength, bm25PlusDelta, bm25LowerTfBound);
+                        break;
+                    case RAW_TF_IDF:
+                    case SUBLINEAR_TF_IDF:
+                    default:
+                        value = computeTfIdfWeight(tf, df, totalDocsForIdf, scheme, smoothingStrategy);
+                        break;
                 }
                 dense[docIndex][featureIndex] = (float) value;
             }
@@ -971,17 +1371,19 @@ public final class TfIdfAlgorithms {
         return labels != null && labels.length == expectedSize;
     }
 
-    private static Map<String, Double> scoreTermsByChiSquare(CorpusCacheEntry entry,
-                                                              String[] labels,
-                                                              ClassBalanceOptions balanceOptions) {
+    private static FeatureScoreBreakdown scoreTermsByChiSquare(CorpusCacheEntry entry,
+                                                                String[] labels,
+                                                                ClassBalanceOptions balanceOptions) {
         int numDocs = labels.length;
         Map<String, Integer> classCounts = new HashMap<>();
         for (String label : labels) classCounts.merge(label, 1, Integer::sum);
 
         Map<String, Double> scores = new HashMap<>();
+        Map<String, Map<String, Double>> classScores = new HashMap<>();
         for (String term : entry.corpusDocumentFrequency.keySet()) {
             double agg = balanceOptions.macroAverage ? 0.0 : Double.NEGATIVE_INFINITY;
             int classes = 0;
+            Map<String, Double> perClass = new HashMap<>();
 
             for (Map.Entry<String, Integer> cls : classCounts.entrySet()) {
                 String label = cls.getKey();
@@ -1010,6 +1412,8 @@ public final class TfIdfAlgorithms {
                     score *= (1.0 / Math.max(prior, EPS));
                 }
 
+                perClass.put(label, Math.max(0.0, score));
+
                 if (balanceOptions.macroAverage) {
                     agg += score;
                     classes++;
@@ -1021,31 +1425,33 @@ public final class TfIdfAlgorithms {
                 agg /= classes;
             }
             scores.put(term, Math.max(0.0, agg));
+            classScores.put(term, perClass);
         }
-        return scores;
+        return new FeatureScoreBreakdown(scores, classScores);
     }
 
-    private static Map<String, Double> scoreTermsByInformationGain(CorpusCacheEntry entry,
-                                                                    String[] labels,
-                                                                    ClassBalanceOptions balanceOptions) {
+    private static FeatureScoreBreakdown scoreTermsByInformationGain(CorpusCacheEntry entry,
+                                                                      String[] labels,
+                                                                      ClassBalanceOptions balanceOptions) {
         int numDocs = labels.length;
         Map<String, Integer> classCounts = new HashMap<>();
         for (String label : labels) classCounts.merge(label, 1, Integer::sum);
 
-        Map<String, Double> classWeights = new HashMap<>();
-        if (balanceOptions.useClassPriorWeighting) {
-            for (Map.Entry<String, Integer> e : classCounts.entrySet()) {
-                double prior = (double) e.getValue() / numDocs;
-                classWeights.put(e.getKey(), 1.0 / Math.max(prior, EPS));
-            }
-        } else {
-            for (String label : classCounts.keySet()) {
-                classWeights.put(label, 1.0);
-            }
+        Map<String, Double> classWeights = buildClassWeights(classCounts, numDocs, balanceOptions.useClassPriorWeighting);
+        if (balanceOptions.macroAverage) {
+            return scoreTermsByInformationGainMacro(entry, labels, classCounts, classWeights, numDocs);
         }
+        return scoreTermsByInformationGainMicro(entry, labels, classCounts, classWeights, numDocs);
+    }
 
+    private static FeatureScoreBreakdown scoreTermsByInformationGainMicro(CorpusCacheEntry entry,
+                                                                           String[] labels,
+                                                                           Map<String, Integer> classCounts,
+                                                                           Map<String, Double> classWeights,
+                                                                           int numDocs) {
         double entropyClass = weightedEntropy(classCounts, classWeights, numDocs);
         Map<String, Double> scores = new HashMap<>();
+        Map<String, Map<String, Double>> classScores = new HashMap<>();
 
         for (String term : entry.corpusDocumentFrequency.keySet()) {
             Map<String, Integer> presentClassCounts = new HashMap<>();
@@ -1067,17 +1473,124 @@ public final class TfIdfAlgorithms {
             double conditionalEntropy =
                     ((double) present / numDocs) * weightedEntropy(presentClassCounts, classWeights, present)
                             + ((double) absent / numDocs) * weightedEntropy(absentClassCounts, classWeights, absent);
-            double ig = Math.max(0.0, entropyClass - conditionalEntropy);
+            scores.put(term, Math.max(0.0, entropyClass - conditionalEntropy));
 
-            if (balanceOptions.macroAverage) {
-                scores.put(term, ig);
-            } else {
-                // Non-macro mode: retain compatibility by slight frequency emphasis
-                scores.put(term, ig * Math.max(1.0, entry.corpusDocumentFrequency.getOrDefault(term, 1)));
+            Map<String, Double> perClass = new HashMap<>();
+            for (String c : classCounts.keySet()) {
+                int pInClass = presentClassCounts.getOrDefault(c, 0);
+                int aInClass = absentClassCounts.getOrDefault(c, 0);
+                double hClass = binaryEntropy((double) classCounts.getOrDefault(c, 0) / numDocs);
+                double hPresent = present > 0 ? binaryEntropy((double) pInClass / present) : 0.0;
+                double hAbsent = absent > 0 ? binaryEntropy((double) aInClass / absent) : 0.0;
+                double conditional = ((double) present / numDocs) * hPresent + ((double) absent / numDocs) * hAbsent;
+                perClass.put(c, Math.max(0.0, hClass - conditional));
             }
+            classScores.put(term, perClass);
         }
 
-        return scores;
+        return new FeatureScoreBreakdown(scores, classScores);
+    }
+
+    private static FeatureScoreBreakdown scoreTermsByInformationGainMacro(CorpusCacheEntry entry,
+                                                                           String[] labels,
+                                                                           Map<String, Integer> classCounts,
+                                                                           Map<String, Double> classWeights,
+                                                                           int numDocs) {
+        Map<String, Double> scores = new HashMap<>();
+        Map<String, Map<String, Double>> classScores = new HashMap<>();
+
+        for (String term : entry.corpusDocumentFrequency.keySet()) {
+            int presentCount = 0;
+            for (int i = 0; i < numDocs; i++) {
+                if (entry.docTermWeights.get(i).containsKey(term)) {
+                    presentCount++;
+                }
+            }
+            int absentCount = numDocs - presentCount;
+
+            double weightedSum = 0.0;
+            double weightNorm = 0.0;
+            Map<String, Double> perClass = new HashMap<>();
+
+            for (Map.Entry<String, Integer> cls : classCounts.entrySet()) {
+                String label = cls.getKey();
+                int classSize = cls.getValue();
+
+                int presentInClass = 0;
+                for (int i = 0; i < numDocs; i++) {
+                    if (label.equals(labels[i]) && entry.docTermWeights.get(i).containsKey(term)) {
+                        presentInClass++;
+                    }
+                }
+
+                int absentInClass = classSize - presentInClass;
+
+                double hClass = binaryEntropy((double) classSize / numDocs);
+
+                double hPresent = 0.0;
+                if (presentCount > 0) {
+                    hPresent = binaryEntropy((double) presentInClass / presentCount);
+                }
+
+                double hAbsent = 0.0;
+                if (absentCount > 0) {
+                    hAbsent = binaryEntropy((double) absentInClass / absentCount);
+                }
+
+                double conditional =
+                        ((double) presentCount / numDocs) * hPresent
+                                + ((double) absentCount / numDocs) * hAbsent;
+
+                double igForClass = Math.max(0.0, hClass - conditional);
+                perClass.put(label, igForClass);
+                double w = classWeights.getOrDefault(label, 1.0);
+                weightedSum += w * igForClass;
+                weightNorm += w;
+            }
+
+            double macroIg = weightNorm > 0.0 ? (weightedSum / weightNorm) : 0.0;
+            scores.put(term, Math.max(0.0, macroIg));
+            classScores.put(term, perClass);
+        }
+
+        return new FeatureScoreBreakdown(scores, classScores);
+    }
+
+    private static Map<String, Double> buildClassWeights(Map<String, Integer> classCounts,
+                                                          int totalDocs,
+                                                          boolean useClassPriorWeighting) {
+        Map<String, Double> classWeights = new HashMap<>();
+        if (!useClassPriorWeighting) {
+            for (String label : classCounts.keySet()) {
+                classWeights.put(label, 1.0);
+            }
+            return classWeights;
+        }
+
+        for (Map.Entry<String, Integer> e : classCounts.entrySet()) {
+            double prior = (double) e.getValue() / Math.max(totalDocs, 1);
+            classWeights.put(e.getKey(), 1.0 / Math.max(prior, EPS));
+        }
+        return classWeights;
+    }
+
+    private static double binaryEntropy(double p) {
+        double clamped = Math.max(EPS, Math.min(1.0 - EPS, p));
+        return -(clamped * (Math.log(clamped) / Math.log(2.0))
+                + (1.0 - clamped) * (Math.log(1.0 - clamped) / Math.log(2.0)));
+    }
+
+    private static FeatureScoreBreakdown computeFeatureScoreBreakdown(CorpusCacheEntry entry,
+                                                                      FeatureSelectionMethod selectionMethod,
+                                                                      ClassBalanceOptions balanceOptions,
+                                                                      String[] labels) {
+        if (selectionMethod == FeatureSelectionMethod.CHI_SQUARE && isLabelSetValid(labels, entry.docTermWeights.size())) {
+            return scoreTermsByChiSquare(entry, labels, balanceOptions);
+        }
+        if (selectionMethod == FeatureSelectionMethod.INFORMATION_GAIN && isLabelSetValid(labels, entry.docTermWeights.size())) {
+            return scoreTermsByInformationGain(entry, labels, balanceOptions);
+        }
+        return new FeatureScoreBreakdown(new HashMap<>(entry.corpusFrequency), new HashMap<>());
     }
 
     private static double weightedEntropy(Map<String, Integer> counts,
@@ -1168,11 +1681,15 @@ public final class TfIdfAlgorithms {
                                             int df,
                                             int totalDocs,
                                             int docLength,
-                                            double avgDocLength) {
+                                            double avgDocLength,
+                                            double delta,
+                                            double lowerTfBound) {
         double idf = Math.log(1.0 + (totalDocs - df + 0.5) / (df + 0.5));
         double numerator = tf * (BM25_K1 + 1.0);
         double denominator = tf + BM25_K1 * (1.0 - BM25_B + BM25_B * (docLength / Math.max(avgDocLength, EPS)));
-        return idf * (numerator / Math.max(denominator, EPS));
+        double tfNorm = numerator / Math.max(denominator, EPS);
+        double boundedTf = Math.max(lowerTfBound, tfNorm);
+        return idf * (boundedTf + Math.max(0.0, delta));
     }
 
     private static short floatToHalf(float value) {
