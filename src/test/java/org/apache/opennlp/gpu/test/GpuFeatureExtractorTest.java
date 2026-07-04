@@ -17,11 +17,15 @@ package org.apache.opennlp.gpu.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.apache.opennlp.gpu.common.GpuConfig;
 import org.apache.opennlp.gpu.compute.CpuComputeProvider;
 import org.apache.opennlp.gpu.compute.MatrixOperation;
 import org.apache.opennlp.gpu.compute.OperationFactory;
 import org.apache.opennlp.gpu.features.GpuFeatureExtractor;
+import org.apache.opennlp.gpu.features.TfIdfAlgorithms;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -316,5 +320,132 @@ public class GpuFeatureExtractorTest {
             assertArrayEquals(first[i], second[i], TOLERANCE,
                 "repeated extraction should give identical results");
         }
+    }
+
+    // ── Wrapper convenience APIs (diagnostics / CSR / calibration) ─────────
+
+    @Test
+    @DisplayName("computeVocabularyDiagnostics wrapper exposes per-class contributions")
+    void testComputeVocabularyDiagnosticsWrapper() {
+        String[] docs = {
+            "apple banana apple",
+            "banana orange",
+            "orange orange apple"
+        };
+        String[] labels = {"A", "B", "A"};
+
+        extractor.setFeatureSelectionMethod(TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN);
+        extractor.setClassBalanceOptions(new TfIdfAlgorithms.ClassBalanceOptions(true, true));
+
+        TfIdfAlgorithms.VocabularyDiagnostics diagnostics = extractor.computeVocabularyDiagnostics(docs, 10, labels);
+        assertNotNull(diagnostics);
+        assertFalse(diagnostics.getTermDiagnostics().isEmpty(), "diagnostics should include selected terms");
+        assertTrue(
+            diagnostics.getTermDiagnostics().stream().anyMatch(t -> !t.getClassContributions().isEmpty()),
+            "at least one term should expose per-class contributions"
+        );
+    }
+
+    @Test
+    @DisplayName("CSR wrapper can export and roundtrip sparse vectors")
+    void testSparseCsrWrapperRoundtrip() throws Exception {
+        String[] docs = {
+            "quick brown fox",
+            "quick blue hare",
+            "brown hare sleeps"
+        };
+
+        TfIdfAlgorithms.VectorizationResult result = extractor.extractTfIdfVectors(
+            docs,
+            1,
+            50,
+            TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF
+        );
+
+        TfIdfAlgorithms.SparseCsrMatrix csr = extractor.toSparseCsr(result.getSparseVectors());
+        assertEquals(docs.length, csr.getRows());
+        assertEquals(extractor.getVocabularySize(), csr.getCols());
+
+        Path tmp = Files.createTempFile("gpu-feature-extractor-csr", ".bin");
+        try {
+            extractor.saveSparseCsr(csr, tmp);
+            TfIdfAlgorithms.SparseCsrMatrix loaded = extractor.loadSparseCsr(tmp);
+            assertEquals(csr.getRows(), loaded.getRows());
+            assertEquals(csr.getCols(), loaded.getCols());
+            assertArrayEquals(csr.getRowOffsets(), loaded.getRowOffsets());
+            assertArrayEquals(csr.getColIndices(), loaded.getColIndices());
+            assertArrayEquals(csr.getValues(), loaded.getValues(), TOLERANCE);
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    @Test
+    @DisplayName("Calibration wrappers normalize vectors and scores")
+    void testCalibrationWrappers() {
+        float[][] dense = {
+            {3f, 4f},
+            {1f, 0f}
+        };
+        float[][] calibrated = extractor.calibrateDenseVectors(
+            dense,
+            TfIdfAlgorithms.VectorCalibrationMethod.L2_PER_DOCUMENT
+        );
+        float norm0 = (float) Math.sqrt(calibrated[0][0] * calibrated[0][0] + calibrated[0][1] * calibrated[0][1]);
+        float norm1 = (float) Math.sqrt(calibrated[1][0] * calibrated[1][0] + calibrated[1][1] * calibrated[1][1]);
+        assertEquals(1.0f, norm0, TOLERANCE);
+        assertEquals(1.0f, norm1, TOLERANCE);
+        assertEquals(3f, dense[0][0], TOLERANCE, "original vectors should remain unchanged");
+
+        float[] scores = {10f, 20f, 30f};
+        float[] normalizedScores = extractor.calibrateScores(
+            scores,
+            TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1
+        );
+        assertEquals(0.0f, normalizedScores[0], TOLERANCE);
+        assertEquals(1.0f, normalizedScores[2], TOLERANCE);
+        assertEquals(10f, scores[0], TOLERANCE, "original scores should remain unchanged");
+    }
+
+    @Test
+    @DisplayName("setBm25PlusOptions validates non-negative parameters")
+    void testSetBm25PlusOptionsValidation() {
+        assertThrows(IllegalArgumentException.class,
+            () -> extractor.setBm25PlusOptions(-0.1, 0.0));
+        assertThrows(IllegalArgumentException.class,
+            () -> extractor.setBm25PlusOptions(0.0, -0.1));
+        assertDoesNotThrow(() -> extractor.setBm25PlusOptions(0.8, 0.2));
+    }
+
+    @Test
+    @DisplayName("BM25+ lower TF bound option affects extractor BM25_PLUS weights")
+    void testBm25PlusLowerTfBoundPropagation() {
+        String[] docs = {
+            "rare token token token token token token token token token token token",
+            "rare"
+        };
+
+        extractor.setBm25PlusOptions(0.0, 0.0);
+        TfIdfAlgorithms.VectorizationResult baseline = extractor.extractTfIdfVectors(
+            docs,
+            1,
+            20,
+            TfIdfAlgorithms.WeightingScheme.BM25_PLUS
+        );
+        int rareIdx = baseline.getVocabulary().getOrDefault("rare", -1);
+        assertTrue(rareIdx >= 0, "rare should be present in vocabulary");
+        float baselineWeight = baseline.getDenseVectors()[0][rareIdx];
+
+        extractor.setBm25PlusOptions(0.0, 1.0);
+        TfIdfAlgorithms.VectorizationResult bounded = extractor.extractTfIdfVectors(
+            docs,
+            1,
+            20,
+            TfIdfAlgorithms.WeightingScheme.BM25_PLUS
+        );
+        float boundedWeight = bounded.getDenseVectors()[0][rareIdx];
+
+        assertTrue(boundedWeight > baselineWeight,
+            "higher BM25+ lower TF bound should increase long-document rare-term weight");
     }
 }

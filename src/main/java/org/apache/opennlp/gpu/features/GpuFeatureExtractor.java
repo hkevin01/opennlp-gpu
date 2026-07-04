@@ -48,6 +48,8 @@ public class GpuFeatureExtractor {
     private TfIdfAlgorithms.FeatureSelectionMethod featureSelectionMethod = TfIdfAlgorithms.FeatureSelectionMethod.FREQUENCY;
     private TfIdfAlgorithms.ClassBalanceOptions classBalanceOptions = TfIdfAlgorithms.ClassBalanceOptions.defaultOptions();
     private TfIdfAlgorithms.IDFSmoothingStrategy idfSmoothingStrategy = TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH;
+    private double bm25PlusDelta = 1.0;
+    private double bm25LowerTfBound = 0.0;
     private int minDocumentFrequency = 1;
     private int maxDocumentFrequency = Integer.MAX_VALUE;
     private TfIdfAlgorithms.VocabularyState vocabularyState;
@@ -176,6 +178,8 @@ public class GpuFeatureExtractor {
             idfSmoothingStrategy,
             minDocumentFrequency,
             maxDocumentFrequency,
+            bm25PlusDelta,
+            bm25LowerTfBound,
                 null,
                 true
         );
@@ -215,6 +219,8 @@ public class GpuFeatureExtractor {
             idfSmoothingStrategy,
             minDocumentFrequency,
             maxDocumentFrequency,
+            bm25PlusDelta,
+            bm25LowerTfBound,
                 labels,
                 true
         );
@@ -263,6 +269,20 @@ public class GpuFeatureExtractor {
      */
     public void setIdfSmoothingStrategy(TfIdfAlgorithms.IDFSmoothingStrategy idfSmoothingStrategy) {
         this.idfSmoothingStrategy = Objects.requireNonNull(idfSmoothingStrategy, "idfSmoothingStrategy must not be null");
+    }
+
+    /**
+     * Configure BM25+ parameters used when weighting scheme is BM25_PLUS.
+     */
+    public void setBm25PlusOptions(double bm25PlusDelta, double bm25LowerTfBound) {
+        if (bm25PlusDelta < 0.0) {
+            throw new IllegalArgumentException("bm25PlusDelta must be >= 0.0, got: " + bm25PlusDelta);
+        }
+        if (bm25LowerTfBound < 0.0) {
+            throw new IllegalArgumentException("bm25LowerTfBound must be >= 0.0, got: " + bm25LowerTfBound);
+        }
+        this.bm25PlusDelta = bm25PlusDelta;
+        this.bm25LowerTfBound = bm25LowerTfBound;
     }
 
     /**
@@ -318,6 +338,86 @@ public class GpuFeatureExtractor {
                 normalizationOptions,
                 true
         );
+    }
+
+    /**
+     * Compute per-term vocabulary diagnostics using current extractor configuration.
+     */
+    public TfIdfAlgorithms.VocabularyDiagnostics computeVocabularyDiagnostics(String[] documents,
+                                                                              int maxFeatures) {
+        return computeVocabularyDiagnostics(documents, maxFeatures, null);
+    }
+
+    /**
+     * Compute per-term vocabulary diagnostics with optional labels for discriminative scoring.
+     */
+    public TfIdfAlgorithms.VocabularyDiagnostics computeVocabularyDiagnostics(String[] documents,
+                                                                              int maxFeatures,
+                                                                              String[] labels) {
+        Objects.requireNonNull(documents, "documents must not be null");
+        if (maxFeatures < 1) throw new IllegalArgumentException("maxFeatures must be >= 1, got: " + maxFeatures);
+
+        TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                maxFeatures,
+                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                normalizationOptions,
+                nGramBlendOptions,
+                featureSelectionMethod,
+                classBalanceOptions,
+                idfSmoothingStrategy,
+                minDocumentFrequency,
+                maxDocumentFrequency,
+            bm25PlusDelta,
+            bm25LowerTfBound,
+                labels,
+                true
+        );
+        return TfIdfAlgorithms.computeVocabularyDiagnostics(documents, options);
+    }
+
+    /**
+     * Convert sparse vectors to CSR using explicit column count.
+     */
+    public TfIdfAlgorithms.SparseCsrMatrix toSparseCsr(TfIdfAlgorithms.SparseVector[] sparseVectors,
+                                                        int cols) {
+        return TfIdfAlgorithms.toSparseCsr(sparseVectors, cols);
+    }
+
+    /**
+     * Convert sparse vectors to CSR using current extractor vocabulary size.
+     */
+    public TfIdfAlgorithms.SparseCsrMatrix toSparseCsr(TfIdfAlgorithms.SparseVector[] sparseVectors) {
+        return TfIdfAlgorithms.toSparseCsr(sparseVectors, vocabularySize);
+    }
+
+    /**
+     * Persist sparse CSR matrix for ANN/retrieval pipelines.
+     */
+    public void saveSparseCsr(TfIdfAlgorithms.SparseCsrMatrix matrix, Path path) throws IOException {
+        TfIdfAlgorithms.saveSparseCsr(matrix, path);
+    }
+
+    /**
+     * Load sparse CSR matrix from disk.
+     */
+    public TfIdfAlgorithms.SparseCsrMatrix loadSparseCsr(Path path) throws IOException {
+        return TfIdfAlgorithms.loadSparseCsr(path);
+    }
+
+    /**
+     * Calibrate dense vectors for cross-corpus comparability.
+     */
+    public float[][] calibrateDenseVectors(float[][] denseVectors,
+                                           TfIdfAlgorithms.VectorCalibrationMethod method) {
+        return TfIdfAlgorithms.calibrateDenseVectors(denseVectors, method);
+    }
+
+    /**
+     * Calibrate scalar scores for cross-corpus comparability.
+     */
+    public float[] calibrateScores(float[] scores,
+                                   TfIdfAlgorithms.ScoreCalibrationMethod method) {
+        return TfIdfAlgorithms.calibrateScores(scores, method);
     }
 
     /**
