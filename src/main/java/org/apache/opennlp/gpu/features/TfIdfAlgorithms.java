@@ -1426,6 +1426,267 @@ public final class TfIdfAlgorithms {
         return out;
     }
 
+    public static CalibrationMetadata fitCalibrationMetadata(float[][] denseVectors,
+                                                             float[] scores,
+                                                             VectorCalibrationMethod vectorMethod,
+                                                             ScoreCalibrationMethod scoreMethod) {
+        VectorCalibrationMethod vm = vectorMethod == null ? VectorCalibrationMethod.NONE : vectorMethod;
+        ScoreCalibrationMethod sm = scoreMethod == null ? ScoreCalibrationMethod.NONE : scoreMethod;
+
+        float[] featureMeans = new float[0];
+        float[] featureScales = new float[0];
+        if (denseVectors != null && denseVectors.length > 0) {
+            int cols = denseVectors[0].length;
+            featureMeans = new float[cols];
+            featureScales = new float[cols];
+
+            switch (vm) {
+                case Z_SCORE_PER_FEATURE:
+                    for (int c = 0; c < cols; c++) {
+                        double mean = 0.0;
+                        for (float[] row : denseVectors) mean += row[c];
+                        mean /= denseVectors.length;
+                        featureMeans[c] = (float) mean;
+
+                        double var = 0.0;
+                        for (float[] row : denseVectors) {
+                            double d = row[c] - mean;
+                            var += d * d;
+                        }
+                        featureScales[c] = (float) Math.sqrt(var / Math.max(1, denseVectors.length));
+                    }
+                    break;
+                case MAX_ABS_PER_FEATURE:
+                    for (int c = 0; c < cols; c++) {
+                        float maxAbs = 0f;
+                        for (float[] row : denseVectors) maxAbs = Math.max(maxAbs, Math.abs(row[c]));
+                        featureScales[c] = maxAbs;
+                    }
+                    break;
+                case NONE:
+                case L2_PER_DOCUMENT:
+                default:
+                    break;
+            }
+        }
+
+        float scoreMean = 0f;
+        float scoreScale = 1f;
+        float scoreMin = 0f;
+        float scoreMax = 1f;
+        if (scores != null && scores.length > 0) {
+            if (sm == ScoreCalibrationMethod.Z_SCORE) {
+                double mean = 0.0;
+                for (float v : scores) mean += v;
+                mean /= scores.length;
+                double var = 0.0;
+                for (float v : scores) {
+                    double d = v - mean;
+                    var += d * d;
+                }
+                scoreMean = (float) mean;
+                scoreScale = (float) Math.sqrt(var / Math.max(1, scores.length));
+            } else if (sm == ScoreCalibrationMethod.MIN_MAX_0_1) {
+                float min = Float.POSITIVE_INFINITY;
+                float max = Float.NEGATIVE_INFINITY;
+                for (float v : scores) {
+                    min = Math.min(min, v);
+                    max = Math.max(max, v);
+                }
+                scoreMin = min;
+                scoreMax = max;
+                scoreScale = max - min;
+            }
+        }
+
+        return new CalibrationMetadata(vm, sm, featureMeans, featureScales, scoreMean, scoreScale, scoreMin, scoreMax);
+    }
+
+    public static float[][] calibrateDenseVectors(float[][] denseVectors, CalibrationMetadata metadata) {
+        if (denseVectors == null || metadata == null || metadata.getVectorCalibrationMethod() == VectorCalibrationMethod.NONE) {
+            return denseVectors;
+        }
+        float[][] out = new float[denseVectors.length][denseVectors.length == 0 ? 0 : denseVectors[0].length];
+        for (int i = 0; i < denseVectors.length; i++) {
+            out[i] = Arrays.copyOf(denseVectors[i], denseVectors[i].length);
+        }
+
+        switch (metadata.getVectorCalibrationMethod()) {
+            case L2_PER_DOCUMENT:
+                for (int r = 0; r < out.length; r++) {
+                    double norm = 0.0;
+                    for (float v : out[r]) norm += v * v;
+                    norm = Math.sqrt(norm);
+                    if (norm > EPS) {
+                        float inv = (float) (1.0 / norm);
+                        for (int c = 0; c < out[r].length; c++) out[r][c] *= inv;
+                    }
+                }
+                break;
+            case Z_SCORE_PER_FEATURE:
+                float[] means = metadata.getFeatureMeans();
+                float[] stds = metadata.getFeatureScales();
+                for (int r = 0; r < out.length; r++) {
+                    for (int c = 0; c < out[r].length && c < means.length && c < stds.length; c++) {
+                        if (stds[c] > EPS) {
+                            out[r][c] = (out[r][c] - means[c]) / stds[c];
+                        }
+                    }
+                }
+                break;
+            case MAX_ABS_PER_FEATURE:
+                float[] maxAbs = metadata.getFeatureScales();
+                for (int r = 0; r < out.length; r++) {
+                    for (int c = 0; c < out[r].length && c < maxAbs.length; c++) {
+                        if (maxAbs[c] > EPS) {
+                            out[r][c] = out[r][c] / maxAbs[c];
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return out;
+    }
+
+    public static float[] calibrateScores(float[] scores, CalibrationMetadata metadata) {
+        if (scores == null || metadata == null || metadata.getScoreCalibrationMethod() == ScoreCalibrationMethod.NONE) {
+            return scores;
+        }
+        float[] out = Arrays.copyOf(scores, scores.length);
+        switch (metadata.getScoreCalibrationMethod()) {
+            case Z_SCORE:
+                if (metadata.getScoreScale() > EPS) {
+                    for (int i = 0; i < out.length; i++) {
+                        out[i] = (out[i] - metadata.getScoreMean()) / metadata.getScoreScale();
+                    }
+                }
+                break;
+            case MIN_MAX_0_1:
+                if (metadata.getScoreScale() > EPS) {
+                    for (int i = 0; i < out.length; i++) {
+                        out[i] = (out[i] - metadata.getScoreMin()) / metadata.getScoreScale();
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return out;
+    }
+
+    public static CalibrationApplicationResult applyCalibration(float[][] denseVectors,
+                                                                float[] scores,
+                                                                CalibrationMetadata metadata) {
+        return new CalibrationApplicationResult(
+                calibrateDenseVectors(denseVectors, metadata),
+                calibrateScores(scores, metadata)
+        );
+    }
+
+    public static PerClassDiagnosticsReport aggregatePerClassDiagnostics(VocabularyDiagnostics diagnostics,
+                                                                         String[] labels,
+                                                                         int topK,
+                                                                         boolean imbalanceAdjusted) {
+        Objects.requireNonNull(diagnostics, "diagnostics must not be null");
+        int totalDocs = labels == null ? 0 : labels.length;
+        Map<String, Integer> classCounts = new HashMap<>();
+        if (labels != null) {
+            for (String label : labels) classCounts.merge(label, 1, Integer::sum);
+        }
+
+        List<ClassDiagnosticsSummary> summaries = new ArrayList<>();
+        for (String label : classCounts.keySet()) {
+            int count = classCounts.getOrDefault(label, 0);
+            double prior = totalDocs > 0 ? (double) count / totalDocs : 0.0;
+            double adjustment = imbalanceAdjusted ? (1.0 / Math.max(prior, EPS)) : 1.0;
+
+            List<ClassTermDiagnostics> ranked = new ArrayList<>();
+            for (TermDiagnostics td : diagnostics.getTermDiagnostics()) {
+                double raw = td.getClassContributions().getOrDefault(label, 0.0);
+                double adjusted = raw * adjustment;
+                ranked.add(new ClassTermDiagnostics(td.getTerm(), adjusted, td.getGlobalScore(), td.getDocumentFrequency()));
+            }
+
+            ranked.sort((a, b) -> {
+                int cmp = Double.compare(b.getClassScore(), a.getClassScore());
+                return cmp != 0 ? cmp : a.getTerm().compareTo(b.getTerm());
+            });
+
+            int keep = Math.min(Math.max(0, topK), ranked.size());
+            summaries.add(new ClassDiagnosticsSummary(label, count, prior, ranked.subList(0, keep)));
+        }
+        summaries.sort((a, b) -> a.getLabel().compareTo(b.getLabel()));
+        return new PerClassDiagnosticsReport(diagnostics.getSelectionMethod(), totalDocs, imbalanceAdjusted, summaries);
+    }
+
+    public static float dotProduct(SparseCsrMatrix matrix, int rowA, int rowB) {
+        validateRowIndex(matrix, rowA);
+        validateRowIndex(matrix, rowB);
+        int aStart = matrix.rowOffsets[rowA];
+        int aEnd = matrix.rowOffsets[rowA + 1];
+        int bStart = matrix.rowOffsets[rowB];
+        int bEnd = matrix.rowOffsets[rowB + 1];
+
+        float dot = 0f;
+        int i = aStart;
+        int j = bStart;
+        while (i < aEnd && j < bEnd) {
+            int ca = matrix.colIndices[i];
+            int cb = matrix.colIndices[j];
+            if (ca == cb) {
+                dot += matrix.values[i] * matrix.values[j];
+                i++;
+                j++;
+            } else if (ca < cb) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return dot;
+    }
+
+    public static float cosineSimilarity(SparseCsrMatrix matrix, int rowA, int rowB) {
+        float dot = dotProduct(matrix, rowA, rowB);
+        float normA = (float) Math.sqrt(dotProduct(matrix, rowA, rowA));
+        float normB = (float) Math.sqrt(dotProduct(matrix, rowB, rowB));
+        if (normA <= EPS || normB <= EPS) {
+            return 0f;
+        }
+        return dot / (normA * normB);
+    }
+
+    public static List<CsrSearchResult> searchTopKByInnerProduct(SparseCsrMatrix matrix, int queryRow, int topK) {
+        return searchTopK(matrix, queryRow, topK, false);
+    }
+
+    public static List<CsrSearchResult> searchTopKByCosine(SparseCsrMatrix matrix, int queryRow, int topK) {
+        return searchTopK(matrix, queryRow, topK, true);
+    }
+
+    public static ComparabilityMetrics evaluateComparability(float[] baselineScores, float[] comparedScores) {
+        if (baselineScores == null || comparedScores == null || baselineScores.length != comparedScores.length) {
+            throw new IllegalArgumentException("baselineScores and comparedScores must be non-null and have equal length");
+        }
+        if (baselineScores.length == 0) {
+            return new ComparabilityMetrics(0.0, 0.0, 1.0, 0.0);
+        }
+
+        double sumAbs = 0.0;
+        double maxAbs = 0.0;
+        for (int i = 0; i < baselineScores.length; i++) {
+            double diff = Math.abs(comparedScores[i] - baselineScores[i]);
+            sumAbs += diff;
+            maxAbs = Math.max(maxAbs, diff);
+        }
+
+        double spearman = spearmanRankCorrelation(baselineScores, comparedScores);
+        double shift = kolmogorovSmirnovDistance(baselineScores, comparedScores);
+        return new ComparabilityMetrics(sumAbs / baselineScores.length, maxAbs, spearman, shift);
+    }
+
     private static VocabularyState readVocabularyStateV3(DataInputStream in) throws IOException {
         int totalDocuments = in.readInt();
         double averageDocumentLength = in.readDouble();
@@ -2001,6 +2262,94 @@ public final class TfIdfAlgorithms {
                 normalizationOptions.stopwords.hashCode()
         );
         return Integer.toHexString(Objects.hash(docsHash, blendHash, normHash));
+    }
+
+    private static void validateRowIndex(SparseCsrMatrix matrix, int row) {
+        Objects.requireNonNull(matrix, "matrix must not be null");
+        if (row < 0 || row >= matrix.rows) {
+            throw new IllegalArgumentException("row out of range: " + row);
+        }
+    }
+
+    private static List<CsrSearchResult> searchTopK(SparseCsrMatrix matrix,
+                                                     int queryRow,
+                                                     int topK,
+                                                     boolean cosine) {
+        validateRowIndex(matrix, queryRow);
+        int k = Math.max(0, topK);
+        List<CsrSearchResult> results = new ArrayList<>();
+        if (k == 0) return results;
+
+        for (int row = 0; row < matrix.rows; row++) {
+            if (row == queryRow) continue;
+            float score = cosine ? cosineSimilarity(matrix, queryRow, row) : dotProduct(matrix, queryRow, row);
+            results.add(new CsrSearchResult(row, score));
+        }
+
+        results.sort((a, b) -> {
+            int cmp = Float.compare(b.score, a.score);
+            return cmp != 0 ? cmp : Integer.compare(a.rowIndex, b.rowIndex);
+        });
+        if (results.size() > k) {
+            return new ArrayList<>(results.subList(0, k));
+        }
+        return results;
+    }
+
+    private static double spearmanRankCorrelation(float[] a, float[] b) {
+        int n = a.length;
+        if (n <= 1) return 1.0;
+        double[] rankA = ranks(a);
+        double[] rankB = ranks(b);
+        double sumSq = 0.0;
+        for (int i = 0; i < n; i++) {
+            double d = rankA[i] - rankB[i];
+            sumSq += d * d;
+        }
+        double denom = n * (n * n - 1.0);
+        return denom <= 0.0 ? 1.0 : (1.0 - (6.0 * sumSq) / denom);
+    }
+
+    private static double[] ranks(float[] values) {
+        Integer[] order = new Integer[values.length];
+        for (int i = 0; i < values.length; i++) order[i] = i;
+        Arrays.sort(order, (i, j) -> {
+            int cmp = Float.compare(values[i], values[j]);
+            return cmp != 0 ? cmp : Integer.compare(i, j);
+        });
+
+        double[] ranks = new double[values.length];
+        int i = 0;
+        while (i < order.length) {
+            int j = i;
+            while (j + 1 < order.length && values[order[j + 1]] == values[order[i]]) {
+                j++;
+            }
+            double rank = (i + j + 2) / 2.0;
+            for (int k = i; k <= j; k++) ranks[order[k]] = rank;
+            i = j + 1;
+        }
+        return ranks;
+    }
+
+    private static double kolmogorovSmirnovDistance(float[] a, float[] b) {
+        float[] sa = Arrays.copyOf(a, a.length);
+        float[] sb = Arrays.copyOf(b, b.length);
+        Arrays.sort(sa);
+        Arrays.sort(sb);
+        int i = 0;
+        int j = 0;
+        double maxDiff = 0.0;
+        while (i < sa.length && j < sb.length) {
+            float va = sa[i];
+            float vb = sb[j];
+            if (va <= vb) i++;
+            if (vb <= va) j++;
+            double cdfA = (double) i / sa.length;
+            double cdfB = (double) j / sb.length;
+            maxDiff = Math.max(maxDiff, Math.abs(cdfA - cdfB));
+        }
+        return maxDiff;
     }
 
     private static List<String> generateNGrams(String[] tokens, int n) {

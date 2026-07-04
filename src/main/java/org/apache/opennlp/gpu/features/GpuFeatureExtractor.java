@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.nio.file.Path;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.apache.opennlp.gpu.common.ComputeProvider;
@@ -53,11 +54,59 @@ public class GpuFeatureExtractor {
     private int minDocumentFrequency = 1;
     private int maxDocumentFrequency = Integer.MAX_VALUE;
     private TfIdfAlgorithms.VocabularyState vocabularyState;
+    private TfIdfAlgorithms.CalibrationMetadata calibrationMetadata = TfIdfAlgorithms.CalibrationMetadata.none();
     private int vocabularySize = 0;
 
     // Performance thresholds
     private static final int MIN_DOCS_FOR_GPU = 100;
     private static final int MIN_FEATURES_FOR_GPU = 1000;
+
+    public static final class CalibratedVectorizationResult {
+        private final TfIdfAlgorithms.VectorizationResult rawResult;
+        private final float[][] calibratedDenseVectors;
+        private final TfIdfAlgorithms.SparseVector[] calibratedSparseVectors;
+        private final float[] rawScores;
+        private final float[] calibratedScores;
+        private final TfIdfAlgorithms.CalibrationMetadata calibrationMetadata;
+
+        public CalibratedVectorizationResult(TfIdfAlgorithms.VectorizationResult rawResult,
+                                             float[][] calibratedDenseVectors,
+                                             TfIdfAlgorithms.SparseVector[] calibratedSparseVectors,
+                                             float[] rawScores,
+                                             float[] calibratedScores,
+                                             TfIdfAlgorithms.CalibrationMetadata calibrationMetadata) {
+            this.rawResult = rawResult;
+            this.calibratedDenseVectors = calibratedDenseVectors;
+            this.calibratedSparseVectors = calibratedSparseVectors;
+            this.rawScores = rawScores;
+            this.calibratedScores = calibratedScores;
+            this.calibrationMetadata = calibrationMetadata;
+        }
+
+        public TfIdfAlgorithms.VectorizationResult getRawResult() {
+            return rawResult;
+        }
+
+        public float[][] getCalibratedDenseVectors() {
+            return calibratedDenseVectors;
+        }
+
+        public TfIdfAlgorithms.SparseVector[] getCalibratedSparseVectors() {
+            return calibratedSparseVectors;
+        }
+
+        public float[] getRawScores() {
+            return rawScores;
+        }
+
+        public float[] getCalibratedScores() {
+            return calibratedScores;
+        }
+
+        public TfIdfAlgorithms.CalibrationMetadata getCalibrationMetadata() {
+            return calibrationMetadata;
+        }
+    }
 
     /**
 
@@ -321,6 +370,7 @@ public class GpuFeatureExtractor {
         idfSmoothingStrategy = vocabularyState.getIdfSmoothingStrategy();
         minDocumentFrequency = vocabularyState.getMinDocumentFrequency();
         maxDocumentFrequency = vocabularyState.getMaxDocumentFrequency();
+        calibrationMetadata = vocabularyState.getCalibrationMetadata();
     }
 
     /**
@@ -339,6 +389,72 @@ public class GpuFeatureExtractor {
                 true
         );
     }
+
+        /**
+         * Single-call vectorization plus optional calibration fit/apply pipeline.
+         */
+        public CalibratedVectorizationResult extractTfIdfVectorsWithCalibration(String[] documents,
+                                             int maxFeatures,
+                                             TfIdfAlgorithms.WeightingScheme scheme,
+                                             String[] labels,
+                                             TfIdfAlgorithms.VectorCalibrationMethod vectorCalibrationMethod,
+                                             TfIdfAlgorithms.ScoreCalibrationMethod scoreCalibrationMethod,
+                                             boolean persistCalibrationMetadata) {
+        TfIdfAlgorithms.VectorizationResult raw = extractTfIdfVectors(documents, maxFeatures, scheme, labels);
+        float[] rawScores = computeDenseVectorNormScores(raw.getDenseVectors());
+        TfIdfAlgorithms.CalibrationMetadata fitted = TfIdfAlgorithms.fitCalibrationMetadata(
+            raw.getDenseVectors(),
+            rawScores,
+            vectorCalibrationMethod,
+            scoreCalibrationMethod
+        );
+        TfIdfAlgorithms.CalibrationApplicationResult calibrated = TfIdfAlgorithms.applyCalibration(
+            raw.getDenseVectors(),
+            rawScores,
+            fitted
+        );
+
+        if (persistCalibrationMetadata && vocabularyState != null) {
+            vocabularyState = vocabularyState.withCalibrationMetadata(fitted);
+            calibrationMetadata = fitted;
+        }
+
+        return new CalibratedVectorizationResult(
+            raw,
+            calibrated.getCalibratedDenseVectors(),
+            toSparse(calibrated.getCalibratedDenseVectors()),
+            rawScores,
+            calibrated.getCalibratedScores(),
+            fitted
+        );
+        }
+
+        /**
+         * Vectorize with loaded vocabulary, then apply persisted calibration metadata.
+         */
+        public CalibratedVectorizationResult extractTfIdfVectorsWithLoadedCalibration(String[] documents,
+                                               TfIdfAlgorithms.WeightingScheme scheme) {
+        TfIdfAlgorithms.VectorizationResult raw = extractTfIdfVectorsWithLoadedVocabulary(documents, scheme);
+        float[] rawScores = computeDenseVectorNormScores(raw.getDenseVectors());
+
+        TfIdfAlgorithms.CalibrationMetadata metadata = (vocabularyState == null)
+            ? TfIdfAlgorithms.CalibrationMetadata.none()
+            : vocabularyState.getCalibrationMetadata();
+        TfIdfAlgorithms.CalibrationApplicationResult calibrated = TfIdfAlgorithms.applyCalibration(
+            raw.getDenseVectors(),
+            rawScores,
+            metadata
+        );
+
+        return new CalibratedVectorizationResult(
+            raw,
+            calibrated.getCalibratedDenseVectors(),
+            toSparse(calibrated.getCalibratedDenseVectors()),
+            rawScores,
+            calibrated.getCalibratedScores(),
+            metadata
+        );
+        }
 
     /**
      * Compute per-term vocabulary diagnostics using current extractor configuration.
@@ -376,6 +492,17 @@ public class GpuFeatureExtractor {
     }
 
     /**
+     * Aggregate diagnostics into per-class top-k summaries.
+     */
+    public TfIdfAlgorithms.PerClassDiagnosticsReport aggregatePerClassDiagnostics(
+            TfIdfAlgorithms.VocabularyDiagnostics diagnostics,
+            String[] labels,
+            int topK,
+            boolean imbalanceAdjusted) {
+        return TfIdfAlgorithms.aggregatePerClassDiagnostics(diagnostics, labels, topK, imbalanceAdjusted);
+    }
+
+    /**
      * Convert sparse vectors to CSR using explicit column count.
      */
     public TfIdfAlgorithms.SparseCsrMatrix toSparseCsr(TfIdfAlgorithms.SparseVector[] sparseVectors,
@@ -405,6 +532,38 @@ public class GpuFeatureExtractor {
     }
 
     /**
+     * Compute inner product similarity between two CSR rows.
+     */
+    public float dotProduct(TfIdfAlgorithms.SparseCsrMatrix matrix, int rowA, int rowB) {
+        return TfIdfAlgorithms.dotProduct(matrix, rowA, rowB);
+    }
+
+    /**
+     * Compute cosine similarity between two CSR rows.
+     */
+    public float cosineSimilarity(TfIdfAlgorithms.SparseCsrMatrix matrix, int rowA, int rowB) {
+        return TfIdfAlgorithms.cosineSimilarity(matrix, rowA, rowB);
+    }
+
+    /**
+     * Search nearest rows by cosine similarity.
+     */
+    public List<TfIdfAlgorithms.CsrSearchResult> searchTopKByCosine(TfIdfAlgorithms.SparseCsrMatrix matrix,
+                                                                     int queryRow,
+                                                                     int topK) {
+        return TfIdfAlgorithms.searchTopKByCosine(matrix, queryRow, topK);
+    }
+
+    /**
+     * Search nearest rows by inner product.
+     */
+    public List<TfIdfAlgorithms.CsrSearchResult> searchTopKByInnerProduct(TfIdfAlgorithms.SparseCsrMatrix matrix,
+                                                                           int queryRow,
+                                                                           int topK) {
+        return TfIdfAlgorithms.searchTopKByInnerProduct(matrix, queryRow, topK);
+    }
+
+    /**
      * Calibrate dense vectors for cross-corpus comparability.
      */
     public float[][] calibrateDenseVectors(float[][] denseVectors,
@@ -418,6 +577,13 @@ public class GpuFeatureExtractor {
     public float[] calibrateScores(float[] scores,
                                    TfIdfAlgorithms.ScoreCalibrationMethod method) {
         return TfIdfAlgorithms.calibrateScores(scores, method);
+    }
+
+    /**
+     * Evaluate score comparability metrics across corpora.
+     */
+    public TfIdfAlgorithms.ComparabilityMetrics evaluateComparability(float[] baselineScores, float[] comparedScores) {
+        return TfIdfAlgorithms.evaluateComparability(baselineScores, comparedScores);
     }
 
     /**
@@ -541,6 +707,44 @@ public class GpuFeatureExtractor {
      */
     private String[] tokenize(String text) {
         return TfIdfAlgorithms.tokenizeNormalized(text, normalizationOptions);
+    }
+
+    private static float[] computeDenseVectorNormScores(float[][] denseVectors) {
+        if (denseVectors == null) {
+            return new float[0];
+        }
+        float[] scores = new float[denseVectors.length];
+        for (int i = 0; i < denseVectors.length; i++) {
+            double sum = 0.0;
+            for (float v : denseVectors[i]) sum += v * v;
+            scores[i] = (float) Math.sqrt(sum);
+        }
+        return scores;
+    }
+
+    private static TfIdfAlgorithms.SparseVector[] toSparse(float[][] denseVectors) {
+        if (denseVectors == null) {
+            return new TfIdfAlgorithms.SparseVector[0];
+        }
+        TfIdfAlgorithms.SparseVector[] sparse = new TfIdfAlgorithms.SparseVector[denseVectors.length];
+        for (int r = 0; r < denseVectors.length; r++) {
+            float[] row = denseVectors[r];
+            int nnz = 0;
+            for (float v : row) if (v != 0.0f) nnz++;
+
+            int[] idx = new int[nnz];
+            float[] vals = new float[nnz];
+            int p = 0;
+            for (int c = 0; c < row.length; c++) {
+                if (row[c] != 0.0f) {
+                    idx[p] = c;
+                    vals[p] = row[c];
+                    p++;
+                }
+            }
+            sparse[r] = new TfIdfAlgorithms.SparseVector(idx, vals);
+        }
+        return sparse;
     }
 
     /**
@@ -798,6 +1002,7 @@ public class GpuFeatureExtractor {
     public void release() {
         vocabulary.clear();
         vocabularyState = null;
+        calibrationMetadata = TfIdfAlgorithms.CalibrationMetadata.none();
         vocabularySize = 0;
         logger.debug("Released feature extractor resources");
     }
