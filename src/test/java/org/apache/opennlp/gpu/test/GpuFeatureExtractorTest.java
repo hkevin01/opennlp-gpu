@@ -539,4 +539,41 @@ public class GpuFeatureExtractorTest {
         assertEquals(2, top.size());
         assertEquals(1, top.get(0).getRowIndex());
     }
+
+    @Test
+    @DisplayName("One-call training artifact bundle wrapper returns complete typed handoff artifact")
+    void testBuildTrainingArtifactBundleWrapper() {
+        String[] docs = {
+            "alpha beta beta",
+            "alpha gamma",
+            "gamma delta"
+        };
+        String[] labels = {"A", "A", "B"};
+
+        GpuFeatureExtractor.TrainingBundleBuildResult built = extractor.buildTrainingArtifactBundle(
+            docs,
+            32,
+            TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+            labels,
+            TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+            TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1,
+            3,
+            true
+        );
+
+        TfIdfAlgorithms.TrainingArtifactBundle bundle = built.getTrainingArtifactBundle();
+        assertNotNull(bundle);
+        assertNotNull(bundle.getVocabularyState());
+        assertNotNull(bundle.getCalibrationMetadata());
+        assertNotNull(bundle.getDiagnosticsSummary());
+        assertNotNull(bundle.getCsrIndexMetadata());
+
+        assertEquals(docs.length, bundle.getCsrIndexMetadata().getRows());
+        assertEquals(
+            built.getCalibratedVectorizationResult().getCalibratedDenseVectors()[0].length,
+            bundle.getCsrIndexMetadata().getCols()
+        );
+        assertEquals(TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1,
+            bundle.getCalibrationMetadata().getScoreCalibrationMethod());
+    }
 }
