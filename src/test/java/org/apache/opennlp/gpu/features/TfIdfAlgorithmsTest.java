@@ -769,4 +769,143 @@ class TfIdfAlgorithmsTest {
                 assertEquals(1.0, n0, 1e-6);
                 assertEquals(1.0, n1, 1e-6);
         }
+
+        @Test
+        @DisplayName("Calibration metadata persists with vocabulary state and is reusable")
+        void calibrationMetadataPersistsWithVocabularyState() throws Exception {
+                String[] docs = {
+                                "alpha beta",
+                                "alpha gamma",
+                                "gamma gamma"
+                };
+
+                TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(
+                                docs,
+                                1,
+                                16,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                false
+                );
+
+                float[] rawScores = new float[]{1f, 3f, 5f};
+                TfIdfAlgorithms.CalibrationMetadata metadata = TfIdfAlgorithms.fitCalibrationMetadata(
+                                result.getDenseVectors(),
+                                rawScores,
+                                TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+                                TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1
+                );
+
+                TfIdfAlgorithms.VocabularyState stateWithCalibration = result.getVocabularyState().withCalibrationMetadata(metadata);
+                Path tmp = Files.createTempFile("tfidf-vocab-cal", ".bin");
+                try {
+                        TfIdfAlgorithms.saveVocabularyState(stateWithCalibration, tmp);
+                        TfIdfAlgorithms.VocabularyState loaded = TfIdfAlgorithms.loadVocabularyState(tmp);
+
+                        assertEquals(TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+                                        loaded.getCalibrationMetadata().getVectorCalibrationMethod());
+                        assertEquals(TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1,
+                                        loaded.getCalibrationMetadata().getScoreCalibrationMethod());
+                        assertEquals(result.getDenseVectors()[0].length,
+                                        loaded.getCalibrationMetadata().getFeatureScales().length);
+                } finally {
+                        Files.deleteIfExists(tmp);
+                }
+        }
+
+        @Test
+        @DisplayName("Per-class diagnostics aggregation returns top-k class summaries with imbalance adjustment")
+        void perClassDiagnosticsAggregationWorks() {
+                String[] docs = {
+                                "major major shared",
+                                "major shared",
+                                "major shared",
+                                "minor niche"
+                };
+                String[] labels = {"MAJ", "MAJ", "MAJ", "MIN"};
+
+                TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                                8,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN,
+                                new TfIdfAlgorithms.ClassBalanceOptions(true, true),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VocabularyDiagnostics diagnostics = TfIdfAlgorithms.computeVocabularyDiagnostics(docs, options);
+                TfIdfAlgorithms.PerClassDiagnosticsReport unadjusted = TfIdfAlgorithms.aggregatePerClassDiagnostics(
+                                diagnostics,
+                                labels,
+                                2,
+                                false
+                );
+                TfIdfAlgorithms.PerClassDiagnosticsReport adjusted = TfIdfAlgorithms.aggregatePerClassDiagnostics(
+                                diagnostics,
+                                labels,
+                                2,
+                                true
+                );
+
+                assertEquals(2, unadjusted.getClassSummaries().size());
+                TfIdfAlgorithms.ClassDiagnosticsSummary minUnadjusted = unadjusted.getClassSummaries().stream()
+                                .filter(s -> s.getLabel().equals("MIN"))
+                                .findFirst()
+                                .orElseThrow();
+                TfIdfAlgorithms.ClassDiagnosticsSummary minAdjusted = adjusted.getClassSummaries().stream()
+                                .filter(s -> s.getLabel().equals("MIN"))
+                                .findFirst()
+                                .orElseThrow();
+                assertTrue(minAdjusted.getTopTerms().get(0).getClassScore() >= minUnadjusted.getTopTerms().get(0).getClassScore());
+        }
+
+        @Test
+        @DisplayName("CSR similarity/search primitives return expected ordering")
+        void csrSimilarityAndSearchPrimitivesWork() {
+                String[] docs = {
+                                "alpha beta gamma",
+                                "alpha beta",
+                                "gamma delta"
+                };
+
+                TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(
+                                docs,
+                                1,
+                                32,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                false
+                );
+                TfIdfAlgorithms.SparseCsrMatrix csr = TfIdfAlgorithms.toSparseCsr(result.getSparseVectors(), result.getVocabulary().size());
+
+                float ip01 = TfIdfAlgorithms.dotProduct(csr, 0, 1);
+                float ip02 = TfIdfAlgorithms.dotProduct(csr, 0, 2);
+                assertTrue(ip01 > ip02);
+
+                List<TfIdfAlgorithms.CsrSearchResult> topCosine = TfIdfAlgorithms.searchTopKByCosine(csr, 0, 2);
+                assertEquals(2, topCosine.size());
+                assertEquals(1, topCosine.get(0).getRowIndex());
+        }
+
+        @Test
+        @DisplayName("Cross-corpus comparability metrics improve after calibration while preserving rank stability")
+        void comparabilityMetricsRegression() {
+                float[] baselineRaw = new float[]{10f, 12f, 14f, 16f};
+                float[] comparedRaw = new float[]{110f, 112f, 114f, 116f};
+
+                TfIdfAlgorithms.ComparabilityMetrics raw = TfIdfAlgorithms.evaluateComparability(baselineRaw, comparedRaw);
+
+                float[] baselineCal = TfIdfAlgorithms.calibrateScores(baselineRaw, TfIdfAlgorithms.ScoreCalibrationMethod.Z_SCORE);
+                float[] comparedCal = TfIdfAlgorithms.calibrateScores(comparedRaw, TfIdfAlgorithms.ScoreCalibrationMethod.Z_SCORE);
+                TfIdfAlgorithms.ComparabilityMetrics calibrated = TfIdfAlgorithms.evaluateComparability(baselineCal, comparedCal);
+
+                assertTrue(calibrated.getMeanAbsoluteShift() < raw.getMeanAbsoluteShift());
+                assertTrue(calibrated.getDistributionShift() <= raw.getDistributionShift());
+                assertTrue(calibrated.getSpearmanRankCorrelation() >= 0.99);
+        }
 }

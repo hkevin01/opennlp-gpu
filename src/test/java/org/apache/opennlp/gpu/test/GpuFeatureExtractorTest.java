@@ -448,4 +448,95 @@ public class GpuFeatureExtractorTest {
         assertTrue(boundedWeight > baselineWeight,
             "higher BM25+ lower TF bound should increase long-document rare-term weight");
     }
+
+    @Test
+    @DisplayName("Calibration-aware vectorization wrapper returns calibrated vectors/scores and persists metadata")
+    void testCalibrationAwareVectorizationPipeline() throws Exception {
+        String[] docs = {
+            "alpha beta beta",
+            "alpha gamma",
+            "gamma gamma beta"
+        };
+
+        GpuFeatureExtractor.CalibratedVectorizationResult calibrated = extractor.extractTfIdfVectorsWithCalibration(
+            docs,
+            32,
+            TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+            null,
+            TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+            TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1,
+            true
+        );
+
+        assertEquals(docs.length, calibrated.getRawResult().getDenseVectors().length);
+        assertEquals(docs.length, calibrated.getCalibratedDenseVectors().length);
+        assertEquals(docs.length, calibrated.getCalibratedScores().length);
+        assertEquals(TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+            calibrated.getCalibrationMetadata().getVectorCalibrationMethod());
+
+        Path tmp = Files.createTempFile("gfe-calibration-vocab", ".bin");
+        try {
+            extractor.saveVocabularyState(tmp);
+
+            GpuFeatureExtractor loaded = new GpuFeatureExtractor(provider, config, matrixOp);
+            loaded.loadVocabularyState(tmp);
+            GpuFeatureExtractor.CalibratedVectorizationResult applied = loaded.extractTfIdfVectorsWithLoadedCalibration(
+                docs,
+                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF
+            );
+            assertEquals(docs.length, applied.getCalibratedDenseVectors().length);
+            assertEquals(docs.length, applied.getCalibratedScores().length);
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    @Test
+    @DisplayName("Per-class diagnostics aggregation wrapper returns class summaries")
+    void testPerClassDiagnosticsAggregationWrapper() {
+        String[] docs = {
+            "major major shared",
+            "major shared",
+            "minor niche"
+        };
+        String[] labels = {"MAJ", "MAJ", "MIN"};
+
+        extractor.setFeatureSelectionMethod(TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN);
+        extractor.setClassBalanceOptions(new TfIdfAlgorithms.ClassBalanceOptions(true, true));
+        TfIdfAlgorithms.VocabularyDiagnostics diagnostics = extractor.computeVocabularyDiagnostics(docs, 8, labels);
+
+        TfIdfAlgorithms.PerClassDiagnosticsReport report = extractor.aggregatePerClassDiagnostics(
+            diagnostics,
+            labels,
+            2,
+            true
+        );
+        assertEquals(2, report.getClassSummaries().size());
+        assertTrue(report.isImbalanceAdjusted());
+    }
+
+    @Test
+    @DisplayName("CSR similarity and search wrappers return expected nearest rows")
+    void testCsrSimilarityAndSearchWrappers() {
+        String[] docs = {
+            "alpha beta gamma",
+            "alpha beta",
+            "gamma delta"
+        };
+        TfIdfAlgorithms.VectorizationResult result = extractor.extractTfIdfVectors(
+            docs,
+            1,
+            32,
+            TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF
+        );
+        TfIdfAlgorithms.SparseCsrMatrix csr = extractor.toSparseCsr(result.getSparseVectors());
+
+        float s01 = extractor.cosineSimilarity(csr, 0, 1);
+        float s02 = extractor.cosineSimilarity(csr, 0, 2);
+        assertTrue(s01 > s02);
+
+        var top = extractor.searchTopKByCosine(csr, 0, 2);
+        assertEquals(2, top.size());
+        assertEquals(1, top.get(0).getRowIndex());
+    }
 }
