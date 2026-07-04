@@ -492,6 +492,60 @@ public class GpuFeatureExtractorTest {
     }
 
     @Test
+    @DisplayName("Loaded calibration reuse applies persisted score calibration metadata")
+    void testLoadedCalibrationReuseAppliesPersistedMetadata() throws Exception {
+        String[] trainDocs = {
+            "alpha beta beta",
+            "alpha gamma",
+            "gamma gamma beta"
+        };
+        String[] inferDocs = {
+            "alpha beta",
+            "gamma gamma",
+            "beta gamma"
+        };
+
+        extractor.extractTfIdfVectorsWithCalibration(
+            trainDocs,
+            32,
+            TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+            null,
+            TfIdfAlgorithms.VectorCalibrationMethod.NONE,
+            TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1,
+            true
+        );
+
+        Path tmp = Files.createTempFile("gfe-calibration-reuse", ".bin");
+        try {
+            extractor.saveVocabularyState(tmp);
+
+            GpuFeatureExtractor loaded = new GpuFeatureExtractor(provider, config, matrixOp);
+            loaded.loadVocabularyState(tmp);
+            GpuFeatureExtractor.CalibratedVectorizationResult reused = loaded.extractTfIdfVectorsWithLoadedCalibration(
+                inferDocs,
+                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF
+            );
+
+            float[] raw = reused.getRawScores();
+            float[] calibrated = reused.getCalibratedScores();
+            assertEquals(raw.length, calibrated.length);
+
+            boolean anyChanged = false;
+            for (int i = 0; i < raw.length; i++) {
+                if (Math.abs(raw[i] - calibrated[i]) > TOLERANCE) {
+                    anyChanged = true;
+                    break;
+                }
+            }
+            assertTrue(anyChanged, "Persisted calibration should transform at least one inference score");
+            assertEquals(TfIdfAlgorithms.ScoreCalibrationMethod.MIN_MAX_0_1,
+                reused.getCalibrationMetadata().getScoreCalibrationMethod());
+        } finally {
+            Files.deleteIfExists(tmp);
+        }
+    }
+
+    @Test
     @DisplayName("Per-class diagnostics aggregation wrapper returns class summaries")
     void testPerClassDiagnosticsAggregationWrapper() {
         String[] docs = {
