@@ -1426,6 +1426,46 @@ public final class TfIdfAlgorithms {
         return out;
     }
 
+    private static VocabularyState readVocabularyStateV3(DataInputStream in) throws IOException {
+        int totalDocuments = in.readInt();
+        double averageDocumentLength = in.readDouble();
+
+        int vocabSize = in.readInt();
+        Map<String, Integer> vocabulary = new HashMap<>(vocabSize * 2 + 1);
+        for (int i = 0; i < vocabSize; i++) {
+            vocabulary.put(in.readUTF(), in.readInt());
+        }
+
+        int dfSize = in.readInt();
+        Map<String, Integer> documentFrequency = new HashMap<>(dfSize * 2 + 1);
+        for (int i = 0; i < dfSize; i++) {
+            documentFrequency.put(in.readUTF(), in.readInt());
+        }
+
+        int blendSize = in.readInt();
+        Map<Integer, Double> blendWeights = new HashMap<>();
+        for (int i = 0; i < blendSize; i++) {
+            blendWeights.put(in.readInt(), in.readDouble());
+        }
+
+        IDFSmoothingStrategy smoothing = IDFSmoothingStrategy.valueOf(in.readUTF());
+        int minDf = in.readInt();
+        int maxDf = in.readInt();
+        CalibrationMetadata metadata = readCalibrationMetadata(in);
+
+        return new VocabularyState(
+                vocabulary,
+                documentFrequency,
+                totalDocuments,
+                averageDocumentLength,
+                new NGramBlendOptions(blendWeights),
+                smoothing,
+                minDf,
+                maxDf,
+                metadata
+        );
+    }
+
     private static VocabularyState readVocabularyStateV2(DataInputStream in) throws IOException {
         int totalDocuments = in.readInt();
         double averageDocumentLength = in.readDouble();
@@ -1460,7 +1500,8 @@ public final class TfIdfAlgorithms {
                 new NGramBlendOptions(blendWeights),
                 smoothing,
                 minDf,
-                maxDf
+            maxDf,
+            CalibrationMetadata.none()
         );
     }
 
@@ -1494,8 +1535,46 @@ public final class TfIdfAlgorithms {
                 new NGramBlendOptions(blendWeights),
                 IDFSmoothingStrategy.STANDARD_SMOOTH,
                 1,
-                Integer.MAX_VALUE
+                Integer.MAX_VALUE,
+                CalibrationMetadata.none()
         );
+    }
+
+    private static void writeCalibrationMetadata(DataOutputStream out, CalibrationMetadata metadata) throws IOException {
+        CalibrationMetadata effective = metadata == null ? CalibrationMetadata.none() : metadata;
+        out.writeUTF(effective.vectorCalibrationMethod.name());
+        out.writeUTF(effective.scoreCalibrationMethod.name());
+
+        out.writeInt(effective.featureMeans.length);
+        for (float v : effective.featureMeans) out.writeFloat(v);
+
+        out.writeInt(effective.featureScales.length);
+        for (float v : effective.featureScales) out.writeFloat(v);
+
+        out.writeFloat(effective.scoreMean);
+        out.writeFloat(effective.scoreScale);
+        out.writeFloat(effective.scoreMin);
+        out.writeFloat(effective.scoreMax);
+    }
+
+    private static CalibrationMetadata readCalibrationMetadata(DataInputStream in) throws IOException {
+        VectorCalibrationMethod vectorMethod = VectorCalibrationMethod.valueOf(in.readUTF());
+        ScoreCalibrationMethod scoreMethod = ScoreCalibrationMethod.valueOf(in.readUTF());
+
+        int meansLen = in.readInt();
+        float[] means = new float[meansLen];
+        for (int i = 0; i < meansLen; i++) means[i] = in.readFloat();
+
+        int scalesLen = in.readInt();
+        float[] scales = new float[scalesLen];
+        for (int i = 0; i < scalesLen; i++) scales[i] = in.readFloat();
+
+        float scoreMean = in.readFloat();
+        float scoreScale = in.readFloat();
+        float scoreMin = in.readFloat();
+        float scoreMax = in.readFloat();
+
+        return new CalibrationMetadata(vectorMethod, scoreMethod, means, scales, scoreMean, scoreScale, scoreMin, scoreMax);
     }
 
     private static CorpusCacheEntry getOrBuildCorpusEntry(String[] documents,
