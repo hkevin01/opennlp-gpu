@@ -108,6 +108,25 @@ public class GpuFeatureExtractor {
         }
     }
 
+    public static final class TrainingBundleBuildResult {
+        private final CalibratedVectorizationResult calibratedVectorizationResult;
+        private final TfIdfAlgorithms.TrainingArtifactBundle trainingArtifactBundle;
+
+        public TrainingBundleBuildResult(CalibratedVectorizationResult calibratedVectorizationResult,
+                                         TfIdfAlgorithms.TrainingArtifactBundle trainingArtifactBundle) {
+            this.calibratedVectorizationResult = calibratedVectorizationResult;
+            this.trainingArtifactBundle = trainingArtifactBundle;
+        }
+
+        public CalibratedVectorizationResult getCalibratedVectorizationResult() {
+            return calibratedVectorizationResult;
+        }
+
+        public TfIdfAlgorithms.TrainingArtifactBundle getTrainingArtifactBundle() {
+            return trainingArtifactBundle;
+        }
+    }
+
     /**
 
      * ID: GPU-GFE-002
@@ -453,6 +472,67 @@ public class GpuFeatureExtractor {
             rawScores,
             calibrated.getCalibratedScores(),
             metadata
+        );
+        }
+
+        /**
+         * Build a compact strongly-typed training artifact bundle in one call.
+         */
+        public TrainingBundleBuildResult buildTrainingArtifactBundle(String[] documents,
+                                     int maxFeatures,
+                                     TfIdfAlgorithms.WeightingScheme scheme,
+                                     String[] labels,
+                                     TfIdfAlgorithms.VectorCalibrationMethod vectorCalibrationMethod,
+                                     TfIdfAlgorithms.ScoreCalibrationMethod scoreCalibrationMethod,
+                                     int diagnosticsTopK,
+                                     boolean imbalanceAdjusted) {
+        CalibratedVectorizationResult calibrated = extractTfIdfVectorsWithCalibration(
+            documents,
+            maxFeatures,
+            scheme,
+            labels,
+            vectorCalibrationMethod,
+            scoreCalibrationMethod,
+            true
+        );
+
+        TfIdfAlgorithms.VocabularyDiagnostics diagnostics = computeVocabularyDiagnostics(documents, maxFeatures, labels);
+        TfIdfAlgorithms.PerClassDiagnosticsReport diagnosticsReport = aggregatePerClassDiagnostics(
+            diagnostics,
+            labels,
+            diagnosticsTopK,
+            imbalanceAdjusted
+        );
+
+        int cols = calibrated.getCalibratedDenseVectors().length == 0
+            ? calibrated.getRawResult().getVocabulary().size()
+            : calibrated.getCalibratedDenseVectors()[0].length;
+        TfIdfAlgorithms.SparseCsrMatrix csr = toSparseCsr(calibrated.getCalibratedSparseVectors(), cols);
+
+        TfIdfAlgorithms.VocabularyState bundleState = calibrated.getRawResult()
+            .getVocabularyState()
+            .withCalibrationMetadata(calibrated.getCalibrationMetadata());
+        TfIdfAlgorithms.TrainingArtifactBundle bundle = TfIdfAlgorithms.buildTrainingArtifactBundle(
+            bundleState,
+            calibrated.getCalibrationMetadata(),
+            diagnosticsReport,
+            csr
+        );
+        return new TrainingBundleBuildResult(calibrated, bundle);
+        }
+
+        /**
+         * Build a compact artifact bundle from already-computed components.
+         */
+        public TfIdfAlgorithms.TrainingArtifactBundle buildTrainingArtifactBundle(TfIdfAlgorithms.VocabularyState vocabularyState,
+                                               TfIdfAlgorithms.CalibrationMetadata calibrationMetadata,
+                                               TfIdfAlgorithms.PerClassDiagnosticsReport diagnosticsSummary,
+                                               TfIdfAlgorithms.SparseCsrMatrix csrMatrix) {
+        return TfIdfAlgorithms.buildTrainingArtifactBundle(
+            vocabularyState,
+            calibrationMetadata,
+            diagnosticsSummary,
+            csrMatrix
         );
         }
 

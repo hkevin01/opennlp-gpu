@@ -908,4 +908,61 @@ class TfIdfAlgorithmsTest {
                 assertTrue(calibrated.getDistributionShift() <= raw.getDistributionShift());
                 assertTrue(calibrated.getSpearmanRankCorrelation() >= 0.99);
         }
+
+        @Test
+        @DisplayName("TrainingArtifactBundle compactly carries vocab+calibration+diagnostics+CSR metadata")
+        void trainingArtifactBundleCarriesCoreTrainingState() {
+                String[] docs = {
+                                "alpha beta",
+                                "alpha gamma",
+                                "gamma delta"
+                };
+                String[] labels = {"A", "A", "B"};
+
+                TfIdfAlgorithms.VectorizationOptions options = new TfIdfAlgorithms.VectorizationOptions(
+                                32,
+                                TfIdfAlgorithms.WeightingScheme.RAW_TF_IDF,
+                                TfIdfAlgorithms.NormalizationOptions.defaultOptions(),
+                                TfIdfAlgorithms.NGramBlendOptions.unigramOnly(),
+                                TfIdfAlgorithms.FeatureSelectionMethod.INFORMATION_GAIN,
+                                new TfIdfAlgorithms.ClassBalanceOptions(true, true),
+                                TfIdfAlgorithms.IDFSmoothingStrategy.STANDARD_SMOOTH,
+                                1,
+                                Integer.MAX_VALUE,
+                                labels,
+                                false
+                );
+
+                TfIdfAlgorithms.VectorizationResult result = TfIdfAlgorithms.vectorizeDocuments(docs, options);
+                float[] rawScores = new float[] {1f, 2f, 3f};
+                TfIdfAlgorithms.CalibrationMetadata metadata = TfIdfAlgorithms.fitCalibrationMetadata(
+                                result.getDenseVectors(),
+                                rawScores,
+                                TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+                                TfIdfAlgorithms.ScoreCalibrationMethod.Z_SCORE
+                );
+
+                TfIdfAlgorithms.VocabularyDiagnostics diagnostics = TfIdfAlgorithms.computeVocabularyDiagnostics(docs, options);
+                TfIdfAlgorithms.PerClassDiagnosticsReport report = TfIdfAlgorithms.aggregatePerClassDiagnostics(
+                                diagnostics,
+                                labels,
+                                3,
+                                true
+                );
+                TfIdfAlgorithms.SparseCsrMatrix csr = TfIdfAlgorithms.toSparseCsr(result.getSparseVectors(), result.getVocabulary().size());
+
+                TfIdfAlgorithms.TrainingArtifactBundle bundle = TfIdfAlgorithms.buildTrainingArtifactBundle(
+                                result.getVocabularyState().withCalibrationMetadata(metadata),
+                                metadata,
+                                report,
+                                csr
+                );
+
+                assertEquals(result.getVocabulary().size(), bundle.getVocabularyState().getVocabulary().size());
+                assertEquals(TfIdfAlgorithms.VectorCalibrationMethod.Z_SCORE_PER_FEATURE,
+                                bundle.getCalibrationMetadata().getVectorCalibrationMethod());
+                assertEquals(2, bundle.getDiagnosticsSummary().getClassSummaries().size());
+                assertEquals(csr.getRows(), bundle.getCsrIndexMetadata().getRows());
+                assertEquals(csr.getValues().length, bundle.getCsrIndexMetadata().getNnz());
+        }
 }

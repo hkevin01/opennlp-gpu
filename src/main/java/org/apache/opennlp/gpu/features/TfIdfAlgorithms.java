@@ -716,6 +716,86 @@ public final class TfIdfAlgorithms {
         }
     }
 
+    public static final class CsrIndexMetadata {
+        private final int rows;
+        private final int cols;
+        private final int nnz;
+        private final int rowOffsetsLength;
+        private final int colIndicesLength;
+        private final float averageNnzPerRow;
+
+        public CsrIndexMetadata(int rows,
+                                int cols,
+                                int nnz,
+                                int rowOffsetsLength,
+                                int colIndicesLength,
+                                float averageNnzPerRow) {
+            this.rows = rows;
+            this.cols = cols;
+            this.nnz = nnz;
+            this.rowOffsetsLength = rowOffsetsLength;
+            this.colIndicesLength = colIndicesLength;
+            this.averageNnzPerRow = averageNnzPerRow;
+        }
+
+        public int getRows() {
+            return rows;
+        }
+
+        public int getCols() {
+            return cols;
+        }
+
+        public int getNnz() {
+            return nnz;
+        }
+
+        public int getRowOffsetsLength() {
+            return rowOffsetsLength;
+        }
+
+        public int getColIndicesLength() {
+            return colIndicesLength;
+        }
+
+        public float getAverageNnzPerRow() {
+            return averageNnzPerRow;
+        }
+    }
+
+    public static final class TrainingArtifactBundle {
+        private final VocabularyState vocabularyState;
+        private final CalibrationMetadata calibrationMetadata;
+        private final PerClassDiagnosticsReport diagnosticsSummary;
+        private final CsrIndexMetadata csrIndexMetadata;
+
+        public TrainingArtifactBundle(VocabularyState vocabularyState,
+                                      CalibrationMetadata calibrationMetadata,
+                                      PerClassDiagnosticsReport diagnosticsSummary,
+                                      CsrIndexMetadata csrIndexMetadata) {
+            this.vocabularyState = vocabularyState;
+            this.calibrationMetadata = calibrationMetadata == null ? CalibrationMetadata.none() : calibrationMetadata;
+            this.diagnosticsSummary = diagnosticsSummary;
+            this.csrIndexMetadata = csrIndexMetadata;
+        }
+
+        public VocabularyState getVocabularyState() {
+            return vocabularyState;
+        }
+
+        public CalibrationMetadata getCalibrationMetadata() {
+            return calibrationMetadata;
+        }
+
+        public PerClassDiagnosticsReport getDiagnosticsSummary() {
+            return diagnosticsSummary;
+        }
+
+        public CsrIndexMetadata getCsrIndexMetadata() {
+            return csrIndexMetadata;
+        }
+    }
+
     public static final class SparseCsrMatrix {
         private final int rows;
         private final int cols;
@@ -1685,6 +1765,37 @@ public final class TfIdfAlgorithms {
         double spearman = spearmanRankCorrelation(baselineScores, comparedScores);
         double shift = kolmogorovSmirnovDistance(baselineScores, comparedScores);
         return new ComparabilityMetrics(sumAbs / baselineScores.length, maxAbs, spearman, shift);
+    }
+
+    public static CsrIndexMetadata computeCsrIndexMetadata(SparseCsrMatrix matrix) {
+        Objects.requireNonNull(matrix, "matrix must not be null");
+        int nnz = matrix.values == null ? 0 : matrix.values.length;
+        float avgNnzPerRow = matrix.rows > 0 ? ((float) nnz / matrix.rows) : 0f;
+        return new CsrIndexMetadata(
+                matrix.rows,
+                matrix.cols,
+                nnz,
+                matrix.rowOffsets == null ? 0 : matrix.rowOffsets.length,
+                matrix.colIndices == null ? 0 : matrix.colIndices.length,
+                avgNnzPerRow
+        );
+    }
+
+    public static TrainingArtifactBundle buildTrainingArtifactBundle(VocabularyState vocabularyState,
+                                                                     CalibrationMetadata calibrationMetadata,
+                                                                     PerClassDiagnosticsReport diagnosticsSummary,
+                                                                     SparseCsrMatrix csrMatrix) {
+        Objects.requireNonNull(vocabularyState, "vocabularyState must not be null");
+        CsrIndexMetadata csrMeta = csrMatrix == null ? null : computeCsrIndexMetadata(csrMatrix);
+        CalibrationMetadata effective = calibrationMetadata == null
+                ? vocabularyState.getCalibrationMetadata()
+                : calibrationMetadata;
+        return new TrainingArtifactBundle(
+                vocabularyState,
+                effective,
+                diagnosticsSummary,
+                csrMeta
+        );
     }
 
     private static VocabularyState readVocabularyStateV3(DataInputStream in) throws IOException {
