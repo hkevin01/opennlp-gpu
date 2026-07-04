@@ -256,6 +256,7 @@ public final class TfIdfAlgorithms {
         private final IDFSmoothingStrategy idfSmoothingStrategy;
         private final int minDocumentFrequency;
         private final int maxDocumentFrequency;
+        private final CalibrationMetadata calibrationMetadata;
 
         public VocabularyState(Map<String, Integer> vocabulary,
                                Map<String, Integer> documentFrequency,
@@ -265,6 +266,26 @@ public final class TfIdfAlgorithms {
                                IDFSmoothingStrategy idfSmoothingStrategy,
                                int minDocumentFrequency,
                                int maxDocumentFrequency) {
+            this(vocabulary,
+                    documentFrequency,
+                    totalDocuments,
+                    averageDocumentLength,
+                    ngramBlendOptions,
+                    idfSmoothingStrategy,
+                    minDocumentFrequency,
+                    maxDocumentFrequency,
+                    CalibrationMetadata.none());
+        }
+
+        public VocabularyState(Map<String, Integer> vocabulary,
+                               Map<String, Integer> documentFrequency,
+                               int totalDocuments,
+                               double averageDocumentLength,
+                               NGramBlendOptions ngramBlendOptions,
+                               IDFSmoothingStrategy idfSmoothingStrategy,
+                               int minDocumentFrequency,
+                               int maxDocumentFrequency,
+                               CalibrationMetadata calibrationMetadata) {
             this.vocabulary = new HashMap<>(vocabulary);
             this.documentFrequency = new HashMap<>(documentFrequency);
             this.totalDocuments = totalDocuments;
@@ -273,6 +294,7 @@ public final class TfIdfAlgorithms {
             this.idfSmoothingStrategy = idfSmoothingStrategy == null ? IDFSmoothingStrategy.STANDARD_SMOOTH : idfSmoothingStrategy;
             this.minDocumentFrequency = Math.max(1, minDocumentFrequency);
             this.maxDocumentFrequency = maxDocumentFrequency <= 0 ? Integer.MAX_VALUE : maxDocumentFrequency;
+            this.calibrationMetadata = calibrationMetadata == null ? CalibrationMetadata.none() : calibrationMetadata;
         }
 
         /**
@@ -317,6 +339,24 @@ public final class TfIdfAlgorithms {
 
         public int getMaxDocumentFrequency() {
             return maxDocumentFrequency;
+        }
+
+        public CalibrationMetadata getCalibrationMetadata() {
+            return calibrationMetadata;
+        }
+
+        public VocabularyState withCalibrationMetadata(CalibrationMetadata calibrationMetadata) {
+            return new VocabularyState(
+                    vocabulary,
+                    documentFrequency,
+                    totalDocuments,
+                    averageDocumentLength,
+                    ngramBlendOptions,
+                    idfSmoothingStrategy,
+                    minDocumentFrequency,
+                    maxDocumentFrequency,
+                    calibrationMetadata
+            );
         }
     }
 
@@ -437,6 +477,245 @@ public final class TfIdfAlgorithms {
         }
     }
 
+    public static final class ClassTermDiagnostics {
+        private final String term;
+        private final double classScore;
+        private final double globalScore;
+        private final int documentFrequency;
+
+        public ClassTermDiagnostics(String term, double classScore, double globalScore, int documentFrequency) {
+            this.term = term;
+            this.classScore = classScore;
+            this.globalScore = globalScore;
+            this.documentFrequency = documentFrequency;
+        }
+
+        public String getTerm() {
+            return term;
+        }
+
+        public double getClassScore() {
+            return classScore;
+        }
+
+        public double getGlobalScore() {
+            return globalScore;
+        }
+
+        public int getDocumentFrequency() {
+            return documentFrequency;
+        }
+    }
+
+    public static final class ClassDiagnosticsSummary {
+        private final String label;
+        private final int classDocumentCount;
+        private final double classPrior;
+        private final List<ClassTermDiagnostics> topTerms;
+
+        public ClassDiagnosticsSummary(String label,
+                                       int classDocumentCount,
+                                       double classPrior,
+                                       List<ClassTermDiagnostics> topTerms) {
+            this.label = label;
+            this.classDocumentCount = classDocumentCount;
+            this.classPrior = classPrior;
+            this.topTerms = Collections.unmodifiableList(new ArrayList<>(topTerms));
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public int getClassDocumentCount() {
+            return classDocumentCount;
+        }
+
+        public double getClassPrior() {
+            return classPrior;
+        }
+
+        public List<ClassTermDiagnostics> getTopTerms() {
+            return topTerms;
+        }
+    }
+
+    public static final class PerClassDiagnosticsReport {
+        private final FeatureSelectionMethod selectionMethod;
+        private final int totalDocuments;
+        private final boolean imbalanceAdjusted;
+        private final List<ClassDiagnosticsSummary> classSummaries;
+
+        public PerClassDiagnosticsReport(FeatureSelectionMethod selectionMethod,
+                                         int totalDocuments,
+                                         boolean imbalanceAdjusted,
+                                         List<ClassDiagnosticsSummary> classSummaries) {
+            this.selectionMethod = selectionMethod;
+            this.totalDocuments = totalDocuments;
+            this.imbalanceAdjusted = imbalanceAdjusted;
+            this.classSummaries = Collections.unmodifiableList(new ArrayList<>(classSummaries));
+        }
+
+        public FeatureSelectionMethod getSelectionMethod() {
+            return selectionMethod;
+        }
+
+        public int getTotalDocuments() {
+            return totalDocuments;
+        }
+
+        public boolean isImbalanceAdjusted() {
+            return imbalanceAdjusted;
+        }
+
+        public List<ClassDiagnosticsSummary> getClassSummaries() {
+            return classSummaries;
+        }
+    }
+
+    public static final class CalibrationMetadata {
+        private final VectorCalibrationMethod vectorCalibrationMethod;
+        private final ScoreCalibrationMethod scoreCalibrationMethod;
+        private final float[] featureMeans;
+        private final float[] featureScales;
+        private final float scoreMean;
+        private final float scoreScale;
+        private final float scoreMin;
+        private final float scoreMax;
+
+        public CalibrationMetadata(VectorCalibrationMethod vectorCalibrationMethod,
+                                   ScoreCalibrationMethod scoreCalibrationMethod,
+                                   float[] featureMeans,
+                                   float[] featureScales,
+                                   float scoreMean,
+                                   float scoreScale,
+                                   float scoreMin,
+                                   float scoreMax) {
+            this.vectorCalibrationMethod = vectorCalibrationMethod == null ? VectorCalibrationMethod.NONE : vectorCalibrationMethod;
+            this.scoreCalibrationMethod = scoreCalibrationMethod == null ? ScoreCalibrationMethod.NONE : scoreCalibrationMethod;
+            this.featureMeans = featureMeans == null ? new float[0] : Arrays.copyOf(featureMeans, featureMeans.length);
+            this.featureScales = featureScales == null ? new float[0] : Arrays.copyOf(featureScales, featureScales.length);
+            this.scoreMean = scoreMean;
+            this.scoreScale = scoreScale;
+            this.scoreMin = scoreMin;
+            this.scoreMax = scoreMax;
+        }
+
+        public static CalibrationMetadata none() {
+            return new CalibrationMetadata(
+                    VectorCalibrationMethod.NONE,
+                    ScoreCalibrationMethod.NONE,
+                    new float[0],
+                    new float[0],
+                    0f,
+                    1f,
+                    0f,
+                    1f
+            );
+        }
+
+        public VectorCalibrationMethod getVectorCalibrationMethod() {
+            return vectorCalibrationMethod;
+        }
+
+        public ScoreCalibrationMethod getScoreCalibrationMethod() {
+            return scoreCalibrationMethod;
+        }
+
+        public float[] getFeatureMeans() {
+            return Arrays.copyOf(featureMeans, featureMeans.length);
+        }
+
+        public float[] getFeatureScales() {
+            return Arrays.copyOf(featureScales, featureScales.length);
+        }
+
+        public float getScoreMean() {
+            return scoreMean;
+        }
+
+        public float getScoreScale() {
+            return scoreScale;
+        }
+
+        public float getScoreMin() {
+            return scoreMin;
+        }
+
+        public float getScoreMax() {
+            return scoreMax;
+        }
+    }
+
+    public static final class CalibrationApplicationResult {
+        private final float[][] calibratedDenseVectors;
+        private final float[] calibratedScores;
+
+        public CalibrationApplicationResult(float[][] calibratedDenseVectors, float[] calibratedScores) {
+            this.calibratedDenseVectors = calibratedDenseVectors;
+            this.calibratedScores = calibratedScores;
+        }
+
+        public float[][] getCalibratedDenseVectors() {
+            return calibratedDenseVectors;
+        }
+
+        public float[] getCalibratedScores() {
+            return calibratedScores;
+        }
+    }
+
+    public static final class CsrSearchResult {
+        private final int rowIndex;
+        private final float score;
+
+        public CsrSearchResult(int rowIndex, float score) {
+            this.rowIndex = rowIndex;
+            this.score = score;
+        }
+
+        public int getRowIndex() {
+            return rowIndex;
+        }
+
+        public float getScore() {
+            return score;
+        }
+    }
+
+    public static final class ComparabilityMetrics {
+        private final double meanAbsoluteShift;
+        private final double maxAbsoluteShift;
+        private final double spearmanRankCorrelation;
+        private final double distributionShift;
+
+        public ComparabilityMetrics(double meanAbsoluteShift,
+                                    double maxAbsoluteShift,
+                                    double spearmanRankCorrelation,
+                                    double distributionShift) {
+            this.meanAbsoluteShift = meanAbsoluteShift;
+            this.maxAbsoluteShift = maxAbsoluteShift;
+            this.spearmanRankCorrelation = spearmanRankCorrelation;
+            this.distributionShift = distributionShift;
+        }
+
+        public double getMeanAbsoluteShift() {
+            return meanAbsoluteShift;
+        }
+
+        public double getMaxAbsoluteShift() {
+            return maxAbsoluteShift;
+        }
+
+        public double getSpearmanRankCorrelation() {
+            return spearmanRankCorrelation;
+        }
+
+        public double getDistributionShift() {
+            return distributionShift;
+        }
+    }
+
     public static final class SparseCsrMatrix {
         private final int rows;
         private final int cols;
@@ -512,6 +791,7 @@ public final class TfIdfAlgorithms {
 
     private static final int CACHE_FORMAT_V1 = 1;
     private static final int CACHE_FORMAT_V2 = 2;
+    private static final int CACHE_FORMAT_V3 = 3;
     private static final int DENSE_VECTOR_FORMAT_VERSION = 1;
     private static final int SPARSE_CSR_FORMAT_VERSION = 1;
     private static final int MAX_CACHE_ENTRIES = 32;
@@ -753,7 +1033,7 @@ public final class TfIdfAlgorithms {
         Objects.requireNonNull(state, "state must not be null");
         Objects.requireNonNull(path, "path must not be null");
         try (DataOutputStream out = new DataOutputStream(new BufferedOutputStream(Files.newOutputStream(path)))) {
-            out.writeInt(CACHE_FORMAT_V2);
+            out.writeInt(CACHE_FORMAT_V3);
             out.writeInt(state.totalDocuments);
             out.writeDouble(state.averageDocumentLength);
 
@@ -779,6 +1059,7 @@ public final class TfIdfAlgorithms {
             out.writeUTF(state.idfSmoothingStrategy.name());
             out.writeInt(state.minDocumentFrequency);
             out.writeInt(state.maxDocumentFrequency);
+            writeCalibrationMetadata(out, state.calibrationMetadata);
         }
     }
 
@@ -789,7 +1070,9 @@ public final class TfIdfAlgorithms {
         Objects.requireNonNull(path, "path must not be null");
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(Files.newInputStream(path)))) {
             int version = in.readInt();
-            if (version == CACHE_FORMAT_V2) {
+            if (version == CACHE_FORMAT_V3) {
+                return readVocabularyStateV3(in);
+            } else if (version == CACHE_FORMAT_V2) {
                 return readVocabularyStateV2(in);
             } else if (version == CACHE_FORMAT_V1) {
                 return migrateVocabularyStateFromV1(in);
